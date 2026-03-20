@@ -14,6 +14,7 @@ CLIENTS = {
     "uio": {
         "nom": "Assistant UIO",
         "couleur": "#7c5cfc",
+        "suggestions": ["Nos services", "Nos tarifs", "Comment ca marche ?"],
         "system_prompt": (
             "Tu es l'assistant IA de UIO Automatisation, une entreprise quebecoise specialisee en chatbots IA et sites web pour les petites entreprises.\n\n"
             "MESSAGE D ACCUEIL : A la toute premiere interaction presente-toi ainsi : "
@@ -32,14 +33,15 @@ CLIENTS = {
     "demo": {
         "nom": "Assistant Demo",
         "couleur": "#1D9E75",
+        "suggestions": ["Nos services", "Nos tarifs", "Comment ca marche ?"],
         "system_prompt": "Tu es un assistant de demonstration pour UIO Automatisation. Montre les capacites du chatbot de facon professionnelle. Reponds en francais."
     }
     # Pour ajouter un client :
     # "restaurant_mario": {
     #     "nom": "Assistant Mario",
     #     "couleur": "#e74c3c",
-    #     "system_prompt": "Tu es l'assistant du Restaurant Mario...",
-    #     "suggestions": ["Notre menu", "Nos horaires", "Reserver une table"]
+    #     "suggestions": ["Notre menu", "Nos horaires", "Reserver une table"],
+    #     "system_prompt": "Tu es l'assistant du Restaurant Mario..."
     # }
 }
 
@@ -92,10 +94,9 @@ def chatbot_js():
     suggestions = client.get("suggestions", ["Nos services", "Nos tarifs", "Comment ca marche ?"])
     backend = request.host_url.rstrip("/")
 
-    sugg_buttons = "".join(
-        '<button class=\\"uio-sugg\\" onclick=\\"suggClick(this)\\">' + s + '</button>'
-        for s in suggestions
-    )
+    sugg_html = ""
+    for s in suggestions:
+        sugg_html += '<button class=\\"uio-sugg\\" onclick=\\"suggClick(this)\\">' + s + '</button>'
 
     js = ("""
 (function() {
@@ -126,12 +127,12 @@ def chatbot_js():
 
   var btn = document.createElement('button');
   btn.id = 'uio-btn';
-  btn.textContent = '[chat]';
+  btn.innerHTML = '&#129302;';
   document.body.appendChild(btn);
 
   var box = document.createElement('div');
   box.id = 'uio-box';
-  box.innerHTML = '<div id="uio-head"><div id="uio-online"></div>' + NOM + '</div><div id="uio-msgs"><div class="uio-bubble uio-bot">Bonjour ! Comment puis-je vous aider ?</div><div id="uio-suggestions">""" + sugg_buttons + """</div></div><div id="uio-input-row"><input id="uio-input" placeholder="Votre message..."/><button id="uio-send">Envoyer</button></div>';
+  box.innerHTML = '<div id="uio-head"><div id="uio-online"></div>' + NOM + '</div><div id="uio-msgs"><div class="uio-bubble uio-bot">Bonjour ! Comment puis-je vous aider ?</div><div id="uio-suggestions">""" + sugg_html + """</div></div><div id="uio-input-row"><input id="uio-input" placeholder="Votre message..."/><button id="uio-send">Envoyer</button></div>';
   document.body.appendChild(box);
 
   btn.onclick = function() {
