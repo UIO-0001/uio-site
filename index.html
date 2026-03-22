@@ -533,34 +533,23 @@ const cObs = new IntersectionObserver(entries => {
 }, {threshold:.5});
 document.querySelectorAll('.stat-num').forEach(el => cObs.observe(el));
 
-// ═══ TILT 3D CARTES ═══
-document.querySelectorAll('.av-card, .svc-card').forEach(card => {
-  card.addEventListener('mousemove', e => {
-    const r = card.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width - .5;
-    const y = (e.clientY - r.top) / r.height - .5;
-    card.style.transform = `perspective(700px) rotateX(${-y*10}deg) rotateY(${x*10}deg) translateY(-6px) scale(1.02)`;
-  });
-  card.addEventListener('mouseleave', () => {
-    card.style.transform = 'perspective(700px) rotateX(0) rotateY(0) translateY(0) scale(1)';
-  });
-});
-
-// ═══ RIPPLE BOUTONS ═══
-document.querySelectorAll('.btn-primary,.btn-secondary,.nav-cta,.contact-form button').forEach(btn => {
-  btn.style.position = 'relative';
-  btn.style.overflow = 'hidden';
-  btn.addEventListener('click', e => {
-    const r = btn.getBoundingClientRect();
-    const size = Math.max(r.width, r.height) * 2;
-    const el = document.createElement('span');
-    el.className = 'ripple-effect';
-    el.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX-r.left-size/2}px;top:${e.clientY-r.top-size/2}px;`;
-    btn.appendChild(el);
-    setTimeout(()=>el.remove(), 600);
+/// ═══ TILT 3D — toutes les cartes regardent la souris ═══
+const allCards = document.querySelectorAll('.av-card, .svc-card');
+document.addEventListener('mousemove', e => {
+  allCards.forEach(card => {
+    const r  = card.getBoundingClientRect();
+    const dx = (e.clientX - (r.left + r.width/2))  / window.innerWidth;
+    const dy = (e.clientY - (r.top  + r.height/2)) / window.innerHeight;
+    card.style.transition = 'transform .1s ease';
+    card.style.transform  = `perspective(700px) rotateX(${-dy*22}deg) rotateY(${dx*22}deg) scale(1.01)`;
   });
 });
-
+document.addEventListener('mouseleave', () => {
+  allCards.forEach(card => {
+    card.style.transition = 'transform .6s ease';
+    card.style.transform  = 'perspective(700px) rotateX(0) rotateY(0) scale(1)';
+  });
+});
 // ═══ REVEAL ═══
 const rObs = new IntersectionObserver(entries => {
   entries.forEach((e,i) => {
