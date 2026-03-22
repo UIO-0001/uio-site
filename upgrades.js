@@ -115,7 +115,8 @@
     var em = document.getElementById('morph-em');
 
     // Hauteur fixe sur h1 — empêche le saut quand le mot change de longueur
-    h1.style.minHeight = '160px';
+    h1.style.height = '240px';
+    h1.style.marginBottom = '32px';
     em.style.cssText = 'display:inline-block;white-space:nowrap;vertical-align:bottom;';
 
     // Curseur clignotant
@@ -392,7 +393,8 @@
     if (!hero) return;
     var hint = document.createElement('div');
     hint.className = 'scroll-hint';
-    hint.innerHTML = '<span>Scroll</span><div class="scroll-hint-line"></div>';
+    hint.style.cssText = 'position:absolute;bottom:32px;left:40px;transform:none;display:flex;flex-direction:column;align-items:flex-start;gap:6px;z-index:2;';
+    hint.innerHTML = '<span style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);">Scroll</span><div class="scroll-hint-line"></div>';
     hero.appendChild(hint);
     window.addEventListener('scroll', function () {
       hint.style.opacity    = '0';
