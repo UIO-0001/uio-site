@@ -96,7 +96,7 @@
     /* AVANTAGES */
     #avantages { background: var(--dark2); }
     .avantages-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; }
-    .av-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 32px 28px; transition: border-color .3s, box-shadow .4s; position: relative; overflow: hidden; transform-style: preserve-3d; will-change: transform; }
+    .av-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 32px 28px; transition: border-color .3s, box-shadow .4s; position: relative; overflow: hidden; }
     .av-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--blue), var(--green)); opacity: 0; transition: opacity .3s; }
     .av-card:hover { border-color: rgba(0,170,255,0.4); box-shadow: 0 20px 60px rgba(0,170,255,0.15); }
     .av-card:hover::before { opacity: 1; }
@@ -148,7 +148,7 @@
     /* SERVICES */
     #services { background: linear-gradient(160deg, #0d1b2a 0%, #0a1628 40%, #0f1f35 70%, #0d1b2a 100%); }
     .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
-    .svc-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 36px 28px; transition: transform .3s, border-color .3s, box-shadow .4s; transform-style: preserve-3d; will-change: transform; }
+    .svc-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 36px 28px; transition: transform .3s, border-color .3s, box-shadow .4s; }
     .svc-card:hover { border-color: rgba(0,170,255,0.4); box-shadow: 0 30px 80px rgba(0,170,255,0.12); }
     .svc-icon { width: 56px; height: 56px; border-radius: 14px; background: rgba(0,170,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 24px; }
     .svc-card h3 { font-family: "Syne", sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; }
