@@ -163,11 +163,74 @@
     }
     .reveal { opacity: 0; transform: translateY(30px); transition: opacity .7s ease, transform .7s ease; }
     .reveal.visible { opacity: 1; transform: translateY(0); }
+    /* ═══ EFFETS VISUELS WOW ═══ */
+
+    /* Curseur personnalisé */
+    body { cursor: none; }
+    #cursor { position:fixed; width:12px; height:12px; background:var(--blue); border-radius:50%; pointer-events:none; z-index:99999; transform:translate(-50%,-50%); transition:transform .1s, background .2s; mix-blend-mode:screen; }
+    #cursor-trail { position:fixed; width:32px; height:32px; border:1px solid rgba(0,170,255,0.4); border-radius:50%; pointer-events:none; z-index:99998; transform:translate(-50%,-50%); transition:left .12s ease, top .12s ease; }
+
+    /* Canvas particules */
+    #particles-canvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
+
+    /* Hero et sections au-dessus du canvas */
+    nav, section, footer { position:relative; z-index:1; }
+
+    /* Typewriter */
+    .typewriter-text { border-right:3px solid var(--blue); white-space:nowrap; overflow:hidden; animation:blink-caret .8s step-end infinite; }
+    @keyframes blink-caret { 50% { border-color:transparent; } }
+
+    /* Cartes 3D */
+    .av-card, .svc-card { transform-style:preserve-3d; transition:transform .4s, border-color .3s, box-shadow .4s; will-change:transform; }
+    .av-card:hover, .svc-card:hover { box-shadow:0 20px 60px rgba(0,170,255,0.25); }
+
+    /* Compteurs animés */
+    .stat-strip { display:flex; gap:60px; justify-content:center; flex-wrap:wrap; padding:60px 60px 0; position:relative; z-index:1; }
+    .stat-item { text-align:center; }
+    .stat-num { font-family:"Syne",sans-serif; font-size:clamp(36px,5vw,64px); font-weight:800; background:linear-gradient(135deg,var(--blue),var(--green)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .stat-label { font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; }
+
+    /* Glitch effect sur le titre */
+    @keyframes glitch1 { 0%,100%{clip-path:inset(0 0 95% 0)} 20%{clip-path:inset(15% 0 70% 0)} 40%{clip-path:inset(40% 0 45% 0)} 60%{clip-path:inset(65% 0 20% 0)} 80%{clip-path:inset(85% 0 5% 0)} }
+    @keyframes glitch2 { 0%,100%{clip-path:inset(0 0 95% 0)} 20%{clip-path:inset(20% 0 65% 0)} 40%{clip-path:inset(45% 0 40% 0)} 60%{clip-path:inset(70% 0 15% 0)} 80%{clip-path:inset(88% 0 2% 0)} }
+    .glitch-wrap { position:relative; display:inline-block; }
+    .glitch-wrap::before, .glitch-wrap::after { content:attr(data-text); position:absolute; top:0; left:0; width:100%; }
+    .glitch-wrap::before { color:#ff00ff; animation:glitch1 4s infinite; opacity:0.4; transform:translateX(-2px); }
+    .glitch-wrap::after { color:#00ffff; animation:glitch2 4s infinite 0.2s; opacity:0.4; transform:translateX(2px); }
+
+    /* Neon glow pulse sur les boutons CTA */
+    .btn-primary { animation:neon-pulse 3s ease-in-out infinite; }
+    @keyframes neon-pulse { 0%,100%{box-shadow:0 0 30px rgba(0,170,255,0.3)} 50%{box-shadow:0 0 60px rgba(0,170,255,0.7), 0 0 100px rgba(0,170,255,0.3)} }
+
+    /* Ligne laser qui traverse la nav */
+    nav::after { content:""; position:absolute; bottom:0; left:-100%; width:60px; height:1px; background:linear-gradient(90deg,transparent,var(--blue),transparent); animation:laser-scan 4s linear infinite; }
+    @keyframes laser-scan { to { left:110%; } }
+
+    /* Floating badges */
+    .float-badge { animation:float 3s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+    /* Gradient text reveal on scroll */
+    .gradient-reveal { background:linear-gradient(135deg,var(--blue),var(--green),var(--blue)); background-size:200%; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:gradient-shift 4s ease infinite; }
+    @keyframes gradient-shift { 0%,100%{background-position:0%} 50%{background-position:100%} }
+
+    /* Cards flip effect */
+    .svc-card { perspective:1000px; }
+
+    @media (max-width:900px) { .stat-strip { padding:40px 24px 0; gap:32px; } body { cursor:auto; } #cursor, #cursor-trail { display:none; } }
+
   </style>
 </head>
-<div style="position:fixed; bottom:84px; right:16px; background:#0d1b2a; border:1px solid rgba(0,170,255,0.3); border-radius:8px; padding:4px 10px; font-size:11px; color:#00aaff; z-index:9998;">Version flottante</div>
+ rgba(0,170,255,0.3); border-radius:8px; padding:4px 10px; font-size:11px; color:#00aaff; z-index:9998;">Version flottante</div>
 <script src="https://uio-backend.onrender.com/chatbot.js?client=uio"></script>
 <body>
+
+<!-- Cursor personnalisé -->
+<div id="cursor"></div>
+<div id="cursor-trail"></div>
+
+<!-- Canvas particules -->
+<canvas id="particles-canvas"></canvas>
 
 <!-- SEO -->
 <h1 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Agence UIO — Chatbot IA et site web pour PME à Gatineau et en Outaouais</h1>
@@ -185,14 +248,33 @@
 <section class="hero">
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-  <div class="hero-badge">L'intelligence artificielle à votre service</div>
-  <h1>Votre service client<br/>automatisé par <em>l'IA</em></h1>
+  <div class="hero-badge float-badge">L'intelligence artificielle à votre service</div>
+  <h1><span class="glitch-wrap gradient-reveal" data-text="Votre service client">Votre service client</span><br/>automatisé par <em>l'IA</em></h1>
   <p>Des chatbots intelligents qui répondent à vos clients 24h/24, 7j/7 pour que vous puissiez vous concentrer sur l'essentiel.</p>
   <div class="hero-btns">
     <a href="#demo" class="btn-primary">Voir la demo</a>
     <a href="#contact" class="btn-secondary">Nous contacter</a>
   </div>
 </section>
+
+<div class="stat-strip">
+  <div class="stat-item reveal">
+    <div class="stat-num" data-target="24">0</div>
+    <div class="stat-label">Heures / jour disponible</div>
+  </div>
+  <div class="stat-item reveal">
+    <div class="stat-num" data-target="3">0</div>
+    <div class="stat-label">Spots de lancement restants</div>
+  </div>
+  <div class="stat-item reveal">
+    <div class="stat-num" data-target="100">0</div>
+    <div class="stat-label">% Personnalisé</div>
+  </div>
+  <div class="stat-item reveal">
+    <div class="stat-num" data-target="48">0</div>
+    <div class="stat-label">Heures de livraison max</div>
+  </div>
+</div>
 
 <section id="avantages">
   <div class="section-head reveal">
@@ -297,7 +379,7 @@
     <h2 class="section-title">Contactez-nous</h2>
     <p class="section-subtitle">Pour un service client plus efficace, plus rapide et plus moderne grâce à l'IA, travaillons ensemble.</p>
     <div class="contact-items">
-      <div class="contact-item"><div class="contact-item-icon">&#9993;&#65039;</div><div class="contact-item-text"><p>Email</p><a href="/cdn-cgi/l/email-protection#d6a3bfb9f8b7a3a2b9bbb7a2bfa5b7a2bfb9b8bfb796b1bbb7bfbaf8b5b9bb"><span class="__cf_email__" data-cfemail="a7d2cec889c6d2d3c8cac6d3ced4c6d3cec8c9cec6e7c0cac6cecb89c4c8ca">[email&#160;protected]</span></a></div></div>
+      <div class="contact-item"><div class="contact-item-icon">&#9993;&#65039;</div><div class="contact-item-text"><p>Email</p><a href="mailto:uio.automatisationia@gmail.com">uio.automatisationia@gmail.com</a></div></div>
       <div class="contact-item"><div class="contact-item-icon">&#128205;</div><div class="contact-item-text"><p>Adresse</p><span>Quebec, CA</span></div></div>
       <div class="contact-item"><div class="contact-item-icon">&#128247;</div><div class="contact-item-text"><p>Instagram</p><a href="https://instagram.com/agence.uio" target="_blank">@agence.uio</a></div></div>
     </div>
