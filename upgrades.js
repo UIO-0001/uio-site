@@ -1,11 +1,11 @@
 /* ============================================================
-   AGENCE UIO — upgrades.js (version corrigée)
+   AGENCE UIO — upgrades.js v3
    ============================================================ */
 
 (function () {
   'use strict';
 
-  /* ── 1. SPHÈRE THREE.JS ────────────────────────────────────── */
+  /* ── 1. SPHÈRE THREE.JS — réaction souris plus forte ─────── */
   function initSphere() {
     var hero = document.querySelector('.hero');
     if (!hero) return;
@@ -95,8 +95,9 @@
         points.rotation.y += 0.0009;
         sphere.scale.setScalar(1 + Math.sin(t * 1.4) * 0.028);
         inner.scale.setScalar(1 + Math.sin(t * 2.1) * 0.048);
-        camera.position.x += (mx * 0.45 - camera.position.x) * 0.038;
-        camera.position.y += (-my * 0.28 - camera.position.y) * 0.038;
+        // Réaction souris plus forte : 1.8 au lieu de 0.45
+        camera.position.x += (mx * 1.8 - camera.position.x) * 0.055;
+        camera.position.y += (-my * 1.2 - camera.position.y) * 0.055;
         camera.lookAt(scene.position);
         renderer.render(scene, camera);
       })();
@@ -105,14 +106,7 @@
   }
 
 
-  /* ── 2. MORPHING DE TEXTE — CORRIGÉ ───────────────────────── */
-  /*
-   * BUG ORIGINAL : on remplaçait em.textContent ce qui cassait
-   * le gradient CSS (background-clip:text sur <em>).
-   * FIX : on crée un <span id="morph-span"> DANS le <em> et on
-   * anime seulement ce span. Le <em> garde son style gradient.
-   * On sauvegarde le texte initial et on l'utilise comme 1er mot.
-   */
+  /* ── 2. MORPHING — fade propre, mots corrigés ─────────────── */
   function initMorphText() {
     var em = document.querySelector('.hero h1 em');
     if (!em) return;
@@ -126,61 +120,40 @@
       em.appendChild(span);
     }
 
-    // Transition CSS sur l'opacité — aucun caractère random
-    span.style.transition = 'opacity 0.35s ease';
+    span.style.display    = 'inline-block';
+    span.style.transition = 'opacity 0.4s ease';
+    span.style.opacity    = '1';
 
-    var words = ["l'IA", 'un Chatbot', 'votre Site Web', '24h / 24', 'votre Croissance'];
+    // "automatisés 24/24" → "24h/24" corrigé
+    var words = ["l'IA", 'un Chatbot', 'votre Site Web', '24h/24', 'votre Croissance'];
     var idx = 0;
 
     function nextWord() {
-      // Fade out
       span.style.opacity = '0';
       setTimeout(function () {
-        // Change le texte pendant qu'il est invisible
         idx = (idx + 1) % words.length;
         span.textContent = words[idx];
-        // Fade in
         span.style.opacity = '1';
-      }, 380); // légèrement après la fin du fade out
+      }, 420);
     }
 
-    // Change toutes les 3 secondes
-    setInterval(nextWord, 3000);
+    setInterval(nextWord, 3200);
   }
 
 
-  /* ── 3. CURSEUR AVEC TRAÎNÉE — CORRIGÉ ────────────────────── */
-  /*
-   * BUG ORIGINAL : le CSS de #cursor-ring original utilisait
-   * border + transition left/top, ce qui conflictuait avec le
-   * nouveau positionnement par JS.
-   * FIX : on override le style du ring directement par JS pour
-   * le transformer en glow radial sans border.
-   */
+  /* ── 3. CURSEUR — simplifié, s'efface à l'arrêt ──────────── */
   function initCursor() {
     var dot  = document.getElementById('cursor');
     var ring = document.getElementById('cursor-ring');
     if (!dot || !ring) return;
 
-    // Caché par défaut jusqu'au premier mouvement
+    // Cache tout au départ
     dot.style.opacity  = '0';
-    ring.style.opacity = '0';
+    dot.style.transition = 'opacity .3s';
+    // Supprime complètement le ring original — on n'en a pas besoin
+    ring.style.display = 'none';
 
-    // Override du style du ring
-    ring.style.cssText = [
-      'position:fixed',
-      'width:40px',
-      'height:40px',
-      'border-radius:50%',
-      'pointer-events:none',
-      'z-index:99998',
-      'opacity:0',
-      'background:radial-gradient(circle,rgba(0,170,255,0.28) 0%,transparent 70%)',
-      'border:none',
-      'transition:width .35s,height .35s,background .3s,opacity .3s'
-    ].join(';');
-
-    // Canvas de traînée
+    // Canvas de traînée uniquement — plus de ring séparé
     var trailCanvas = document.createElement('canvas');
     trailCanvas.id = 'cursor-trail-canvas';
     trailCanvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99997;';
@@ -194,96 +167,90 @@
       H = trailCanvas.height = window.innerHeight;
     });
 
-    var mx = -200, my = -200, ringX = -200, ringY = -200;
-    var TRAIL = 30;
+    var mx = -200, my = -200;
+    var TRAIL = 22;
     var pts = [];
-    for (var i = 0; i < TRAIL; i++) pts.push({ x: -200, y: -200 });
+    for (var i = 0; i < TRAIL; i++) pts.push({ x: -200, y: -200, alpha: 0 });
     var head = 0;
     var visible = false;
     var idleTimer = null;
+    // Alpha global de la traînée — diminue à l'arrêt
+    var trailAlpha = 1;
 
     document.addEventListener('mousemove', function (e) {
-      // FIX décalage : utiliser clientX/Y directement sans transform
-      mx = e.clientX; my = e.clientY;
+      mx = e.clientX;
+      my = e.clientY;
+
+      // Positionnement du dot : margin -3px/-3px dans le CSS
       dot.style.left = mx + 'px';
       dot.style.top  = my + 'px';
+
       pts[head] = { x: mx, y: my };
       head = (head + 1) % TRAIL;
 
-      // Affiche au premier mouvement
       if (!visible) {
         visible = true;
-        dot.style.opacity  = '1';
-        dot.style.transition = 'opacity .3s';
-        ring.style.opacity = '1';
+        dot.style.opacity = '1';
       }
 
-      // Timer d'inactivité — efface la traînée après 800ms immobile
+      // Remet l'alpha à 1 au mouvement
+      trailAlpha = 1;
+
+      // Efface la traînée progressivement après 600ms d'arrêt
       clearTimeout(idleTimer);
       idleTimer = setTimeout(function () {
-        // Vide les points de traînée
-        for (var i = 0; i < TRAIL; i++) pts[i] = { x: -200, y: -200 };
-      }, 800);
+        var fade = setInterval(function () {
+          trailAlpha -= 0.08;
+          if (trailAlpha <= 0) {
+            trailAlpha = 0;
+            clearInterval(fade);
+            for (var i = 0; i < TRAIL; i++) pts[i] = { x: -200, y: -200 };
+          }
+        }, 30);
+      }, 600);
     });
 
-    // Hover
+    // Hover — change juste le dot
     document.querySelectorAll('a, button, .av-card, .svc-card').forEach(function (el) {
-      el.addEventListener('mouseenter', function () {
-        dot.classList.add('hover');
-        ring.style.width  = '72px';
-        ring.style.height = '72px';
-        ring.style.background = 'radial-gradient(circle,rgba(126,223,74,0.32) 0%,transparent 70%)';
-      });
-      el.addEventListener('mouseleave', function () {
-        dot.classList.remove('hover');
-        ring.style.width  = '40px';
-        ring.style.height = '40px';
-        ring.style.background = 'radial-gradient(circle,rgba(0,170,255,0.28) 0%,transparent 70%)';
-      });
+      el.addEventListener('mouseenter', function () { dot.classList.add('hover'); });
+      el.addEventListener('mouseleave', function () { dot.classList.remove('hover'); });
     });
 
     (function drawTrail() {
       requestAnimationFrame(drawTrail);
-      ringX += (mx - ringX) * 0.13;
-      ringY += (my - ringY) * 0.13;
-      ring.style.left = ringX + 'px';
-      ring.style.top  = ringY + 'px';
-
       ctx.clearRect(0, 0, W, H);
+      if (trailAlpha <= 0) return;
+
       for (var i = 0; i < TRAIL; i++) {
         var p     = pts[(head - i - 1 + TRAIL) % TRAIL];
-        var ratio = 1 - i / TRAIL;
-        var r     = ratio * 6.5;
-        var alpha = ratio * 0.55;
+        if (p.x < 0) continue;
+        var ratio = (1 - i / TRAIL) * trailAlpha;
+        var r     = ratio * 5;
+        var alpha = ratio * 0.5;
+
         var color;
         if (ratio > 0.65)      color = 'rgba(0,170,255,'  + alpha + ')';
-        else if (ratio > 0.32) color = 'rgba(168,85,247,' + (alpha * 0.85) + ')';
-        else                   color = 'rgba(126,223,74,'  + (alpha * 0.6)  + ')';
+        else if (ratio > 0.32) color = 'rgba(168,85,247,' + alpha + ')';
+        else                   color = 'rgba(126,223,74,'  + alpha + ')';
 
         ctx.beginPath();
-        ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, Math.max(r, 0.1), 0, Math.PI * 2);
         ctx.fillStyle = color;
         ctx.fill();
-
-        if (i < 7) {
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, r * 2.8, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(0,170,255,' + (alpha * 0.07) + ')';
-          ctx.fill();
-        }
       }
     })();
   }
 
 
-  /* ── 4. TILT 3D SUR LES CARTES ────────────────────────────── */
+  /* ── 4. TILT 3D — plus prononcé (20deg) ──────────────────── */
   function initTilt() {
     document.querySelectorAll('.av-card, .svc-card').forEach(function (card) {
       card.addEventListener('mousemove', function (e) {
         var rect = card.getBoundingClientRect();
         var x    = (e.clientX - rect.left) / rect.width  - 0.5;
         var y    = (e.clientY - rect.top)  / rect.height - 0.5;
-        card.style.transform = 'perspective(900px) rotateX(' + (y * -12) + 'deg) rotateY(' + (x * 12) + 'deg) scale3d(1.02,1.02,1.02)';
+        // 20deg au lieu de 12 — plus prononcé
+        card.style.transform = 'perspective(700px) rotateX(' + (y * -20) + 'deg) rotateY(' + (x * 20) + 'deg) scale3d(1.03,1.03,1.03)';
         card.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width  * 100) + '%');
         card.style.setProperty('--my', ((e.clientY - rect.top)  / rect.height * 100) + '%');
       });
@@ -352,13 +319,7 @@
   }
 
 
-  /* ── 7. COMPTEURS ANIMÉS — CORRIGÉ ────────────────────────── */
-  /*
-   * BUG ORIGINAL : les sélecteurs nth-child cherchaient
-   * .stat-num à l'intérieur de stat-item:nth-child(N) mais
-   * les .stat-item sont dans .stat-strip et ont déjà le texte
-   * en dur. On lit le texte existant et on anime depuis 0.
-   */
+  /* ── 7. COMPTEURS ANIMÉS ───────────────────────────────────── */
   function initCounters() {
     var items = document.querySelectorAll('.stat-item');
     if (!items.length) return;
@@ -367,17 +328,11 @@
     items.forEach(function (item) {
       var numEl = item.querySelector('.stat-num');
       if (!numEl) return;
-      var text   = numEl.textContent.trim();
-      // Extrait le nombre et le suffixe (ex: "24h" → end:24, suffix:"h")
-      var match  = text.match(/^(\d+)(.*)/);
+      var text  = numEl.textContent.trim();
+      var match = text.match(/^(\d+)(.*)/);
       if (!match) return;
-      configs.push({
-        el:       numEl,
-        end:      parseInt(match[1], 10),
-        suffix:   match[2],
-        duration: 1400
-      });
-      numEl.textContent = '0' + match[2]; // reset à 0
+      configs.push({ el: numEl, end: parseInt(match[1], 10), suffix: match[2], duration: 1400 });
+      numEl.textContent = '0' + match[2];
     });
 
     var strip = document.querySelector('.stat-strip');
@@ -388,7 +343,6 @@
       if (!entries[0].isIntersecting || fired) return;
       fired = true;
       obs.disconnect();
-
       configs.forEach(function (c) {
         var start = Date.now();
         (function tick() {
@@ -400,7 +354,6 @@
         })();
       });
     }, { threshold: 0.5 });
-
     obs.observe(strip);
   }
 
@@ -420,16 +373,7 @@
   }
 
 
-  /* ── 9. BADGE "AGENCE ACTIVE" ──────────────────────────────── */
-  function initBadge() {
-    var badge = document.createElement('div');
-    badge.className = 'live-badge';
-    badge.innerHTML = '&#9679;&nbsp;&nbsp;Agence active';
-    document.body.appendChild(badge);
-  }
-
-
-  /* ── 10. PARALLAX HALO AU SCROLL ──────────────────────────── */
+  /* ── 9. PARALLAX HALO AU SCROLL ──────────────────────────── */
   function initParallax() {
     var glow = document.querySelector('.hero-glow');
     if (!glow) return;
@@ -449,8 +393,8 @@
     initRipple();
     initCounters();
     initScrollHint();
-    initBadge();
     initParallax();
+    // Badge retiré — causait le bug près du chatbot
   }
 
   if (document.readyState === 'loading') {
