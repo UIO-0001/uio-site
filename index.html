@@ -78,7 +78,6 @@
     @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
 
     /* STATS */
-    #particles-canvas2 { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; opacity:.5; z-index:0; }
     #services { position:relative; }
     #services > * { position:relative; z-index:1; }
     .stat-strip { display: flex; gap: 0; justify-content: center; flex-wrap: wrap; background: rgba(0,170,255,0.04); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); position:relative; z-index:1; }
@@ -108,7 +107,7 @@
     /* PROCEDURE */
     #procedure { background: var(--dark); }
     .steps { display: flex; flex-direction: column; max-width: 760px; }
-    .step { display: flex; gap: 40px; align-items: flex-start; padding: 40px 0; border-bottom: 1px solid var(--border); }
+    .step { display: flex; gap: 60px; align-items: flex-start; padding: 40px 0; border-bottom: 1px solid var(--border); }
     .step:last-child { border-bottom: none; }
     .step-num { font-family: "Syne", sans-serif; font-size: 72px; font-weight: 800; color: rgba(0,170,255,0.12); line-height: 1; width: 90px; letter-spacing: -0.04em; transition: color .3s; flex-shrink:0; text-align: right; }
     .step:hover .step-num { color: rgba(126,223,74,0.4); }
@@ -201,8 +200,7 @@
       footer { padding: 24px; flex-direction: column; text-align: center; }
       body { cursor: auto; }
       #cursor, #cursor-ring { display: none; }
-      #particles-canvas2 { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; opacity:.5; z-index:0; }
-    #services { position:relative; }
+      #services { position:relative; }
     #services > * { position:relative; z-index:1; }
     .stat-strip { flex-direction: column; }
       .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
@@ -343,7 +341,7 @@
 </section>
 
 <section id="services">
-<canvas id="particles-canvas2"></canvas>
+<canvas id="particles-canvas2" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
 <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%, rgba(0,170,255,0.06) 0%, transparent 60%), radial-gradient(ellipse at 80% 30%, rgba(126,223,74,0.04) 0%, transparent 50%);pointer-events:none;z-index:0;"></div>
   <div class="section-head reveal">
     <p class="section-label">Ce que nous proposons</p>
@@ -675,9 +673,20 @@ form.addEventListener("submit", async function(e) {
     c:Math.random()>.5?'126,223,74':'0,170,255',
     a:Math.random()*.45+.1
   }));
+  // track mouse relative to section
+  let mx2 = -9999, my2 = -9999;
+  section.addEventListener('mousemove', e => {
+    const r = section.getBoundingClientRect();
+    mx2 = e.clientX - r.left;
+    my2 = e.clientY - r.top;
+  });
+  section.addEventListener('mouseleave', () => { mx2=-9999; my2=-9999; });
+
   function draw2() {
     ctx2.clearRect(0,0,c2.width,c2.height);
     pts2.forEach(p=>{
+      const dx=mx2-p.x, dy=my2-p.y, d=Math.sqrt(dx*dx+dy*dy);
+      if(d<130){ p.x-=dx*.02; p.y-=dy*.02; }
       p.x+=p.vx; p.y+=p.vy;
       if(p.x<0||p.x>c2.width) p.vx*=-1;
       if(p.y<0||p.y>c2.height) p.vy*=-1;
