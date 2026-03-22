@@ -185,11 +185,11 @@
     document.body.appendChild(trailCanvas);
     var ctx = trailCanvas.getContext('2d');
 
-    var W = trailCanvas.width  = window.innerWidth;
-    var H = trailCanvas.height = window.innerHeight;
+    var W = trailCanvas.width  = document.documentElement.clientWidth;
+    var H = trailCanvas.height = document.documentElement.clientHeight;
     window.addEventListener('resize', function () {
-      W = trailCanvas.width  = window.innerWidth;
-      H = trailCanvas.height = window.innerHeight;
+      W = trailCanvas.width  = document.documentElement.clientWidth;
+      H = trailCanvas.height = document.documentElement.clientHeight;
     });
 
     // Position réelle de la souris
