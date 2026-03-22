@@ -110,9 +110,9 @@
     .steps { display: flex; flex-direction: column; max-width: 760px; }
     .step { display: flex; gap: 40px; align-items: flex-start; padding: 40px 0; border-bottom: 1px solid var(--border); }
     .step:last-child { border-bottom: none; }
-    .step-num { font-family: "Syne", sans-serif; font-size: 72px; font-weight: 800; color: rgba(0,170,255,0.12); line-height: 1; min-width: 90px; letter-spacing: -0.04em; transition: color .3s; flex-shrink:0; }
+    .step-num { font-family: "Syne", sans-serif; font-size: 72px; font-weight: 800; color: rgba(0,170,255,0.12); line-height: 1; width: 90px; letter-spacing: -0.04em; transition: color .3s; flex-shrink:0; text-align: right; }
     .step:hover .step-num { color: rgba(126,223,74,0.4); }
-    .step-content { flex: 1; padding-top: 14px; }
+    .step-content { flex: 1; padding-top: 0; }
     .step-content h3 { font-family: "Syne", sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 10px; }
     .step-content p { font-size: 15px; color: var(--muted); line-height: 1.7; }
 
@@ -147,7 +147,7 @@
     .chat-sugg:hover { background:var(--blue); color:#fff; }
 
     /* SERVICES */
-    #services { background: var(--dark); }
+    #services { background: linear-gradient(160deg, #0d1b2a 0%, #0a1628 40%, #0f1f35 70%, #0d1b2a 100%); }
     .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
     .svc-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 36px 28px; transition: transform .3s, border-color .3s, box-shadow .4s; transform-style: preserve-3d; will-change: transform; }
     .svc-card:hover { border-color: rgba(0,170,255,0.4); box-shadow: 0 30px 80px rgba(0,170,255,0.12); }
@@ -344,6 +344,7 @@
 
 <section id="services">
 <canvas id="particles-canvas2"></canvas>
+<div style="position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%, rgba(0,170,255,0.06) 0%, transparent 60%), radial-gradient(ellipse at 80% 30%, rgba(126,223,74,0.04) 0%, transparent 50%);pointer-events:none;z-index:0;"></div>
   <div class="section-head reveal">
     <p class="section-label">Ce que nous proposons</p>
     <h2 class="section-title">Nos Services</h2>
@@ -653,6 +654,56 @@ form.addEventListener("submit", async function(e) {
     btn.disabled = false;
   }
 });
+
+// ═══ PARTICULES SERVICES ═══
+(function() {
+  const c2 = document.getElementById('particles-canvas2');
+  if (!c2) return;
+  const ctx2 = c2.getContext('2d');
+  const section = document.getElementById('services');
+  function resize2() {
+    c2.width = section.offsetWidth;
+    c2.height = section.offsetHeight;
+  }
+  resize2();
+  window.addEventListener('resize', resize2);
+  const pts2 = Array.from({length:60}, () => ({
+    x: Math.random()*c2.width,
+    y: Math.random()*c2.height,
+    vx:(Math.random()-.5)*.3, vy:(Math.random()-.5)*.3,
+    r:Math.random()*1.8+.4,
+    c:Math.random()>.5?'126,223,74':'0,170,255',
+    a:Math.random()*.45+.1
+  }));
+  function draw2() {
+    ctx2.clearRect(0,0,c2.width,c2.height);
+    pts2.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0||p.x>c2.width) p.vx*=-1;
+      if(p.y<0||p.y>c2.height) p.vy*=-1;
+      ctx2.beginPath();
+      ctx2.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx2.fillStyle='rgba('+p.c+','+p.a+')';
+      ctx2.fill();
+    });
+    // connect nearby points
+    for(let i=0;i<pts2.length;i++) for(let j=i+1;j<pts2.length;j++){
+      const dx=pts2[i].x-pts2[j].x, dy=pts2[i].y-pts2[j].y;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<100){
+        ctx2.beginPath();
+        ctx2.strokeStyle='rgba(0,170,255,'+(0.08*(1-d/100))+')';
+        ctx2.lineWidth=.4;
+        ctx2.moveTo(pts2[i].x,pts2[i].y);
+        ctx2.lineTo(pts2[j].x,pts2[j].y);
+        ctx2.stroke();
+      }
+    }
+    requestAnimationFrame(draw2);
+  }
+  draw2();
+})();
+
 </script>
 
 </body>
