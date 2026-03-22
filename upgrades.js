@@ -185,10 +185,10 @@
     document.body.appendChild(trailCanvas);
     var ctx = trailCanvas.getContext('2d');
 
-    var W = trailCanvas.width  = document.documentElement.clientWidth;
+    var W = trailCanvas.width  = document.body.clientWidth;
     var H = trailCanvas.height = document.documentElement.clientHeight;
     window.addEventListener('resize', function () {
-      W = trailCanvas.width  = document.documentElement.clientWidth;
+      W = trailCanvas.width  = document.body.clientWidth;
       H = trailCanvas.height = document.documentElement.clientHeight;
     });
 
