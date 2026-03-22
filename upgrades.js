@@ -117,6 +117,8 @@
     // Hauteur fixe sur h1 — empêche le saut quand le mot change de longueur
     h1.style.height = '240px';
     h1.style.marginBottom = '32px';
+    var sub = document.querySelector('.hero-sub');
+    if (sub) sub.style.marginTop = '20px';
     em.style.cssText = 'display:inline-block;white-space:nowrap;vertical-align:bottom;';
 
     // Curseur clignotant
