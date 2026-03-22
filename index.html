@@ -61,7 +61,7 @@
     .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 140px 40px 80px; position: relative; z-index:1; overflow: hidden; }
     .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(0,170,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,170,255,0.04) 1px, transparent 1px); background-size: 60px 60px; animation: grid-drift 20s linear infinite; }
     @keyframes grid-drift { from{background-position:0 0} to{background-position:60px 60px} }
-    .hero-glow { position: absolute; width: 700px; height: 700px; border-radius: 50%; background: radial-gradient(circle, rgba(0,170,255,0.1) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; animation: glow-breathe 4s ease-in-out infinite; }
+    .hero-glow { position: absolute; width: 800px; height: 800px; border-radius: 50%; background: radial-gradient(circle, rgba(0,170,255,0.22) 0%, rgba(0,170,255,0.08) 40%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; animation: glow-breathe 4s ease-in-out infinite; filter: blur(40px); }
     @keyframes glow-breathe { 0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(1)} 50%{opacity:1;transform:translate(-50%,-50%) scale(1.1)} }
     .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,170,255,0.1); border: 1px solid var(--border); border-radius: 100px; padding: 6px 16px; font-size: 13px; color: var(--blue); margin-bottom: 28px; animation: fadeUp .6s ease both, float 3s ease-in-out 1s infinite; }
     @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
@@ -78,6 +78,9 @@
     @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
 
     /* STATS */
+    #particles-canvas2 { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; opacity:.5; z-index:0; }
+    #services { position:relative; }
+    #services > * { position:relative; z-index:1; }
     .stat-strip { display: flex; gap: 0; justify-content: center; flex-wrap: wrap; background: rgba(0,170,255,0.04); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); position:relative; z-index:1; }
     .stat-item { flex:1; min-width:150px; text-align: center; padding: 36px 20px; border-right: 1px solid var(--border); }
     .stat-item:last-child { border-right: none; }
@@ -109,7 +112,7 @@
     .step:last-child { border-bottom: none; }
     .step-num { font-family: "Syne", sans-serif; font-size: 72px; font-weight: 800; color: rgba(0,170,255,0.12); line-height: 1; min-width: 90px; letter-spacing: -0.04em; transition: color .3s; flex-shrink:0; }
     .step:hover .step-num { color: rgba(126,223,74,0.4); }
-    .step-content { flex: 1; padding-top: 8px; }
+    .step-content { flex: 1; padding-top: 14px; }
     .step-content h3 { font-family: "Syne", sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 10px; }
     .step-content p { font-size: 15px; color: var(--muted); line-height: 1.7; }
 
@@ -182,8 +185,8 @@
     .promo-banner { background:linear-gradient(135deg,rgba(126,223,74,0.12),rgba(0,170,255,0.08)); border:1px solid rgba(126,223,74,0.35); border-radius:14px; padding:18px 28px; margin-bottom:36px; display:flex; align-items:center; gap:16px; }
 
     /* RIPPLE */
-    .ripple-effect { position:absolute; border-radius:50%; background:rgba(255,255,255,0.25); transform:scale(0); animation:ripple .6s ease-out; pointer-events:none; }
-    @keyframes ripple { to { transform:scale(4); opacity:0; } }
+    .ripple-effect { position:absolute; border-radius:50%; background:rgba(255,255,255,0.3); transform:scale(0); animation:ripple-anim .6s linear forwards; pointer-events:none; }
+    @keyframes ripple-anim { 0%{transform:scale(0);opacity:1} 100%{transform:scale(3);opacity:0} }
 
     /* REVEAL */
     .reveal { opacity: 0; transform: translateY(30px); transition: opacity .7s ease, transform .7s ease; }
@@ -198,7 +201,10 @@
       footer { padding: 24px; flex-direction: column; text-align: center; }
       body { cursor: auto; }
       #cursor, #cursor-ring { display: none; }
-      .stat-strip { flex-direction: column; }
+      #particles-canvas2 { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; opacity:.5; z-index:0; }
+    #services { position:relative; }
+    #services > * { position:relative; z-index:1; }
+    .stat-strip { flex-direction: column; }
       .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
       .stat-item:last-child { border-bottom: none; }
     }
@@ -254,7 +260,7 @@
     <div class="stat-label">Personnalisé pour vous</div>
   </div>
   <div class="stat-item reveal">
-    <div class="stat-num" data-target="48" data-suffix="h">0</div>
+    <div class="stat-num" data-target="7" data-suffix=" jours">0</div>
     <div class="stat-label">Délai de livraison max</div>
   </div>
 </div>
@@ -337,6 +343,7 @@
 </section>
 
 <section id="services">
+<canvas id="particles-canvas2"></canvas>
   <div class="section-head reveal">
     <p class="section-label">Ce que nous proposons</p>
     <h2 class="section-title">Nos Services</h2>
@@ -565,7 +572,7 @@ document.querySelectorAll('.reveal').forEach(r => rObs.observe(r));
 // ═══ PARALLAX HERO ═══
 window.addEventListener('scroll', () => {
   const g = document.querySelector('.hero-glow');
-  if(g) g.style.transform = `translate(-50%, calc(-50% + ${window.scrollY*.25}px))`;
+  if(g) g.style.transform = `translate(-50%, calc(-50% + ${window.scrollY * 0.3}px)) `;
 });
 
 // ═══ CHAT FIXE ═══
