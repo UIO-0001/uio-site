@@ -117,7 +117,6 @@
     var em = document.querySelector('.hero h1 em');
     if (!em) return;
 
-    // Crée le span interne si pas déjà là
     var span = document.getElementById('morph-span');
     if (!span) {
       span = document.createElement('span');
@@ -127,36 +126,26 @@
       em.appendChild(span);
     }
 
-    var words  = ["l'IA", 'un Chatbot', 'votre Site Web', '24h / 24', 'votre Croissance'];
-    var CHARS  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var idx = 0, phase = 'idle', frame = 0;
+    // Transition CSS sur l'opacité — aucun caractère random
+    span.style.transition = 'opacity 0.35s ease';
 
-    function scramble(target, progress) {
-      var len = target.length, out = '';
-      for (var i = 0; i < len; i++) {
-        out += (i < Math.floor(progress * len))
-          ? target[i]
-          : CHARS[Math.floor(Math.random() * CHARS.length)];
-      }
-      return out;
+    var words = ["l'IA", 'un Chatbot', 'votre Site Web', '24h / 24', 'votre Croissance'];
+    var idx = 0;
+
+    function nextWord() {
+      // Fade out
+      span.style.opacity = '0';
+      setTimeout(function () {
+        // Change le texte pendant qu'il est invisible
+        idx = (idx + 1) % words.length;
+        span.textContent = words[idx];
+        // Fade in
+        span.style.opacity = '1';
+      }, 380); // légèrement après la fin du fade out
     }
 
-    function tick() {
-      frame++;
-      if (phase === 'idle') {
-        if (frame > 90) { phase = 'out'; frame = 0; }
-      } else if (phase === 'out') {
-        var p = 1 - frame / 20;
-        span.textContent = scramble(words[idx], Math.max(0, p));
-        if (frame >= 20) { idx = (idx + 1) % words.length; phase = 'in'; frame = 0; }
-      } else if (phase === 'in') {
-        var p2 = frame / 28;
-        span.textContent = scramble(words[idx], Math.min(1, p2));
-        if (frame >= 28) { span.textContent = words[idx]; phase = 'idle'; frame = 0; }
-      }
-      requestAnimationFrame(tick);
-    }
-    setTimeout(function () { requestAnimationFrame(tick); }, 3500);
+    // Change toutes les 3 secondes
+    setInterval(nextWord, 3000);
   }
 
 
@@ -173,7 +162,11 @@
     var ring = document.getElementById('cursor-ring');
     if (!dot || !ring) return;
 
-    // Override du style du ring pour notre nouveau comportement
+    // Caché par défaut jusqu'au premier mouvement
+    dot.style.opacity  = '0';
+    ring.style.opacity = '0';
+
+    // Override du style du ring
     ring.style.cssText = [
       'position:fixed',
       'width:40px',
@@ -181,10 +174,10 @@
       'border-radius:50%',
       'pointer-events:none',
       'z-index:99998',
-      'transform:translate(-50%,-50%)',
+      'opacity:0',
       'background:radial-gradient(circle,rgba(0,170,255,0.28) 0%,transparent 70%)',
       'border:none',
-      'transition:width .35s,height .35s,background .3s'
+      'transition:width .35s,height .35s,background .3s,opacity .3s'
     ].join(';');
 
     // Canvas de traînée
@@ -206,13 +199,31 @@
     var pts = [];
     for (var i = 0; i < TRAIL; i++) pts.push({ x: -200, y: -200 });
     var head = 0;
+    var visible = false;
+    var idleTimer = null;
 
     document.addEventListener('mousemove', function (e) {
+      // FIX décalage : utiliser clientX/Y directement sans transform
       mx = e.clientX; my = e.clientY;
       dot.style.left = mx + 'px';
       dot.style.top  = my + 'px';
       pts[head] = { x: mx, y: my };
       head = (head + 1) % TRAIL;
+
+      // Affiche au premier mouvement
+      if (!visible) {
+        visible = true;
+        dot.style.opacity  = '1';
+        dot.style.transition = 'opacity .3s';
+        ring.style.opacity = '1';
+      }
+
+      // Timer d'inactivité — efface la traînée après 800ms immobile
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(function () {
+        // Vide les points de traînée
+        for (var i = 0; i < TRAIL; i++) pts[i] = { x: -200, y: -200 };
+      }, 800);
     });
 
     // Hover

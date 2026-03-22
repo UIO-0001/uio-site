@@ -28,9 +28,10 @@
   border-radius: 50%;
   pointer-events: none;
   z-index: 99999;
-  transform: translate(-50%,-50%);
+  margin-left: -3px;
+  margin-top: -3px;
   mix-blend-mode: difference;
-  transition: width .15s, height .15s;
+  transition: width .15s, height .15s, opacity .3s;
 }
 #cursor.hover {
   width: 22px; height: 22px;
