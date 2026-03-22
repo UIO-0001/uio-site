@@ -172,17 +172,12 @@
   }
 
 
-  /* ── 3. CURSEUR — traînée collée à la souris ─────────────── */
+  /* ── 3. CURSEUR ───────────────────────────────────────────── */
   function initCursor() {
     var dot = document.getElementById('cursor');
     var ring = document.getElementById('cursor-ring');
-    if (!dot) return;
-
-    // Cache le ring original — on ne l'utilise plus
+    if (dot)  dot.style.display  = 'none'; // on cache le dot — la traînée suffit
     if (ring) ring.style.display = 'none';
-
-    dot.style.opacity    = '0';
-    dot.style.transition = 'opacity .3s';
 
     var trailCanvas = document.createElement('canvas');
     trailCanvas.id = 'cursor-trail-canvas';
@@ -197,58 +192,43 @@
       H = trailCanvas.height = window.innerHeight;
     });
 
-    var mx = -200, my = -200;
-    var TRAIL = 28;
-    // Chaque point a sa propre position interpolée
+    // Position réelle de la souris
+    var mouseX = -200, mouseY = -200;
+
+    // TRAIL : 20 points qui se rattrapent les uns les autres
+    var TRAIL = 20;
     var pts = [];
     for (var i = 0; i < TRAIL; i++) pts.push({ x: -200, y: -200 });
 
-    var visible = false;
-    var trailAlpha = 1;
-    var idleTimer = null;
+    var trailAlpha = 0;
+    var idleTimer  = null;
 
     document.addEventListener('mousemove', function (e) {
-      mx = e.clientX;
-      my = e.clientY;
-
-      // Dot collé exactement à la souris — margin -3px/-3px dans CSS
-      dot.style.left = mx + 'px';
-      dot.style.top  = my + 'px';
-
-      if (!visible) {
-        visible = true;
-        dot.style.opacity = '1';
-      }
+      // clientX/Y = position relative au viewport, sans scroll — correspond exactement au canvas fixed
+      mouseX = e.clientX;
+      mouseY = e.clientY;
 
       trailAlpha = 1;
       clearTimeout(idleTimer);
       idleTimer = setTimeout(function () {
         var fade = setInterval(function () {
-          trailAlpha -= 0.06;
-          if (trailAlpha <= 0) {
-            trailAlpha = 0;
-            clearInterval(fade);
-          }
+          trailAlpha = Math.max(0, trailAlpha - 0.07);
+          if (trailAlpha === 0) clearInterval(fade);
         }, 30);
-      }, 600);
+      }, 500);
     });
 
-    // Hover
-    document.querySelectorAll('a, button, .av-card, .svc-card').forEach(function (el) {
-      el.addEventListener('mouseenter', function () { dot.classList.add('hover'); });
-      el.addEventListener('mouseleave', function () { dot.classList.remove('hover'); });
-    });
+    (function loop() {
+      requestAnimationFrame(loop);
 
-    // La traînée suit la souris — chaque point interpole vers le précédent
-    (function drawTrail() {
-      requestAnimationFrame(drawTrail);
+      // Point 0 rattrape la souris très vite (0.9)
+      pts[0].x += (mouseX - pts[0].x) * 0.9;
+      pts[0].y += (mouseY - pts[0].y) * 0.9;
 
-      // Point 0 colle à la souris, chaque suivant suit le précédent
-      pts[0].x += (mx - pts[0].x) * 0.85;
-      pts[0].y += (my - pts[0].y) * 0.85;
+      // Chaque point suivant rattrape le précédent
       for (var i = 1; i < TRAIL; i++) {
-        pts[i].x += (pts[i-1].x - pts[i].x) * 0.65;
-        pts[i].y += (pts[i-1].y - pts[i].y) * 0.65;
+        pts[i].x += (pts[i-1].x - pts[i].x) * 0.6;
+        pts[i].y += (pts[i-1].y - pts[i].y) * 0.6;
       }
 
       ctx.clearRect(0, 0, W, H);
@@ -256,14 +236,14 @@
 
       for (var j = 0; j < TRAIL; j++) {
         var ratio = (1 - j / TRAIL) * trailAlpha;
-        var r     = ratio * 5;
-        var alpha = ratio * 0.5;
-        if (r <= 0 || alpha <= 0) continue;
+        var r     = ratio * 6;
+        var a     = ratio * 0.6;
+        if (r < 0.1) continue;
 
         var color;
-        if (ratio > 0.65)      color = 'rgba(0,170,255,'  + alpha + ')';
-        else if (ratio > 0.32) color = 'rgba(168,85,247,' + alpha + ')';
-        else                   color = 'rgba(126,223,74,'  + alpha + ')';
+        if (j < 6)       color = 'rgba(0,170,255,'  + a + ')';
+        else if (j < 13) color = 'rgba(168,85,247,' + a + ')';
+        else             color = 'rgba(126,223,74,'  + a + ')';
 
         ctx.beginPath();
         ctx.arc(pts[j].x, pts[j].y, r, 0, Math.PI * 2);
