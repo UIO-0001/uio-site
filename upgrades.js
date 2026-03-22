@@ -106,54 +106,84 @@
   }
 
 
-  /* ── 2. MORPHING — fade propre, mots corrigés ─────────────── */
+  /* ── 2. MORPHING — typewriter, hauteur fixe ──────────────── */
   function initMorphText() {
-    var em = document.querySelector('.hero h1 em');
-    if (!em) return;
+    var h1 = document.querySelector('.hero h1');
+    if (!h1) return;
+    h1.innerHTML = 'Votre entreprise,<br/>propulsée par <em id="morph-em"></em>';
 
-    var span = document.getElementById('morph-span');
-    if (!span) {
-      span = document.createElement('span');
-      span.id = 'morph-span';
-      span.textContent = em.textContent;
-      em.textContent = '';
-      em.appendChild(span);
+    var em = document.getElementById('morph-em');
+
+    // Hauteur fixe sur em pour éviter que la page saute
+    em.style.cssText = 'display:inline-block;min-width:220px;vertical-align:bottom;';
+
+    // Curseur clignotant
+    var cursorEl = document.createElement('span');
+    cursorEl.textContent = '|';
+    cursorEl.style.cssText = 'display:inline-block;margin-left:1px;opacity:1;';
+    em.after(cursorEl);
+
+    if (!document.getElementById('morph-style')) {
+      var s = document.createElement('style');
+      s.id = 'morph-style';
+      s.textContent = '@keyframes blink-cursor{0%,100%{opacity:1}50%{opacity:0}}';
+      document.head.appendChild(s);
     }
+    cursorEl.style.animation = 'blink-cursor .7s ease-in-out infinite';
 
-    span.style.display    = 'inline-block';
-    span.style.transition = 'opacity 0.4s ease';
-    span.style.opacity    = '1';
-
-    // "automatisés 24/24" → "24h/24" corrigé
-    var words = ["l'IA", 'un Chatbot', 'votre Site Web', '24h/24', 'votre Croissance'];
+    var words = ["l'IA", 'un Chatbot', 'un Site Web', 'la technologie', "l'automatisation"];
     var idx = 0;
+    var currentText = '';
+    var phase = 'typing';
+    var charIdx = 0;
 
-    function nextWord() {
-      span.style.opacity = '0';
-      setTimeout(function () {
-        idx = (idx + 1) % words.length;
-        span.textContent = words[idx];
-        span.style.opacity = '1';
-      }, 420);
+    function tick() {
+      if (phase === 'typing') {
+        var target = words[idx];
+        if (charIdx <= target.length) {
+          currentText = target.slice(0, charIdx);
+          em.textContent = currentText;
+          em.appendChild(cursorEl);
+          charIdx++;
+          setTimeout(tick, 70);
+        } else {
+          phase = 'pause';
+          setTimeout(tick, 1800);
+        }
+      } else if (phase === 'pause') {
+        phase = 'deleting';
+        setTimeout(tick, 80);
+      } else if (phase === 'deleting') {
+        if (currentText.length > 0) {
+          currentText = currentText.slice(0, -1);
+          em.textContent = currentText;
+          em.appendChild(cursorEl);
+          setTimeout(tick, 45);
+        } else {
+          idx = (idx + 1) % words.length;
+          charIdx = 0;
+          phase = 'typing';
+          setTimeout(tick, 300);
+        }
+      }
     }
 
-    setInterval(nextWord, 3200);
+    setTimeout(tick, 1000);
   }
 
 
-  /* ── 3. CURSEUR — simplifié, s'efface à l'arrêt ──────────── */
+  /* ── 3. CURSEUR — traînée collée à la souris ─────────────── */
   function initCursor() {
-    var dot  = document.getElementById('cursor');
+    var dot = document.getElementById('cursor');
     var ring = document.getElementById('cursor-ring');
-    if (!dot || !ring) return;
+    if (!dot) return;
 
-    // Cache tout au départ
-    dot.style.opacity  = '0';
+    // Cache le ring original — on ne l'utilise plus
+    if (ring) ring.style.display = 'none';
+
+    dot.style.opacity    = '0';
     dot.style.transition = 'opacity .3s';
-    // Supprime complètement le ring original — on n'en a pas besoin
-    ring.style.display = 'none';
 
-    // Canvas de traînée uniquement — plus de ring séparé
     var trailCanvas = document.createElement('canvas');
     trailCanvas.id = 'cursor-trail-canvas';
     trailCanvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99997;';
@@ -168,65 +198,67 @@
     });
 
     var mx = -200, my = -200;
-    var TRAIL = 22;
+    var TRAIL = 28;
+    // Chaque point a sa propre position interpolée
     var pts = [];
-    for (var i = 0; i < TRAIL; i++) pts.push({ x: -200, y: -200, alpha: 0 });
-    var head = 0;
+    for (var i = 0; i < TRAIL; i++) pts.push({ x: -200, y: -200 });
+
     var visible = false;
-    var idleTimer = null;
-    // Alpha global de la traînée — diminue à l'arrêt
     var trailAlpha = 1;
+    var idleTimer = null;
 
     document.addEventListener('mousemove', function (e) {
       mx = e.clientX;
       my = e.clientY;
 
-      // Positionnement du dot : margin -3px/-3px dans le CSS
+      // Dot collé exactement à la souris — margin -3px/-3px dans CSS
       dot.style.left = mx + 'px';
       dot.style.top  = my + 'px';
-
-      pts[head] = { x: mx, y: my };
-      head = (head + 1) % TRAIL;
 
       if (!visible) {
         visible = true;
         dot.style.opacity = '1';
       }
 
-      // Remet l'alpha à 1 au mouvement
       trailAlpha = 1;
-
-      // Efface la traînée progressivement après 600ms d'arrêt
       clearTimeout(idleTimer);
       idleTimer = setTimeout(function () {
         var fade = setInterval(function () {
-          trailAlpha -= 0.08;
+          trailAlpha -= 0.06;
           if (trailAlpha <= 0) {
             trailAlpha = 0;
             clearInterval(fade);
-            for (var i = 0; i < TRAIL; i++) pts[i] = { x: -200, y: -200 };
           }
         }, 30);
       }, 600);
     });
 
-    // Hover — change juste le dot
+    // Hover
     document.querySelectorAll('a, button, .av-card, .svc-card').forEach(function (el) {
       el.addEventListener('mouseenter', function () { dot.classList.add('hover'); });
       el.addEventListener('mouseleave', function () { dot.classList.remove('hover'); });
     });
 
+    // La traînée suit la souris — chaque point interpole vers le précédent
     (function drawTrail() {
       requestAnimationFrame(drawTrail);
+
+      // Point 0 colle à la souris, chaque suivant suit le précédent
+      pts[0].x += (mx - pts[0].x) * 0.85;
+      pts[0].y += (my - pts[0].y) * 0.85;
+      for (var i = 1; i < TRAIL; i++) {
+        pts[i].x += (pts[i-1].x - pts[i].x) * 0.65;
+        pts[i].y += (pts[i-1].y - pts[i].y) * 0.65;
+      }
+
       ctx.clearRect(0, 0, W, H);
       if (trailAlpha <= 0) return;
 
-      for (var i = 0; i < TRAIL; i++) {
-        var p     = pts[(head - i - 1 + TRAIL) % TRAIL];
-        if (p.x < 0) continue;
-        var ratio = (1 - i / TRAIL) * trailAlpha;
+      for (var j = 0; j < TRAIL; j++) {
+        var ratio = (1 - j / TRAIL) * trailAlpha;
         var r     = ratio * 5;
         var alpha = ratio * 0.5;
+        if (r <= 0 || alpha <= 0) continue;
 
         var color;
         if (ratio > 0.65)      color = 'rgba(0,170,255,'  + alpha + ')';
@@ -234,7 +266,7 @@
         else                   color = 'rgba(126,223,74,'  + alpha + ')';
 
         ctx.beginPath();
-        ctx.arc(p.x, p.y, Math.max(r, 0.1), 0, Math.PI * 2);
+        ctx.arc(pts[j].x, pts[j].y, r, 0, Math.PI * 2);
         ctx.fillStyle = color;
         ctx.fill();
       }
@@ -242,22 +274,37 @@
   }
 
 
-  /* ── 4. TILT 3D — plus prononcé (20deg) ──────────────────── */
+  /* ── 4. TILT 3D — penché vers curseur ────────────────────── */
   function initTilt() {
     document.querySelectorAll('.av-card, .svc-card').forEach(function (card) {
+      // Désactive transition pendant mouvement pour tilt fluide
+      card.addEventListener('mouseenter', function () {
+        card.style.transition = 'none';
+      });
+
       card.addEventListener('mousemove', function (e) {
         var rect = card.getBoundingClientRect();
         var x    = (e.clientX - rect.left) / rect.width  - 0.5;
         var y    = (e.clientY - rect.top)  / rect.height - 0.5;
-        // 20deg au lieu de 12 — plus prononcé
-        card.style.transform = 'perspective(700px) rotateX(' + (y * -20) + 'deg) rotateY(' + (x * 20) + 'deg) scale3d(1.03,1.03,1.03)';
+        card.style.transform = 'perspective(600px) rotateX(' + (y * -18) + 'deg) rotateY(' + (x * 18) + 'deg) scale3d(1.03,1.03,1.03)';
         card.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width  * 100) + '%');
         card.style.setProperty('--my', ((e.clientY - rect.top)  / rect.height * 100) + '%');
+
+        var icon = card.querySelector('.av-icon, .svc-icon');
+        if (icon) {
+          icon.style.transition = 'none';
+          icon.style.transform  = 'rotateX(' + (y * 5) + 'deg) rotateY(' + (x * 5) + 'deg) scale(1.08)';
+        }
       });
+
       card.addEventListener('mouseleave', function () {
-        card.style.transition = 'transform .5s cubic-bezier(.16,1,.3,1), border-color .3s, box-shadow .4s';
-        card.style.transform  = '';
-        setTimeout(function () { card.style.transition = ''; }, 500);
+        card.style.transition = 'transform .6s cubic-bezier(.16,1,.3,1), border-color .3s, box-shadow .4s';
+        card.style.transform  = 'perspective(600px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)';
+        var icon = card.querySelector('.av-icon, .svc-icon');
+        if (icon) {
+          icon.style.transition = 'transform .6s cubic-bezier(.16,1,.3,1)';
+          icon.style.transform  = '';
+        }
       });
     });
   }

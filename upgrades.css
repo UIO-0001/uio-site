@@ -20,37 +20,21 @@
   pointer-events: none;
 }
 
-/* ── CURSEUR AVANCÉ — remplace l'ancien ── */
+/* ── CURSEUR AVANCÉ ── */
 #cursor {
   position: fixed;
-  width: 7px; height: 7px;
+  width: 8px; height: 8px;
   background: #fff;
   border-radius: 50%;
   pointer-events: none;
   z-index: 99999;
-  margin-left: -3px;
-  margin-top: -3px;
-  mix-blend-mode: difference;
+  transform: translate(-50%, -50%);
   transition: width .15s, height .15s, opacity .3s;
 }
 #cursor.hover {
-  width: 22px; height: 22px;
+  width: 20px; height: 20px;
 }
-#cursor-ring {
-  position: fixed;
-  width: 38px; height: 38px;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 99998;
-  transform: translate(-50%,-50%);
-  background: radial-gradient(circle, rgba(0,170,255,0.28) 0%, transparent 70%);
-  transition: width .35s, height .35s, background .3s;
-  border: none;
-}
-#cursor-ring.hover {
-  width: 72px; height: 72px;
-  background: radial-gradient(circle, rgba(126,223,74,0.35) 0%, transparent 70%);
-}
+#cursor-ring { display: none !important; }
 #cursor-trail-canvas {
   position: fixed;
   top: 0; left: 0;
