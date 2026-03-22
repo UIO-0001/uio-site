@@ -533,15 +533,14 @@ const cObs = new IntersectionObserver(entries => {
 }, {threshold:.5});
 document.querySelectorAll('.stat-num').forEach(el => cObs.observe(el));
 
-/// ═══ TILT 3D — toutes les cartes regardent la souris ═══
+// ═══ TILT 3D — toutes les cartes regardent la souris ═══
 const allCards = document.querySelectorAll('.av-card, .svc-card');
 document.addEventListener('mousemove', e => {
+  const mx = e.clientX / window.innerWidth  - 0.5;
+  const my = e.clientY / window.innerHeight - 0.5;
   allCards.forEach(card => {
-    const r  = card.getBoundingClientRect();
-    const dx = (e.clientX - (r.left + r.width/2))  / window.innerWidth;
-    const dy = (e.clientY - (r.top  + r.height/2)) / window.innerHeight;
     card.style.transition = 'transform .1s ease';
-    card.style.transform  = `perspective(700px) rotateX(${-dy*22}deg) rotateY(${dx*22}deg) scale(1.01)`;
+    card.style.transform  = `perspective(700px) rotateX(${-my*30}deg) rotateY(${mx*30}deg) scale(1.01)`;
   });
 });
 document.addEventListener('mouseleave', () => {
