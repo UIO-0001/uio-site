@@ -114,8 +114,9 @@
 
     var em = document.getElementById('morph-em');
 
-    // Largeur fixe basée sur le mot le plus long — empêche tout saut
-    em.style.cssText = 'display:inline-block;min-width:280px;white-space:nowrap;vertical-align:bottom;';
+    // Hauteur fixe sur h1 — empêche le saut quand le mot change de longueur
+    h1.style.minHeight = '160px';
+    em.style.cssText = 'display:inline-block;white-space:nowrap;vertical-align:bottom;';
 
     // Curseur clignotant
     var cursorEl = document.createElement('span');
