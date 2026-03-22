@@ -258,40 +258,7 @@
   }
 
 
-  /* ── 4. TILT 3D — penché vers curseur ────────────────────── */
-  function initTilt() {
-    document.querySelectorAll('.av-card, .svc-card').forEach(function (card) {
-      // Désactive transition pendant mouvement pour tilt fluide
-      card.addEventListener('mouseenter', function () {
-        card.style.transition = 'none';
-      });
-
-      card.addEventListener('mousemove', function (e) {
-        var rect = card.getBoundingClientRect();
-        var x    = (e.clientX - rect.left) / rect.width  - 0.5;
-        var y    = (e.clientY - rect.top)  / rect.height - 0.5;
-        card.style.transform = 'perspective(600px) rotateX(' + (y * -18) + 'deg) rotateY(' + (x * 18) + 'deg) scale3d(1.03,1.03,1.03)';
-        card.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width  * 100) + '%');
-        card.style.setProperty('--my', ((e.clientY - rect.top)  / rect.height * 100) + '%');
-
-        var icon = card.querySelector('.av-icon, .svc-icon');
-        if (icon) {
-          icon.style.transition = 'none';
-          icon.style.transform  = 'rotateX(' + (y * 5) + 'deg) rotateY(' + (x * 5) + 'deg) scale(1.08)';
-        }
-      });
-
-      card.addEventListener('mouseleave', function () {
-        card.style.transition = 'transform .6s cubic-bezier(.16,1,.3,1), border-color .3s, box-shadow .4s';
-        card.style.transform  = 'perspective(600px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)';
-        var icon = card.querySelector('.av-icon, .svc-icon');
-        if (icon) {
-          icon.style.transition = 'transform .6s cubic-bezier(.16,1,.3,1)';
-          icon.style.transform  = '';
-        }
-      });
-    });
-  }
+  /* tilt géré dans index.html */
 
 
   /* ── 5. SCROLL CINÉMATIQUE ─────────────────────────────────── */
@@ -420,7 +387,6 @@
     initSphere();
     initMorphText();
     initCursor();
-    initTilt();
     initScroll();
     initRipple();
     initCounters();
