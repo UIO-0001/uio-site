@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Garage Éric Thérien — Mécanique Automobile Gatineau</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #C0392B;
+    --red-dark: #96281B;
+    --black: #0D0D0D;
+    --grey-dark: #1A1A1A;
+    --grey-mid: #2A2A2A;
+    --grey-light: #888;
+    --white: #F5F5F0;
+    --accent: #E8D5A3;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 4rem;
+    background: rgba(13,13,13,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 2px;
+    color: var(--white);
+    text-decoration: none;
+  }
+
+  .nav-logo span { color: var(--red); }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--grey-light);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--white); }
+
+  .nav-cta {
+    background: var(--red);
+    color: var(--white) !important;
+    padding: 0.6rem 1.4rem;
+    border-radius: 2px;
+    transition: background 0.2s !important;
+  }
+
+  .nav-cta:hover { background: var(--red-dark) !important; color: var(--white) !important; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 0 4rem;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: 
+      linear-gradient(135deg, rgba(192,57,43,0.15) 0%, transparent 50%),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 60px,
+        rgba(255,255,255,0.015) 60px,
+        rgba(255,255,255,0.015) 61px
+      ),
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 60px,
+        rgba(255,255,255,0.015) 60px,
+        rgba(255,255,255,0.015) 61px
+      );
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(192,57,43,0.15);
+    border: 1px solid rgba(192,57,43,0.4);
+    padding: 0.4rem 1rem;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .hero-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--red);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.4); }
+  }
+
+  .hero-content { position: relative; z-index: 2; max-width: 700px; }
+
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(4rem, 9vw, 8rem);
+    line-height: 0.95;
+    letter-spacing: 2px;
+    animation: fadeUp 0.7s ease 0.1s both;
+  }
+
+  .hero h1 span { color: var(--red); }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    color: var(--grey-light);
+    margin: 1.5rem 0 2.5rem;
+    line-height: 1.7;
+    font-weight: 300;
+    max-width: 500px;
+    animation: fadeUp 0.7s ease 0.2s both;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    animation: fadeUp 0.7s ease 0.3s both;
+  }
+
+  .btn-primary {
+    background: var(--red);
+    color: var(--white);
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 2px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.2s, transform 0.2s;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-primary:hover { background: var(--red-dark); transform: translateY(-2px); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--white);
+    padding: 1rem 2rem;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 2px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .btn-secondary:hover { border-color: var(--white); transform: translateY(-2px); }
+
+  .hero-stats {
+    position: absolute;
+    right: 4rem;
+    bottom: 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    animation: fadeUp 0.7s ease 0.4s both;
+  }
+
+  .stat {
+    text-align: right;
+    border-right: 2px solid var(--red);
+    padding-right: 1.2rem;
+  }
+
+  .stat-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.8rem;
+    color: var(--white);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--grey-light);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* INFO BAR */
+  .info-bar {
+    background: var(--red);
+    padding: 1rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .info-item svg { opacity: 0.8; }
+
+  /* SERVICES */
+  .services {
+    padding: 8rem 4rem;
+    position: relative;
+  }
+
+  .section-label {
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 0.8rem;
+    font-weight: 600;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    letter-spacing: 2px;
+    margin-bottom: 3rem;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .service-card {
+    background: var(--grey-dark);
+    padding: 2.5rem 2rem;
+    transition: background 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .service-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0; height: 2px;
+    background: var(--red);
+    transition: width 0.3s;
+  }
+
+  .service-card:hover { background: var(--grey-mid); }
+  .service-card:hover::before { width: 100%; }
+
+  .service-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .service-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+  }
+
+  .service-desc {
+    font-size: 0.85rem;
+    color: var(--grey-light);
+    line-height: 1.6;
+  }
+
+  /* ABOUT */
+  .about {
+    padding: 8rem 4rem;
+    background: var(--grey-dark);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+  }
+
+  .about-text p {
+    color: var(--grey-light);
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    font-weight: 300;
+  }
+
+  .about-features {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--black);
+    border-left: 3px solid var(--red);
+  }
+
+  .feature-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .feature-title {
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    font-size: 0.95rem;
+  }
+
+  .feature-desc {
+    font-size: 0.85rem;
+    color: var(--grey-light);
+    line-height: 1.5;
+  }
+
+  /* HORAIRES */
+  .horaires {
+    padding: 8rem 4rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  .horaires-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .horaires-table tr {
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .horaires-table td {
+    padding: 1rem 0;
+    font-size: 0.9rem;
+  }
+
+  .horaires-table td:last-child {
+    text-align: right;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .horaires-table tr.closed td:last-child {
+    color: var(--grey-light);
+  }
+
+  .horaires-note {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: rgba(192,57,43,0.1);
+    border: 1px solid rgba(192,57,43,0.3);
+    border-radius: 2px;
+    font-size: 0.85rem;
+    color: var(--accent);
+    line-height: 1.6;
+  }
+
+  /* CONTACT */
+  .contact {
+    padding: 8rem 4rem;
+    background: var(--grey-dark);
+    text-align: center;
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 4rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .contact-card {
+    padding: 2.5rem 2rem;
+    background: var(--black);
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .contact-card:hover {
+    border-color: var(--red);
+    transform: translateY(-4px);
+  }
+
+  .contact-card-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .contact-card-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--grey-light);
+    margin-bottom: 0.5rem;
+  }
+
+  .contact-card-value {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .contact-card a {
+    color: var(--white);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .contact-card a:hover { color: var(--red); }
+
+  /* FOOTER */
+  footer {
+    background: var(--black);
+    padding: 2rem 4rem;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  footer p { font-size: 0.8rem; color: var(--grey-light); }
+
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: 2px;
+  }
+
+  .footer-logo span { color: var(--red); }
+
+  /* GALERIE */
+  .galerie {
+    padding: 8rem 4rem;
+    background: var(--black);
+  }
+
+  .galerie-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto auto;
+    gap: 8px;
+    margin-top: 3rem;
+  }
+
+  .galerie-grid img {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(20%);
+    transition: filter 0.3s, transform 0.3s;
+  }
+
+  .galerie-grid .big {
+    grid-column: span 2;
+    height: 340px;
+  }
+
+  .galerie-grid img:hover {
+    filter: grayscale(0%);
+    transform: scale(1.01);
+  }
+
+  /* LOGOS PARTENAIRES */
+  .partenaires {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .partenaires img {
+    height: 50px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+
+  .partenaires img:hover { opacity: 1; }
+
+  /* MANDATAIRE BADGE */
+  .saaq-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(232,213,163,0.1);
+    border: 1px solid rgba(232,213,163,0.3);
+    padding: 0.5rem 1rem;
+    border-radius: 2px;
+    font-size: 0.8rem;
+    color: var(--accent);
+    margin-top: 1.5rem;
+    letter-spacing: 0.5px;
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .hero { padding: 0 1.5rem; }
+    .hero-stats { display: none; }
+    .services { padding: 4rem 1.5rem; }
+    .about { grid-template-columns: 1fr; padding: 4rem 1.5rem; gap: 3rem; }
+    .horaires { grid-template-columns: 1fr; padding: 4rem 1.5rem; }
+    .contact { padding: 4rem 1.5rem; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .info-bar { padding: 1rem 1.5rem; flex-direction: column; align-items: flex-start; }
+    footer { padding: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <img src="https://www.garageerictherien.com/images/logo_autovalue_fr.png" alt="Garage Éric Thérien" style="height:40px; filter: brightness(0) invert(1);">
+  </a>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#about">À propos</a></li>
+    <li><a href="#horaires">Horaires</a></li>
+    <li><a href="#contact" class="nav-cta">Nous contacter</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-badge">Mandataire SAAQ · Gatineau</div>
+    <h1>GARAGE<br>ÉRIC<br><span>THÉRIEN</span></h1>
+    <p class="hero-sub">Plus de 35 ans d'expertise en mécanique automobile à Gatineau. Un travail précis, une tranquillité d'esprit garantie.</p>
+    <div class="hero-actions">
+      <a href="tel:819-682-1795" class="btn-primary">
+        📞 819-682-1795
+      </a>
+      <a href="#services" class="btn-secondary">Nos services</a>
+    </div>
+    <div class="saaq-badge">✓ Mandataire officiel SAAQ — Vérification mécanique</div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-number">35+</div>
+      <div class="stat-label">Ans d'expérience</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">1991</div>
+      <div class="stat-label">Fondé en</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">100%</div>
+      <div class="stat-label">Local & indépendant</div>
+    </div>
+  </div>
+</section>
+
+<!-- INFO BAR -->
+<div class="info-bar">
+  <div class="info-item">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+    483 Chemin McConnell, Gatineau, QC J9J 3M3
+  </div>
+  <div class="info-item">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    Lun–Ven : 7h30 – 17h00
+  </div>
+  <div class="info-item">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+    garageerictherien@gmail.com
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="section-label">Ce qu'on fait</div>
+  <h2 class="section-title">NOS SERVICES</h2>
+  <div class="services-grid">
+    <div class="service-card">
+      <div class="service-icon">🔧</div>
+      <div class="service-name">Freins</div>
+      <div class="service-desc">Inspection, remplacement de plaquettes, disques et tambours. Votre sécurité avant tout.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">💉</div>
+      <div class="service-name">Injection</div>
+      <div class="service-desc">Diagnostic et entretien des systèmes d'injection pour une performance optimale.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🚗</div>
+      <div class="service-name">Direction</div>
+      <div class="service-desc">Réparation et entretien de la direction assistée et mécanique.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🛞</div>
+      <div class="service-name">Suspension</div>
+      <div class="service-desc">Amortisseurs, ressorts, rotules et bras de suspension.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">📐</div>
+      <div class="service-name">Alignement</div>
+      <div class="service-desc">Alignement des roues pour prolonger la durée de vie de vos pneus.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🔇</div>
+      <div class="service-name">Silencieux</div>
+      <div class="service-desc">Installation et réparation de systèmes d'échappement.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🚛</div>
+      <div class="service-name">Remorquage</div>
+      <div class="service-desc">Service de remorquage disponible pour vous dépanner en cas de panne.</div>
+    </div>
+    <div class="service-card" style="background: var(--red); cursor: default;">
+      <div class="service-icon">🏛️</div>
+      <div class="service-name">Vérification SAAQ</div>
+      <div class="service-desc">Mandataire officiel — inspection mécanique certifiée pour votre véhicule.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-text">
+    <div class="section-label">Notre histoire</div>
+    <h2 class="section-title">PLUS DE 35 ANS À VOTRE SERVICE</h2>
+    <p>Fondé en 1991, Garage Éric Thérien est un atelier mécanique indépendant situé à Gatineau. Depuis plus de 35 ans, nous offrons à nos clients une expertise de confiance en mécanique automobile.</p>
+    <p>Notre engagement : un travail précis et de qualité supérieure, pour vous offrir la tranquillité d'esprit que vous méritez.</p>
+    <p>Mandataire officiel de la SAAQ, nous effectuons également les vérifications mécaniques certifiées.</p>
+  </div>
+  <div class="about-features">
+    <div class="feature">
+      <div class="feature-icon">🏆</div>
+      <div>
+        <div class="feature-title">Expertise reconnue</div>
+        <div class="feature-desc">35+ ans d'expérience en mécanique générale et spécialisée.</div>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🤝</div>
+      <div>
+        <div class="feature-title">Service honnête</div>
+        <div class="feature-desc">Diagnostic transparent et devis clair avant chaque réparation.</div>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">📍</div>
+      <div>
+        <div class="feature-title">100% local</div>
+        <div class="feature-desc">Entreprise familiale et indépendante de Gatineau depuis 1991.</div>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">✅</div>
+      <div>
+        <div class="feature-title">Mandataire SAAQ</div>
+        <div class="feature-desc">Vérification mécanique officielle certifiée par la SAAQ.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALERIE -->
+<section class="galerie" id="galerie">
+  <div class="section-label">En images</div>
+  <h2 class="section-title">NOTRE GARAGE</h2>
+  <div class="galerie-grid">
+    <img class="big" src="https://www.garageerictherien.com/images/photos/garage_complet.jpg" alt="Garage Éric Thérien complet">
+    <img src="https://www.garageerictherien.com/images/photos/devant.jpg" alt="Devanture du garage">
+    <img src="https://www.garageerictherien.com/images/photos/eric_therien.jpg" alt="Éric Thérien">
+    <img src="https://www.garageerictherien.com/images/photos/eric_therien2.jpg" alt="Éric Thérien au travail">
+    <img src="https://www.garageerictherien.com/images/photos/office.jpg" alt="Bureau">
+    <img src="https://www.garageerictherien.com/images/photos/office2.jpg" alt="Bureau 2">
+  </div>
+  <div class="partenaires">
+    <img src="https://www.garageerictherien.com/images/logo_autovalue_fr.png" alt="AutoValue">
+    <img src="https://www.garageerictherien.com/images/saaq_mandataire.gif" alt="Mandataire SAAQ" style="filter: none; opacity:0.9;">
+  </div>
+</section>
+
+<!-- HORAIRES -->
+<section class="horaires" id="horaires">
+  <div>
+    <div class="section-label">Disponibilités</div>
+    <h2 class="section-title">HORAIRES<br>D'OUVERTURE</h2>
+    <table class="horaires-table">
+      <tr><td>Lundi</td><td>7h30 – 17h00</td></tr>
+      <tr><td>Mardi</td><td>7h30 – 17h00</td></tr>
+      <tr><td>Mercredi</td><td>7h30 – 17h00</td></tr>
+      <tr><td>Jeudi</td><td>7h30 – 17h00</td></tr>
+      <tr><td>Vendredi</td><td>7h30 – 17h00</td></tr>
+      <tr class="closed"><td>Samedi</td><td>Fermé</td></tr>
+      <tr class="closed"><td>Dimanche</td><td>Fermé</td></tr>
+    </table>
+  </div>
+  <div>
+    <div class="section-label">Vérification mécanique SAAQ</div>
+    <h2 class="section-title">HORAIRES<br>SPÉCIAUX</h2>
+    <table class="horaires-table">
+      <tr><td>Lundi – Mardi</td><td>7h30–12h30 / 13h–17h30</td></tr>
+      <tr><td>Mercredi – Jeudi</td><td>7h30–12h30 / 13h–20h00</td></tr>
+      <tr><td>Vendredi</td><td>7h30–12h30 / 13h–17h00</td></tr>
+      <tr class="closed"><td>Samedi – Dimanche</td><td>Fermé</td></tr>
+    </table>
+    <div class="horaires-note">
+      💡 Pour la vérification mécanique SAAQ, nous vous recommandons d'appeler à l'avance pour confirmer votre disponibilité.
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="section-label">Rejoignez-nous</div>
+  <h2 class="section-title">CONTACTEZ-NOUS</h2>
+  <div class="contact-grid">
+    <div class="contact-card">
+      <div class="contact-card-icon">📞</div>
+      <div class="contact-card-label">Téléphone</div>
+      <div class="contact-card-value"><a href="tel:819-682-1795">819-682-1795</a></div>
+    </div>
+    <div class="contact-card">
+      <div class="contact-card-icon">✉️</div>
+      <div class="contact-card-label">Courriel</div>
+      <div class="contact-card-value"><a href="mailto:garageerictherien@gmail.com">garageerictherien@gmail.com</a></div>
+    </div>
+    <div class="contact-card">
+      <div class="contact-card-icon">📍</div>
+      <div class="contact-card-label">Adresse</div>
+      <div class="contact-card-value"><a href="https://maps.google.com/?q=483+Chemin+McConnell+Gatineau" target="_blank">483 Ch. McConnell<br>Gatineau, QC J9J 3M3</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <img src="https://www.garageerictherien.com/images/logo_autovalue_fr.png" alt="Garage Éric Thérien" style="height:35px; filter: brightness(0) invert(1); opacity:0.7;">
+  <p>© 2025 Garage Éric Thérien — Gatineau, Québec</p>
+  <p style="font-size:0.7rem; color: #444;">Site créé par Agence UIO</p>
+</footer>
+
+<!-- CHATBOT UIO -->
+<script src="https://uio-backend.onrender.com/chatbot.js?client=garage_therien"></script>
+</body>
+</html>
