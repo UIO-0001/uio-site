@@ -338,7 +338,7 @@ nav::after {
   opacity: 1;
 }
 .svc-card:hover {
-  transform: translateY(-6px) !important;
+  transform: translateY(-6px);
   border-color: rgba(0,170,255,0.45) !important;
   box-shadow: 0 40px 100px rgba(0,170,255,0.14) !important;
 }
