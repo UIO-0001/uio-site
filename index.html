@@ -584,6 +584,180 @@ function suggFixeClick(btn) {
   sendChat();
 }
 
+const BACKEND_BASE = "https://uio-backend.onrender.com";
+let pendingLead = null;
+
+function addCalendar() {
+  const couleur = "#00aaff";
+  const wrapper = document.createElement("div");
+  wrapper.className = "bubble bot";
+  wrapper.style.maxWidth = "100%";
+  wrapper.style.padding = "4px";
+  wrapper.style.background = "transparent";
+
+  const cal = document.createElement("div");
+  cal.style.cssText = "background:#fff;border:1px solid #eee;border-radius:12px;overflow:hidden;font-size:12px;color:#333;";
+
+  const today = new Date();
+  let current = new Date(today.getFullYear(), today.getMonth(), 1);
+  let selected = { date: null, heure: null };
+
+  const moisNoms = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+
+  function renderCal() {
+    cal.innerHTML = "";
+
+    // Header
+    const header = document.createElement("div");
+    header.style.cssText = "display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f8f8f8;border-bottom:1px solid #eee;";
+    const btnP = document.createElement("button");
+    btnP.textContent = "‹";
+    btnP.style.cssText = "background:none;border:none;cursor:pointer;font-size:16px;color:#666;padding:2px 6px;border-radius:4px;";
+    const btnN = document.createElement("button");
+    btnN.textContent = "›";
+    btnN.style.cssText = btnP.style.cssText;
+    const titre = document.createElement("span");
+    titre.style.cssText = "font-weight:600;color:#333;font-size:13px;";
+    titre.textContent = moisNoms[current.getMonth()] + " " + current.getFullYear();
+    btnP.onclick = () => { current = new Date(current.getFullYear(), current.getMonth()-1, 1); renderCal(); };
+    btnN.onclick = () => { current = new Date(current.getFullYear(), current.getMonth()+1, 1); renderCal(); };
+    header.append(btnP, titre, btnN);
+    cal.appendChild(header);
+
+    // Grille
+    const grid = document.createElement("div");
+    grid.style.cssText = "display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:8px;";
+    ["Di","Lu","Ma","Me","Je","Ve","Sa"].forEach(j => {
+      const d = document.createElement("div");
+      d.style.cssText = "text-align:center;font-size:10px;color:#999;font-weight:600;padding:2px;";
+      d.textContent = j;
+      grid.appendChild(d);
+    });
+
+    const premier = new Date(current.getFullYear(), current.getMonth(), 1).getDay();
+    const nbJours = new Date(current.getFullYear(), current.getMonth()+1, 0).getDate();
+    const todayStr = today.toISOString().split("T")[0];
+
+    for(let i=0;i<premier;i++){const v=document.createElement("div");grid.appendChild(v);}
+
+    for(let j=1;j<=nbJours;j++){
+      (function(jour){
+        const dateObj = new Date(current.getFullYear(), current.getMonth(), jour);
+        const dateStr = dateObj.toISOString().split("T")[0];
+        const jourSem = dateObj.getDay();
+        const cell = document.createElement("div");
+        cell.style.cssText = "text-align:center;padding:6px 2px;border-radius:6px;transition:all .15s;";
+        cell.textContent = jour;
+        const isPast = dateStr < todayStr;
+        const isWeekend = jourSem===0||jourSem===6;
+        if(isPast||isWeekend){
+          cell.style.color="#ccc";
+        } else {
+          cell.style.cursor="pointer";
+          if(dateStr===todayStr) cell.style.fontWeight="700";
+          if(selected.date===dateStr){ cell.style.background=couleur; cell.style.color="#fff"; cell.style.fontWeight="600"; }
+          cell.onmouseover=()=>{ if(selected.date!==dateStr) cell.style.background=couleur+"22"; };
+          cell.onmouseout=()=>{ if(selected.date!==dateStr) cell.style.background=""; };
+          cell.onclick=()=>{ selected.date=dateStr; selected.heure=null; renderCal(); chargerCreneaux(dateStr); };
+        }
+        grid.appendChild(cell);
+      })(j);
+    }
+    cal.appendChild(grid);
+
+    // Zone créneaux
+    const slotsZone = document.createElement("div");
+    slotsZone.id = "uio-fixed-slots";
+    if(selected.date) slotsZone.innerHTML = '<div style="text-align:center;padding:12px;color:#999;font-size:12px;">Chargement...</div>';
+    cal.appendChild(slotsZone);
+
+    // Bouton confirmer
+    const confirmZone = document.createElement("div");
+    confirmZone.style.cssText = "margin:8px 12px 12px;";
+    const btnC = document.createElement("button");
+    btnC.textContent = "Confirmer le rendez-vous";
+    btnC.style.cssText = "width:100%;padding:10px;background:"+(selected.date&&selected.heure?couleur:"#ccc")+";color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:"+(selected.date&&selected.heure?"pointer":"default")+";";
+    btnC.disabled = !(selected.date && selected.heure);
+    btnC.onclick = confirmerRdv;
+    confirmZone.appendChild(btnC);
+    cal.appendChild(confirmZone);
+  }
+
+  async function chargerCreneaux(dateStr) {
+    const zone = document.getElementById("uio-fixed-slots");
+    if(!zone) return;
+    zone.innerHTML = '<div style="text-align:center;padding:12px;color:#999;font-size:12px;">Chargement des disponibilités...</div>';
+    try {
+      const res = await fetch(BACKEND_BASE+"/disponibilites?client=uio&date="+dateStr);
+      const data = await res.json();
+      const creneaux = data.creneaux||[];
+      zone.innerHTML="";
+      const slots = document.createElement("div");
+      slots.style.cssText="display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;border-top:1px solid #eee;";
+      if(!creneaux.length){
+        slots.innerHTML='<span style="color:#999;font-size:12px;padding:4px;">Aucune disponibilité ce jour.</span>';
+      } else {
+        creneaux.forEach(c=>{
+          const btn=document.createElement("div");
+          btn.style.cssText="padding:6px 12px;border-radius:8px;font-size:12px;border:1px solid "+(c.disponible?couleur:"#ddd")+";color:"+(c.disponible?couleur:"#bbb")+";background:"+(c.disponible?"":"#f9f9f9")+";cursor:"+(c.disponible?"pointer":"default")+";transition:all .15s;";
+          btn.textContent=c.heure;
+          if(c.disponible){
+            btn.onmouseover=()=>{btn.style.background=couleur;btn.style.color="#fff";};
+            btn.onmouseout=()=>{ if(selected.heure!==c.heure){btn.style.background="";btn.style.color=couleur;} };
+            btn.onclick=()=>{
+              document.querySelectorAll("#uio-fixed-slots [data-slot]").forEach(s=>{s.style.background="";s.style.color=couleur;});
+              btn.style.background=couleur; btn.style.color="#fff";
+              selected.heure=c.heure;
+              const bc=cal.querySelector("button[data-confirm]");
+              if(bc){bc.disabled=false;bc.style.background=couleur;bc.style.cursor="pointer";}
+            };
+            btn.setAttribute("data-slot","1");
+          }
+          slots.appendChild(btn);
+        });
+      }
+      zone.appendChild(slots);
+    } catch(e){
+      zone.innerHTML='<div style="text-align:center;padding:12px;color:#999;font-size:12px;">Erreur de chargement.</div>';
+    }
+  }
+
+  async function confirmerRdv() {
+    if(!selected.date||!selected.heure) return;
+    const nom   = pendingLead ? pendingLead.nom   : "";
+    const email = pendingLead ? pendingLead.email : "";
+    if(!nom||!email){
+      wrapper.remove();
+      addBubble("Pour confirmer, veuillez d'abord me donner votre nom et courriel via le chat.", "bot");
+      return;
+    }
+    const btnC = cal.querySelector("button");
+    if(btnC){btnC.disabled=true;btnC.textContent="Confirmation...";}
+    try {
+      const res = await fetch(BACKEND_BASE+"/reserver",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({client_id:"uio",nom,email,date:selected.date,heure:selected.heure})
+      });
+      const data = await res.json();
+      wrapper.remove();
+      if(data.succes){
+        addBubble("✅ Rendez-vous confirmé le "+selected.date+" à "+selected.heure+" ! Vous recevrez une invitation par courriel.", "bot");
+      } else {
+        addBubble("❌ Une erreur est survenue. Contactez-nous à uio.automatisationia@gmail.com", "bot");
+      }
+    } catch(e){
+      wrapper.remove();
+      addBubble("❌ Erreur de connexion. Contactez-nous à uio.automatisationia@gmail.com", "bot");
+    }
+  }
+
+  renderCal();
+  wrapper.appendChild(cal);
+  messagesEl.appendChild(wrapper);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
 async function sendChat() {
   const text = inputEl.value.trim();
   if(!text) return;
@@ -593,13 +767,24 @@ async function sendChat() {
   history.push({ role: "user", content: text });
   const typing = addBubble("...", "bot typing");
   try {
-    const res = await fetch(BACKEND_URL, {
+    const res = await fetch(BACKEND_BASE+"/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ messages: history, client_id: "uio" })
     });
     const data = await res.json();
     typing.remove();
+
+    if(data.show_calendar) {
+      const reply = data.choices[0].message.content;
+      addBubble(reply, "bot");
+      history.push({ role: "assistant", content: reply });
+      addCalendar();
+      sendBtn.disabled = false;
+      inputEl.focus();
+      return;
+    }
+
     const reply = data.choices[0].message.content;
     addBubble(reply, "bot");
     history.push({ role: "assistant", content: reply });
