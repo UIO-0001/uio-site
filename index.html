@@ -676,6 +676,7 @@ function addCalendar() {
     confirmZone.style.cssText = "margin:8px 12px 12px;";
     const btnC = document.createElement("button");
     btnC.textContent = "Confirmer le rendez-vous";
+    btnC.setAttribute("data-confirm","1");
     btnC.style.cssText = "width:100%;padding:10px;background:"+(selected.date&&selected.heure?couleur:"#ccc")+";color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:"+(selected.date&&selected.heure?"pointer":"default")+";";
     btnC.disabled = !(selected.date && selected.heure);
     btnC.onclick = confirmerRdv;
