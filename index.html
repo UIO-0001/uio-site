@@ -559,7 +559,7 @@ window.addEventListener('scroll', () => {
 });
 
 // ═══ CHAT FIXE ═══
-const BACKEND_URL = "https://uio-backend.onrender.com/chat";
+
 let history = [];
 const messagesEl = document.getElementById("chat-messages");
 const inputEl = document.getElementById("chat-input");
@@ -585,7 +585,7 @@ function suggFixeClick(btn) {
 }
 
 const BACKEND_BASE = "https://uio-backend.onrender.com";
-let pendingLead = null;
+let pendingLeadFixe = null;
 
 function addCalendar() {
   const couleur = "#00aaff";
@@ -725,8 +725,8 @@ function addCalendar() {
 
   async function confirmerRdv() {
     if(!selected.date||!selected.heure) return;
-    const nom   = pendingLead ? pendingLead.nom   : "";
-    const email = pendingLead ? pendingLead.email : "";
+    const nom   = pendingLeadFixe ? pendingLeadFixe.nom   : "";
+    const email = pendingLeadFixe ? pendingLeadFixe.email : "";
     if(!nom||!email){
       wrapper.remove();
       addBubble("Pour confirmer, veuillez d'abord me donner votre nom et courriel via le chat.", "bot");
