@@ -62,13 +62,13 @@ body::after{
 #truck{
   position:absolute;
   z-index:2;
-  width:54px;
+  width:110px;
   transform-origin:50% 50%;
   pointer-events:none;
   filter:drop-shadow(0 2px 8px rgba(30,77,38,0.3));
 }
 @media(max-width:768px){
-  #truck{width:38px}
+  #truck{width:72px}
 }
 
 /* ── LANDMARKS: z-index 3 — above truck but below cards ── */
@@ -372,8 +372,8 @@ textarea.calc-input { font-family: 'DM Sans', sans-serif; }
     <!-- Lignes de bord blanches -->
     <path id="road-edge-l"  fill="none" stroke="rgba(255,255,255,0.65)"  stroke-width="2.5" stroke-linecap="round"/>
     <path id="road-edge-r"  fill="none" stroke="rgba(255,255,255,0.65)"  stroke-width="2.5" stroke-linecap="round"/>
-    <!-- Ligne centrale jaune pointillée -->
-    <path id="road-center"  fill="none" stroke="rgba(255,240,120,0.9)" stroke-width="2"  stroke-linecap="round" stroke-dasharray="18 14"/>
+    <!-- Ligne centrale (supprimée) -->
+    <path id="road-center"  fill="none" stroke="none" stroke-width="2"  stroke-linecap="round" stroke-dasharray="18 14"/>
     <!-- Motion path invisible -->
     <path id="motion-path"  fill="none" stroke="none"/>
   </svg>
@@ -636,12 +636,11 @@ textarea.calc-input { font-family: 'DM Sans', sans-serif; }
           <div class="eyebrow" data-fr="Nos réalisations" data-en="Our work">Nos réalisations</div>
           <div class="sh2" data-fr="En <em>action</em>" data-en="In <em>action</em>">En <em>action</em></div>
           <div id="galleryGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.5rem">
-            <div class="gallery-placeholder reveal">📦</div>
-            <div class="gallery-placeholder reveal" style="animation-delay:.1s">🚛</div>
-            <div class="gallery-placeholder reveal" style="animation-delay:.2s">🏠</div>
-            <div class="gallery-placeholder reveal" style="animation-delay:.3s">✅</div>
+            <div class="reveal" style="aspect-ratio:3/4;overflow:hidden;border-radius:2px;border:1px solid var(--line)"><img src="mobilo-img1.png" alt="Camion Mobilo" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"></div>
+            <div class="reveal" style="aspect-ratio:3/4;overflow:hidden;border-radius:2px;border:1px solid var(--line);animation-delay:.1s"><img src="mobilo-img2.png" alt="Équipe Mobilo" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"></div>
+            <div class="reveal" style="aspect-ratio:3/4;overflow:hidden;border-radius:2px;border:1px solid var(--line);animation-delay:.2s"><img src="mobilo-img3.png" alt="Désencombrement Mobilo" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"></div>
+            <div class="reveal" style="aspect-ratio:3/4;overflow:hidden;border-radius:2px;border:1px solid var(--line);animation-delay:.3s"><img src="mobilo-img4.png" alt="Livraison Mobilo" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"></div>
           </div>
-          <p style="font-size:.65rem;color:var(--ink3);margin-top:.9rem;text-align:center;font-family:'DM Mono',monospace;letter-spacing:1px" data-fr="Photos de réalisations à venir bientôt." data-en="Photos coming soon.">Photos de réalisations à venir bientôt.</p>
         </div>
       </div>
     </div>
