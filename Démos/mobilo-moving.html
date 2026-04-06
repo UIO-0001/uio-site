@@ -62,14 +62,26 @@ body::after{
 #truck{
   position:absolute;
   z-index:2;
-  width:110px;
+  width:120px;
   transform-origin:50% 50%;
   pointer-events:none;
-  filter:drop-shadow(0 2px 8px rgba(30,77,38,0.3));
+  filter:drop-shadow(0 3px 10px rgba(30,77,38,0.4));
 }
 @media(max-width:768px){
-  #truck{width:72px}
+  #truck{width:78px}
 }
+
+/* ── DARK ZONES — zones sombres traversées par le camion ── */
+.dark-zone{
+  position:absolute;
+  left:0;right:0;height:220px;
+  pointer-events:none;
+  z-index:4;
+  background:linear-gradient(to bottom, transparent 0%, rgba(8,22,11,0.6) 35%, rgba(8,22,11,0.6) 65%, transparent 100%);
+  opacity:0;
+  transition:opacity 1.4s ease;
+}
+.dark-zone.dz-visible{ opacity:1; }
 
 /* ── LANDMARKS: z-index 3 — above truck but below cards ── */
 .landmark{
@@ -280,7 +292,7 @@ h1.hero-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.8rem,10vw,8.5re
 .faq-icon{font-size:1.1rem;color:var(--g2);flex-shrink:0;line-height:1;transition:transform .35s cubic-bezier(.16,1,.3,1)}
 .faq-q.open .faq-icon{transform:rotate(45deg)}
 .faq-a{font-size:.78rem;color:var(--ink3);line-height:1.8;font-weight:300;max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.16,1,.3,1),padding .3s}
-.faq-a.open{max-height:200px;padding-bottom:1.1rem}
+.faq-a.open{max-height:400px;padding-bottom:1.1rem}
 
 /* CTA */
 #cta{background:var(--g1);padding:6rem 2rem;text-align:center;position:relative;overflow:hidden;z-index:10}
@@ -372,8 +384,8 @@ textarea.calc-input { font-family: 'DM Sans', sans-serif; }
     <!-- Lignes de bord blanches -->
     <path id="road-edge-l"  fill="none" stroke="rgba(255,255,255,0.65)"  stroke-width="2.5" stroke-linecap="round"/>
     <path id="road-edge-r"  fill="none" stroke="rgba(255,255,255,0.65)"  stroke-width="2.5" stroke-linecap="round"/>
-    <!-- Ligne centrale (supprimée) -->
-    <path id="road-center"  fill="none" stroke="none" stroke-width="2"  stroke-linecap="round" stroke-dasharray="18 14"/>
+    <!-- Ligne centrale supprimée -->
+    <path id="road-center"  fill="none" stroke="none" stroke-width="2" stroke-linecap="round" stroke-dasharray="18 14"/>
     <!-- Motion path invisible -->
     <path id="motion-path"  fill="none" stroke="none"/>
   </svg>
@@ -395,109 +407,85 @@ textarea.calc-input { font-family: 'DM Sans', sans-serif; }
     rotationOffset is NOT needed when the element naturally points right.
     If it appears sideways, we can add rotationOffset:90 or -90.
   -->
-  <svg id="truck" viewBox="-38 -14 76 28" xmlns="http://www.w3.org/2000/svg">
+  <svg id="truck" viewBox="-38 -16 76 32" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <filter id="ts" x="-40%" y="-40%" width="180%" height="180%">
         <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#0C1A0F" flood-opacity="0.4"/>
       </filter>
-      <!-- Roue -->
-      <radialGradient id="wg" cx="35%" cy="35%" r="65%">
-        <stop offset="0%" stop-color="#777"/><stop offset="100%" stop-color="#111"/>
-      </radialGradient>
-      <!-- Caisse (corps du camion) — vert clair -->
       <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
         <stop offset="0%" stop-color="#5BA368"/><stop offset="100%" stop-color="#3A7D44"/>
       </linearGradient>
-      <!-- Cabine — vert foncé -->
       <linearGradient id="cabGrad" x1="0%" y1="0%" x2="0%" y2="100%">
         <stop offset="0%" stop-color="#2A6032"/><stop offset="100%" stop-color="#1E4D26"/>
       </linearGradient>
-      <!-- Toit caisse — reflet -->
       <linearGradient id="roofGrad" x1="0%" y1="0%" x2="0%" y2="100%">
         <stop offset="0%" stop-color="rgba(255,255,255,0.18)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/>
       </linearGradient>
+      <!-- Faisceau phare avant -->
+      <radialGradient id="beamGrad" cx="0%" cy="50%" r="100%">
+        <stop offset="0%" stop-color="rgba(255,250,180,0.85)"/>
+        <stop offset="100%" stop-color="rgba(255,250,180,0)"/>
+      </radialGradient>
     </defs>
     <g filter="url(#ts)">
 
       <!-- ═══ OMBRE AU SOL ═══ -->
-      <ellipse cx="-4" cy="0" rx="35" ry="11" fill="rgba(0,0,0,0.18)"/>
+      <ellipse cx="-4" cy="1" rx="34" ry="6" fill="rgba(0,0,0,0.22)"/>
 
-      <!-- ═══ CHASSIS (base sombre qui dépasse) ═══ -->
-      <rect x="-36" y="-12" width="72" height="24" rx="4" fill="#163A1B"/>
+      <!-- ═══ CHASSIS ═══ -->
+      <rect x="-36" y="-11" width="72" height="22" rx="3" fill="#163A1B"/>
 
-      <!-- ═══ CAISSE (corps principal — occupe 2/3 gauche) ═══ -->
-      <!-- Corps blanc de la caisse, style camion de déménagement -->
-      <rect x="-34" y="-11" width="46" height="22" rx="2" fill="#f0f0f0"/>
-      <!-- Face avant de la caisse (mur entre caisse et cabine) -->
-      <rect x="10" y="-11" width="3" height="22" fill="#ddd"/>
-      <!-- Panneau latéral vert Mobilo sur la caisse -->
-      <rect x="-32" y="-9" width="40" height="18" rx="1" fill="url(#bodyGrad)"/>
-      <!-- Reflet toit -->
-      <rect x="-32" y="-9" width="40" height="6" rx="1" fill="url(#roofGrad)"/>
-      <!-- Ligne de panneau horizontale -->
-      <line x1="-32" y1="0" x2="12" y2="0" stroke="rgba(0,0,0,0.12)" stroke-width="0.8"/>
-      <!-- Lignes verticales panneau (style portes cargo) -->
-      <line x1="-14" y1="-9" x2="-14" y2="9" stroke="rgba(0,0,0,0.10)" stroke-width="0.7"/>
-      <line x1="0"   y1="-9" x2="0"   y2="9" stroke="rgba(0,0,0,0.10)" stroke-width="0.7"/>
-      <!-- Texte MOBILO centré sur la caisse -->
-      <rect x="-18" y="-4" width="26" height="8" rx="1.5" fill="rgba(255,255,255,0.2)"/>
-      <text x="-5" y="3.5" font-family="'Bebas Neue',sans-serif" font-size="6" fill="rgba(255,255,255,0.92)" text-anchor="middle" letter-spacing="2">MOBILO</text>
-      <!-- Feux arrière (côté gauche = arrière du camion) -->
-      <rect x="-34" y="-11" width="3" height="7" rx="1" fill="#FF2020"/>
-      <rect x="-34" y="4"   width="3" height="7" rx="1" fill="#FF2020"/>
+      <!-- ═══ CAISSE ═══ -->
+      <rect x="-34" y="-10" width="46" height="20" rx="2" fill="url(#bodyGrad)"/>
+      <rect x="-34" y="-10" width="46" height="7" rx="2" fill="url(#roofGrad)"/>
+      <!-- Séparateur caisse/cabine -->
+      <rect x="10" y="-10" width="3" height="20" fill="#1E4D26"/>
+      <!-- Lignes cargo verticales -->
+      <line x1="-14" y1="-10" x2="-14" y2="10" stroke="rgba(0,0,0,0.13)" stroke-width="0.8"/>
+      <line x1="0"   y1="-10" x2="0"   y2="10" stroke="rgba(0,0,0,0.13)" stroke-width="0.8"/>
+      <!-- MOBILO plus grand -->
+      <text x="-11" y="4" font-family="'Bebas Neue',Arial Black,sans-serif" font-size="9" fill="rgba(255,255,255,0.95)" text-anchor="middle" letter-spacing="2.5">MOBILO</text>
+      <!-- Feux arrière -->
+      <rect x="-35" y="-10" width="3" height="6" rx="1" fill="#FF2020"/>
+      <rect x="-35" y="4"   width="3" height="6" rx="1" fill="#FF2020"/>
       <!-- Pare-choc arrière -->
-      <rect x="-37" y="-10" width="4" height="20" rx="1.5" fill="#1E4D26"/>
+      <rect x="-38" y="-9" width="4" height="18" rx="1.5" fill="#1E4D26"/>
 
-      <!-- ═══ CABINE (1/3 droit) ═══ -->
-      <rect x="13" y="-12" width="22" height="24" rx="4" fill="url(#cabGrad)"/>
-      <!-- Fenêtre latérale gauche cabine -->
-      <rect x="14" y="-10" width="8" height="7" rx="1.5" fill="rgba(100,200,230,0.75)"/>
-      <!-- Fenêtre latérale droite cabine -->
-      <rect x="14" y="3"   width="8" height="7" rx="1.5" fill="rgba(100,200,230,0.75)"/>
-      <!-- Reflets fenêtres -->
-      <rect x="14.5" y="-9.5" width="3" height="2.5" rx=".5" fill="rgba(255,255,255,0.4)"/>
-      <rect x="14.5" y="3.5"  width="3" height="2.5" rx=".5" fill="rgba(255,255,255,0.4)"/>
-      <!-- Pare-brise avant (face droite = avant) -->
-      <rect x="28" y="-9" width="5" height="18" rx="2" fill="rgba(100,200,230,0.8)"/>
-      <rect x="28.5" y="-8" width="2" height="5" rx=".5" fill="rgba(255,255,255,0.5)"/>
-      <!-- Ligne de toit cabine -->
-      <rect x="13" y="-12" width="22" height="3" rx="2" fill="rgba(255,255,255,0.1)"/>
+      <!-- ═══ CABINE ═══ -->
+      <rect x="13" y="-11" width="22" height="22" rx="3" fill="url(#cabGrad)"/>
+      <!-- Fenêtres -->
+      <rect x="14" y="-9" width="8" height="6" rx="1.5" fill="rgba(100,200,230,0.75)"/>
+      <rect x="14" y="3"  width="8" height="6" rx="1.5" fill="rgba(100,200,230,0.75)"/>
+      <rect x="14.5" y="-8.5" width="3" height="2" rx=".5" fill="rgba(255,255,255,0.4)"/>
+      <rect x="14.5" y="3.5"  width="3" height="2" rx=".5" fill="rgba(255,255,255,0.4)"/>
+      <!-- Pare-brise -->
+      <rect x="28" y="-8" width="5" height="16" rx="2" fill="rgba(100,200,230,0.8)"/>
+      <rect x="28.5" y="-7" width="2" height="4" rx=".5" fill="rgba(255,255,255,0.5)"/>
       <!-- Pare-choc avant -->
-      <rect x="33" y="-10" width="4" height="20" rx="1.5" fill="#1E4D26"/>
-      <!-- Phares avant -->
-      <rect x="33" y="-10" width="4" height="7" rx="1.5" fill="#FFFAAA"/>
-      <ellipse cx="36" cy="-6.5" rx="3.5" ry="3" fill="rgba(255,250,150,0.5)"/>
-      <rect x="33" y="3"  width="4" height="7" rx="1.5" fill="#FFFAAA"/>
-      <ellipse cx="36" cy="6.5"  rx="3.5" ry="3" fill="rgba(255,250,150,0.5)"/>
+      <rect x="33" y="-9" width="4" height="18" rx="1.5" fill="#163A1B"/>
+      <!-- Phares avant (boîtier) -->
+      <rect x="33" y="-9" width="4" height="6" rx="1" fill="#FFFAAA"/>
+      <rect x="33" y="3"  width="4" height="6" rx="1" fill="#FFFAAA"/>
+      <!-- Faisceaux phares (cônes lumineux vers l'avant) -->
+      <polygon points="37,-6 37,-3 70,12 70,-18" fill="url(#beamGrad)" opacity="0.55"/>
+      <polygon points="37,4 37,7 70,22 70,-8"   fill="url(#beamGrad)" opacity="0.55"/>
       <!-- Rétroviseurs -->
-      <rect x="13" y="-14" width="6" height="4" rx="1.5" fill="#2A6032"/>
-      <rect x="13" y="10"  width="6" height="4" rx="1.5" fill="#2A6032"/>
+      <rect x="13" y="-13" width="5" height="3" rx="1" fill="#2A6032"/>
+      <rect x="13" y="10"  width="5" height="3" rx="1" fill="#2A6032"/>
 
-      <!-- ═══ ROUES ═══ -->
+      <!-- ═══ ROUES — fines, vue de haut, pas d'intérieur gris ═══ -->
       <!-- Roue avant gauche -->
-      <ellipse cx="22" cy="-13" rx="5" ry="5" fill="#1a1a1a"/>
-      <ellipse cx="22" cy="-13" rx="3"   ry="3"   fill="url(#wg)"/>
-      <circle  cx="22" cy="-13" r="1.2" fill="#666"/>
+      <ellipse cx="22" cy="-12" rx="4" ry="2.2" fill="#111"/>
       <!-- Roue avant droite -->
-      <ellipse cx="22" cy="13"  rx="5" ry="5" fill="#1a1a1a"/>
-      <ellipse cx="22" cy="13"  rx="3"   ry="3"   fill="url(#wg)"/>
-      <circle  cx="22" cy="13"  r="1.2" fill="#666"/>
-      <!-- Roue arrière gauche (double) -->
-      <ellipse cx="-10" cy="-13" rx="5" ry="5" fill="#1a1a1a"/>
-      <ellipse cx="-10" cy="-13" rx="3"   ry="3"   fill="url(#wg)"/>
-      <circle  cx="-10" cy="-13" r="1.2" fill="#666"/>
-      <!-- Roue arrière droite (double) -->
-      <ellipse cx="-10" cy="13"  rx="5" ry="5" fill="#1a1a1a"/>
-      <ellipse cx="-10" cy="13"  rx="3"   ry="3"   fill="url(#wg)"/>
-      <circle  cx="-10" cy="13"  r="1.2" fill="#666"/>
+      <ellipse cx="22" cy="12"  rx="4" ry="2.2" fill="#111"/>
+      <!-- Roue arrière gauche -->
+      <ellipse cx="-10" cy="-12" rx="4" ry="2.2" fill="#111"/>
+      <!-- Roue arrière droite -->
+      <ellipse cx="-10" cy="12"  rx="4" ry="2.2" fill="#111"/>
       <!-- Roue milieu gauche -->
-      <ellipse cx="5" cy="-13" rx="4.5" ry="4.5" fill="#1a1a1a"/>
-      <ellipse cx="5" cy="-13" rx="2.8"   ry="2.8"   fill="url(#wg)"/>
-      <circle  cx="5" cy="-13" r="1.1" fill="#666"/>
+      <ellipse cx="6" cy="-12" rx="3.5" ry="2" fill="#111"/>
       <!-- Roue milieu droite -->
-      <ellipse cx="5" cy="13"  rx="4.5" ry="4.5" fill="#1a1a1a"/>
-      <ellipse cx="5" cy="13"  rx="2.8"   ry="2.8"   fill="url(#wg)"/>
-      <circle  cx="5" cy="13"  r="1.1" fill="#666"/>
+      <ellipse cx="6" cy="12"  rx="3.5" ry="2" fill="#111"/>
 
     </g>
   </svg>
@@ -636,11 +624,12 @@ textarea.calc-input { font-family: 'DM Sans', sans-serif; }
           <div class="eyebrow" data-fr="Nos réalisations" data-en="Our work">Nos réalisations</div>
           <div class="sh2" data-fr="En <em>action</em>" data-en="In <em>action</em>">En <em>action</em></div>
           <div id="galleryGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.5rem">
-            <div class="reveal" style="aspect-ratio:3/4;overflow:hidden;border-radius:2px;border:1px solid var(--line)"><img src="mobilo-img1.png" alt="Camion Mobilo" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"></div>
-            <div class="reveal" style="aspect-ratio:3/4;overflow:hidden;border-radius:2px;border:1px solid var(--line);animation-delay:.1s"><img src="mobilo-img2.png" alt="Équipe Mobilo" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"></div>
-            <div class="reveal" style="aspect-ratio:3/4;overflow:hidden;border-radius:2px;border:1px solid var(--line);animation-delay:.2s"><img src="mobilo-img3.png" alt="Désencombrement Mobilo" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"></div>
-            <div class="reveal" style="aspect-ratio:3/4;overflow:hidden;border-radius:2px;border:1px solid var(--line);animation-delay:.3s"><img src="mobilo-img4.png" alt="Livraison Mobilo" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"></div>
+            <div class="gallery-placeholder reveal">📦</div>
+            <div class="gallery-placeholder reveal" style="animation-delay:.1s">🚛</div>
+            <div class="gallery-placeholder reveal" style="animation-delay:.2s">🏠</div>
+            <div class="gallery-placeholder reveal" style="animation-delay:.3s">✅</div>
           </div>
+          <p style="font-size:.65rem;color:var(--ink3);margin-top:.9rem;text-align:center;font-family:'DM Mono',monospace;letter-spacing:1px" data-fr="Photos de réalisations à venir bientôt." data-en="Photos coming soon.">Photos de réalisations à venir bientôt.</p>
         </div>
       </div>
     </div>
@@ -675,7 +664,7 @@ textarea.calc-input { font-family: 'DM Sans', sans-serif; }
         <div class="content-card reveal">
           <div class="eyebrow" data-fr="Questions fréquentes" data-en="FAQ">Questions fréquentes</div>
           <div class="sh2" data-fr="On répond à <em>tout</em>" data-en="We answer <em>everything</em>">On répond à <em>tout</em></div>
-          <div class="faq-item reveal"><div class="faq-q" onclick="toggleFaq(this)"><span data-fr="Comment obtenir un devis ?" data-en="How do I get a quote?">Comment obtenir un devis ?</span> <span class="faq-icon">+</span></div><div class="faq-a" data-fr="Appelez-nous au (438) 873-8605 ou écrivez à [email]. Réponse en moins de 24h, gratuit et sans engagement." data-en="Call us at (438) 873-8605 or email us. Response within 24h, free and no commitment.">Appelez-nous au (438) 873-8605 ou écrivez à <a href="/cdn-cgi/l/email-protection#650c0b030a25080a070c090a080a130c0b024b0604"><span class="__cf_email__" data-cfemail="93fafdf5fcd3fefcf1fafffcfefce5fafdf4bdf0f2">[email&#160;protected]</span></a>. Réponse en moins de 24h, gratuit et sans engagement.</div></div>
+          <div class="faq-item reveal"><div class="faq-q" onclick="toggleFaq(this)"><span data-fr="Comment obtenir un devis ?" data-en="How do I get a quote?">Comment obtenir un devis ?</span> <span class="faq-icon">+</span></div><div class="faq-a" data-fr="Appelez-nous au (438) 873-8605 ou écrivez à [email]. Réponse en moins de 24h, gratuit et sans engagement." data-en="Call us at (438) 873-8605 or email us. Response within 24h, free and no commitment.">Appelez-nous au (438) 873-8605 ou écrivez à <a href="mailto:mobilomoving.co@gmail.com">mobilomoving.co@gmail.com</a>. Réponse en moins de 24h, gratuit et sans engagement.</div></div>
           <div class="faq-item reveal"><div class="faq-q" onclick="toggleFaq(this)"><span data-fr="Faites-vous les déménagements longue distance ?" data-en="Do you do long distance moves?">Faites-vous les déménagements longue distance ?</span> <span class="faq-icon">+</span></div><div class="faq-a" data-fr="Oui. On peut gérer des déménagements au-delà de Gatineau et Ottawa." data-en="Yes. We can handle moves beyond Gatineau and Ottawa.">Oui. On peut gérer des déménagements au-delà de Gatineau et Ottawa.</div></div>
           <div class="faq-item reveal"><div class="faq-q" onclick="toggleFaq(this)"><span data-fr="Disponibles les fins de semaine ?" data-en="Available on weekends?">Disponibles les fins de semaine ?</span> <span class="faq-icon">+</span></div><div class="faq-a" data-fr="Absolument. 7 jours sur 7, incluant samedis, dimanches et jours fériés." data-en="Absolutely. 7 days a week, including Saturdays, Sundays and holidays.">Absolument. 7 jours sur 7, incluant samedis, dimanches et jours fériés.</div></div>
           <div class="faq-item reveal"><div class="faq-q" onclick="toggleFaq(this)"><span data-fr="Service bilingue ?" data-en="Bilingual service?">Service bilingue ?</span> <span class="faq-icon">+</span></div><div class="faq-a" data-fr="Oui, entièrement bilingues. Français ou anglais selon votre préférence." data-en="Yes, fully bilingual. French or English according to your preference.">Oui, entièrement bilingues. Français ou anglais selon votre préférence.</div></div>
@@ -737,7 +726,7 @@ textarea.calc-input { font-family: 'DM Sans', sans-serif; }
     <a href="tel:4388738605" class="btn-wp reveal" style="margin:0 auto;display:inline-flex;font-size:.82rem;padding:.85rem 1.8rem">📞 Appeler maintenant</a>
     <div class="cta-contact">
       <div class="cti"><div class="cti-label" data-fr="Téléphone" data-en="Phone">Téléphone</div><div class="cti-val"><a href="tel:4388738605">(438) 873-8605</a></div></div>
-      <div class="cti"><div class="cti-label" data-fr="Courriel" data-en="Email">Courriel</div><div class="cti-val"><a href="/cdn-cgi/l/email-protection#1871767e775875777a71747775776e71767f367b79"><span class="__cf_email__" data-cfemail="2940474f466944464b40454644465f40474e074a48">[email&#160;protected]</span></a></div></div>
+      <div class="cti"><div class="cti-label" data-fr="Courriel" data-en="Email">Courriel</div><div class="cti-val"><a href="mailto:mobilomoving.co@gmail.com">mobilomoving.co@gmail.com</a></div></div>
       <div class="cti"><div class="cti-label" data-fr="Instagram" data-en="Instagram">Instagram</div><div class="cti-val"><a href="https://instagram.com/mobilo.co" target="_blank">@mobilo.co</a></div></div>
     </div>
   </section>
@@ -988,7 +977,7 @@ function initTruck() {
       start: 'top top',
       end: 'bottom bottom',
       scrub: 1,
-      onUpdate: self => checkLandmarkProximity(self.progress),
+      onUpdate: self => { checkLandmarkProximity(self.progress); updateDarkZones(self.progress); },
     }
   });
 }
@@ -1035,6 +1024,7 @@ window.addEventListener('load', () => {
     buildRoad();
     initTruck();
     placeLandmarks();
+    initDarkZones();
     ScrollTrigger.refresh();
   }, 120);
 });
@@ -1178,6 +1168,53 @@ function submitForm() {
     ['fName','fPhone','fEmail','fMsg'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
     document.getElementById('fService').value = '';
   }, 1200);
+}
+
+// ═══════════════════════════════════════
+// FAQ TOGGLE
+// ═══════════════════════════════════════
+function toggleFaq(btn) {
+  const answer = btn.nextElementSibling;
+  const isOpen = answer.classList.contains('open');
+  // Fermer tous
+  document.querySelectorAll('.faq-a').forEach(a => a.classList.remove('open'));
+  document.querySelectorAll('.faq-q').forEach(q => q.classList.remove('open'));
+  // Ouvrir celui cliqué sauf si déjà ouvert
+  if (!isOpen) {
+    answer.classList.add('open');
+    btn.classList.add('open');
+  }
+}
+
+// ═══════════════════════════════════════
+// DARK ZONES — zones sombres traversées
+// ═══════════════════════════════════════
+function initDarkZones() {
+  const page = document.getElementById('page');
+  const positions = [0.20, 0.48, 0.74]; // 3 zones sombres à travers la page
+  const H = page.scrollHeight;
+  positions.forEach(p => {
+    const dz = document.createElement('div');
+    dz.className = 'dark-zone';
+    dz.style.top = (p * H - 110) + 'px';
+    page.appendChild(dz);
+  });
+}
+
+// Activer/désactiver dark zones selon scroll du camion
+function updateDarkZones(progress) {
+  const zones = document.querySelectorAll('.dark-zone');
+  const H = document.getElementById('page').scrollHeight;
+  const truckY = progress * H;
+  zones.forEach(dz => {
+    const top = parseFloat(dz.style.top) + 110;
+    const dist = Math.abs(truckY - top * H / H);
+    if (Math.abs(truckY - top) < 180) {
+      dz.classList.add('dz-visible');
+    } else {
+      dz.classList.remove('dz-visible');
+    }
+  });
 }
 
 // Calculator
