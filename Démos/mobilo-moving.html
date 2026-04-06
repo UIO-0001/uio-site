@@ -71,17 +71,15 @@ body::after{
   #truck{width:78px}
 }
 
-/* ── DARK ZONES — zones sombres traversées par le camion ── */
-.dark-zone{
+/* ── DARKNESS + HEADLIGHTS ── */
+#darkness-svg, #headlight-svg{
   position:absolute;
-  left:0;right:0;height:220px;
+  top:0;left:0;width:100%;
   pointer-events:none;
-  z-index:4;
-  background:linear-gradient(to bottom, transparent 0%, rgba(8,22,11,0.6) 35%, rgba(8,22,11,0.6) 65%, transparent 100%);
-  opacity:0;
-  transition:opacity 1.4s ease;
+  overflow:visible;
 }
-.dark-zone.dz-visible{ opacity:1; }
+#darkness-svg{ z-index:4; }
+#headlight-svg{ z-index:5; mix-blend-mode:screen; }
 
 /* ── LANDMARKS: z-index 3 — above truck but below cards ── */
 .landmark{
@@ -205,8 +203,38 @@ section{position:relative;z-index:5}
   padding:2.2rem 2rem;
   border-radius:2px;
   position:relative;
-  z-index:10; /* truck (z-index:2) goes behind this */
+  z-index:10;
 }
+/* Overlay sombre — couvre la carte avant allumage */
+.content-card::after,
+.rev-card::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  background:rgba(2,8,4,0.52);
+  border-radius:inherit;
+  pointer-events:none;
+  z-index:2;
+  opacity:1;
+  transition:none;
+}
+/* Animation haut→bas : le rideau sombre se lève */
+@keyframes unlockCard {
+  0%   { clip-path: inset(0 0 0 0); opacity:1; }
+  100% { clip-path: inset(0 0 100% 0); opacity:0; }
+}
+.content-card.card-lit::after,
+.rev-card.card-lit::after {
+  animation: unlockCard 1.1s cubic-bezier(0.4,0,0.2,1) forwards;
+}
+/* Contour doré subtil — reste après allumage */
+.content-card.card-lit,
+.rev-card.card-lit {
+  border-color: rgba(255,220,60,0.35);
+  box-shadow: 0 0 0 1px rgba(255,220,60,0.18), inset 0 0 0 0 transparent;
+  transition: border-color 1.1s ease, box-shadow 1.1s ease;
+}
+.rev-card { position:relative; }
 
 .eyebrow{font-family:'DM Mono',monospace;font-size:.63rem;letter-spacing:3px;text-transform:uppercase;color:var(--g2);margin-bottom:1rem;display:flex;align-items:center;gap:.8rem}
 .eyebrow::before{content:'';width:22px;height:1px;background:var(--g2)}
@@ -490,6 +518,44 @@ textarea.calc-input { font-family: 'DM Sans', sans-serif; }
     </g>
   </svg>
 
+  <!-- SVG zones sombres circulaires fondues -->
+  <svg id="darkness-svg" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="dzBlur" x="-100%" y="-100%" width="400%" height="400%">
+        <feGaussianBlur stdDeviation="140"/>
+      </filter>
+    </defs>
+    <!-- 3 grands cercles sombres flous permanents — sans masque -->
+    <ellipse id="dz1" rx="340" ry="220" fill="rgba(3,10,5,0.55)" filter="url(#dzBlur)"/>
+    <ellipse id="dz2" rx="310" ry="200" fill="rgba(3,10,5,0.50)" filter="url(#dzBlur)"/>
+    <ellipse id="dz3" rx="360" ry="230" fill="rgba(3,10,5,0.55)" filter="url(#dzBlur)"/>
+  </svg>
+
+  <!-- SVG cônes lumineux phares — polygones floutés puissants -->
+  <svg id="headlight-svg" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="beamBlur" x="-40%" y="-40%" width="180%" height="180%">
+        <feGaussianBlur stdDeviation="30"/>
+      </filter>
+      <linearGradient id="coneGradL" gradientUnits="userSpaceOnUse">
+        <stop offset="0%"   stop-color="rgb(255,255,200)" stop-opacity="1"/>
+        <stop offset="8%"   stop-color="rgb(255,252,150)" stop-opacity="1"/>
+        <stop offset="25%"  stop-color="rgb(255,244,100)" stop-opacity="0.80"/>
+        <stop offset="55%"  stop-color="rgb(255,235,60)"  stop-opacity="0.40"/>
+        <stop offset="100%" stop-color="rgb(255,220,30)"  stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="coneGradR" gradientUnits="userSpaceOnUse">
+        <stop offset="0%"   stop-color="rgb(255,255,200)" stop-opacity="1"/>
+        <stop offset="8%"   stop-color="rgb(255,252,150)" stop-opacity="1"/>
+        <stop offset="25%"  stop-color="rgb(255,244,100)" stop-opacity="0.80"/>
+        <stop offset="55%"  stop-color="rgb(255,235,60)"  stop-opacity="0.40"/>
+        <stop offset="100%" stop-color="rgb(255,220,30)"  stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <polygon id="cone-L" fill="url(#coneGradL)" filter="url(#beamBlur)"/>
+    <polygon id="cone-R" fill="url(#coneGradR)" filter="url(#beamBlur)"/>
+  </svg>
+
   <!-- HERO -->
   <section id="hero">
     <div class="content">
@@ -624,12 +690,11 @@ textarea.calc-input { font-family: 'DM Sans', sans-serif; }
           <div class="eyebrow" data-fr="Nos réalisations" data-en="Our work">Nos réalisations</div>
           <div class="sh2" data-fr="En <em>action</em>" data-en="In <em>action</em>">En <em>action</em></div>
           <div id="galleryGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.5rem">
-            <div class="gallery-placeholder reveal">📦</div>
-            <div class="gallery-placeholder reveal" style="animation-delay:.1s">🚛</div>
-            <div class="gallery-placeholder reveal" style="animation-delay:.2s">🏠</div>
-            <div class="gallery-placeholder reveal" style="animation-delay:.3s">✅</div>
+            <div class="reveal" style="aspect-ratio:3/4;overflow:hidden;border-radius:2px;border:1px solid var(--line)"><img src="mobilo-img1.png" alt="Camion Mobilo" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"></div>
+            <div class="reveal" style="aspect-ratio:3/4;overflow:hidden;border-radius:2px;border:1px solid var(--line);animation-delay:.1s"><img src="mobilo-img2.png" alt="Équipe Mobilo" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"></div>
+            <div class="reveal" style="aspect-ratio:3/4;overflow:hidden;border-radius:2px;border:1px solid var(--line);animation-delay:.2s"><img src="mobilo-img3.png" alt="Désencombrement Mobilo" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"></div>
+            <div class="reveal" style="aspect-ratio:3/4;overflow:hidden;border-radius:2px;border:1px solid var(--line);animation-delay:.3s"><img src="mobilo-img4.png" alt="Livraison Mobilo" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"></div>
           </div>
-          <p style="font-size:.65rem;color:var(--ink3);margin-top:.9rem;text-align:center;font-family:'DM Mono',monospace;letter-spacing:1px" data-fr="Photos de réalisations à venir bientôt." data-en="Photos coming soon.">Photos de réalisations à venir bientôt.</p>
         </div>
       </div>
     </div>
@@ -664,7 +729,7 @@ textarea.calc-input { font-family: 'DM Sans', sans-serif; }
         <div class="content-card reveal">
           <div class="eyebrow" data-fr="Questions fréquentes" data-en="FAQ">Questions fréquentes</div>
           <div class="sh2" data-fr="On répond à <em>tout</em>" data-en="We answer <em>everything</em>">On répond à <em>tout</em></div>
-          <div class="faq-item reveal"><div class="faq-q" onclick="toggleFaq(this)"><span data-fr="Comment obtenir un devis ?" data-en="How do I get a quote?">Comment obtenir un devis ?</span> <span class="faq-icon">+</span></div><div class="faq-a" data-fr="Appelez-nous au (438) 873-8605 ou écrivez à [email]. Réponse en moins de 24h, gratuit et sans engagement." data-en="Call us at (438) 873-8605 or email us. Response within 24h, free and no commitment.">Appelez-nous au (438) 873-8605 ou écrivez à <a href="mailto:mobilomoving.co@gmail.com">mobilomoving.co@gmail.com</a>. Réponse en moins de 24h, gratuit et sans engagement.</div></div>
+          <div class="faq-item reveal"><div class="faq-q" onclick="toggleFaq(this)"><span data-fr="Comment obtenir un devis ?" data-en="How do I get a quote?">Comment obtenir un devis ?</span> <span class="faq-icon">+</span></div><div class="faq-a" data-fr="Appelez-nous au (438) 873-8605 ou écrivez à [email]. Réponse en moins de 24h, gratuit et sans engagement." data-en="Call us at (438) 873-8605 or email us. Response within 24h, free and no commitment.">Appelez-nous au (438) 873-8605 ou écrivez à <a href="/cdn-cgi/l/email-protection#85e8eae7ece9eae8eaf3ecebe2abe6eac5e2e8e4ece9abe6eae8"><span class="__cf_email__" data-cfemail="f29f9d909b9e9d9f9d849b9c95dc919db2959f939b9edc919d9f">[email&#160;protected]</span></a>. Réponse en moins de 24h, gratuit et sans engagement.</div></div>
           <div class="faq-item reveal"><div class="faq-q" onclick="toggleFaq(this)"><span data-fr="Faites-vous les déménagements longue distance ?" data-en="Do you do long distance moves?">Faites-vous les déménagements longue distance ?</span> <span class="faq-icon">+</span></div><div class="faq-a" data-fr="Oui. On peut gérer des déménagements au-delà de Gatineau et Ottawa." data-en="Yes. We can handle moves beyond Gatineau and Ottawa.">Oui. On peut gérer des déménagements au-delà de Gatineau et Ottawa.</div></div>
           <div class="faq-item reveal"><div class="faq-q" onclick="toggleFaq(this)"><span data-fr="Disponibles les fins de semaine ?" data-en="Available on weekends?">Disponibles les fins de semaine ?</span> <span class="faq-icon">+</span></div><div class="faq-a" data-fr="Absolument. 7 jours sur 7, incluant samedis, dimanches et jours fériés." data-en="Absolutely. 7 days a week, including Saturdays, Sundays and holidays.">Absolument. 7 jours sur 7, incluant samedis, dimanches et jours fériés.</div></div>
           <div class="faq-item reveal"><div class="faq-q" onclick="toggleFaq(this)"><span data-fr="Service bilingue ?" data-en="Bilingual service?">Service bilingue ?</span> <span class="faq-icon">+</span></div><div class="faq-a" data-fr="Oui, entièrement bilingues. Français ou anglais selon votre préférence." data-en="Yes, fully bilingual. French or English according to your preference.">Oui, entièrement bilingues. Français ou anglais selon votre préférence.</div></div>
@@ -726,7 +791,7 @@ textarea.calc-input { font-family: 'DM Sans', sans-serif; }
     <a href="tel:4388738605" class="btn-wp reveal" style="margin:0 auto;display:inline-flex;font-size:.82rem;padding:.85rem 1.8rem">📞 Appeler maintenant</a>
     <div class="cta-contact">
       <div class="cti"><div class="cti-label" data-fr="Téléphone" data-en="Phone">Téléphone</div><div class="cti-val"><a href="tel:4388738605">(438) 873-8605</a></div></div>
-      <div class="cti"><div class="cti-label" data-fr="Courriel" data-en="Email">Courriel</div><div class="cti-val"><a href="mailto:mobilomoving.co@gmail.com">mobilomoving.co@gmail.com</a></div></div>
+      <div class="cti"><div class="cti-label" data-fr="Courriel" data-en="Email">Courriel</div><div class="cti-val"><a href="/cdn-cgi/l/email-protection#c5a8aaa7aca9aaa8aab3acaba2eba6aa85a2a8a4aca9eba6aaa8"><span class="__cf_email__" data-cfemail="deb3b1bcb7b2b1b3b1a8b7b0b9f0bdb19eb9b3bfb7b2f0bdb1b3">[email&#160;protected]</span></a></div></div>
       <div class="cti"><div class="cti-label" data-fr="Instagram" data-en="Instagram">Instagram</div><div class="cti-val"><a href="https://instagram.com/mobilo.co" target="_blank">@mobilo.co</a></div></div>
     </div>
   </section>
@@ -738,7 +803,7 @@ textarea.calc-input { font-family: 'DM Sans', sans-serif; }
 
 </div><!-- #page -->
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/MotionPathPlugin.min.js"></script>
 <script>
@@ -1032,6 +1097,7 @@ window.addEventListener('load', () => {
 window.addEventListener('resize', () => {
   buildRoad();
   placeLandmarks();
+  initDarkZones();
   ScrollTrigger.refresh();
 }, { passive: true });
 
@@ -1187,34 +1253,158 @@ function toggleFaq(btn) {
 }
 
 // ═══════════════════════════════════════
-// DARK ZONES — zones sombres traversées
+// DARK ZONES + SPOTLIGHT REVEAL
+// Zones sombres permanentes, révélées
+// par le camion comme des phares
 // ═══════════════════════════════════════
+// ═══════════════════════════════════════
+// DARKNESS + HEADLIGHT CONE SYSTEM
+// Cercles sombres flous + cônes phares
+// synchronisés sur la position exacte
+// du camion sur le path GSAP
+// ═══════════════════════════════════════
+
+// Positions Y relatives des 3 zones (% de scrollHeight)
+const DZ_CENTERS = [0.24, 0.50, 0.75];
+
+// Stocker la position courante du camion (mise à jour par GSAP)
+let _truckX = 0, _truckY = 0, _truckAngle = 0;
+
 function initDarkZones() {
-  const page = document.getElementById('page');
-  const positions = [0.20, 0.48, 0.74]; // 3 zones sombres à travers la page
-  const H = page.scrollHeight;
-  positions.forEach(p => {
-    const dz = document.createElement('div');
-    dz.className = 'dark-zone';
-    dz.style.top = (p * H - 110) + 'px';
-    page.appendChild(dz);
+  const H = document.getElementById('page').scrollHeight;
+  const W = window.innerWidth;
+
+  // Taille des SVGs
+  ['darkness-svg','headlight-svg'].forEach(id => {
+    const s = document.getElementById(id);
+    s.setAttribute('width', W);
+    s.setAttribute('height', H);
+    s.style.height = H + 'px';
+  });
+
+  // Positionner les 3 ellipses sombres
+  const ids = ['dz1','dz2','dz3'];
+  DZ_CENTERS.forEach((frac, i) => {
+    const el = document.getElementById(ids[i]);
+    // Cx légèrement décalé pour que ce ne soit pas centré — plus naturel
+    const offsets = [0.38, 0.62, 0.45];
+    el.setAttribute('cx', W * offsets[i]);
+    el.setAttribute('cy', H * frac);
+    // Rx/ry adaptés à l'écran
+    const rx = W < 768 ? W * 1.0 : W * 0.72;
+    const ry = W < 768 ? H * 0.16 : H * 0.18;
+    el.setAttribute('rx', rx);
+    el.setAttribute('ry', ry);
   });
 }
 
-// Activer/désactiver dark zones selon scroll du camion
+// Calcule les points d'un cône projeté depuis (bx,by) dans la direction angle
+function buildCone(bx, by, angle, length, halfAng) {
+  // Bords gauche et droit du cône
+  const lx = bx + Math.cos(angle - halfAng) * length;
+  const ly = by + Math.sin(angle - halfAng) * length;
+  const rx = bx + Math.cos(angle + halfAng) * length;
+  const ry = by + Math.sin(angle + halfAng) * length;
+  // Points intermédiaires pour arrondir le bout du cône (arc approximé 5 pts)
+  const mid = [];
+  for (let t = -halfAng; t <= halfAng; t += halfAng / 2) {
+    mid.push(`${bx + Math.cos(angle + t) * length},${by + Math.sin(angle + t) * length}`);
+  }
+  return `${bx},${by} ${mid.join(' ')}`;
+}
+
+// Angle lissé (lerp) pour que les phares suivent doucement la voiture
+let _smoothAngle = 0;
+
 function updateDarkZones(progress) {
-  const zones = document.querySelectorAll('.dark-zone');
   const H = document.getElementById('page').scrollHeight;
-  const truckY = progress * H;
-  zones.forEach(dz => {
-    const top = parseFloat(dz.style.top) + 110;
-    const dist = Math.abs(truckY - top * H / H);
-    if (Math.abs(truckY - top) < 180) {
-      dz.classList.add('dz-visible');
-    } else {
-      dz.classList.remove('dz-visible');
+  const W = window.innerWidth;
+  const pathEl = document.getElementById('motion-path');
+  const totalLen = pathEl.getTotalLength();
+
+  // Position exacte sur le path
+  const pt = pathEl.getPointAtLength(progress * totalLen);
+  _truckX = pt.x;
+  _truckY = pt.y;
+
+  // Angle tangent — fenêtre large pour éviter les micro-tremblements
+  const eps = Math.max(8, totalLen * 0.006);
+  const ptA = pathEl.getPointAtLength(Math.max(0, progress * totalLen - eps));
+  const ptB = pathEl.getPointAtLength(Math.min(totalLen, progress * totalLen + eps));
+  const rawAngle = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
+
+  // Lerp vers l'angle cible — 0.06 = phares glissent lentement
+  let diff = rawAngle - _smoothAngle;
+  while (diff >  Math.PI) diff -= 2 * Math.PI;
+  while (diff < -Math.PI) diff += 2 * Math.PI;
+  _smoothAngle += diff * 0.06;
+
+  const angle = _smoothAngle;
+  const perpX = -Math.sin(angle);
+  const perpY =  Math.cos(angle);
+
+  const coneLen = W < 768 ? 320 : 620;
+  const halfAng = 0.32;
+  const spread  = W < 768 ? 7 : 13;
+
+  const truckHalfLen = (W < 768 ? 78 : 120) * 0.38;
+  const frontX = _truckX + Math.cos(angle) * truckHalfLen;
+  const frontY = _truckY + Math.sin(angle) * truckHalfLen;
+
+  const lOriginX = frontX + perpX * spread;
+  const lOriginY = frontY + perpY * spread;
+  const rOriginX = frontX - perpX * spread;
+  const rOriginY = frontY - perpY * spread;
+
+  const polyL = buildCone(lOriginX, lOriginY, angle, coneLen, halfAng);
+  const polyR = buildCone(rOriginX, rOriginY, angle, coneLen, halfAng);
+
+  document.getElementById('cone-L').setAttribute('points', polyL);
+  document.getElementById('cone-R').setAttribute('points', polyR);
+
+  // Gradients linéaires de la base vers le bout du cône
+  ['coneGradL','coneGradR'].forEach((gid, i) => {
+    const g = document.getElementById(gid);
+    const ox = i === 0 ? lOriginX : rOriginX;
+    const oy = i === 0 ? lOriginY : rOriginY;
+    g.setAttribute('x1', ox); g.setAttribute('y1', oy);
+    g.setAttribute('x2', ox + Math.cos(angle) * coneLen);
+    g.setAttribute('y2', oy + Math.sin(angle) * coneLen);
+  });
+
+  // ── Jeu d'allumage des cartes ──
+  // Allume définitivement une carte dès que le camion arrive à sa hauteur
+  // Éteint les phares (opacity 0) si le camion est strictement en dessous d'une carte non-allumée
+  const sy = window.scrollY || window.pageYOffset;
+  let blockedByCard = false;
+
+  document.querySelectorAll('.content-card, .rev-card').forEach(card => {
+    const r = card.getBoundingClientRect();
+    const cardTop    = r.top    + sy;
+    const cardBottom = r.bottom + sy;
+    const cardCX     = r.left + r.width / 2;
+
+    // Allumer quand la POINTE du cône atteint le haut de la carte
+    if (!card.classList.contains('card-lit')) {
+      // La pointe du cône est à _truckY + coneLen (dans la direction du mouvement ≈ vers le bas)
+      const coneTipY = _truckY + coneLen;
+      const arriving = coneTipY >= cardTop && _truckY <= cardBottom + 20;
+      const hClose   = Math.abs(_truckX - cardCX) < r.width / 2 + coneLen * 0.55;
+      if (arriving && hClose) {
+        card.classList.add('card-lit');
+      }
+      // Le camion est sous une carte pas encore allumée → bloquer les phares
+      if (_truckY > cardBottom + 10 && Math.abs(_truckX - cardCX) < r.width / 2 + 60) {
+        blockedByCard = true;
+      }
     }
   });
+
+  // Couper visuellement les phares si bloqués par une carte non-allumée au-dessus
+  const hlSvg = document.getElementById('headlight-svg');
+  hlSvg.style.opacity = blockedByCard ? '0' : '1';
+  hlSvg.style.transition = blockedByCard ? 'opacity 0.1s' : 'opacity 0.4s';
+
 }
 
 // Calculator
@@ -1222,12 +1412,58 @@ function calcPrice() {
   const t = document.getElementById('cType').value;
   const s = parseInt(document.getElementById('cSize').value);
   const d = parseInt(document.getElementById('cDist').value) || 10;
-  const f = parseInt(document.getElementById('cFloor').value);
-  let b = { move: 160, junk: 110, delivery: 85 }[t];
-  b += s * 65; b += Math.min(d, 50) * 1.5 + Math.max(d - 50, 0) * 2.8; b += f * 45;
-  document.getElementById('calcOut').textContent = '$' + Math.round(b/10)*10 + ' – $' + Math.round(b*1.55/10)*10;
+  const f = parseInt(document.getElementById('cFloor').value) || 0;
+
+  let base = 0;
+  if (t === 'move') {
+    const sizes = [150, 250, 380, 520];
+    base = sizes[s - 1] || 250;
+  } else if (t === 'junk') {
+    const sizes = [80, 130, 200, 300];
+    base = sizes[s - 1] || 130;
+  } else {
+    base = 60;
+  }
+
+  // Distance surcharge
+  if (d > 20) base += Math.round((d - 20) * 1.2);
+
+  // Floor surcharge
+  base += f * 40;
+
+  const lo = base;
+  const hi = Math.round(base * 1.45);
+
+  const out = document.getElementById('calcOut');
+  if (out) out.textContent = '$' + lo + ' – $' + hi;
 }
-calcPrice();
+
+// Scroll progress bar
+window.addEventListener('scroll', () => {
+  const st = window.scrollY;
+  const dh = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = dh > 0 ? (st / dh) * 100 : 0;
+  const bar = document.getElementById('scroll-progress');
+  if (bar) bar.style.width = pct + '%';
+}, { passive: true });
+
+// Active nav link
+window.addEventListener('scroll', () => {
+  const sections = document.querySelectorAll('section[id]');
+  const scrollY = window.scrollY + 120;
+  sections.forEach(sec => {
+    const top = sec.offsetTop;
+    const bot = top + sec.offsetHeight;
+    const link = document.querySelector('.nav-links a[href="#' + sec.id + '"]');
+    if (link) {
+      if (scrollY >= top && scrollY < bot) link.classList.add('active');
+      else link.classList.remove('active');
+    }
+  });
+}, { passive: true });
+
+// Init calculator on load
+window.addEventListener('DOMContentLoaded', () => { calcPrice(); });
 </script>
 </body>
 </html>
