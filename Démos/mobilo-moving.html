@@ -1045,7 +1045,7 @@ function initTruck() {
       trigger: '#page',
       start: 'top top',
       end: 'bottom bottom',
-      scrub: isMob ? 2.5 : 1,
+      scrub: true,
       onUpdate: self => {
         checkLandmarkProximity(self.progress);
         updateDarkZones(self.progress);
@@ -1320,31 +1320,21 @@ function buildCone(bx, by, angle, length, halfAng) {
   return `${bx},${by} ${mid.join(' ')}`;
 }
 
-// Angle lissé (lerp) pour que les phares suivent doucement la voiture
 let _smoothAngle = 0;
 
 function updateDarkZones(progress) {
-  const H = document.getElementById('page').scrollHeight;
   const W = window.innerWidth;
   const pathEl = document.getElementById('motion-path');
   const totalLen = pathEl.getTotalLength();
 
-  // Position exacte sur le path
   const pt = pathEl.getPointAtLength(progress * totalLen);
   _truckX = pt.x;
   _truckY = pt.y;
 
-  // Angle tangent — fenêtre large pour éviter les micro-tremblements
-  const eps = Math.max(8, totalLen * 0.006);
+  const eps = Math.max(20, totalLen * 0.018);
   const ptA = pathEl.getPointAtLength(Math.max(0, progress * totalLen - eps));
   const ptB = pathEl.getPointAtLength(Math.min(totalLen, progress * totalLen + eps));
-  const rawAngle = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
-
-  // Lerp vers l'angle cible — 0.06 = phares glissent lentement
-  let diff = rawAngle - _smoothAngle;
-  while (diff >  Math.PI) diff -= 2 * Math.PI;
-  while (diff < -Math.PI) diff += 2 * Math.PI;
-  _smoothAngle += diff * 0.06;
+  _smoothAngle = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
 
   const angle = _smoothAngle;
   const perpX = -Math.sin(angle);
@@ -1391,11 +1381,9 @@ function updateDarkZones(progress) {
     const cardBottom = r.bottom + sy;
     const cardCX     = r.left + r.width / 2;
 
-    // Allumer quand la POINTE du cône atteint le haut de la carte
+    // Allumer quand le camion arrive à hauteur du haut de la carte
     if (!card.classList.contains('card-lit')) {
-      // La pointe du cône est à _truckY + coneLen (dans la direction du mouvement ≈ vers le bas)
-      const coneTipY = _truckY + coneLen;
-      const arriving = coneTipY >= cardTop && _truckY <= cardBottom + 20;
+      const arriving = _truckY >= cardTop - coneLen * 0.8 && _truckY <= cardBottom + 20;
       const hClose   = Math.abs(_truckX - cardCX) < r.width / 2 + coneLen * 0.55;
       if (arriving && hClose) {
         card.classList.add('card-lit');
