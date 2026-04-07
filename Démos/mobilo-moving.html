@@ -983,17 +983,13 @@ function placeLandmarks() {
   // Sur desktop: route à droite (RR=75%) pour panels LEFT → ox positif (vers droite, loin du texte)
   //              route à gauche (RL=25%) pour panels RIGHT → ox négatif (vers gauche, loin du texte)
   const lms = [
-    // t=0.10 route est à droite (RR) → panneau texte à gauche → landmark à droite de la route
     { t: 0.10, label: 'Hull',      type: 'house', ox: 60,   oy: -55 },
-    // t=0.24 route encore à droite
     { t: 0.24, label: 'Gatineau',  type: 'city',  ox: 60,   oy: -60 },
-    // t=0.42 route à gauche (RL) → panneau texte à droite → landmark à gauche de la route
     { t: 0.42, label: 'Ottawa',    type: 'city',  ox: -130, oy: -60 },
-    // t=0.58 route à droite
     { t: 0.58, label: 'Aylmer',    type: 'house', ox: 60,   oy: -52 },
-    // t=0.73 route à gauche
-    { t: 0.73, label: 'Kanata',    type: 'city',  ox: -130, oy: -60 },
-    // t=0.87 route à gauche (transition)
+    // Entre reviews et FAQ
+    { t: 0.66, label: 'Orléans',   type: 'house', ox: 60,   oy: -52 },
+    { t: 0.76, label: 'Kanata',    type: 'city',  ox: -130, oy: -60 },
     { t: 0.87, label: 'Rockland',  type: 'house', ox: -130, oy: -52 },
   ];
 
@@ -1004,8 +1000,10 @@ function placeLandmarks() {
     // Sur mobile: positionné au-dessus du point route, centré
     let left, top;
     if(W < 768) {
-      left = Math.max(8, Math.min(W - iconW - 8, pt.x - iconW / 2));
-      top  = Math.max(60, pt.y - 75);
+      // Sur mobile: alterner gauche/droite selon index pour éviter chevauchement
+      const mobSide = i % 2 === 0 ? 8 : W - iconW - 8;
+      left = mobSide;
+      top  = Math.max(60, pt.y - 80);
     } else {
       left = Math.max(5, Math.min(W - iconW - 5, pt.x + lm.ox));
       top  = Math.max(80, pt.y + lm.oy);
@@ -1033,24 +1031,25 @@ function initTruck() {
   const truck = document.getElementById('truck');
   gsap.set(truck, { xPercent: -50, yPercent: -50 });
 
+  const isMob = window.innerWidth < 768;
+  // scrub plus élevé sur mobile = animation plus lissée, moins de glitch
   gsap.to(truck, {
     motionPath: {
       path: '#motion-path',
       align: '#motion-path',
       alignOrigin: [0.5, 0.5],
       autoRotate: true,
-      // The truck SVG points RIGHT (cab at x=+28).
-      // GSAP autoRotate aligns the element's positive-X axis to the path tangent.
-      // So pointing right = correct. No rotationOffset needed.
-      // If still sideways after testing, set rotationOffset: -90 or 90.
     },
     ease: 'none',
     scrollTrigger: {
       trigger: '#page',
       start: 'top top',
       end: 'bottom bottom',
-      scrub: 1,
-      onUpdate: self => { checkLandmarkProximity(self.progress); updateDarkZones(self.progress); },
+      scrub: isMob ? 2.5 : 1,
+      onUpdate: self => {
+        checkLandmarkProximity(self.progress);
+        updateDarkZones(self.progress);
+      },
     }
   });
 }
