@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mobilo Moving — Petites Livraisons</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --g1:#1E4D26;--g2:#3A7D44;--g3:#5BA368;--g4:#A8D5B5;--g5:#EAF5ED;
+  --white:#fff;--ink:#0C1A0F;--ink2:#2C3F30;--ink3:#5A7060;
+  --line:rgba(42,96,50,0.12);--linem:rgba(42,96,50,0.25);
+}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:'DM Sans',sans-serif;background:#EDF5EF;color:var(--ink);overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 80% 60% at 10% 10%, rgba(58,125,68,0.12) 0%, transparent 60%),radial-gradient(ellipse 60% 50% at 90% 50%, rgba(91,163,104,0.10) 0%, transparent 55%)}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(42,96,50,0.055) 1px, transparent 1px),linear-gradient(90deg, rgba(42,96,50,0.055) 1px, transparent 1px);background-size:52px 52px}
+nav{position:sticky;top:0;z-index:500;padding:.85rem 2rem;display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.97);backdrop-filter:blur(16px);box-shadow:0 1px 0 var(--line)}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px;color:var(--g1);text-decoration:none}
+.nav-back{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);text-decoration:none;display:flex;align-items:center;gap:.4rem;transition:color .25s}
+.nav-back:hover{color:var(--g2)}
+.nav-cta{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.8px;color:#fff;background:var(--g2);text-decoration:none;padding:.5rem 1.1rem;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);transition:background .25s;white-space:nowrap}
+.nav-cta:hover{background:var(--g1)}
+.nav-right{display:flex;align-items:center;gap:.8rem}
+#scroll-progress{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--g1),var(--g3));z-index:9999;transition:width .1s linear;box-shadow:0 0 8px rgba(58,125,68,0.4)}
+
+.srv-hero{min-height:52vh;display:flex;align-items:flex-end;padding:5rem 2rem 3rem;position:relative;z-index:5;background:linear-gradient(135deg, rgba(30,77,38,0.92) 0%, rgba(58,125,68,0.88) 100%);overflow:hidden}
+.srv-hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(255,255,255,.025) 40px,rgba(255,255,255,.025) 41px)}
+.srv-hero::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);background-size:52px 52px}
+.srv-hero-inner{position:relative;z-index:2;max-width:680px}
+.srv-eyebrow{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:.8rem;display:flex;align-items:center;gap:.8rem}
+.srv-eyebrow::before{content:'';width:22px;height:1px;background:rgba(255,255,255,.4)}
+.srv-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,8vw,7rem);line-height:.88;letter-spacing:-1px;color:#fff;margin-bottom:1rem}
+.srv-h1 em{font-style:normal;-webkit-text-stroke:1.5px #fff;color:transparent}
+.srv-sub{font-size:.92rem;color:rgba(255,255,255,.65);font-weight:300;line-height:1.75;max-width:480px;margin-bottom:1.8rem}
+.btn-white{display:inline-flex;align-items:center;gap:.6rem;font-family:'DM Mono',monospace;font-size:.72rem;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;color:var(--g1);background:#fff;padding:.8rem 1.6rem;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);transition:background .25s,transform .2s;border:none;cursor:pointer}
+.btn-white:hover{background:var(--g5);transform:translateX(3px)}
+.btn-outline-white{display:inline-flex;align-items:center;gap:.6rem;font-family:'DM Mono',monospace;font-size:.72rem;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;color:#fff;background:transparent;padding:.8rem 1.6rem;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);outline:2px solid rgba(255,255,255,.5);outline-offset:-2px;transition:background .25s}
+.btn-outline-white:hover{background:rgba(255,255,255,.1)}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap}
+
+.page-content{position:relative;z-index:5;padding:4rem 2rem;max-width:860px;margin:0 auto}
+.section-label{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:3px;text-transform:uppercase;color:var(--g2);margin-bottom:2rem;display:flex;align-items:center;gap:.8rem}
+.section-label::before{content:'';width:22px;height:1px;background:var(--g2)}
+
+/* PRICING CARDS */
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:3rem}
+@media(max-width:600px){.pricing-grid{grid-template-columns:1fr}}
+.price-card{background:var(--white);border:1px solid var(--linem);padding:2rem 1.8rem;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s}
+.price-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(30,77,38,0.12)}
+.price-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--g2)}
+.price-card.featured::before{background:linear-gradient(90deg,var(--g1),var(--g3))}
+.price-badge{display:inline-block;font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:2px;text-transform:uppercase;background:var(--g2);color:#fff;padding:.2rem .6rem;margin-bottom:.8rem}
+.price-tag-label{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--ink3);margin-bottom:.4rem}
+.price-tag-name{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;letter-spacing:.5px;color:var(--ink);line-height:1;margin-bottom:.3rem}
+.price-tag-sub{font-size:.72rem;color:var(--ink3);font-weight:300;margin-bottom:1.3rem;line-height:1.5}
+.price-amount{font-family:'Bebas Neue',sans-serif;font-size:3.2rem;color:var(--g2);line-height:1;letter-spacing:-2px;margin-bottom:.3rem}
+.price-note{font-size:.65rem;color:var(--ink3);font-weight:300;margin-bottom:1.5rem;line-height:1.6;border-top:1px solid var(--line);padding-top:.8rem}
+.price-features{display:flex;flex-direction:column;gap:.4rem}
+.pf{display:flex;align-items:flex-start;gap:.7rem;font-size:.76rem;color:var(--ink2);padding:.35rem 0;border-top:1px solid var(--line)}
+.pf:first-child{border-top:none}
+.pf-icon{color:var(--g2);font-size:.8rem;flex-shrink:0;margin-top:.05rem}
+
+/* USECASES */
+.usecase-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;margin-bottom:3rem}
+@media(max-width:640px){.usecase-grid{grid-template-columns:1fr 1fr}}
+.usecase{background:var(--white);border:1px solid var(--linem);padding:1.2rem 1rem;text-align:center;transition:background .25s,transform .3s}
+.usecase:hover{background:var(--g5);transform:translateY(-2px)}
+.usecase-icon{font-size:1.6rem;margin-bottom:.5rem}
+.usecase-name{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink2)}
+
+/* CHECKLIST */
+.checklist{display:flex;flex-direction:column;gap:.5rem;margin-bottom:3rem}
+.cl-item{display:flex;align-items:flex-start;gap:.9rem;padding:.8rem 1rem;background:var(--white);border:1px solid var(--linem);transition:background .25s}
+.cl-item:hover{background:var(--g5)}
+.cl-icon{color:var(--g2);flex-shrink:0;margin-top:.05rem}
+.cl-text{font-size:.82rem;color:var(--ink2);line-height:1.6}
+.cl-text strong{font-weight:500;color:var(--ink)}
+
+.cta-band{background:var(--g1);padding:3.5rem 2rem;text-align:center;position:relative;overflow:hidden;margin-top:2rem}
+.cta-band::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(255,255,255,.018) 40px,rgba(255,255,255,.018) 41px)}
+.cta-band h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.2rem,6vw,4.5rem);color:#fff;letter-spacing:-1px;line-height:.92;margin-bottom:.8rem;position:relative;z-index:1}
+.cta-band p{font-size:.85rem;color:rgba(255,255,255,.55);font-weight:300;margin-bottom:1.5rem;position:relative;z-index:1}
+.cta-band-btns{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;position:relative;z-index:1}
+
+footer{padding:1.4rem 2rem;border-top:1px solid var(--line);background:var(--white);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;position:relative;z-index:10}
+.foot-credit{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:1.5px;color:var(--ink3)}
+.foot-credit a{color:var(--g2);text-decoration:none}
+
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+<div id="scroll-progress"></div>
+
+<nav>
+  <a href="mobilo-moving.html" class="nav-back">← Retour</a>
+  <a href="mobilo-moving.html" class="nav-logo">Mobilo Moving</a>
+  <div class="nav-right">
+    <a href="tel:4388738605" class="nav-cta">📞 (438) 873-8605</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="srv-hero">
+  <div class="srv-hero-inner">
+    <div class="srv-eyebrow">Service 03</div>
+    <h1 class="srv-h1">Petites <em>Livrai</em>sons</h1>
+    <p class="srv-sub">Marketplace, IKEA, achats encombrants — on va chercher et on livre là où vous voulez.</p>
+    <div class="hero-btns">
+      <a href="tel:4388738605" class="btn-white">Obtenir un devis →</a>
+      <a href="mobilo-moving.html#contact" class="btn-outline-white">Formulaire de contact</a>
+    </div>
+  </div>
+</section>
+
+<div class="page-content">
+
+  <!-- TARIFS -->
+  <div class="section-label reveal">Nos forfaits</div>
+  <div class="pricing-grid">
+    <div class="price-card reveal">
+      <div class="price-tag-label">Forfait</div>
+      <div class="price-tag-name">Livraison normale</div>
+      <div class="price-tag-sub">Vous participez au chargement et déchargement</div>
+      <div class="price-amount">100$</div>
+      <div class="price-note">Inclut 30 km de livraison · Aide du chauffeur disponible sur place</div>
+      <div class="price-features">
+        <div class="pf"><span class="pf-icon">✓</span> Transport sécurisé jusqu'à 30 km</div>
+        <div class="pf"><span class="pf-icon">✓</span> Vous chargez et déchargez</div>
+        <div class="pf"><span class="pf-icon">✓</span> Chauffeur disponible pour aider</div>
+        <div class="pf"><span class="pf-icon">✓</span> Option la plus économique</div>
+      </div>
+    </div>
+    <div class="price-card featured reveal">
+      <div class="price-badge">Recommandé</div>
+      <div class="price-tag-label">Forfait</div>
+      <div class="price-tag-name">Livraison sans tracas</div>
+      <div class="price-tag-sub">Notre équipe s'occupe de tout</div>
+      <div class="price-amount">140$</div>
+      <div class="price-note">Inclut 30 km de livraison · Transport, protection et installation où vous le désirez</div>
+      <div class="price-features">
+        <div class="pf"><span class="pf-icon">✓</span> Transport sécurisé jusqu'à 30 km</div>
+        <div class="pf"><span class="pf-icon">✓</span> Équipe s'occupe du chargement</div>
+        <div class="pf"><span class="pf-icon">✓</span> Meubles protégés et emballés</div>
+        <div class="pf"><span class="pf-icon">✓</span> Installé exactement où vous voulez</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAS D'USAGE -->
+  <div class="section-label reveal">Parfait pour</div>
+  <div class="usecase-grid reveal">
+    <div class="usecase"><div class="usecase-icon">📦</div><div class="usecase-name">Facebook Marketplace</div></div>
+    <div class="usecase"><div class="usecase-icon">🪑</div><div class="usecase-name">IKEA &amp; magasins</div></div>
+    <div class="usecase"><div class="usecase-icon">🛋️</div><div class="usecase-name">Meubles encombrants</div></div>
+    <div class="usecase"><div class="usecase-icon">🏋️</div><div class="usecase-name">Équipement sportif</div></div>
+    <div class="usecase"><div class="usecase-icon">🖥️</div><div class="usecase-name">Électronique lourd</div></div>
+    <div class="usecase"><div class="usecase-icon">📬</div><div class="usecase-name">Livraison urgente</div></div>
+  </div>
+
+  <!-- CE QUI EST INCLUS -->
+  <div class="section-label reveal">Ce qui est inclus</div>
+  <div class="checklist reveal">
+    <div class="cl-item"><span class="cl-icon">✓</span><div class="cl-text"><strong>30 km de livraison inclus</strong> — Couvre la grande région de Gatineau-Ottawa</div></div>
+    <div class="cl-item"><span class="cl-icon">✓</span><div class="cl-text"><strong>Protection des articles</strong> — Couvertures et sangles pour éviter tout dommage</div></div>
+    <div class="cl-item"><span class="cl-icon">✓</span><div class="cl-text"><strong>Ramassage sur place</strong> — On va chercher l'article chez le vendeur pour vous</div></div>
+    <div class="cl-item"><span class="cl-icon">✓</span><div class="cl-text"><strong>Paiement au vendeur possible</strong> — On peut payer pour vous sur marketplace et vous rembourser (Interac)</div></div>
+    <div class="cl-item"><span class="cl-icon">✓</span><div class="cl-text"><strong>Service bilingue</strong> — Français ou anglais selon votre préférence</div></div>
+  </div>
+
+</div>
+
+<!-- CTA -->
+<div class="cta-band">
+  <h2>Un achat à<br>livrer ?</h2>
+  <p>On s'en occupe. Appelez-nous ou écrivez-nous.</p>
+  <div class="cta-band-btns">
+    <a href="tel:4388738605" class="btn-white">📞 (438) 873-8605</a>
+    <a href="mobilo-moving.html#contact" class="btn-outline-white">Formulaire →</a>
+  </div>
+</div>
+
+<footer>
+  <span class="foot-credit">© 2025 Mobilo Moving — Gatineau · Ottawa · Outaouais</span>
+  <span class="foot-credit">Site par <a href="https://agenceuio.ca" target="_blank">Agence UIO</a></span>
+</footer>
+
+<script>
+window.addEventListener('scroll', () => {
+  const pct = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+  document.getElementById('scroll-progress').style.width = pct + '%';
+}, {passive:true});
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }});
+}, {threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
