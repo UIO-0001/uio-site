@@ -66,6 +66,7 @@ body::after{
   transform-origin:50% 50%;
   pointer-events:none;
   filter:drop-shadow(0 3px 10px rgba(30,77,38,0.4));
+  opacity:0;
 }
 @media(max-width:768px){
   #truck{width:78px}
@@ -78,7 +79,7 @@ body::after{
   pointer-events:none;
   overflow:visible;
 }
-#darkness-svg{ z-index:4; }
+#darkness-svg{ z-index:4; opacity:0; }
 #headlight-svg{ z-index:5; mix-blend-mode:screen; }
 
 /* ── LANDMARKS: z-index 3 — above truck but below cards ── */
@@ -1027,13 +1028,14 @@ function placeLandmarks() {
 // ═══════════════════════════════════════
 // TRUCK MOTIONPATH
 // ═══════════════════════════════════════
+let _truckTween = null;
+
 function initTruck() {
   const truck = document.getElementById('truck');
+  const isMob = window.innerWidth < 768;
   gsap.set(truck, { xPercent: -50, yPercent: -50 });
 
-  const isMob = window.innerWidth < 768;
-  // scrub plus élevé sur mobile = animation plus lissée, moins de glitch
-  gsap.to(truck, {
+  _truckTween = gsap.to(truck, {
     motionPath: {
       path: '#motion-path',
       align: '#motion-path',
@@ -1045,13 +1047,20 @@ function initTruck() {
       trigger: '#page',
       start: 'top top',
       end: 'bottom bottom',
-      scrub: true,
-      onUpdate: self => {
-        checkLandmarkProximity(self.progress);
-        updateDarkZones(self.progress);
-      },
+      scrub: isMob ? 1.5 : 0.5,
     }
   });
+
+  // RAF loop — lit le progress du tween APRÈS scrub pour synchroniser les phares
+  function rafLoop() {
+    if (_truckTween && _truckTween.scrollTrigger) {
+      const p = _truckTween.progress();
+      checkLandmarkProximity(p);
+      updateDarkZones(p);
+    }
+    requestAnimationFrame(rafLoop);
+  }
+  requestAnimationFrame(rafLoop);
 }
 
 // ═══════════════════════════════════════
@@ -1095,15 +1104,18 @@ window.addEventListener('load', () => {
   setTimeout(() => {
     buildRoad();
     initTruck();
-    placeLandmarks();
     initDarkZones();
     ScrollTrigger.refresh();
+    // Montrer le camion et l'ombre seulement après init pour éviter le glitch
+    setTimeout(() => {
+      document.getElementById('truck').style.opacity = '1';
+      document.getElementById('darkness-svg').style.opacity = '1';
+    }, 80);
   }, 120);
 });
 
 window.addEventListener('resize', () => {
   buildRoad();
-  placeLandmarks();
   initDarkZones();
   ScrollTrigger.refresh();
 }, { passive: true });
