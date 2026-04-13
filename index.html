@@ -191,6 +191,21 @@
     /* PROMO BANNER */
     .promo-banner { background:linear-gradient(135deg,rgba(126,223,74,0.12),rgba(0,170,255,0.08)); border:1px solid rgba(126,223,74,0.35); border-radius:14px; padding:18px 28px; margin-bottom:36px; display:flex; align-items:center; gap:16px; }
 
+    /* NAV CLIENT LINK */
+    .nav-client-link { font-size:13px; color:var(--muted); text-decoration:none; border:1px solid var(--border); border-radius:6px; padding:8px 16px; margin-right:12px; transition:color .2s, border-color .2s; white-space:nowrap; }
+    .nav-client-link:hover { color:var(--text); border-color:var(--blue); }
+
+    /* SECTION PORTAIL CLIENT */
+    #portail-client { background:var(--dark); border-top:1px solid var(--border); padding:70px 60px; text-align:center; position:relative; z-index:1; }
+    .portail-inner { max-width:480px; margin:0 auto; }
+    .portail-icon { font-size:36px; margin-bottom:16px; }
+    .portail-title { font-family:"Syne",sans-serif; font-size:clamp(22px,3vw,32px); font-weight:700; margin-bottom:10px; }
+    .portail-sub { font-size:15px; color:var(--muted); font-weight:300; margin-bottom:28px; line-height:1.6; }
+    .btn-portail { display:inline-flex; align-items:center; gap:8px; background:transparent; border:1px solid var(--border); color:var(--text); padding:13px 28px; border-radius:10px; font-size:14px; font-weight:500; text-decoration:none; transition:border-color .2s, background .2s, box-shadow .2s; }
+    .btn-portail:hover { border-color:var(--blue); background:rgba(0,170,255,0.07); box-shadow:0 0 24px rgba(0,170,255,0.15); }
+    .btn-portail svg { flex-shrink:0; }
+    @media(max-width:900px){ #portail-client { padding:50px 24px; } .nav-client-link { display:none; } }
+
     /* RIPPLE */
     .ripple-effect { position:absolute; border-radius:50%; background:rgba(255,255,255,0.3); transform:scale(0); animation:ripple-anim .6s linear forwards; pointer-events:none; }
     @keyframes ripple-anim { 0%{transform:scale(0);opacity:1} 100%{transform:scale(3);opacity:0} }
@@ -238,7 +253,7 @@
     <li><a href="#services">Services</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
-  <a href="https://uio-0001.github.io/mobilo/" class="nav-cta" target="_blank" style="background:#16a34a;margin-right:8px;">Démo Mobilo</a><a href="#contact" class="nav-cta">Nous contacter</a>
+  <a href="client.html" class="nav-client-link">Déjà client ?</a><a href="#contact" class="nav-cta">Nous contacter</a>
 </nav>
 
 <section class="hero">
@@ -413,6 +428,19 @@
       <button type="submit">Envoyer ma demande</button>
     </form>
     <div class="form-success" id="form-success">Message envoyé ! Nous vous recontacterons bientôt.</div>
+  </div>
+</section>
+
+<!-- SECTION PORTAIL CLIENT -->
+<section id="portail-client">
+  <div class="portail-inner reveal">
+    <div class="portail-icon">🔒</div>
+    <h2 class="portail-title">Déjà client UIO ?</h2>
+    <p class="portail-sub">Suivez l'avancement de votre projet en temps réel — checklist, progression et notes de l'équipe.</p>
+    <a href="client.html" class="btn-portail">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Accéder à mon espace →
+    </a>
   </div>
 </section>
 

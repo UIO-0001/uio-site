@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portail Client — Agence UIO</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e1a;--card:#111827;--border:#1e2d40;
+  --purple:#7c5cfc;--purple2:#9b7ffe;
+  --green:#22c55e;--yellow:#f59e0b;
+  --text:#e2e8f0;--muted:#64748b;--white:#fff;
+}
+html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1rem}
+
+/* ── LOGIN ── */
+#login-screen{width:100%;max-width:400px}
+.uio-logo{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--purple);margin-bottom:2rem;text-align:center}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:2.5rem 2rem}
+.login-title{font-size:1.5rem;font-weight:700;margin-bottom:.4rem;color:var(--white)}
+.login-sub{font-size:.82rem;color:var(--muted);margin-bottom:2rem}
+.field{margin-bottom:1.2rem}
+.field label{display:block;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;font-family:'DM Mono',monospace}
+.field input{width:100%;background:#0d1525;border:1px solid var(--border);border-radius:8px;padding:.75rem 1rem;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s}
+.field input:focus{border-color:var(--purple)}
+.btn-login{width:100%;background:var(--purple);color:#fff;border:none;border-radius:8px;padding:.85rem;font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:background .2s;margin-top:.5rem}
+.btn-login:hover{background:var(--purple2)}
+.login-error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:6px;padding:.7rem 1rem;font-size:.82rem;color:#f87171;margin-top:1rem;display:none}
+
+/* ── DASHBOARD ── */
+#dashboard{width:100%;max-width:720px;display:none}
+.dash-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
+.dash-logo{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:3px;text-transform:uppercase;color:var(--purple)}
+.btn-logout{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:.4rem .9rem;font-size:.75rem;font-family:'DM Mono',monospace;letter-spacing:1px;cursor:pointer;transition:all .2s}
+.btn-logout:hover{border-color:var(--muted);color:var(--text)}
+
+.project-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:2rem;margin-bottom:1.5rem}
+.project-name{font-size:1.4rem;font-weight:700;color:var(--white);margin-bottom:.3rem}
+.project-sub{font-size:.8rem;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:1px;margin-bottom:1.5rem}
+
+/* Demo link */
+.demo-link{display:inline-flex;align-items:center;gap:.5rem;background:#0d1525;border:1px solid var(--border);border-radius:8px;padding:.6rem 1rem;font-size:.82rem;color:var(--purple2);text-decoration:none;margin-bottom:1.5rem;transition:border-color .2s}
+.demo-link:hover{border-color:var(--purple)}
+.demo-link svg{flex-shrink:0}
+
+/* Progress */
+.progress-section{margin-bottom:1.8rem}
+.progress-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem}
+.progress-text{font-size:.78rem;font-family:'DM Mono',monospace;letter-spacing:1px;color:var(--muted);text-transform:uppercase}
+.progress-pct{font-size:1.1rem;font-weight:700;color:var(--purple2)}
+.progress-bar-bg{background:#0d1525;border-radius:999px;height:10px;overflow:hidden;border:1px solid var(--border)}
+.progress-bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--purple),var(--purple2));transition:width 1s cubic-bezier(.16,1,.3,1)}
+
+/* Checklist */
+.checklist-title{font-size:.72rem;font-family:'DM Mono',monospace;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:1rem}
+.checklist{display:flex;flex-direction:column;gap:.5rem}
+.check-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .9rem;background:#0d1525;border-radius:8px;border:1px solid var(--border)}
+.check-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.75rem}
+.check-icon.done{background:rgba(34,197,94,.15);color:var(--green)}
+.check-icon.todo{background:rgba(100,116,139,.1);color:var(--muted)}
+.check-label{font-size:.85rem;font-weight:500}
+.check-label.done{color:var(--text)}
+.check-label.todo{color:var(--muted)}
+
+/* Notes */
+.notes-card{background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:1.5rem;margin-top:1.5rem}
+.notes-title{font-size:.72rem;font-family:'DM Mono',monospace;letter-spacing:2px;text-transform:uppercase;color:var(--yellow);margin-bottom:.75rem}
+.notes-text{font-size:.85rem;color:var(--text);line-height:1.7;white-space:pre-wrap}
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN ── -->
+<div id="login-screen">
+  <div class="uio-logo">Agence UIO — Portail Client</div>
+  <div class="login-card">
+    <div class="login-title">Connexion</div>
+    <div class="login-sub">Accédez à la progression de votre projet.</div>
+    <div class="field">
+      <label>Nom d'utilisateur</label>
+      <input type="text" id="username" placeholder="ex: mobilo" autocomplete="username">
+    </div>
+    <div class="field">
+      <label>Mot de passe</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn-login" onclick="login()">Se connecter →</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!-- ── DASHBOARD ── -->
+<div id="dashboard">
+  <div class="dash-header">
+    <div class="dash-logo">Agence UIO — Portail Client</div>
+    <button class="btn-logout" onclick="logout()">Déconnexion</button>
+  </div>
+
+  <div class="project-card">
+    <div class="project-name" id="d-project-name">—</div>
+    <div class="project-sub">PROJET EN COURS</div>
+
+    <a href="#" id="d-demo-link" class="demo-link" target="_blank" rel="noopener">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Voir la démo en cours
+    </a>
+
+    <div class="progress-section">
+      <div class="progress-label">
+        <span class="progress-text">Avancement</span>
+        <span class="progress-pct" id="d-progress-pct">0%</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="d-progress-bar" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="checklist-title">Checklist du projet</div>
+    <div class="checklist" id="d-checklist"></div>
+  </div>
+
+  <div class="notes-card" id="d-notes-card" style="display:none">
+    <div class="notes-title">📌 Note de l'équipe</div>
+    <div class="notes-text" id="d-notes"></div>
+  </div>
+</div>
+
+<script>
+const BACKEND = 'https://uio-backend.onrender.com';
+let adminPass = null;
+
+async function login() {
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const errEl    = document.getElementById('login-error');
+  errEl.style.display = 'none';
+
+  if (!username || !password) {
+    errEl.textContent = 'Veuillez remplir tous les champs.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  try {
+    const res  = await fetch(BACKEND + '/portal/login', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({username, password})
+    });
+    const data = await res.json();
+
+    if (!data.success) {
+      errEl.textContent = data.error || 'Identifiants invalides.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    renderDashboard(data.client);
+  } catch(e) {
+    errEl.textContent = 'Erreur de connexion. Réessayez.';
+    errEl.style.display = 'block';
+  }
+}
+
+function renderDashboard(client) {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('dashboard').style.display    = 'block';
+
+  document.getElementById('d-project-name').textContent = client.project_name || 'Mon projet';
+
+  const demoLink = document.getElementById('d-demo-link');
+  if (client.demo_url) {
+    demoLink.href = client.demo_url;
+  } else {
+    demoLink.style.display = 'none';
+  }
+
+  const pct = parseInt(client.progress) || 0;
+  document.getElementById('d-progress-pct').textContent = pct + '%';
+  setTimeout(() => {
+    document.getElementById('d-progress-bar').style.width = pct + '%';
+  }, 100);
+
+  const cl = document.getElementById('d-checklist');
+  cl.innerHTML = '';
+  (client.checklist || []).forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'check-item';
+    div.innerHTML = `
+      <div class="check-icon ${item.done ? 'done' : 'todo'}">${item.done ? '✓' : '○'}</div>
+      <div class="check-label ${item.done ? 'done' : 'todo'}">${item.label}</div>
+    `;
+    cl.appendChild(div);
+  });
+
+  if (client.notes) {
+    document.getElementById('d-notes').textContent = client.notes;
+    document.getElementById('d-notes-card').style.display = 'block';
+  }
+}
+
+function logout() {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('dashboard').style.display    = 'none';
+  document.getElementById('username').value  = '';
+  document.getElementById('password').value  = '';
+  document.getElementById('login-error').style.display = 'none';
+}
+
+// Login avec Enter
+document.getElementById('password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') login();
+});
+document.getElementById('username').addEventListener('keydown', e => {
+  if (e.key === 'Enter') login();
+});
+</script>
+</body>
+</html>
