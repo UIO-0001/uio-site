@@ -486,14 +486,20 @@ footer { position: relative; }
     linear-gradient(90deg, rgba(0,170,255,0.055) 1px, transparent 1px) !important;
 }
 
-/* ── HALO HERO — couleur améliorée ── */
+/* ── HALO HERO — subtil ── */
 .hero-glow {
   background: radial-gradient(circle,
-    rgba(0,170,255,0.28) 0%,
-    rgba(168,85,247,0.12) 35%,
+    rgba(0,170,255,0.13) 0%,
+    rgba(168,85,247,0.05) 35%,
     transparent 70%) !important;
-  width: 900px !important;
-  height: 900px !important;
+  width: 480px !important;
+  height: 480px !important;
+}
+@media (max-width: 900px) {
+  .hero-glow {
+    width: 220px !important;
+    height: 220px !important;
+  }
 }
 
 /* ── RESPONSIVE UPGRADES ── */
