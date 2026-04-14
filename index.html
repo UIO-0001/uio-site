@@ -75,10 +75,14 @@
     @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
     .hero-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse-dot 1.5s ease-in-out infinite; }
     @keyframes pulse-dot { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.8);opacity:.5} }
-    .hero h1 { font-family: "Syne", sans-serif; font-size: clamp(42px, 7vw, 88px); font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 24px; animation: fadeUp .7s .1s ease both; }
+    .hero h1 { font-family: "Syne", sans-serif; font-size: clamp(32px, 6vw, 78px); font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 24px; animation: fadeUp .7s .1s ease both; color: rgba(240,248,255,0.88); }
     .hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--blue) 0%, var(--green) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .hero-sub { font-size: 18px; color: var(--muted); max-width: 540px; margin: 0 auto 40px; font-weight: 300; animation: fadeUp .7s .2s ease both; min-height: 54px; }
+    .hero-sub { font-size: 16px; color: var(--muted); max-width: 540px; margin: 0 auto 40px; font-weight: 300; animation: fadeUp .7s .2s ease both; min-height: 54px; }
     .hero-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; animation: fadeUp .7s .3s ease both; }
+    @media(max-width:900px){
+      .hero-glow { width: 340px; height: 340px; }
+      .hero h1 { font-size: clamp(28px, 8vw, 52px); }
+    }
     .btn-primary { background: var(--blue); color: #fff; padding: 14px 32px; border-radius: 10px; font-size: 15px; font-weight: 500; text-decoration: none; transition: transform .2s, box-shadow .2s; box-shadow: 0 0 30px rgba(0,170,255,0.3); position:relative; overflow:hidden; }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(0,170,255,0.6); }
     .btn-secondary { background: transparent; color: var(--text); padding: 14px 32px; border-radius: 10px; font-size: 15px; font-weight: 500; text-decoration: none; border: 1px solid var(--border); transition: border-color .2s, background .2s; position:relative; overflow:hidden; }
@@ -274,8 +278,12 @@
     <div class="stat-label">Disponible par jour</div>
   </div>
   <div class="stat-item reveal">
-    <div class="stat-num" data-target="3" data-suffix="">0</div>
+    <div class="stat-num" data-target="2" data-suffix="">0</div>
     <div class="stat-label">Spots de lancement restants</div>
+    <div style="margin-top:10px;background:rgba(0,170,255,0.12);border-radius:999px;height:6px;overflow:hidden;width:80%;margin-left:auto;margin-right:auto">
+      <div style="height:100%;width:33%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:999px"></div>
+    </div>
+    <div style="font-size:11px;color:var(--blue);margin-top:5px;letter-spacing:.05em">1 sur 3 pris — dépêchez-vous</div>
   </div>
   <div class="stat-item reveal">
     <div class="stat-num" data-target="100" data-suffix="%">0</div>
