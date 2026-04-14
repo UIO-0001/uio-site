@@ -21,7 +21,7 @@
 
       var scene  = new THREE.Scene();
       var camera = new THREE.PerspectiveCamera(58, 1, 0.1, 100);
-      camera.position.set(0, 0, 5.5);
+      camera.position.set(0, 0, 5.0);
 
       function resize() {
         var w = canvas.offsetWidth, h = canvas.offsetHeight;
@@ -34,37 +34,37 @@
       window.addEventListener('resize', resize);
 
       var sphere = new THREE.Mesh(
-        new THREE.IcosahedronGeometry(1.0, 4),
-        new THREE.MeshBasicMaterial({ color: 0x00aaff, wireframe: true, transparent: true, opacity: 0.06 })
+        new THREE.IcosahedronGeometry(1.5, 4),
+        new THREE.MeshBasicMaterial({ color: 0x00aaff, wireframe: true, transparent: true, opacity: 0.11 })
       );
       scene.add(sphere);
 
       var inner = new THREE.Mesh(
-        new THREE.IcosahedronGeometry(0.62, 2),
-        new THREE.MeshBasicMaterial({ color: 0xa855f7, wireframe: true, transparent: true, opacity: 0.05 })
+        new THREE.IcosahedronGeometry(0.92, 2),
+        new THREE.MeshBasicMaterial({ color: 0xa855f7, wireframe: true, transparent: true, opacity: 0.09 })
       );
       scene.add(inner);
 
       var ring1 = new THREE.Mesh(
-        new THREE.TorusGeometry(1.35, 0.003, 16, 220),
-        new THREE.MeshBasicMaterial({ color: 0x7edf4a, transparent: true, opacity: 0.18 })
+        new THREE.TorusGeometry(2.05, 0.004, 16, 220),
+        new THREE.MeshBasicMaterial({ color: 0x7edf4a, transparent: true, opacity: 0.38 })
       );
       ring1.rotation.x = Math.PI / 3.2;
       scene.add(ring1);
 
       var ring2 = new THREE.Mesh(
-        new THREE.TorusGeometry(1.15, 0.002, 16, 220),
-        new THREE.MeshBasicMaterial({ color: 0x00aaff, transparent: true, opacity: 0.12 })
+        new THREE.TorusGeometry(1.72, 0.003, 16, 220),
+        new THREE.MeshBasicMaterial({ color: 0x00aaff, transparent: true, opacity: 0.22 })
       );
       ring2.rotation.x = Math.PI / 2.1;
       ring2.rotation.y = Math.PI / 3.8;
       scene.add(ring2);
 
-      var N = 180, pos = new Float32Array(N * 3);
+      var N = 320, pos = new Float32Array(N * 3);
       for (var i = 0; i < N; i++) {
         var theta = Math.random() * Math.PI * 2;
         var phi   = Math.acos(2 * Math.random() - 1);
-        var r     = 1.05 + Math.random() * 0.8;
+        var r     = 1.55 + Math.random() * 1.3;
         pos[i*3]   = r * Math.sin(phi) * Math.cos(theta);
         pos[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
         pos[i*3+2] = r * Math.cos(phi);
@@ -72,7 +72,7 @@
       var pGeo = new THREE.BufferGeometry();
       pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
       var points = new THREE.Points(pGeo,
-        new THREE.PointsMaterial({ color: 0x00aaff, size: 0.016, transparent: true, opacity: 0.32 })
+        new THREE.PointsMaterial({ color: 0x00aaff, size: 0.024, transparent: true, opacity: 0.52 })
       );
       scene.add(points);
 
@@ -86,17 +86,18 @@
       (function loop() {
         requestAnimationFrame(loop);
         t += 0.004;
-        sphere.rotation.y += 0.0012;
-        sphere.rotation.x += 0.0005;
-        inner.rotation.y  -= 0.0020;
-        inner.rotation.z  += 0.0010;
-        ring1.rotation.z  += 0.0015;
-        ring2.rotation.z  -= 0.0010;
-        points.rotation.y += 0.0005;
-        sphere.scale.setScalar(1 + Math.sin(t * 1.4) * 0.015);
-        inner.scale.setScalar(1 + Math.sin(t * 2.1) * 0.025);
-        camera.position.x += (mx * 0.6 - camera.position.x) * 0.035;
-        camera.position.y += (-my * 0.4 - camera.position.y) * 0.035;
+        sphere.rotation.y += 0.0022;
+        sphere.rotation.x += 0.0009;
+        inner.rotation.y  -= 0.0038;
+        inner.rotation.z  += 0.0018;
+        ring1.rotation.z  += 0.0028;
+        ring2.rotation.z  -= 0.0019;
+        points.rotation.y += 0.0009;
+        sphere.scale.setScalar(1 + Math.sin(t * 1.4) * 0.028);
+        inner.scale.setScalar(1 + Math.sin(t * 2.1) * 0.048);
+        // Réaction souris plus forte : 1.8 au lieu de 0.45
+        camera.position.x += (mx * 0.8 - camera.position.x) * 0.04;
+        camera.position.y += (-my * 0.6 - camera.position.y) * 0.04;
         camera.lookAt(scene.position);
         renderer.render(scene, camera);
       })();
@@ -113,9 +114,9 @@
 
     var em = document.getElementById('morph-em');
 
-    // Hauteur fixe sur h1
-    h1.style.minHeight = '160px';
-    h1.style.marginBottom = '28px';
+    // Hauteur fixe sur h1 — empêche le saut quand le mot change de longueur
+    h1.style.height = '240px';
+    h1.style.marginBottom = '32px';
     var sub = document.querySelector('.hero-sub');
     if (sub) sub.style.marginTop = '30px';
     em.style.cssText = 'display:inline-block;white-space:nowrap;vertical-align:bottom;';
@@ -148,25 +149,25 @@
           em.textContent = currentText;
           em.appendChild(cursorEl);
           charIdx++;
-          setTimeout(tick, 100);
+          setTimeout(tick, 70);
         } else {
           phase = 'pause';
-          setTimeout(tick, 2800);
+          setTimeout(tick, 1800);
         }
       } else if (phase === 'pause') {
         phase = 'deleting';
-        setTimeout(tick, 60);
+        setTimeout(tick, 80);
       } else if (phase === 'deleting') {
         if (currentText.length > 0) {
           currentText = currentText.slice(0, -1);
           em.textContent = currentText;
           em.appendChild(cursorEl);
-          setTimeout(tick, 55);
+          setTimeout(tick, 45);
         } else {
           idx = (idx + 1) % words.length;
           charIdx = 0;
           phase = 'typing';
-          setTimeout(tick, 500);
+          setTimeout(tick, 300);
         }
       }
     }
