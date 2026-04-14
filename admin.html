@@ -65,7 +65,12 @@ body{padding:2rem 1rem}
 
 /* Checklist editor */
 .checklist-editor{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.6rem}
-.check-row{display:flex;align-items:center;gap:.6rem;padding:.5rem .8rem;background:#0d1525;border-radius:6px;border:1px solid var(--border)}
+.check-row{display:flex;align-items:center;gap:.6rem;padding:.5rem .8rem;background:#0d1525;border-radius:6px;border:1px solid var(--border);cursor:default;transition:background .15s,border-color .15s}
+.check-row.dragging{opacity:.4;border-style:dashed}
+.check-row.drag-over{background:#131f35;border-color:var(--purple)}
+.drag-handle{color:var(--muted);cursor:grab;font-size:.9rem;flex-shrink:0;user-select:none;line-height:1;padding:0 2px;transition:color .2s}
+.drag-handle:hover{color:var(--purple2)}
+.drag-handle:active{cursor:grabbing}
 .check-row input[type=checkbox]{accent-color:var(--green);width:16px;height:16px;cursor:pointer;flex-shrink:0}
 .check-row input[type=text]{background:transparent;border:none;outline:none;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:.83rem;flex:1;padding:0}
 .check-row input[type=text]:focus{color:var(--white)}
@@ -333,14 +338,51 @@ async function addClient() {
 function renderChecklist(idx, items) {
   const container = document.getElementById(`checklist-${idx}`);
   container.innerHTML = '';
+
   items.forEach((item, ci) => {
     const row = document.createElement('div');
     row.className = 'check-row';
+    row.draggable = true;
+    row.dataset.idx = idx;
+    row.dataset.ci  = ci;
+
     row.innerHTML = `
+      <span class="drag-handle" title="Déplacer">⠿</span>
       <input type="checkbox" id="check-${idx}-${ci}" ${item.done ? 'checked' : ''}>
       <input type="text" id="label-${idx}-${ci}" value="${item.label.replace(/"/g, '&quot;')}">
       <button class="btn-delete-check" onclick="deleteCheckItem(${idx}, ${ci})" title="Supprimer">✕</button>
     `;
+
+    // ── Drag events
+    row.addEventListener('dragstart', e => {
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', ci);
+      row.classList.add('dragging');
+    });
+    row.addEventListener('dragend', () => {
+      row.classList.remove('dragging');
+      container.querySelectorAll('.check-row').forEach(r => r.classList.remove('drag-over'));
+    });
+    row.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      container.querySelectorAll('.check-row').forEach(r => r.classList.remove('drag-over'));
+      row.classList.add('drag-over');
+    });
+    row.addEventListener('dragleave', () => row.classList.remove('drag-over'));
+    row.addEventListener('drop', e => {
+      e.preventDefault();
+      row.classList.remove('drag-over');
+      const fromCi = parseInt(e.dataTransfer.getData('text/plain'));
+      const toCi   = ci;
+      if (fromCi === toCi) return;
+      const current = getChecklist(idx);
+      const moved   = current.splice(fromCi, 1)[0];
+      current.splice(toCi, 0, moved);
+      clientsData[idx].checklist = current;
+      renderChecklist(idx, current);
+    });
+
     container.appendChild(row);
   });
 }
