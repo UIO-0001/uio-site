@@ -64,10 +64,18 @@ body{padding:2rem 1rem}
 .progress-bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--purple),var(--purple2));transition:width .3s}
 
 /* Checklist editor */
-.checklist-editor{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem}
+.checklist-editor{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.6rem}
 .check-row{display:flex;align-items:center;gap:.6rem;padding:.5rem .8rem;background:#0d1525;border-radius:6px;border:1px solid var(--border)}
-.check-row input[type=checkbox]{accent-color:var(--green);width:16px;height:16px;cursor:pointer}
-.check-row span{font-size:.83rem;flex:1}
+.check-row input[type=checkbox]{accent-color:var(--green);width:16px;height:16px;cursor:pointer;flex-shrink:0}
+.check-row input[type=text]{background:transparent;border:none;outline:none;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:.83rem;flex:1;padding:0}
+.check-row input[type=text]:focus{color:var(--white)}
+.btn-delete-check{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:0 2px;line-height:1;transition:color .2s;flex-shrink:0}
+.btn-delete-check:hover{color:var(--red)}
+.add-check-row{display:flex;gap:.5rem;margin-bottom:1rem}
+.add-check-row input{flex:1;background:#0d1525;border:1px solid var(--border);border-radius:6px;padding:.45rem .8rem;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:.83rem;outline:none;transition:border-color .2s}
+.add-check-row input:focus{border-color:var(--purple)}
+.btn-add-check{background:rgba(124,92,252,.15);border:1px solid rgba(124,92,252,.3);color:var(--purple2);border-radius:6px;padding:.45rem .9rem;font-size:.8rem;font-family:'Space Grotesk',sans-serif;cursor:pointer;white-space:nowrap;transition:all .2s}
+.btn-add-check:hover{background:rgba(124,92,252,.25)}
 
 /* Add client form */
 .add-client-card{background:var(--card);border:1px dashed var(--border);border-radius:12px;padding:1.5rem}
@@ -222,6 +230,10 @@ function renderClients() {
 
       <div style="font-size:.7rem;font-family:'DM Mono',monospace;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:.6rem">Checklist</div>
       <div class="checklist-editor" id="checklist-${idx}"></div>
+      <div class="add-check-row">
+        <input type="text" id="new-check-${idx}" placeholder="Nouvel élément..." onkeydown="if(event.key==='Enter')addCheckItem(${idx})">
+        <button class="btn-add-check" onclick="addCheckItem(${idx})">+ Ajouter</button>
+      </div>
 
       <div style="font-size:.7rem;font-family:'DM Mono',monospace;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:.4rem">Note pour le client</div>
       <div class="field" style="margin-bottom:1rem"><textarea id="notes-${idx}">${client.notes || ''}</textarea></div>
@@ -231,16 +243,7 @@ function renderClients() {
     container.appendChild(card);
 
     // Render checklist
-    const clContainer = document.getElementById(`checklist-${idx}`);
-    (client.checklist || []).forEach((item, ci) => {
-      const row = document.createElement('div');
-      row.className = 'check-row';
-      row.innerHTML = `
-        <input type="checkbox" id="check-${idx}-${ci}" ${item.done ? 'checked' : ''}>
-        <span>${item.label}</span>
-      `;
-      clContainer.appendChild(row);
-    });
+    renderChecklist(idx, client.checklist || []);
   });
 }
 
@@ -256,11 +259,8 @@ async function saveClient(idx) {
   const demo_url  = document.getElementById(`demo-${idx}`).value.trim();
   const notes     = document.getElementById(`notes-${idx}`).value.trim();
 
-  // Récupérer checklist
-  const checklist = (client.checklist || []).map((item, ci) => ({
-    label: item.label,
-    done:  document.getElementById(`check-${idx}-${ci}`).checked
-  }));
+  // Récupérer checklist depuis le DOM
+  const checklist = getChecklist(idx);
 
   try {
     const res  = await fetch(BACKEND + '/portal/admin/update', {
@@ -328,6 +328,55 @@ async function addClient() {
     errEl.textContent = 'Erreur de connexion.';
     errEl.style.display = 'block';
   }
+}
+
+function renderChecklist(idx, items) {
+  const container = document.getElementById(`checklist-${idx}`);
+  container.innerHTML = '';
+  items.forEach((item, ci) => {
+    const row = document.createElement('div');
+    row.className = 'check-row';
+    row.innerHTML = `
+      <input type="checkbox" id="check-${idx}-${ci}" ${item.done ? 'checked' : ''}>
+      <input type="text" id="label-${idx}-${ci}" value="${item.label.replace(/"/g, '&quot;')}">
+      <button class="btn-delete-check" onclick="deleteCheckItem(${idx}, ${ci})" title="Supprimer">✕</button>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function getChecklist(idx) {
+  const container = document.getElementById(`checklist-${idx}`);
+  const rows = container.querySelectorAll('.check-row');
+  const items = [];
+  rows.forEach((row, ci) => {
+    const cb = row.querySelector(`input[type=checkbox]`);
+    const lb = row.querySelector(`input[type=text]`);
+    if (lb && lb.value.trim()) {
+      items.push({ label: lb.value.trim(), done: cb ? cb.checked : false });
+    }
+  });
+  return items;
+}
+
+function addCheckItem(idx) {
+  const input = document.getElementById(`new-check-${idx}`);
+  const label = input.value.trim();
+  if (!label) return;
+  const current = getChecklist(idx);
+  current.push({ label, done: false });
+  // Mettre à jour clientsData localement
+  clientsData[idx].checklist = current;
+  renderChecklist(idx, current);
+  input.value = '';
+  input.focus();
+}
+
+function deleteCheckItem(idx, ci) {
+  const current = getChecklist(idx);
+  current.splice(ci, 1);
+  clientsData[idx].checklist = current;
+  renderChecklist(idx, current);
 }
 
 function showToast(msg) {
