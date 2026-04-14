@@ -26,12 +26,12 @@
 }
 @media (max-width: 900px) {
   #hero-webgl {
-    width: 200px;
-    height: 200px;
-    top: 12%;
+    width: 320px !important;
+    height: 320px !important;
+    top: 10%;
     right: 50%;
     transform: translateX(50%);
-    opacity: 0.35;
+    opacity: 0.5 !important;
   }
 }
 
