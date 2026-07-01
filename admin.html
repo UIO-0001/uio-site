@@ -90,6 +90,18 @@ body{padding:2rem 1rem}
 
 .toast{position:fixed;bottom:2rem;right:2rem;background:var(--green);color:#000;border-radius:8px;padding:.75rem 1.2rem;font-size:.85rem;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9999}
 .toast.show{opacity:1}
+
+/* Features toggles */
+.feature-row{display:flex;align-items:center;justify-content:space-between;gap:.8rem;padding:.6rem .8rem;background:#0d1525;border-radius:6px;border:1px solid var(--border);margin-bottom:.5rem}
+.feature-info{display:flex;flex-direction:column;gap:.15rem}
+.feature-label{font-size:.83rem;font-weight:600;color:var(--text)}
+.feature-desc{font-size:.7rem;color:var(--muted)}
+.switch{position:relative;display:inline-block;width:40px;height:22px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.switch-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#1e2d40;border-radius:999px;transition:.2s}
+.switch-slider::before{position:absolute;content:"";height:16px;width:16px;left:3px;bottom:3px;background:#64748b;border-radius:50%;transition:.2s}
+.switch input:checked + .switch-slider{background:rgba(34,197,94,.25);border:1px solid var(--green)}
+.switch input:checked + .switch-slider::before{transform:translateX(18px);background:var(--green)}
 </style>
 </head>
 <body>
@@ -152,6 +164,7 @@ body{padding:2rem 1rem}
 const BACKEND = 'https://uio-backend.onrender.com';
 let ADMIN_PASS = '';
 let clientsData = [];
+let availableFeatures = [];
 
 async function adminLogin() {
   const pass = document.getElementById('admin-pass').value.trim();
@@ -197,7 +210,8 @@ async function loadClients() {
     headers: {'X-Admin-Password': ADMIN_PASS}
   });
   const data = await res.json();
-  clientsData = data.clients || [];
+  clientsData      = data.clients || [];
+  availableFeatures = data.available_features || [];
   renderClients();
 }
 
@@ -243,13 +257,55 @@ function renderClients() {
       <div style="font-size:.7rem;font-family:'DM Mono',monospace;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:.4rem">Note pour le client</div>
       <div class="field" style="margin-bottom:1rem"><textarea id="notes-${idx}">${client.notes || ''}</textarea></div>
 
+      <div style="font-size:.7rem;font-family:'DM Mono',monospace;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:.6rem">Fonctionnalités</div>
+      <div class="feature-list" id="features-${idx}"></div>
+
       <button class="btn btn-success btn-sm" onclick="saveClient(${idx})">💾 Sauvegarder</button>
     `;
     container.appendChild(card);
 
     // Render checklist
     renderChecklist(idx, client.checklist || []);
+    // Render features
+    renderFeatures(idx, client.features || {});
   });
+}
+
+function renderFeatures(idx, features) {
+  const container = document.getElementById(`features-${idx}`);
+  if (!container) return;
+  container.innerHTML = '';
+
+  if (availableFeatures.length === 0) {
+    container.innerHTML = '<p style="color:var(--muted);font-size:.78rem">Aucune fonctionnalité disponible.</p>';
+    return;
+  }
+
+  availableFeatures.forEach(f => {
+    const on  = !!features[f.key];
+    const row = document.createElement('div');
+    row.className = 'feature-row';
+    row.innerHTML = `
+      <div class="feature-info">
+        <div class="feature-label">${f.label}</div>
+        <div class="feature-desc">${f.desc}</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="feat-${idx}-${f.key}" ${on ? 'checked' : ''}>
+        <span class="switch-slider"></span>
+      </label>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function getFeatures(idx) {
+  const result = {};
+  availableFeatures.forEach(f => {
+    const cb = document.getElementById(`feat-${idx}-${f.key}`);
+    result[f.key] = cb ? cb.checked : false;
+  });
+  return result;
 }
 
 function updateRange(idx) {
@@ -264,8 +320,9 @@ async function saveClient(idx) {
   const demo_url  = document.getElementById(`demo-${idx}`).value.trim();
   const notes     = document.getElementById(`notes-${idx}`).value.trim();
 
-  // Récupérer checklist depuis le DOM
+  // Récupérer checklist et features depuis le DOM
   const checklist = getChecklist(idx);
+  const features  = getFeatures(idx);
 
   try {
     const res  = await fetch(BACKEND + '/portal/admin/update', {
@@ -276,7 +333,7 @@ async function saveClient(idx) {
       },
       body: JSON.stringify({
         client_id: client.client_id,
-        progress, checklist, notes, demo_url
+        progress, checklist, notes, demo_url, features
       })
     });
     const data = await res.json();

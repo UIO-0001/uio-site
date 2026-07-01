@@ -172,6 +172,11 @@ function renderDashboard(client) {
 
   document.getElementById('d-project-name').textContent = client.project_name || 'Mon projet';
 
+  // Chatbot IA — affiché seulement si activé par l'admin pour ce client
+  if (client.features && client.features.chatbot && client.client_id) {
+    loadChatbotWidget(client.client_id);
+  }
+
   const demoLink = document.getElementById('d-demo-link');
   if (client.demo_url) {
     demoLink.href = client.demo_url;
@@ -203,12 +208,37 @@ function renderDashboard(client) {
   }
 }
 
+let chatbotScriptEl = null;
+
+function loadChatbotWidget(clientId) {
+  // Évite de charger le widget deux fois si déjà présent
+  if (chatbotScriptEl) return;
+
+  var s = document.createElement('script');
+  s.src = BACKEND + '/chatbot.js?client=' + encodeURIComponent(clientId);
+  document.body.appendChild(s);
+  chatbotScriptEl = s;
+}
+
+function removeChatbotWidget() {
+  if (chatbotScriptEl) {
+    chatbotScriptEl.remove();
+    chatbotScriptEl = null;
+  }
+  // Retire les éléments injectés par chatbot.js (bouton + fenêtre de chat)
+  var btn = document.getElementById('uio-btn');
+  var box = document.getElementById('uio-box');
+  if (btn) btn.remove();
+  if (box) box.remove();
+}
+
 function logout() {
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('dashboard').style.display    = 'none';
   document.getElementById('username').value  = '';
   document.getElementById('password').value  = '';
   document.getElementById('login-error').style.display = 'none';
+  removeChatbotWidget();
 }
 
 // Login avec Enter
