@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="Réservez votre place pour le chatbot IA d'Agence UIO — pour entreprises de déménagement, extermination et carrosserie automobile."/>
+<meta name="robots" content="noindex, follow"/>
+<title>Réservez votre place — Agence UIO Bêta</title>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-G149S4Q6P8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-G149S4Q6P8');
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --dark:    #0d1b2a;
+    --dark2:   #0f2033;
+    --dark3:   #162840;
+    --blue:    #00aaff;
+    --green:   #7edf4a;
+    --text:    #f0f8ff;
+    --muted:   #7a9ab5;
+    --border:  rgba(0,170,255,0.15);
+    --card-bg: rgba(255,255,255,0.03);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"DM Sans",sans-serif;background:var(--dark);color:var(--text);line-height:1.6;min-height:100vh;position:relative;overflow-x:hidden}
+
+  body::before{
+    content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:linear-gradient(rgba(0,170,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,170,255,0.04) 1px,transparent 1px);
+    background-size:60px 60px;
+  }
+  body::after{
+    content:'';position:fixed;width:600px;height:600px;border-radius:50%;
+    background:radial-gradient(circle,rgba(0,170,255,0.14) 0%,rgba(126,223,74,0.06) 45%,transparent 70%);
+    top:-120px;right:-160px;z-index:0;pointer-events:none;filter:blur(50px);
+  }
+
+  nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 40px;background:rgba(13,27,42,0.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+  .nav-logo{font-family:"Syne",sans-serif;font-size:20px;font-weight:800;letter-spacing:-.02em;text-decoration:none;background:linear-gradient(135deg,var(--blue) 0%,var(--green) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .nav-back{font-size:13px;color:var(--muted);text-decoration:none;border:1px solid var(--border);border-radius:6px;padding:8px 16px;transition:color .2s,border-color .2s}
+  .nav-back:hover{color:var(--text);border-color:var(--blue)}
+
+  main{max-width:720px;margin:0 auto;padding:56px 24px 100px;position:relative;z-index:1}
+
+  .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,170,255,0.1);border:1px solid var(--border);border-radius:100px;padding:6px 16px;font-size:13px;color:var(--blue);margin-bottom:24px}
+  .badge::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--blue);animation:pulse 1.5s ease-in-out infinite}
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.8);opacity:.5}}
+
+  h1{font-family:"Syne",sans-serif;font-size:clamp(28px,5vw,42px);font-weight:800;line-height:1.1;letter-spacing:-.02em;margin-bottom:16px}
+  h1 em{font-style:normal;background:linear-gradient(135deg,var(--blue) 0%,var(--green) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .lede{font-size:15px;color:var(--muted);max-width:560px;font-weight:300;margin-bottom:28px}
+
+  /* NOTICE — honnêteté sur l'état de la bêta */
+  .notice{display:flex;gap:14px;align-items:flex-start;background:rgba(0,170,255,0.06);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:40px}
+  .notice-icon{font-size:18px;flex-shrink:0;line-height:1.4}
+  .notice p{font-size:13.5px;color:var(--muted);font-weight:300;line-height:1.65}
+  .notice strong{color:var(--text);font-weight:500}
+  .notice a{color:var(--blue);text-decoration:none;font-weight:500}
+  .notice a:hover{text-decoration:underline}
+
+  /* PROGRESS */
+  .progress-row{display:flex;gap:6px;margin-bottom:36px}
+  .progress-dot{height:3px;border-radius:2px;background:var(--border);flex:1;transition:background .4s}
+  .progress-dot.done{background:var(--green)}
+  .progress-dot.active{background:var(--blue)}
+
+  /* CARD / STEPS */
+  .card{background:var(--card-bg);border:1px solid var(--border);border-radius:20px;padding:36px 32px}
+  @media(max-width:560px){.card{padding:26px 20px}}
+  .step{display:none}
+  .step.active{display:block;animation:stepIn .4s cubic-bezier(.16,1,.3,1) both}
+  @keyframes stepIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+  .step-eyebrow{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin-bottom:8px}
+  .step-title{font-family:"Syne",sans-serif;font-size:22px;font-weight:700;margin-bottom:6px}
+  .step-sub{font-size:13px;color:var(--muted);font-weight:300;margin-bottom:22px}
+
+  .field{margin-bottom:18px}
+  .field label{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+  .field input,.field select,.field textarea{
+    width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;
+    padding:13px 16px;font-size:14px;color:var(--text);font-family:"DM Sans",sans-serif;outline:none;
+    transition:border-color .2s;
+  }
+  .field input::placeholder,.field textarea::placeholder{color:var(--muted)}
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue)}
+  .field textarea{resize:vertical;min-height:90px}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:560px){.field-row{grid-template-columns:1fr}}
+  .field-hint{font-size:12px;color:var(--muted);margin-top:6px;font-weight:300}
+  .checkbox-row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);font-weight:300}
+  .checkbox-row input{width:auto}
+
+  /* CATEGORY CARDS */
+  .cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:640px){.cat-grid{grid-template-columns:1fr}}
+  .cat-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:14px;padding:22px 16px;text-align:center;cursor:pointer;transition:all .2s}
+  .cat-card:hover{border-color:var(--blue)}
+  .cat-card.selected{border-color:var(--green);background:rgba(126,223,74,0.08)}
+  .cat-icon{font-size:28px;margin-bottom:10px}
+  .cat-name{font-family:"Syne",sans-serif;font-size:14px;font-weight:700;margin-bottom:4px}
+  .cat-sub{font-size:11.5px;color:var(--muted);font-weight:300}
+
+  /* CHIPS */
+  .chip-row{display:flex;flex-wrap:wrap;gap:10px}
+  .chip{font-family:"DM Mono",monospace;font-size:12.5px;letter-spacing:.03em;padding:10px 16px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,0.03);color:var(--muted);cursor:pointer;transition:all .2s;user-select:none}
+  .chip:hover{border-color:var(--blue);color:var(--text)}
+  .chip.selected{border-color:var(--green);background:rgba(126,223,74,0.12);color:var(--green)}
+
+  /* PRICING GRID */
+  .price-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:560px){.price-grid{grid-template-columns:1fr}}
+  .price-item{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+  .price-item label{display:block;font-size:11px;color:var(--muted);margin-bottom:6px}
+  .price-item .range{display:flex;align-items:center;gap:6px}
+  .price-item input{width:100%;background:transparent;border:none;border-bottom:1px solid var(--border);padding:4px 2px;font-size:14px;color:var(--text);outline:none}
+  .price-item input:focus{border-color:var(--blue)}
+
+  /* BUTTONS */
+  .btn-row{display:flex;gap:12px;margin-top:32px}
+  .btn-primary{background:var(--blue);color:#fff;padding:14px 30px;border-radius:10px;font-size:14px;font-weight:500;border:none;cursor:pointer;transition:opacity .2s,transform .2s;flex:1;font-family:"DM Sans",sans-serif}
+  .btn-primary:hover{opacity:.88;transform:translateY(-1px)}
+  .btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+  .btn-ghost{background:transparent;color:var(--text);padding:14px 24px;border-radius:10px;font-size:14px;font-weight:500;border:1px solid var(--border);cursor:pointer;transition:border-color .2s;font-family:"DM Sans",sans-serif}
+  .btn-ghost:hover{border-color:var(--blue)}
+
+  .error-box{display:none;background:rgba(255,90,90,0.08);border:1px solid rgba(255,90,90,0.3);border-radius:10px;padding:12px 16px;font-size:13px;color:#ff9a9a;margin-bottom:18px}
+
+  /* SUCCESS */
+  .success{text-align:center;padding:20px 0}
+  .success-icon{font-size:40px;margin-bottom:16px}
+  .success h2{font-family:"Syne",sans-serif;font-size:26px;font-weight:700;margin-bottom:12px}
+  .success p{font-size:14px;color:var(--muted);max-width:440px;margin:0 auto 8px;font-weight:300;line-height:1.7}
+
+  footer{max-width:720px;margin:0 auto;padding:0 24px 60px;position:relative;z-index:1;text-align:center}
+  footer p{font-size:12px;color:var(--muted)}
+  footer a{color:var(--blue);text-decoration:none}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Agence UIO</a>
+  <a href="index.html" class="nav-back">← Retour au site</a>
+</nav>
+
+<main>
+  <div class="badge">En construction</div>
+  <h1>Réservez votre place pour votre <em>chatbot IA</em></h1>
+  <p class="lede">Répondez à quelques questions sur votre entreprise pour qu'on prépare votre chatbot. Ça ne prend que quelques minutes, et ça s'installera sur votre site peu importe la plateforme utilisée.</p>
+
+  <div class="notice">
+    <div class="notice-icon">🚧</div>
+    <p><strong>Cet outil n'est pas encore automatisé.</strong> Le formulaire ci-dessous sert à réserver votre place et nous donner un aperçu de vos besoins — vous pouvez aussi nous écrire directement à <a href="mailto:uio.automatisationia@gmail.com">uio.automatisationia@gmail.com</a> pour qu'on en discute dès maintenant.</p>
+  </div>
+
+  <div class="progress-row">
+    <div class="progress-dot active" id="dot0"></div>
+    <div class="progress-dot" id="dot1"></div>
+    <div class="progress-dot" id="dot2"></div>
+    <div class="progress-dot" id="dot3"></div>
+    <div class="progress-dot" id="dot4"></div>
+  </div>
+
+  <form id="betaForm" class="card">
+    <div class="error-box" id="errorBox"></div>
+
+    <!-- ÉTAPE 0 — CATÉGORIE -->
+    <div class="step active" id="step0">
+      <div class="step-eyebrow">Étape 1 / 5</div>
+      <div class="step-title">Quel est votre domaine ?</div>
+      <div class="step-sub">On adapte les questions suivantes selon votre secteur.</div>
+
+      <div class="cat-grid" id="catGrid">
+        <div class="cat-card" data-cat="demenagement" onclick="selectCategory(this)">
+          <div class="cat-icon">🚚</div>
+          <div class="cat-name">Déménagement &amp; désencombrement</div>
+          <div class="cat-sub">Comme Mobilo Moving</div>
+        </div>
+        <div class="cat-card" data-cat="extermination" onclick="selectCategory(this)">
+          <div class="cat-icon">🐜</div>
+          <div class="cat-name">Extermination &amp; parasites</div>
+          <div class="cat-sub">Diagnostic rapide par photo</div>
+        </div>
+        <div class="cat-card" data-cat="carrosserie" onclick="selectCategory(this)">
+          <div class="cat-icon">🚗</div>
+          <div class="cat-name">Carrosserie automobile</div>
+          <div class="cat-sub">Estimation de dommages par photo</div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn-primary" onclick="next(0)">Continuer →</button>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 1 — ENTREPRISE -->
+    <div class="step" id="step1">
+      <div class="step-eyebrow">Étape 2 / 5</div>
+      <div class="step-title">Votre entreprise</div>
+
+      <div class="field">
+        <label for="entName">Nom de l'entreprise *</label>
+        <input type="text" id="entName" placeholder="Ex. Déménagement Tremblay"/>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="entVille">Ville principale *</label>
+          <input type="text" id="entVille" placeholder="Ex. Gatineau"/>
+        </div>
+        <div class="field">
+          <label for="entTel">Téléphone *</label>
+          <input type="tel" id="entTel" placeholder="(819) 555-0000"/>
+        </div>
+      </div>
+      <div class="field">
+        <label for="entCourriel">Courriel *</label>
+        <input type="email" id="entCourriel" placeholder="contact@votreentreprise.com"/>
+      </div>
+      <div class="field">
+        <label for="entSite">URL de votre site web</label>
+        <input type="text" id="entSite" placeholder="www.votreentreprise.com" oninput="toggleSiteRequired()"/>
+        <div class="field-hint">On lira directement les infos de votre site (services, tarifs, FAQ) pour configurer votre chatbot — ça nous évite de tout redemander.</div>
+      </div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="pasDeSite" onchange="toggleSiteRequired()"/>
+        <label for="pasDeSite" style="text-transform:none;letter-spacing:0;font-size:13px;margin:0">Je n'ai pas de site web</label>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn-ghost" onclick="prev(1)">← Retour</button>
+        <button type="button" class="btn-primary" onclick="next(1)">Continuer →</button>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 2 — SERVICES + ZONES -->
+    <div class="step" id="step2">
+      <div class="step-eyebrow">Étape 3 / 5</div>
+      <div class="step-title">Vos services</div>
+
+      <div class="field">
+        <label>Services offerts *</label>
+        <div class="chip-row" id="chipsServices"></div>
+      </div>
+
+      <div class="field" style="margin-top:22px">
+        <label for="entZones">Villes / zones desservies *</label>
+        <input type="text" id="entZones" placeholder="Ex. Gatineau, Ottawa, Aylmer, Hull"/>
+        <div class="field-hint">Séparez chaque ville par une virgule.</div>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn-ghost" onclick="prev(2)">← Retour</button>
+        <button type="button" class="btn-primary" onclick="next(2)">Continuer →</button>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 3 — TARIFS -->
+    <div class="step" id="step3">
+      <div class="step-eyebrow">Étape 4 / 5</div>
+      <div class="step-title">Votre grille tarifaire</div>
+      <p class="field-hint" style="margin-bottom:18px">Des estimations approximatives suffisent — c'est ce que le chatbot utilisera pour répondre à vos clients. Vous pourrez toujours les ajuster plus tard.</p>
+
+      <div class="price-grid" id="priceGrid"></div>
+
+      <div class="btn-row">
+        <button type="button" class="btn-ghost" onclick="prev(3)">← Retour</button>
+        <button type="button" class="btn-primary" onclick="next(3)">Continuer →</button>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 4 — FAQ / NOTES -->
+    <div class="step" id="step4">
+      <div class="step-eyebrow">Étape 5 / 5</div>
+      <div class="step-title">Questions fréquentes</div>
+
+      <div class="field">
+        <label for="entFaq" id="faqLabel">Questions que vos clients posent souvent</label>
+        <textarea id="entFaq"></textarea>
+        <div class="field-hint">Utile surtout si vous n'avez pas indiqué de site web à l'étape 2.</div>
+      </div>
+
+      <div class="field">
+        <label for="entNotes">Autre chose à savoir ? (optionnel)</label>
+        <textarea id="entNotes" placeholder="Horaires, particularités, ce qui vous distingue..."></textarea>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn-ghost" onclick="prev(4)">← Retour</button>
+        <button type="submit" class="btn-primary" id="submitBtn">Réserver ma place →</button>
+      </div>
+    </div>
+
+    <!-- SUCCÈS -->
+    <div class="step" id="step5">
+      <div class="success">
+        <div class="success-icon">✅</div>
+        <h2>C'est envoyé !</h2>
+        <p>Votre place est réservée. On vous contactera directement par courriel ou téléphone pour la suite.</p>
+        <p>Vous pouvez aussi nous écrire dès maintenant à <a href="mailto:uio.automatisationia@gmail.com" style="color:var(--blue)">uio.automatisationia@gmail.com</a> si vous voulez avancer plus vite.</p>
+        <p style="margin-top:18px"><a href="index.html" style="color:var(--blue);text-decoration:none">← Retour au site d'Agence UIO</a></p>
+      </div>
+    </div>
+  </form>
+</main>
+
+<footer>
+  <p>Une question ? Écrivez à <a href="mailto:uio.automatisationia@gmail.com">uio.automatisationia@gmail.com</a> — Agence UIO 2026</p>
+</footer>
+
+<script>
+const CATS = {
+  demenagement: {
+    label: 'Déménagement & désencombrement',
+    services: ['Déménagement','Désencombrement','Petite livraison','Longue distance'],
+    pricing: [
+      {id:'p1', label:'Studio / 1½ – 2½', ph:['300','500']},
+      {id:'p2', label:'3½ – 4½', ph:['500','800']},
+      {id:'p3', label:'5½ et plus', ph:['800','1300']},
+      {id:'p4', label:'Désencombrement (par charge)', ph:['150','600']}
+    ],
+    faqPh: "Ex. Offrez-vous les fins de semaine ? Faites-vous l'emballage ? Acceptez-vous les paiements Interac ?"
+  },
+  extermination: {
+    label: 'Extermination & contrôle parasitaire',
+    services: ['Insectes rampants','Guêpes & frelons','Rongeurs','Punaises de lit','Inspection préventive'],
+    pricing: [
+      {id:'p1', label:'Inspection / visite', ph:['80','150']},
+      {id:'p2', label:'Traitement insectes rampants', ph:['120','250']},
+      {id:'p3', label:'Traitement guêpes / frelons', ph:['150','300']},
+      {id:'p4', label:'Traitement punaises de lit', ph:['300','800']}
+    ],
+    faqPh: 'Ex. Le traitement est-il sécuritaire pour mes animaux ? Combien de temps avant de voir des résultats ? Offrez-vous une garantie ?'
+  },
+  carrosserie: {
+    label: 'Carrosserie automobile',
+    services: ["Débosselage & peinture",'Réparation pare-choc',"Estimation d'assurance",'Polissage & esthétique'],
+    pricing: [
+      {id:'p1', label:'Petite bosse / éclat', ph:['80','200']},
+      {id:'p2', label:'Réparation pare-choc', ph:['300','700']},
+      {id:'p3', label:'Panneau complet (porte/aile)', ph:['600','1500']},
+      {id:'p4', label:'Estimation initiale', ph:['0','Gratuit']}
+    ],
+    faqPh: "Ex. Travaillez-vous avec les assurances ? Offrez-vous un véhicule de courtoisie ? Combien de temps pour une réparation ?"
+  }
+};
+
+let selectedCategory = null;
+let currentStep = 0;
+const TOTAL = 5; // steps 0-4, step 5 = success
+
+function selectCategory(el){
+  document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedCategory = el.dataset.cat;
+  renderCategoryFields();
+}
+
+function renderCategoryFields(){
+  const cat = CATS[selectedCategory];
+  if(!cat) return;
+
+  const chipsEl = document.getElementById('chipsServices');
+  chipsEl.innerHTML = cat.services.map(s => '<div class="chip" data-value="'+s+'" onclick="toggleChip(this)">'+s+'</div>').join('');
+
+  const priceEl = document.getElementById('priceGrid');
+  priceEl.innerHTML = cat.pricing.map(p =>
+    '<div class="price-item">'+
+      '<label>'+p.label+'</label>'+
+      '<div class="range"><input type="text" id="'+p.id+'" placeholder="'+p.ph[0]+'"/> $ – <input type="text" id="'+p.id+'b" placeholder="'+p.ph[1]+'"/> $</div>'+
+    '</div>'
+  ).join('');
+
+  document.getElementById('entFaq').placeholder = cat.faqPh;
+}
+
+function toggleSiteRequired(){
+  const hasNoSite = document.getElementById('pasDeSite').checked;
+  document.getElementById('entSite').disabled = hasNoSite;
+  if(hasNoSite) document.getElementById('entSite').value = '';
+}
+
+function showStep(n){
+  document.querySelectorAll('.step').forEach((s,i)=> s.classList.toggle('active', i===n));
+  for(let i=0;i<TOTAL;i++){
+    const dot = document.getElementById('dot'+i);
+    if(!dot) continue;
+    dot.classList.remove('done','active');
+    if(i<n) dot.classList.add('done');
+    else if(i===n) dot.classList.add('active');
+  }
+  currentStep = n;
+  hideError();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function showError(msg){
+  const box = document.getElementById('errorBox');
+  box.textContent = msg;
+  box.style.display = 'block';
+}
+function hideError(){
+  document.getElementById('errorBox').style.display = 'none';
+}
+
+function toggleChip(el){
+  el.classList.toggle('selected');
+}
+
+function getSelectedServices(){
+  return Array.from(document.querySelectorAll('#chipsServices .chip.selected')).map(c => c.dataset.value);
+}
+
+function next(from){
+  if(from === 0){
+    if(!selectedCategory){
+      showError('Veuillez choisir votre domaine.');
+      return;
+    }
+  }
+  if(from === 1){
+    const nom = document.getElementById('entName').value.trim();
+    const ville = document.getElementById('entVille').value.trim();
+    const tel = document.getElementById('entTel').value.trim();
+    const courriel = document.getElementById('entCourriel').value.trim();
+    const site = document.getElementById('entSite').value.trim();
+    const pasDeSite = document.getElementById('pasDeSite').checked;
+    if(!nom || !ville || !tel || !courriel){
+      showError("Veuillez remplir le nom de l'entreprise, la ville, le téléphone et le courriel.");
+      return;
+    }
+    if(!site && !pasDeSite){
+      showError("Veuillez indiquer l'URL de votre site, ou cocher \"Je n'ai pas de site web\".");
+      return;
+    }
+  }
+  if(from === 2){
+    const services = getSelectedServices();
+    const zones = document.getElementById('entZones').value.trim();
+    if(services.length === 0){
+      showError('Veuillez sélectionner au moins un service.');
+      return;
+    }
+    if(!zones){
+      showError('Veuillez indiquer au moins une ville ou zone desservie.');
+      return;
+    }
+  }
+  showStep(from + 1);
+}
+
+function prev(from){
+  showStep(from - 1);
+}
+
+document.getElementById('betaForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Envoi en cours...';
+
+  const cat = CATS[selectedCategory] || {label:'—'};
+
+  const payload = {
+    _subject: 'Nouvelle réservation bêta — ' + document.getElementById('entName').value.trim(),
+    source: 'beta-demenagement',
+    'Domaine': cat.label,
+    'Nom entreprise': document.getElementById('entName').value.trim(),
+    'Ville principale': document.getElementById('entVille').value.trim(),
+    'Téléphone': document.getElementById('entTel').value.trim(),
+    'Courriel': document.getElementById('entCourriel').value.trim(),
+    'URL du site': document.getElementById('pasDeSite').checked ? "Aucun site actuellement" : (document.getElementById('entSite').value.trim() || '—'),
+    'Services offerts': getSelectedServices().join(', '),
+    'Zones desservies': document.getElementById('entZones').value.trim(),
+    'FAQ / questions fréquentes': document.getElementById('entFaq').value.trim() || '—',
+    'Notes': document.getElementById('entNotes').value.trim() || '—',
+  };
+
+  (cat.pricing || []).forEach(p => {
+    payload['Prix — ' + p.label] = (document.getElementById(p.id).value || '—') + ' à ' + (document.getElementById(p.id+'b').value || '—');
+  });
+
+  try{
+    const res = await fetch('https://formspree.io/f/mwvragyl', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Accept':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    if(res.ok){
+      showStep(5);
+    } else {
+      throw new Error('Formspree error');
+    }
+  } catch(err){
+    showError("Erreur d'envoi. Réessayez, ou écrivez-nous directement à uio.automatisationia@gmail.com.");
+    btn.disabled = false;
+    btn.textContent = 'Réserver ma place →';
+  }
+});
+</script>
+
+</body>
+</html>
