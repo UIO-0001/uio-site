@@ -209,8 +209,10 @@ function renderDashboard(client) {
 }
 
 let chatbotScriptEl = null;
+let currentClientId = null;
 
 function loadChatbotWidget(clientId) {
+  currentClientId = clientId;
   // Évite de charger le widget deux fois si déjà présent
   if (chatbotScriptEl) return;
 
@@ -239,6 +241,15 @@ function logout() {
   document.getElementById('password').value  = '';
   document.getElementById('login-error').style.display = 'none';
   removeChatbotWidget();
+
+  // Efface la conversation sauvegardee pour ce client — sinon elle reapparait
+  // telle quelle a la prochaine connexion, meme pour un autre utilisateur du
+  // meme compte (le widget stocke son historique en sessionStorage, qui
+  // persiste tant que l'onglet reste ouvert, meme apres deconnexion).
+  if (currentClientId) {
+    try { sessionStorage.removeItem('uio_chat_' + currentClientId); } catch(e) {}
+  }
+  currentClientId = null;
 }
 
 // Login avec Enter
