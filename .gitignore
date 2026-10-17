@@ -3,3 +3,8 @@ venv/
 .venv/
 .env
 __pycache__/
+.DS_Store
+.impeccable/
+.playwright-cli/
+.taste-skill/
+*.mov
