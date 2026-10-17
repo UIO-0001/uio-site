@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 250" role="img" aria-label="Uio, la mascotte d'Agence UIO">
+  <defs>
+    <filter id="fur" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="4" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+  <!-- ears -->
+  <g class="b-ear b-ear--l">
+    <ellipse cx="66" cy="52" rx="19" ry="48" transform="rotate(-14 66 52)" fill="#4f9fe4" filter="url(#fur)"/>
+    <ellipse cx="66" cy="56" rx="9" ry="34" transform="rotate(-14 66 56)" fill="#ffb59a"/>
+  </g>
+  <g class="b-ear b-ear--r">
+    <ellipse cx="134" cy="52" rx="19" ry="48" transform="rotate(14 134 52)" fill="#4f9fe4" filter="url(#fur)"/>
+    <ellipse cx="134" cy="56" rx="9" ry="34" transform="rotate(14 134 56)" fill="#ffb59a"/>
+  </g>
+  <!-- feet -->
+  <ellipse class="b-foot b-foot--l" cx="80" cy="234" rx="20" ry="12" fill="#3d8ed6"/>
+  <ellipse class="b-foot b-foot--r" cx="120" cy="234" rx="20" ry="12" fill="#3d8ed6"/>
+  <!-- body -->
+  <ellipse cx="100" cy="196" rx="46" ry="40" fill="#6bb4ee" filter="url(#fur)"/>
+  <ellipse cx="100" cy="204" rx="26" ry="24" fill="#d6ebfb"/>
+  <!-- arms -->
+  <ellipse class="b-arm b-arm--l" cx="56" cy="194" rx="11" ry="22" transform="rotate(24 56 194)" fill="#5aa8ea" filter="url(#fur)"/>
+  <g class="b-arm b-arm--r"><ellipse cx="144" cy="194" rx="11" ry="22" transform="rotate(-24 144 194)" fill="#5aa8ea" filter="url(#fur)"/></g>
+  <!-- head -->
+  <ellipse cx="100" cy="118" rx="72" ry="64" fill="#6bb4ee" filter="url(#fur)"/>
+  <!-- bandana -->
+  <path d="M58 166 Q100 186 142 166 L100 206 Z" fill="#ff5a1f"/>
+  <text x="100" y="185" text-anchor="middle" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-weight="700" font-size="15" fill="#0e1822">UIO</text>
+  <!-- face -->
+  <ellipse cx="100" cy="126" rx="52" ry="42" fill="#fdeee4"/>
+  <g class="b-eyes">
+    <ellipse cx="78" cy="118" rx="12" ry="15" fill="#0e1822"/>
+    <ellipse cx="122" cy="118" rx="12" ry="15" fill="#0e1822"/>
+    <circle cx="82" cy="112" r="4.5" fill="#fff"/>
+    <circle cx="126" cy="112" r="4.5" fill="#fff"/>
+    <circle cx="75" cy="123" r="2" fill="#fff"/>
+    <circle cx="119" cy="123" r="2" fill="#fff"/>
+  </g>
+  <circle cx="62" cy="138" r="8" fill="#ff8d6b" opacity=".45"/>
+  <circle cx="138" cy="138" r="8" fill="#ff8d6b" opacity=".45"/>
+  <!-- grin: wide, with a row of small teeth -->
+  <path d="M74 140 Q100 166 126 140 Q100 152 74 140 Z" fill="#0e1822"/>
+  <path d="M77 142 L81 149 L85 144 L89 151 L93 145 L97 152 L101 146 L105 152 L109 145 L113 151 L117 144 L121 149 L124 142 Q100 151 77 142 Z" fill="#ffffff"/>
+</svg>
