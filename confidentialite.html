@@ -7,6 +7,16 @@
 <meta name="description" content="Comment Agence UIO recueille, utilise et protège vos renseignements personnels, conformément à la Loi 25 du Québec.">
 <meta name="theme-color" content="#F6F3EE">
 <link rel="canonical" href="https://agenceuio.ca/confidentialite.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_CA">
+<meta property="og:site_name" content="Agence UIO">
+<meta property="og:title" content="Politique de confidentialité · Agence UIO">
+<meta property="og:description" content="Comment Agence UIO recueille, utilise et protège vos renseignements personnels.">
+<meta property="og:url" content="https://agenceuio.ca/confidentialite.html">
+<meta property="og:image" content="https://agenceuio.ca/assets/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Agence UIO : vos appels manqués deviennent des clients">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png?v=3">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=3">
 <style>
@@ -26,13 +36,14 @@
   --m: max(16px, 4vw);
 }
 *, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; background: var(--light); }
+html { -webkit-text-size-adjust: 100%; background: var(--light); scroll-padding-top: 80px; }
 body { margin: 0; background: var(--light); color: var(--ink); font: 400 17px/1.65 var(--font); -webkit-font-smoothing: antialiased; }
 h1, h2, p, ul { margin: 0; padding: 0; }
 a { color: var(--orange-on-light); text-underline-offset: 0.2em; }
-:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; border-radius: 6px; }
+:focus-visible { outline: 3px solid var(--orange-on-light); outline-offset: 3px; border-radius: 6px; }
+.foot :focus-visible { outline-color: var(--orange); }
 .wrap { max-width: 760px; margin-inline: auto; padding-inline: var(--m); }
-.skip { position: absolute; left: 16px; top: -60px; padding: 10px 16px; border-radius: 999px; background: var(--ink); color: #fff; text-decoration: none; }
+.skip { position: absolute; left: 16px; top: -60px; padding: 10px 16px; border-radius: 999px; background: var(--ink); color: #fff; text-decoration: none; z-index: 100; }
 .skip:focus { top: 12px; }
 .nav { position: sticky; top: 0; z-index: 10; background: rgba(246, 243, 238, .9); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
 .nav .wrap { max-width: 1180px; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
@@ -77,31 +88,31 @@ strong { font-weight: 700; }
   <div class="wrap">
     <p class="kicker">Confidentialité</p>
     <h1>Politique de confidentialité</h1>
-    <p class="meta">Dernière mise à jour : <time datetime="2026-11-02">2 novembre 2026</time></p>
+    <p class="meta">Dernière mise à jour : <time datetime="2026-11-02">2 novembre 2026</time></p>
 
     <section class="tldr" aria-labelledby="h-essentiel">
       <h2 id="h-essentiel">L’essentiel</h2>
       <ul>
-        <li>Nous recueillons seulement ce que vous nous écrivez dans le formulaire de demande d’audit : votre nom, votre entreprise, votre téléphone, votre courriel, votre métier et votre message.</li>
-        <li>Nous nous en servons uniquement pour vous répondre et faire le suivi de votre demande.</li>
+        <li>Nous recueillons les renseignements que vous nous transmettez dans le formulaire de demande d’audit (nom, entreprise, téléphone, courriel, métier et message) et certaines données techniques nécessaires au fonctionnement du site.</li>
+        <li>Nous nous en servons pour vous rappeler, préparer votre audit et faire le suivi de votre demande.</li>
         <li>Nous ne vendons ni ne louons vos renseignements, à personne.</li>
-        <li>Le site n’utilise aucun témoin (cookie), aucune mesure d’audience, aucune publicité, et aucune police ou bibliothèque chargée depuis un autre site.</li>
-        <li>Vous pouvez en tout temps voir, corriger ou faire effacer vos renseignements : il suffit de nous écrire.</li>
+        <li>La page d’accueil et cette politique n’utilisent aucun témoin (cookie), aucune mesure d’audience, aucune publicité, et aucune police ou bibliothèque chargée depuis un autre site. L’espace client, réservé à nos clients, est décrit à la section 3.</li>
+        <li>Vous pouvez demander l’accès, la correction ou la suppression de vos renseignements, sous réserve des obligations légales applicables : il suffit de nous écrire.</li>
       </ul>
     </section>
 
     <section aria-labelledby="h-1">
-      <h2 id="h-1">1. Qui sommes-nous ?</h2>
-      <p>Agence UIO aide les entrepreneurs à obtenir plus de clients : sites web sur mesure, texto automatique après un appel manqué, demandes d’avis Google et rapport mensuel. Nous sommes situés à Gatineau, au Québec.</p>
-      <p>Cette politique explique comment nous traitons les renseignements personnels recueillis sur agenceuio.ca. Elle respecte la <em>Loi sur la protection des renseignements personnels dans le secteur privé</em> du Québec (modifiée par la Loi 25) et la loi fédérale (LPRPDE).</p>
+      <h2 id="h-1">1. Qui sommes-nous ?</h2>
+      <p>Agence UIO aide les entrepreneurs à obtenir plus de clients : sites web sur mesure, texto automatique après un appel manqué, demandes d’avis Google et rapport mensuel. Nous sommes situés à Gatineau, au Québec.</p>
+      <p>Cette politique explique comment nous traitons les renseignements personnels recueillis sur agenceuio.ca : la page d’accueil, son formulaire et l’espace client. Elle a été rédigée selon la <em>Loi sur la protection des renseignements personnels dans le secteur privé</em> du Québec (modifiée par la Loi 25) et la loi fédérale (LPRPDE).</p>
     </section>
 
     <section aria-labelledby="h-2">
       <h2 id="h-2">2. Les personnes responsables</h2>
-      <p>Pour toute question ou demande au sujet de vos renseignements personnels, écrivez aux responsables de la protection des renseignements personnels :</p>
+      <p>Pour toute question ou demande au sujet de vos renseignements personnels, écrivez aux responsables de la protection des renseignements personnels :</p>
       <div class="card">
         <p><strong>Hugo Martin</strong> et <strong>Yacine Eddaoudi</strong>, cofondateurs</p>
-        <p>Courriel : <a href="mailto:info@agenceuio.ca">info@agenceuio.ca</a></p>
+        <p>Courriel : <a href="mailto:info@agenceuio.ca">info@agenceuio.ca</a></p>
         <p>Gatineau (Québec)</p>
       </div>
     </section>
@@ -109,9 +120,10 @@ strong { font-weight: 700; }
     <section aria-labelledby="h-3">
       <h2 id="h-3">3. Les renseignements que nous recueillons</h2>
       <ul>
-        <li><strong>Formulaire de demande d’audit :</strong> votre nom, le nom de votre entreprise, votre téléphone, votre adresse courriel, votre métier et votre message (facultatif).</li>
-        <li><strong>Courriel et Instagram :</strong> si vous nous écrivez directement, nous recevons votre message et vos coordonnées.</li>
-        <li><strong>Données techniques :</strong> comme pour tout site, notre hébergeur peut enregistrer des journaux techniques (adresse IP, date et heure, page consultée) pour la sécurité et le bon fonctionnement du site.</li>
+        <li><strong>Formulaire de demande d’audit :</strong> votre nom, le nom de votre entreprise, votre téléphone, votre adresse courriel, votre métier et votre message (facultatif).</li>
+        <li><strong>Courriel et Instagram :</strong> si vous nous écrivez directement, nous recevons votre message et vos coordonnées.</li>
+        <li><strong>Données techniques :</strong> comme pour tout site, notre hébergeur (GitHub Pages) peut enregistrer des journaux techniques (adresse IP, date et heure, page consultée) pour la sécurité et le bon fonctionnement du site.</li>
+        <li><strong>Espace client :</strong> réservé à nos clients, il demande un identifiant et un mot de passe. Il passe par notre serveur hébergé chez Render, les comptes sont gérés dans Google Sheets, et la page charge des polices depuis Google Fonts (Google reçoit alors votre adresse IP).</li>
       </ul>
       <p>Le site n’utilise <strong>aucun témoin (cookie)</strong>, aucun outil de mesure d’audience comme Google Analytics, aucune publicité ciblée et aucun profilage.</p>
       <p class="note">Merci de ne pas nous transmettre de renseignements sensibles dans le formulaire (santé, numéros d’identité, renseignements bancaires).</p>
@@ -120,7 +132,7 @@ strong { font-weight: 700; }
     <section aria-labelledby="h-4">
       <h2 id="h-4">4. Pourquoi nous les utilisons</h2>
       <ul>
-        <li>Répondre à votre demande et vous préparer une soumission.</li>
+        <li>Vous rappeler, préparer votre audit gratuit et, si vous le souhaitez, une soumission.</li>
         <li>Faire le suivi de nos échanges et, si vous devenez client, réaliser votre projet et vous facturer.</li>
         <li>Protéger le site contre le pourriel et les abus (par exemple, limiter le nombre de messages par visiteur).</li>
       </ul>
@@ -129,17 +141,19 @@ strong { font-weight: 700; }
 
     <section aria-labelledby="h-5">
       <h2 id="h-5">5. Votre consentement</h2>
-      <p>En nous envoyant le formulaire, vous consentez à ce que nous utilisions vos renseignements aux fins décrites ci-dessus. Vous pouvez retirer votre consentement en tout temps en nous écrivant. Sans ces renseignements, nous ne pourrons toutefois pas donner suite à votre demande.</p>
+      <p>En nous envoyant le formulaire, vous consentez à ce que nous utilisions vos renseignements aux fins décrites ci-dessus. Vous pouvez retirer votre consentement en tout temps en nous écrivant. Votre nom, votre entreprise et votre téléphone sont nécessaires pour vous rappeler ; les autres champs sont facultatifs.</p>
     </section>
 
     <section aria-labelledby="h-6">
       <h2 id="h-6">6. Qui y a accès</h2>
-      <p>Seules les personnes d’Agence UIO qui traitent votre demande y ont accès. Nous faisons aussi appel à quelques fournisseurs, qui y ont accès uniquement pour nous rendre leur service :</p>
+      <p>Seules les personnes d’Agence UIO qui traitent votre demande y ont accès. Nous faisons aussi appel à quelques fournisseurs, qui y ont accès uniquement pour nous rendre leur service :</p>
       <ul>
-        <li><strong>Web3Forms</strong> reçoit le formulaire et nous le transmet par courriel. Il en conserve une copie pendant au plus 30 jours.</li>
+        <li><strong>Web3Forms</strong> (serveurs d’Amazon Web Services) reçoit le formulaire et nous le transmet par courriel. Il en conserve une copie pendant 30 jours, puis l’efface automatiquement.</li>
+        <li><strong>ImprovMX</strong> fait suivre les courriels envoyés à nos adresses @agenceuio.ca vers notre boîte de réception.</li>
         <li><strong>Google (Gmail)</strong> héberge notre boîte de réception, où arrivent vos demandes.</li>
-        <li><strong>Notre hébergeur web</strong> affiche le site.</li>
-        <li><strong>Des outils d’assistance</strong>, y compris d’intelligence artificielle, nous aident à trier nos courriels et à préparer nos réponses.</li>
+        <li><strong>GitHub Pages</strong> (GitHub) héberge et affiche le site.</li>
+        <li><strong>Render</strong> héberge le serveur de l’espace client, et <strong>Google Sheets</strong> les comptes des clients.</li>
+        <li><strong>Des outils d’intelligence artificielle</strong>, comme Claude d’Anthropic, peuvent nous aider à trier nos courriels et à préparer nos réponses.</li>
       </ul>
       <p>Nous ne vendons, ne louons et n’échangeons jamais vos renseignements.</p>
     </section>
@@ -152,28 +166,28 @@ strong { font-weight: 700; }
     <section aria-labelledby="h-8">
       <h2 id="h-8">8. Combien de temps nous les gardons</h2>
       <ul>
-        <li><strong>Demande sans suite :</strong> au plus 24 mois après notre dernier échange.</li>
-        <li><strong>Clients :</strong> pendant le contrat, puis le temps exigé par la loi (par exemple, 6 ans pour les documents comptables).</li>
+        <li><strong>Demande sans suite :</strong> au plus 24 mois après notre dernier échange.</li>
+        <li><strong>Clients :</strong> pendant le contrat, puis le temps exigé par la loi (par exemple, 6 ans pour les documents comptables).</li>
       </ul>
       <p>Ensuite, nous les détruisons de façon sécuritaire.</p>
     </section>
 
     <section aria-labelledby="h-9">
       <h2 id="h-9">9. Sécurité</h2>
-      <p>Nous prenons des mesures raisonnables pour protéger vos renseignements : accès limité aux personnes qui en ont besoin, comptes protégés et connexion chiffrée (HTTPS).</p>
+      <p>Nous prenons des mesures raisonnables pour protéger vos renseignements : accès limité aux personnes qui en ont besoin, comptes protégés et connexion chiffrée (HTTPS).</p>
       <p>Si un incident de confidentialité présente un risque de préjudice sérieux, nous aviserons la Commission d’accès à l’information et les personnes concernées, comme la loi l’exige.</p>
     </section>
 
     <section aria-labelledby="h-10">
       <h2 id="h-10">10. Vos droits</h2>
-      <p>Vous pouvez en tout temps :</p>
+      <p>Vous pouvez, sous réserve des obligations légales applicables :</p>
       <ul>
-        <li>savoir quels renseignements nous détenons sur vous et en obtenir une copie, y compris dans un format informatique courant ;</li>
-        <li>les faire corriger s’ils sont inexacts ou incomplets ;</li>
-        <li>retirer votre consentement ou demander qu’ils soient effacés ;</li>
+        <li>savoir quels renseignements nous détenons sur vous et en obtenir une copie, y compris dans un format informatique courant ;</li>
+        <li>les faire corriger s’ils sont inexacts ou incomplets ;</li>
+        <li>retirer votre consentement ou demander qu’ils soient effacés ;</li>
         <li>demander que nous cessions de les diffuser, lorsque la loi le permet.</li>
       </ul>
-      <p>Écrivez aux responsables (section 2). Nous vous répondrons dans un délai de 30 jours. Si notre réponse ne vous satisfait pas, vous pouvez porter plainte à la <a href="https://www.cai.gouv.qc.ca/" rel="noopener">Commission d’accès à l’information du Québec</a>.</p>
+      <p>Écrivez aux responsables (section 2). Nous vous répondrons dans un délai de 30 jours. Si notre réponse ne vous satisfait pas, vous pouvez porter plainte à la <a href="https://www.cai.gouv.qc.ca/" rel="noopener">Commission d’accès à l’information du Québec</a>.</p>
     </section>
 
     <section aria-labelledby="h-11">
@@ -184,7 +198,7 @@ strong { font-weight: 700; }
     <section aria-labelledby="h-12">
       <h2 id="h-12">12. Changements à cette politique</h2>
       <p>Nous pouvons modifier cette politique. La date de la dernière mise à jour est indiquée en haut de la page. Si un changement est important, nous l’indiquerons clairement sur le site.</p>
-      <p>Une question ? Écrivez-nous à <a href="mailto:info@agenceuio.ca">info@agenceuio.ca</a>.</p>
+      <p>Une question ? Écrivez-nous à <a href="mailto:info@agenceuio.ca">info@agenceuio.ca</a>.</p>
     </section>
   </div>
 </main>
