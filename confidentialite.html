@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Politique de confidentialité — Agence UIO</title>
 <meta name="description" content="Comment Agence UIO recueille, utilise et protège vos renseignements personnels, conformément à la Loi 25 du Québec.">
-<meta name="theme-color" content="#F6F3EE">
+<meta name="theme-color" content="#FFFFFF">
 <link rel="canonical" href="https://agenceuio.ca/confidentialite.html">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="fr_CA">
@@ -19,78 +19,181 @@
 <meta property="og:image:alt" content="Agence UIO : vos appels manqués deviennent des clients">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png?v=3">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=3">
+<link rel="preload" href="assets/fonts/atkinson-next.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-/* Mêmes couleurs et polices que l'accueil. Polices hébergées sur le site : rien ne part chez Google. */
-@font-face { font-family: "Bricolage"; src: url("assets/fonts/bricolage.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
-@font-face { font-family: "Schibsted"; src: url("assets/fonts/schibsted.woff2") format("woff2"); font-weight: 400 900; font-display: swap; }
+/* Même style que l'accueil. Polices hébergées sur le site : rien ne part chez Google. */
+@font-face { font-family: "Archivo"; src: url(assets/fonts/archivo.woff2) format("woff2"); font-weight: 700 900; font-stretch: 62% 80%; font-display: swap; }
+@font-face { font-family: "Atkinson Hyperlegible Next"; src: url(assets/fonts/atkinson-next.woff2) format("woff2"); font-weight: 200 800; font-display: swap; }
+@font-face { font-family: "Atkinson Hyperlegible Mono"; src: url(assets/fonts/atkinson-mono.woff2) format("woff2"); font-weight: 200 800; font-display: swap; }
 :root {
-  --ink: #0E1A2B;
-  --ink-2: #556072;
-  --line: #E3DED4;
-  --light: #F6F3EE;
-  --white: #fff;
-  --orange: #FF6A2B;
-  --orange-on-light: #B83F0B;
-  --font: "Schibsted", system-ui, sans-serif;
-  --titre: "Bricolage", "Schibsted", system-ui, sans-serif;
-  --m: max(16px, 4vw);
+  --encre: #0E1A2B;
+  --encre-2: #22344F;
+  --papier: #FFFFFF;
+  --plan: #EEF2F7;
+  --trait: #D6DEE9;
+  --gris: #4E5A6C;
+  --gris-fonce: #A9B6C8;
+  --clair: #D2DAE5;
+  --signal: #FF6A2B;
+  --signal-texte: #B83F0B;
+  --titre: "Archivo", "Arial Narrow", "Roboto Condensed", system-ui, sans-serif;
+  --texte: "Atkinson Hyperlegible Next", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "Atkinson Hyperlegible Mono", ui-monospace, Menlo, Consolas, monospace;
+  --m: max(16px, 5vw);
+  --doux: cubic-bezier(.22, 1, .36, 1);
+  --ressort: cubic-bezier(.34, 1.56, .64, 1);
+  color-scheme: light;
 }
 *, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; background: var(--light); scroll-padding-top: 80px; }
-body { margin: 0; background: var(--light); color: var(--ink); font: 400 17px/1.65 var(--font); -webkit-font-smoothing: antialiased; }
-h1, h2, p, ul { margin: 0; padding: 0; }
-a { color: var(--orange-on-light); text-underline-offset: 0.2em; }
-:focus-visible { outline: 3px solid var(--orange-on-light); outline-offset: 3px; border-radius: 6px; }
-.foot :focus-visible { outline-color: var(--orange); }
-.wrap { max-width: 760px; margin-inline: auto; padding-inline: var(--m); }
-.skip { position: absolute; left: 16px; top: -60px; padding: 10px 16px; border-radius: 999px; background: var(--ink); color: #fff; text-decoration: none; z-index: 100; }
-.skip:focus { top: 12px; }
-.nav { position: sticky; top: 0; z-index: 10; background: rgba(246, 243, 238, .9); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
-.nav .wrap { max-width: 1180px; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.logo img { display: block; height: 34px; width: auto; }
-.back { font-size: 15px; font-weight: 600; color: var(--ink); text-decoration: none; }
-.back:hover { text-decoration: underline; }
-main { padding: clamp(48px, 8vw, 96px) 0 clamp(64px, 9vw, 120px); }
-.kicker { color: var(--orange-on-light); font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-h1 { margin-top: 10px; font-family: var(--titre); font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -0.035em; line-height: 1.04; text-wrap: balance; }
-.meta { margin-top: 14px; color: var(--ink-2); font-size: 15px; }
-.tldr { margin-top: 40px; padding: clamp(22px, 4vw, 32px); border-radius: 18px; background: var(--white); border: 1px solid var(--line); }
-.tldr h2 { margin: 0 0 12px; font-size: 20px; }
-.tldr ul { display: grid; gap: 10px; list-style: none; }
-.tldr li { position: relative; padding-left: 30px; }
-.tldr li::before { content: ""; position: absolute; left: 0; top: 4px; width: 20px; height: 20px; border-radius: 50%; background: var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M6 10.5l2.5 2.5L14 7.5' fill='none' stroke='%23FF6A2B' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 100% no-repeat; }
-section + section, .tldr + section { margin-top: 44px; }
-h2 { font-family: var(--titre); font-size: clamp(22px, 2.6vw, 26px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; scroll-margin-top: 84px; }
-section p, section ul { margin-top: 12px; }
-section ul { padding-left: 1.2em; display: grid; gap: 8px; }
-section li::marker { color: var(--orange-on-light); }
-.card { margin-top: 14px; padding: 18px 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--white); }
-.card p { margin: 0; }
-.card p + p { margin-top: 4px; }
-.note { color: var(--ink-2); font-size: 15px; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 96px; }
+body { margin: 0; background: var(--papier); color: var(--encre); font: 400 1.0625rem/1.65 var(--texte); -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 60; background: var(--papier); }
+img, svg { display: block; max-width: 100%; }
+p, ul, ol { margin: 0; }
+a { color: var(--signal-texte); text-underline-offset: .2em; }
 strong { font-weight: 700; }
-.foot { background: var(--ink); color: #AEB6C4; font-size: 14px; padding: 28px 0 calc(28px + env(safe-area-inset-bottom)); }
-.foot .wrap { max-width: 1180px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px 24px; }
-.foot a { color: #fff; }
+:focus-visible { outline: 3px solid var(--signal-texte); outline-offset: 3px; border-radius: 4px; }
+.pied :focus-visible { outline-color: var(--signal); }
+.wrap { width: 100%; max-width: calc(1200px + 2 * var(--m)); margin-inline: auto; padding-left: max(var(--m), env(safe-area-inset-left, 0px)); padding-right: max(var(--m), env(safe-area-inset-right, 0px)); }
+.skip { position: absolute; left: 16px; top: -60px; padding: 10px 16px; background: var(--encre); color: #fff; border-radius: 8px; z-index: 100; }
+.skip:focus { top: 12px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* Le numéro, comme sur la porte d'un camion : condensé, gras, zéro sans barre */
+.tel-num { white-space: nowrap; font-family: var(--titre); font-weight: 800; font-stretch: 76%; font-size: 1.14em; line-height: 1; letter-spacing: .03em; }
+
+/* ---------- Logo : l'icône seule, le nom s'ouvre au survol ---------- */
+.logo { display: inline-flex; align-items: center; text-decoration: none; color: var(--encre); }
+.logo__icone { width: 42px; height: 42px; flex: none; transition: transform .4s var(--ressort); }
+.logo__icone .onde { opacity: .25; }
+.logo__mot { display: grid; gap: 5px; overflow: hidden; max-width: 0; opacity: 0; transform: translateX(-10px); white-space: nowrap; transition: max-width .55s var(--doux), opacity .35s, transform .55s var(--doux), margin .55s var(--doux); }
+.logo__mot svg { width: 46px; height: 25px; }
+.logo__mot small { font: 500 .58rem/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--signal-texte); }
+.logo:hover .logo__mot, .logo:focus-visible .logo__mot, .logo.ouvert .logo__mot { max-width: 170px; opacity: 1; transform: none; margin-left: 11px; }
+.logo:hover .onde, .logo.ouvert .onde { animation: onde 1.4s ease-in-out infinite; }
+.logo .onde--2 { animation-delay: .18s !important; }
+@keyframes onde { 0%, 100% { opacity: .25; } 40% { opacity: 1; } }
+@media (hover: hover) { .logo:hover .logo__icone { transform: rotate(-6deg) scale(1.04); } }
+@media (hover: none) { .logo .logo__mot { max-width: 170px; opacity: 1; transform: none; margin-left: 11px; } .logo .onde { opacity: 1; } }
+@media (max-width: 429px) { .nav .logo__mot small { display: none; } }
+.logo--clair { color: #fff; }
+.logo--clair .logo__mot small { color: var(--signal); }
+
+/* En-tête */
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; background: var(--papier); border-bottom: 1px solid var(--trait); }
+.nav__rangee { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 76px; }
+.nav__actions { display: flex; align-items: center; gap: 10px; }
+.nav__tel { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-width: 46px; min-height: 46px; border: 1.5px solid var(--trait); border-radius: 8px; color: var(--encre); text-decoration: none; transition: border-color .2s; }
+.nav__tel svg { width: 18px; height: 18px; color: var(--signal-texte); }
+.nav__tel .tel-num { display: none; }
+.nav__tel:hover { border-color: var(--encre); }
+.retour { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 16px; border-radius: 8px; background: var(--encre); color: #fff; font-size: .98rem; font-weight: 700; text-decoration: none; transition: background-color .2s; }
+.retour svg { width: 18px; height: 18px; flex: none; transition: transform .25s var(--ressort); }
+@media (hover: hover) { .retour:hover { background: var(--encre-2); } .retour:hover svg { transform: translateX(-3px); } }
+@media (min-width: 600px) { .nav__tel { padding: 0 14px; } .nav__tel .tel-num { display: inline; } }
+@media (max-width: 359px) { .nav .logo__mot { display: none; } .retour { padding: 0 12px; font-size: .94rem; } }
+
+/* Titre de la page */
+.page { padding-block: clamp(40px, 7vw, 88px) clamp(64px, 9vw, 120px); }
+.page__tete { padding-bottom: clamp(28px, 4vw, 40px); border-bottom: 1.5px dashed var(--trait); }
+.surtitre { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 18px; color: var(--signal-texte); font: 500 .8rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+.surtitre::before { content: ""; width: 10px; height: 10px; background: currentColor; }
+h1, h2 { margin: 0; color: var(--encre); font-family: var(--titre); font-weight: 800; text-wrap: balance; }
+h1 { max-width: 12em; font-size: clamp(2.6rem, 7vw, 4.6rem); font-stretch: 64%; line-height: .92; text-transform: uppercase; }
+.meta { margin-top: 20px; color: var(--gris); font: 500 .8rem/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+
+/* Sommaire à gauche sur grand écran, texte à droite */
+.page__corps { display: grid; gap: 40px; margin-top: clamp(32px, 5vw, 56px); }
+@media (min-width: 1000px) { .page__corps { grid-template-columns: 250px minmax(0, 720px); gap: 72px; } }
+.sommaire { display: none; }
+@media (min-width: 1000px) { .sommaire { display: block; position: sticky; top: 104px; align-self: start; } }
+.sommaire b { display: block; margin: 0 0 12px 8px; color: var(--gris); font: 500 .74rem/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+.sommaire ol { display: grid; gap: 2px; padding: 0; list-style: none; }
+.sommaire a { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 6px; padding: 6px 8px; border-radius: 6px; color: var(--gris); font-size: .92rem; line-height: 1.35; text-decoration: none; transition: background-color .2s, color .2s; }
+.sommaire a span { color: var(--signal-texte); font: 500 .78rem/1.75 var(--mono); }
+.sommaire a:hover { background: var(--plan); color: var(--encre); }
+.texte { min-width: 0; }
+
+/* L'essentiel */
+.essentiel { padding: clamp(22px, 4vw, 32px); border-radius: 12px; background: var(--plan); }
+.essentiel h2 { margin-bottom: 16px; font-size: 1.8rem; font-stretch: 72%; line-height: 1; }
+.essentiel ul { display: grid; gap: 12px; padding: 0; list-style: none; }
+.essentiel li { position: relative; padding-left: 32px; }
+.essentiel li::before { content: ""; position: absolute; left: 0; top: .2em; width: 20px; height: 20px; border-radius: 4px; background: var(--encre) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M6 10.5l2.5 2.5L14 7.5' fill='none' stroke='%23FF6A2B' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 100% no-repeat; }
+
+/* Sections */
+.texte > section + section { margin-top: 52px; }
+.texte > section:not(.essentiel) > h2 { display: flex; align-items: center; gap: 14px; font-size: clamp(1.6rem, 2.6vw, 2rem); font-stretch: 74%; line-height: 1.05; }
+.num { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 7px; background: var(--encre); color: #fff; font-size: 1.1rem; font-stretch: 70%; }
+.texte > section:not(.essentiel) > p, .texte > section:not(.essentiel) > ul { margin-top: 14px; }
+.texte > section:not(.essentiel) > ul { display: grid; gap: 8px; padding-left: 1.2em; }
+.texte li::marker { color: var(--signal-texte); }
+.carte { display: grid; gap: 4px; margin-top: 16px; padding: 20px 22px; border: 1px solid var(--trait); border-left: 5px solid var(--signal); border-radius: 10px; background: var(--papier); }
+.carte a[href^="tel:"] { color: var(--encre); text-decoration: none; }
+.carte a[href^="tel:"]:hover { text-decoration: underline; }
+.note { color: var(--gris); font-size: .95rem; }
+
+/* Pied de page */
+.pied { padding-block: 32px calc(32px + env(safe-area-inset-bottom, 0px)); background: #08111E; color: var(--gris-fonce); font-size: .92rem; }
+.pied .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 24px; }
+.pied a { color: #fff; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+}
 </style>
 </head>
 <body>
 <a class="skip" href="#contenu">Aller au contenu</a>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-tel" viewBox="0 0 24 24"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.57a1 1 0 01-.25 1z"/></symbol>
+  <symbol id="i-courriel" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 7.5l8 6 8-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-logo" viewBox="0 0 512 512"><rect width="512" height="512" rx="112.64" fill="#0E1A2B"/><path fill="#fff" transform="translate(74.96 389.12) scale(0.40960 -0.40960)" d="M243 -14Q149 -14 101.5 49.5Q54 113 54 243V528H216V264Q216 190 238.0 153.5Q260 117 305 117Q332 117 351.5 130.5Q371 144 384.5 168.5Q398 193 404.5 225.0Q411 257 411 295V528H572V214V0H444L441 163H421Q406 101 383.5 61.5Q361 22 327.0 4.0Q293 -14 243 -14Z"/></symbol>
+  <symbol id="i-mot" viewBox="196 35 183 99"><path transform="translate(190.00 132.00) scale(0.12800 -0.12800)" d="M243 -14Q149 -14 101.5 49.5Q54 113 54 243V528H216V264Q216 190 238.0 153.5Q260 117 305 117Q332 117 351.5 130.5Q371 144 384.5 168.5Q398 193 404.5 225.0Q411 257 411 295V528H572V214V0H444L441 163H421Q406 101 383.5 61.5Q361 22 327.0 4.0Q293 -14 243 -14Z"/><path transform="translate(269.62 132.00) scale(0.12800 -0.12800)" d="M62 0V528H223V0ZM143 602Q97 602 72.5 621.5Q48 641 48 677Q48 715 72.5 734.5Q97 754 143 754Q190 754 214.5 734.5Q239 715 239 678Q239 641 214.5 621.5Q190 602 143 602Z"/><path transform="translate(304.69 132.00) scale(0.12800 -0.12800)" d="M305 -14Q225 -14 163.5 17.0Q102 48 67.0 110.0Q32 172 32 265Q32 358 67.0 419.5Q102 481 164.0 511.5Q226 542 306 542Q386 542 448.0 511.0Q510 480 545.0 418.5Q580 357 580 264Q580 169 544.0 107.0Q508 45 445.5 15.5Q383 -14 305 -14ZM310 103Q346 103 370.0 119.5Q394 136 406.0 170.0Q418 204 418 254Q418 307 405.0 343.5Q392 380 366.5 399.5Q341 419 301 419Q267 419 242.5 402.5Q218 386 206.0 352.0Q194 318 194 267Q194 185 224.5 144.0Q255 103 310 103Z"/></symbol>
+  <symbol id="i-retour" viewBox="0 0 20 20"><path d="M16 10H4.5M9 5.5L4.5 10 9 14.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
 <header class="nav">
-  <div class="wrap">
-    <a class="logo" href="./" translate="no"><img src="assets/logo/uio-logo.svg" alt="Agence UIO, accueil" height="34"></a>
-    <a class="back" href="./">‹ Retour au site</a>
+  <div class="wrap nav__rangee">
+    <a class="logo" href="./" aria-label="Agence UIO, accueil">
+      <svg class="logo__icone" viewBox="0 0 512 512" aria-hidden="true"><use href="#i-logo"/><path class="onde onde--1" d="M 337.92 122.88 A 61.44 61.44 0 0 1 399.36 184.32" fill="none" stroke="#FF6A2B" stroke-width="30.72" stroke-linecap="round"/><path class="onde onde--2" d="M 337.92 66.56 A 117.76 117.76 0 0 1 455.68 184.32" fill="none" stroke="#FF6A2B" stroke-width="30.72" stroke-linecap="round"/></svg>
+      <span class="logo__mot" aria-hidden="true"><svg viewBox="0 0 183 99" fill="currentColor"><use href="#i-mot" width="183" height="99"/></svg><small>Agence · Gatineau</small></span>
+    </a>
+    <div class="nav__actions">
+      <a class="nav__tel" href="tel:+18734558990" aria-label="Appeler Agence UIO au 873 455-8990"><svg aria-hidden="true"><use href="#i-tel"/></svg><span class="tel-num">873 455-8990</span></a>
+      <a class="retour" href="./"><svg aria-hidden="true"><use href="#i-retour"/></svg>Retour au site</a>
+    </div>
   </div>
 </header>
 
 <main id="contenu">
-  <div class="wrap">
-    <p class="kicker">Confidentialité</p>
-    <h1>Politique de confidentialité</h1>
-    <p class="meta">Dernière mise à jour : <time datetime="2026-11-02">2 novembre 2026</time></p>
-
-    <section class="tldr" aria-labelledby="h-essentiel">
+  <div class="wrap page">
+    <header class="page__tete">
+      <p class="surtitre">Confidentialité · Loi 25</p>
+      <h1>Politique de confidentialité</h1>
+      <p class="meta">Dernière mise à jour : <time datetime="2026-11-03">3 novembre 2026</time></p>
+    </header>
+    <div class="page__corps">
+      <nav class="sommaire" aria-label="Sommaire de la politique">
+        <b>Sommaire</b>
+        <ol>
+          <li><a href="#h-1"><span>1</span>Qui sommes-nous ?</a></li>
+          <li><a href="#h-2"><span>2</span>Les personnes responsables</a></li>
+          <li><a href="#h-3"><span>3</span>Les renseignements que nous recueillons</a></li>
+          <li><a href="#h-4"><span>4</span>Pourquoi nous les utilisons</a></li>
+          <li><a href="#h-5"><span>5</span>Votre consentement</a></li>
+          <li><a href="#h-6"><span>6</span>Qui y a accès</a></li>
+          <li><a href="#h-7"><span>7</span>Renseignements conservés hors du Québec</a></li>
+          <li><a href="#h-8"><span>8</span>Combien de temps nous les gardons</a></li>
+          <li><a href="#h-9"><span>9</span>Sécurité</a></li>
+          <li><a href="#h-10"><span>10</span>Vos droits</a></li>
+          <li><a href="#h-11"><span>11</span>Liens vers d’autres sites</a></li>
+          <li><a href="#h-12"><span>12</span>Changements à cette politique</a></li>
+        </ol>
+      </nav>
+      <div class="texte">
+    <section class="essentiel" aria-labelledby="h-essentiel">
       <h2 id="h-essentiel">L’essentiel</h2>
       <ul>
         <li>Nous recueillons les renseignements que vous nous transmettez dans le formulaire de demande d’audit (nom, entreprise, téléphone, courriel, métier et message) et certaines données techniques nécessaires au fonctionnement du site.</li>
@@ -102,23 +205,24 @@ strong { font-weight: 700; }
     </section>
 
     <section aria-labelledby="h-1">
-      <h2 id="h-1">1. Qui sommes-nous ?</h2>
+      <h2 id="h-1"><span class="num" aria-hidden="true">1</span><span class="sr">Section 1. </span>Qui sommes-nous ?</h2>
       <p>Agence UIO aide les entrepreneurs à obtenir plus de clients : sites web sur mesure, texto automatique après un appel manqué, demandes d’avis Google et rapport mensuel. Nous sommes situés à Gatineau, au Québec.</p>
       <p>Cette politique explique comment nous traitons les renseignements personnels recueillis sur agenceuio.ca : la page d’accueil, son formulaire et l’espace client. Elle a été rédigée selon la <em>Loi sur la protection des renseignements personnels dans le secteur privé</em> du Québec (modifiée par la Loi 25) et la loi fédérale (LPRPDE).</p>
     </section>
 
     <section aria-labelledby="h-2">
-      <h2 id="h-2">2. Les personnes responsables</h2>
+      <h2 id="h-2"><span class="num" aria-hidden="true">2</span><span class="sr">Section 2. </span>Les personnes responsables</h2>
       <p>Pour toute question ou demande au sujet de vos renseignements personnels, écrivez aux responsables de la protection des renseignements personnels :</p>
-      <div class="card">
+      <div class="carte">
         <p><strong>Hugo Martin</strong> et <strong>Yacine Eddaoudi</strong>, cofondateurs</p>
         <p>Courriel : <a href="mailto:info@agenceuio.ca">info@agenceuio.ca</a></p>
+        <p>Téléphone : <a href="tel:+18734558990"><span class="tel-num">873 455-8990</span></a></p>
         <p>Gatineau (Québec)</p>
       </div>
     </section>
 
     <section aria-labelledby="h-3">
-      <h2 id="h-3">3. Les renseignements que nous recueillons</h2>
+      <h2 id="h-3"><span class="num" aria-hidden="true">3</span><span class="sr">Section 3. </span>Les renseignements que nous recueillons</h2>
       <ul>
         <li><strong>Formulaire de demande d’audit :</strong> votre nom, le nom de votre entreprise, votre téléphone, votre adresse courriel, votre métier et votre message (facultatif).</li>
         <li><strong>Courriel et Instagram :</strong> si vous nous écrivez directement, nous recevons votre message et vos coordonnées.</li>
@@ -130,7 +234,7 @@ strong { font-weight: 700; }
     </section>
 
     <section aria-labelledby="h-4">
-      <h2 id="h-4">4. Pourquoi nous les utilisons</h2>
+      <h2 id="h-4"><span class="num" aria-hidden="true">4</span><span class="sr">Section 4. </span>Pourquoi nous les utilisons</h2>
       <ul>
         <li>Vous rappeler, préparer votre audit gratuit et, si vous le souhaitez, une soumission.</li>
         <li>Faire le suivi de nos échanges et, si vous devenez client, réaliser votre projet et vous facturer.</li>
@@ -140,12 +244,12 @@ strong { font-weight: 700; }
     </section>
 
     <section aria-labelledby="h-5">
-      <h2 id="h-5">5. Votre consentement</h2>
+      <h2 id="h-5"><span class="num" aria-hidden="true">5</span><span class="sr">Section 5. </span>Votre consentement</h2>
       <p>En nous envoyant le formulaire, vous consentez à ce que nous utilisions vos renseignements aux fins décrites ci-dessus. Vous pouvez retirer votre consentement en tout temps en nous écrivant. Votre nom, votre entreprise et votre téléphone sont nécessaires pour vous rappeler ; les autres champs sont facultatifs.</p>
     </section>
 
     <section aria-labelledby="h-6">
-      <h2 id="h-6">6. Qui y a accès</h2>
+      <h2 id="h-6"><span class="num" aria-hidden="true">6</span><span class="sr">Section 6. </span>Qui y a accès</h2>
       <p>Seules les personnes d’Agence UIO qui traitent votre demande y ont accès. Nous faisons aussi appel à quelques fournisseurs, qui y ont accès uniquement pour nous rendre leur service :</p>
       <ul>
         <li><strong>Web3Forms</strong> (serveurs d’Amazon Web Services) reçoit le formulaire et nous le transmet par courriel. Il en conserve une copie pendant 30 jours, puis l’efface automatiquement.</li>
@@ -159,12 +263,12 @@ strong { font-weight: 700; }
     </section>
 
     <section aria-labelledby="h-7">
-      <h2 id="h-7">7. Renseignements conservés hors du Québec</h2>
+      <h2 id="h-7"><span class="num" aria-hidden="true">7</span><span class="sr">Section 7. </span>Renseignements conservés hors du Québec</h2>
       <p>Certains de ces fournisseurs ont leurs serveurs à l’extérieur du Québec, notamment aux États-Unis. Vos renseignements peuvent donc y être conservés ou traités. Avant de confier des renseignements à un fournisseur situé hors du Québec, nous évaluons s’ils y seront protégés adéquatement.</p>
     </section>
 
     <section aria-labelledby="h-8">
-      <h2 id="h-8">8. Combien de temps nous les gardons</h2>
+      <h2 id="h-8"><span class="num" aria-hidden="true">8</span><span class="sr">Section 8. </span>Combien de temps nous les gardons</h2>
       <ul>
         <li><strong>Demande sans suite :</strong> au plus 24 mois après notre dernier échange.</li>
         <li><strong>Clients :</strong> pendant le contrat, puis le temps exigé par la loi (par exemple, 6 ans pour les documents comptables).</li>
@@ -173,13 +277,13 @@ strong { font-weight: 700; }
     </section>
 
     <section aria-labelledby="h-9">
-      <h2 id="h-9">9. Sécurité</h2>
+      <h2 id="h-9"><span class="num" aria-hidden="true">9</span><span class="sr">Section 9. </span>Sécurité</h2>
       <p>Nous prenons des mesures raisonnables pour protéger vos renseignements : accès limité aux personnes qui en ont besoin, comptes protégés et connexion chiffrée (HTTPS).</p>
       <p>Si un incident de confidentialité présente un risque de préjudice sérieux, nous aviserons la Commission d’accès à l’information et les personnes concernées, comme la loi l’exige.</p>
     </section>
 
     <section aria-labelledby="h-10">
-      <h2 id="h-10">10. Vos droits</h2>
+      <h2 id="h-10"><span class="num" aria-hidden="true">10</span><span class="sr">Section 10. </span>Vos droits</h2>
       <p>Vous pouvez, sous réserve des obligations légales applicables :</p>
       <ul>
         <li>savoir quels renseignements nous détenons sur vous et en obtenir une copie, y compris dans un format informatique courant ;</li>
@@ -191,19 +295,21 @@ strong { font-weight: 700; }
     </section>
 
     <section aria-labelledby="h-11">
-      <h2 id="h-11">11. Liens vers d’autres sites</h2>
+      <h2 id="h-11"><span class="num" aria-hidden="true">11</span><span class="sr">Section 11. </span>Liens vers d’autres sites</h2>
       <p>Notre site contient des liens vers d’autres sites, comme Instagram ou les sites de nos clients. Quand vous les visitez, c’est leur propre politique de confidentialité qui s’applique.</p>
     </section>
 
     <section aria-labelledby="h-12">
-      <h2 id="h-12">12. Changements à cette politique</h2>
+      <h2 id="h-12"><span class="num" aria-hidden="true">12</span><span class="sr">Section 12. </span>Changements à cette politique</h2>
       <p>Nous pouvons modifier cette politique. La date de la dernière mise à jour est indiquée en haut de la page. Si un changement est important, nous l’indiquerons clairement sur le site.</p>
       <p>Une question ? Écrivez-nous à <a href="mailto:info@agenceuio.ca">info@agenceuio.ca</a>.</p>
     </section>
+      </div>
+    </div>
   </div>
 </main>
 
-<footer class="foot">
+<footer class="pied">
   <div class="wrap">
     <span>© 2026 Agence UIO. Tous droits réservés.</span>
     <span><a href="./">Accueil</a> · Gatineau, Québec</span>
