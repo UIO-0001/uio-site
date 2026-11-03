@@ -40,7 +40,15 @@
   --contour: #868D98;      /* contour des champs au repos : 3,3:1 sur blanc */
   --repos: #CDD1D7;        /* piste des curseurs, barres passées du graphique : décoratif */
   --eteint: #AEB4BD;       /* point « Appel terminé » */
-  --lampe: #FF6A2B;        /* orange du logo : SEULEMENT l'action (boutons, curseurs) et le direct (point, onde) */
+  /* Une teinte par module : la scène prend la teinte, l'interface blanche flotte dessus */
+  --voix-teinte: #FFF1E9;  --voix-fonce: #B93D0B;   /* répondeur : orange du logo */
+  --texto: #1E9E5A;  --texto-teinte: #E8F6EE;  --texto-fonce: #166B3D;
+  --centre: #2F6FEB; --centre-teinte: #EBF1FE; --centre-fonce: #1D4FB8;
+  --site: #F2A900;   --site-teinte: #FFF5D9;   --site-fonce: #7A5200;
+  --urgence: #B42318; --urgence-teinte: #FDECEA;
+  --ombre-flotte: 0 1px 2px rgba(14, 26, 43, .06), 0 12px 28px -10px rgba(14, 26, 43, .18), 0 32px 72px -28px rgba(14, 26, 43, .24);
+  --ombre-douce: 0 1px 2px rgba(14, 26, 43, .06), 0 6px 16px -8px rgba(14, 26, 43, .22);
+  --lampe: #FF6A2B;        /* orange du logo : l'action (boutons, curseurs), le direct (point, onde) et la couleur du répondeur */
   --lampe-survol: #FF7E47;
   --selection: #FFE1D3;
   --anneau: var(--encre);  /* anneau de focus */
@@ -79,8 +87,9 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .tel { white-space: nowrap; font-variant-numeric: tabular-nums; }
 
 /* Boutons en pilule : orange pour l'action, contour marine pour le reste */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 0 26px; border: 0; border-radius: 999px; background: var(--lampe); color: var(--encre); font: 650 1.0625rem/1.1 var(--police); letter-spacing: -.01em; text-align: center; text-decoration: none; cursor: pointer; transition: background-color .2s, color .2s, box-shadow .2s; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 0 26px; border: 0; border-radius: 999px; background: var(--lampe); color: var(--encre); font: 650 1.0625rem/1.1 var(--police); letter-spacing: -.01em; text-align: center; text-decoration: none; cursor: pointer; transition: background-color .2s, color .2s, box-shadow .2s, transform .15s var(--sortie); }
 .btn:hover { background: var(--lampe-survol); }
+.btn:active { transform: scale(.97); }
 .btn--petit { min-height: 40px; padding: 0 16px; font-size: .9375rem; white-space: nowrap; }
 .btn--contour { background: transparent; box-shadow: inset 0 0 0 1.5px var(--encre); }
 .btn--contour:hover { background: var(--encre); color: #fff; }
@@ -109,7 +118,10 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .nav__actions { display: flex; align-items: center; gap: 6px; }
 .nav__tel { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 999px; color: var(--encre); font-size: .9375rem; font-weight: 600; text-decoration: none; transition: background-color .2s; }
 .nav__tel:hover { background: var(--gris); }
+.nav { transition: box-shadow .3s; }
+.nav.defile { box-shadow: 0 10px 30px -20px rgba(14, 26, 43, .35); }
 @media (min-width: 960px) { .nav__liens { display: flex; } }
+@media (max-width: 639px) { .js .nav__actions { display: none; } }
 @media (max-width: 359px) { .nav__tel { display: none; } }
 
 /* ============ Premier écran : le titre, et l'appel qui se déroule ============ */
@@ -122,12 +134,17 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 @media (min-width: 960px) { .hero__grille { grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); gap: 64px; } .hero__texte { padding-top: clamp(8px, 2vw, 32px); } }
 
 .scene { display: grid; gap: 12px; }
-.scene__fond { padding: clamp(16px, 2.8vw, 36px); background: var(--gris); border-radius: var(--r-tuile); }
-.appel { display: grid; gap: 16px; max-width: 460px; margin-inline: auto; padding: clamp(18px, 2.2vw, 26px); background: var(--blanc); border-radius: var(--r-carte); }
+.scene__fond { position: relative; isolation: isolate; overflow: hidden; padding: clamp(16px, 2.8vw, 36px); border-radius: var(--r-tuile);
+  background: radial-gradient(75% 60% at 92% 4%, rgba(255, 122, 61, .32), rgba(255, 122, 61, 0) 70%), radial-gradient(65% 55% at 4% 100%, rgba(255, 186, 110, .3), rgba(255, 186, 110, 0) 70%), linear-gradient(165deg, #FFF6F0, #FFEADD); }
+.scene__fond::after { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(45% 40% at 50% 42%, rgba(255, 106, 43, .26), rgba(255, 106, 43, 0) 72%); opacity: 0; transition: opacity .8s var(--sortie); }
+.scene__fond.vive::after { opacity: 1; animation: lueur 2.6s ease-in-out infinite alternate; }
+@keyframes lueur { from { transform: scale(.9); } to { transform: scale(1.12); } }
+.appel { position: relative; display: grid; gap: 16px; max-width: 460px; margin-inline: auto; padding: clamp(18px, 2.2vw, 26px); background: var(--blanc); border-radius: var(--r-carte); box-shadow: var(--ombre-flotte); }
 .appel__tete { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--texte-2); font-size: .875rem; font-weight: 500; }
 .appel__etat { display: inline-flex; align-items: center; gap: 8px; }
 .appel__point { width: 8px; height: 8px; border-radius: 50%; background: var(--eteint); transition: background-color .3s; }
-.appel.en-cours .appel__point { background: var(--lampe); }
+.appel.en-cours .appel__point { background: var(--lampe); animation: pouls 1.6s var(--sortie) infinite; }
+@keyframes pouls { from { box-shadow: 0 0 0 0 rgba(255, 106, 43, .55); } to { box-shadow: 0 0 0 9px rgba(255, 106, 43, 0); } }
 .appel__duree { font-variant-numeric: tabular-nums; }
 .appel__qui { display: grid; gap: 2px; }
 .appel__qui b { font-size: 1.5rem; font-weight: 650; line-height: 1.2; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
@@ -142,7 +159,14 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .transcription .qui { color: var(--texte-2); font-size: .8125rem; font-weight: 600; }
 .transcription q { font-size: 1rem; line-height: 1.45; quotes: "«\00a0" "\00a0»"; }
 .appel__suite { display: grid; gap: 12px; padding-top: 16px; border-top: 1px solid var(--trait); }
-.appel__suite li { display: grid; gap: 1px; }
+.appel__suite li { display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: 12px; align-items: start; }
+.appel__suite li > div { display: grid; gap: 1px; }
+.puce { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; }
+.puce svg { width: 16px; height: 16px; }
+.puce path { stroke-dasharray: 15; stroke-dashoffset: 0; transition: stroke-dashoffset .45s var(--sortie) .2s; }
+.js .appel.joue li:not(.on) .puce path { stroke-dashoffset: 15; }
+.puce--centre { background: var(--centre-teinte); color: var(--centre-fonce); }
+.puce--texto { background: var(--texto-teinte); color: var(--texto-fonce); }
 .appel__suite b { font-size: .9375rem; font-weight: 650; }
 .appel__suite span { color: var(--texte-2); font-size: .875rem; }
 .js .appel.joue li:not(.on) { opacity: 0; transform: translateY(6px); }
@@ -160,15 +184,31 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .enonce { display: grid; gap: 22px; justify-items: center; text-align: center; }
 .enonce h2 { max-width: 26ch; }
 .enonce .lead { max-width: 34em; }
-.enonce .lead strong { color: var(--encre); font-weight: 650; }
+.enonce .lead strong { color: var(--voix-fonce); font-weight: 700; }
 
 /* Le déroulé d'un appel : titre collant à gauche, étapes à droite */
 .deroule { display: grid; gap: 36px; }
 .deroule__tete { display: grid; gap: 18px; align-content: start; }
+.deroule__etapes { min-width: 0; }
 .etapes { counter-reset: etape; }
-.etapes li { display: grid; grid-template-columns: 2.6rem minmax(0, 1fr); gap: 10px 14px; padding-block: clamp(26px, 3vw, 36px); border-top: 1px solid var(--trait); }
+.etapes li { display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); gap: 10px 18px; padding-block: clamp(26px, 3vw, 36px); border-top: 1px solid var(--trait); }
 .etapes li:last-child { border-bottom: 1px solid var(--trait); }
-.etapes li::before { counter-increment: etape; content: counter(etape); grid-row: span 3; color: var(--texte-2); font-size: clamp(1.5rem, 2.2vw, 2rem); font-weight: 700; line-height: 1.15; letter-spacing: -.028em; font-variant-numeric: tabular-nums; }
+.etapes li::before { counter-increment: etape; content: counter(etape); grid-row: span 3; display: grid; place-items: center; width: 2.75rem; height: 2.75rem; margin-top: -3px; border-radius: 50%; background: var(--voix-teinte); color: var(--voix-fonce); font-size: 1.125rem; font-weight: 700; font-variant-numeric: tabular-nums; transition: background-color .5s var(--sortie), color .5s var(--sortie); }
+.etapes li.vu::before { background: var(--lampe); color: var(--encre); animation: pop .55s var(--sortie); }
+@keyframes pop { 40% { transform: scale(1.14); } }
+.points { display: none; }
+@media (max-width: 639px) {
+  .etapes { display: flex; gap: 12px; margin-inline: calc(-1 * var(--m)); padding: 4px var(--m) 8px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--m); scrollbar-width: none; }
+  .etapes::-webkit-scrollbar { display: none; }
+  .etapes li { flex: 0 0 86%; align-content: start; grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 24px 22px; border: 0; border-radius: var(--r-carte); background: var(--gris); scroll-snap-align: start; }
+  .etapes li:last-child { border-bottom: 0; }
+  .etapes li::before { grid-row: auto; margin-top: 0; }
+  .etapes h3 { font-size: 1.375rem; }
+  .replique q { font-size: 1.0625rem; }
+  .js .points { display: flex; justify-content: center; gap: 8px; margin-top: 10px; }
+  .points i { width: 7px; height: 7px; border-radius: 4px; background: var(--trait); transition: width .3s var(--sortie), background-color .3s; }
+  .points i.actif { width: 22px; background: var(--lampe); }
+}
 .etapes p { color: var(--texte-2); }
 .etapes h3 { font-size: clamp(1.5rem, 2.2vw, 2rem); font-weight: 700; line-height: 1.15; letter-spacing: -.028em; }
 .replique { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: 12px; align-items: baseline; margin-top: 6px; }
@@ -186,34 +226,46 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .centre__texte { display: grid; gap: 18px; align-content: start; }
 .inclus li { display: grid; gap: 2px; padding-block: 14px; border-top: 1px solid var(--trait); }
 .inclus li:last-child { border-bottom: 1px solid var(--trait); }
+.tuile.centre { background: var(--centre-teinte); }
+.centre .inclus li { border-color: rgba(29, 79, 184, .15); }
+@media (max-width: 639px) { .inclus span { display: none; } .inclus li { padding-block: 12px; } }
 .inclus b { font-weight: 650; }
 .inclus span { color: var(--texte-2); font-size: .975rem; line-height: 1.5; }
 .offre-ligne { font-weight: 600; }
 @media (min-width: 960px) { .centre { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: center; } }
 
-.bord { display: grid; gap: 16px; padding: clamp(16px, 2.4vw, 28px); background: var(--gris); border-radius: var(--r-carte); }
+.bord { display: grid; gap: 16px; padding: clamp(16px, 2.4vw, 28px); background: var(--blanc); border-radius: var(--r-carte); box-shadow: var(--ombre-flotte); }
 .bord__tete { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .bord__tete b { font-size: 1.125rem; font-weight: 650; letter-spacing: -.015em; }
 .bord__tete span { color: var(--texte-2); font-size: .875rem; }
 .bord__appels { display: grid; }
-.bord__appels li { display: grid; grid-template-columns: 4.2rem minmax(0, 1fr) auto; align-items: center; gap: 4px 12px; padding-block: 12px; border-top: 1px solid var(--trait-gris); }
-.bord__appels li:last-child { border-bottom: 1px solid var(--trait-gris); }
+.bord__appels li { display: grid; grid-template-columns: 4.2rem minmax(0, 1fr) auto; align-items: center; gap: 4px 12px; padding: 12px 8px; margin-inline: -8px; border-radius: 10px; border-top: 1px solid var(--trait); transition: opacity .5s var(--sortie), transform .6s var(--sortie); transition-delay: calc(var(--i, 0) * 240ms); }
+.bord__appels li:last-child { border-bottom: 1px solid var(--trait); }
+.js .bord.attente .bord__appels li { opacity: 0; transform: translateY(-12px); }
+.bord.vu .bord__appels li:first-child { animation: eclat 2s ease-out .7s; }
+@keyframes eclat { 0%, 35% { background-color: var(--centre-teinte); } 100% { background-color: rgba(235, 241, 254, 0); } }
 .bord__heure { color: var(--texte-2); font-size: .875rem; font-variant-numeric: tabular-nums; }
 .bord__quoi { display: grid; min-width: 0; }
 .bord__quoi b { font-size: .9375rem; font-weight: 600; line-height: 1.3; }
 .bord__quoi span { color: var(--texte-2); font-size: .8125rem; line-height: 1.35; }
-.bord__statut { padding: 4px 10px; border-radius: 999px; background: var(--blanc); font-size: .75rem; font-weight: 600; white-space: nowrap; }
+.bord__statut { padding: 4px 10px; border-radius: 999px; background: var(--gris); font-size: .75rem; font-weight: 600; white-space: nowrap; }
+.bord__statut--rdv { background: var(--texto-teinte); color: var(--texto-fonce); }
+.bord__statut--urgence { background: var(--urgence-teinte); color: var(--urgence); }
+.bord__statut--rappel { background: var(--centre-teinte); color: var(--centre-fonce); }
 
 .bord__chiffres { display: grid; grid-template-columns: 1fr 1fr; }
 .bord__chiffres div { display: grid; gap: 4px; align-content: start; padding-block: 4px; }
 .bord__chiffres div:first-child { padding-right: 16px; }
-.bord__chiffres div + div { padding-left: 16px; border-left: 1px solid var(--trait-gris); }
+.bord__chiffres div + div { padding-left: 16px; border-left: 1px solid var(--trait); }
 .bord__chiffres b { font-size: 1.75rem; font-weight: 700; line-height: 1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
 .bord__chiffres span { color: var(--texte-2); font-size: .8125rem; line-height: 1.35; }
 .barres { display: flex; align-items: flex-end; gap: 5px; height: 40px; }
-.barres i { flex: 1; height: var(--h); border-radius: 4px 4px 0 0; background: var(--repos); }
-.barres i:last-child { background: var(--encre); }
-.etoiles { display: inline-flex; gap: 2px; color: var(--encre); }
+.barres i { flex: 1; height: var(--h); border-radius: 4px 4px 0 0; background: #C9D8FB; transform-origin: bottom; transition: transform .7s var(--sortie); transition-delay: calc(350ms + var(--i, 0) * 80ms); }
+.barres i:last-child { background: var(--centre); }
+.js .bord.attente .barres i { transform: scaleY(0); }
+.etoiles, .bord__chiffres .etoiles { display: inline-flex; gap: 2px; color: var(--site); }
+.etoiles svg { transition: opacity .4s, transform .4s var(--sortie); transition-delay: calc(800ms + var(--i, 0) * 90ms); }
+.js .bord.attente .etoiles svg { opacity: .2; transform: scale(.6); }
 .etoiles svg { width: 14px; height: 14px; }
 .exemple-note { color: var(--texte-2); font-size: .8125rem; }
 @media (max-width: 480px) { .bord__appels li { grid-template-columns: minmax(0, 1fr) auto; } .bord__heure { grid-column: 1 / -1; } }
@@ -223,11 +275,27 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .module__texte { display: grid; gap: 16px; align-content: center; max-width: 34em; }
 .module__texte p { color: var(--texte-2); }
 .module__texte .offre-ligne { color: var(--encre); }
-.fil { display: grid; gap: 12px; padding: clamp(18px, 2.6vw, 30px); background: var(--blanc); border-radius: var(--r-carte); }
+.module__scene { display: grid; min-width: 0; padding: clamp(20px, 4vw, 48px); border-radius: var(--r-tuile); }
+.module__scene--texto { background: radial-gradient(70% 60% at 92% 0%, rgba(30, 158, 90, .18), rgba(30, 158, 90, 0) 70%), var(--texto-teinte); }
+.module__scene--site { background: radial-gradient(70% 60% at 8% 0%, rgba(242, 169, 0, .24), rgba(242, 169, 0, 0) 70%), var(--site-teinte); }
+.fil { display: grid; gap: 12px; padding: clamp(18px, 2.6vw, 30px); background: var(--blanc); border-radius: var(--r-carte); box-shadow: var(--ombre-flotte); }
+.fil li { transition: opacity .45s var(--sortie), transform .45s var(--sortie); }
+.js .fil.attente li, .js .fil.joue li:not(.montre) { opacity: 0; transform: translateY(8px); }
+.fil .bord__quoi { position: relative; }
+.fil .bord__quoi b::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 8px; border-radius: 50%; vertical-align: 1px; background: var(--c, var(--contour)); }
+.fil li[data-etat="manque"] { --c: var(--urgence); }
+.fil li[data-etat="envoye"] { --c: var(--texto); }
+.fil li[data-etat="reponse"] { --c: var(--centre); }
+.fil__ecrit { position: absolute; left: 0; top: 1.75em; display: none; gap: 4px; align-items: center; height: 1.2em; }
+.fil__ecrit i { width: 7px; height: 7px; border-radius: 50%; background: var(--texte-2); animation: ecrit 1s ease-in-out infinite; }
+.fil__ecrit i:nth-child(2) { animation-delay: .15s; } .fil__ecrit i:nth-child(3) { animation-delay: .3s; }
+@keyframes ecrit { 0%, 60%, 100% { opacity: .3; transform: none; } 30% { opacity: 1; transform: translateY(-2px); } }
+.fil li.ecrit .fil__ecrit { display: inline-flex; }
+.fil li.ecrit q { visibility: hidden; }
 .fil li { display: grid; grid-template-columns: 4.2rem minmax(0, 1fr); align-items: baseline; gap: 4px 12px; padding-block: 14px; border-top: 1px solid var(--trait); }
 .fil li:first-child { padding-top: 0; border-top: 0; }
 .fil q { color: var(--encre); font-size: 1rem; line-height: 1.45; quotes: "«\00a0" "\00a0»"; }
-.module__image { display: block; overflow: hidden; border-radius: var(--r-carte); background: var(--blanc); }
+.module__image { display: block; overflow: hidden; border-radius: 14px; background: var(--blanc); box-shadow: var(--ombre-flotte); }
 .module__image img { width: 100%; transition: transform .6s var(--sortie); }
 .module__image:hover img { transform: scale(1.02); }
 @media (max-width: 480px) { .fil li { grid-template-columns: minmax(0, 1fr); } }
@@ -238,7 +306,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 }
 
 /* Calculateur : une tuile grise ; le résultat à côté des curseurs, derrière un filet */
-.calcul { display: grid; gap: 36px; padding: clamp(24px, 4.2vw, 56px); background: var(--gris); border-radius: var(--r-tuile); }
+.calcul { display: grid; gap: 36px; padding: clamp(24px, 4.2vw, 56px); background: radial-gradient(60% 75% at 100% 100%, rgba(255, 122, 61, .16), rgba(255, 122, 61, 0) 72%), var(--gris); border-radius: var(--r-tuile); }
 .calcul__tete { display: grid; gap: 14px; max-width: 40em; }
 .calcul__corps { display: grid; gap: 28px; }
 .curseurs { display: grid; gap: 28px; align-content: center; }
@@ -248,8 +316,9 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .curseur input::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--lampe) var(--p), var(--repos) var(--p)); }
 .curseur input::-moz-range-track { height: 6px; border-radius: 3px; background: var(--repos); }
 .curseur input::-moz-range-progress { height: 6px; border-radius: 3px; background: var(--lampe); }
-.curseur input::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; margin-top: -10px; border: 1.5px solid var(--contour); border-radius: 50%; background: var(--blanc); }
-.curseur input::-moz-range-thumb { width: 23px; height: 23px; border: 1.5px solid var(--contour); border-radius: 50%; background: var(--blanc); }
+.curseur input::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; margin-top: -10px; border: 1.5px solid var(--contour); border-radius: 50%; background: var(--blanc); box-shadow: 0 2px 6px rgba(14, 26, 43, .18); transition: transform .15s var(--sortie); }
+.curseur input:active::-webkit-slider-thumb { transform: scale(1.12); }
+.curseur input::-moz-range-thumb { width: 23px; height: 23px; border: 1.5px solid var(--contour); border-radius: 50%; background: var(--blanc); box-shadow: 0 2px 6px rgba(14, 26, 43, .18); }
 .resultat { display: grid; gap: 10px; align-content: center; padding-top: 28px; border-top: 1px solid var(--trait-gris); }
 .resultat p { color: var(--texte-2); }
 .resultat .resultat__montant { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; color: var(--encre); font-size: clamp(3rem, 6vw, 4.5rem); font-weight: 700; line-height: 1; letter-spacing: -.045em; font-variant-numeric: tabular-nums; }
@@ -258,12 +327,12 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 @media (min-width: 960px) { .calcul__corps { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 0; } .curseurs { padding-right: 56px; } .resultat { padding: 0 0 0 56px; border-top: 0; border-left: 1px solid var(--trait-gris); } }
 
 /* Forfaits : une tuile, trois colonnes séparées par des filets */
-.forfaits { display: grid; background: var(--blanc); border-radius: var(--r-tuile); overflow: hidden; }
+.forfaits { display: grid; background: var(--blanc); border-radius: var(--r-tuile); }
 .forfait { display: grid; align-content: start; gap: 18px; padding: clamp(26px, 3vw, 40px); }
 .forfait + .forfait { border-top: 1px solid var(--trait); }
 .forfait__nom { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
 .forfait__nom h3 { font-size: 1.625rem; font-weight: 700; letter-spacing: -.025em; }
-.etiquette { padding: 4px 10px; border-radius: 999px; background: var(--encre); color: #fff; font-size: .75rem; font-weight: 600; }
+.etiquette { padding: 4px 10px; border-radius: 999px; background: var(--lampe); color: var(--encre); font-size: .75rem; font-weight: 650; }
 .forfait__pour { color: var(--texte-2); }
 .forfait__prix { display: flex; align-items: baseline; gap: 6px; }
 .forfait__prix b { font-size: 3rem; font-weight: 700; line-height: 1; letter-spacing: -.045em; font-variant-numeric: tabular-nums; }
@@ -271,20 +340,46 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .forfait__depart { margin-top: -8px; color: var(--texte-2); font-size: .9375rem; }
 .forfait .btn { width: 100%; }
 .forfait ul { margin-top: 4px; }
-.forfait li { padding-block: 11px; border-top: 1px solid var(--trait); font-size: .975rem; line-height: 1.45; }
+.forfait li { position: relative; padding: 11px 0 11px 20px; border-top: 1px solid var(--trait); font-size: .975rem; line-height: 1.45; }
+/* La pastille dit de quel module vient chaque ligne : orange répondeur, vert texto, bleu centre de contrôle, ambre site */
+.forfait li::before, .modules b::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--contour)); }
+.forfait li::before { position: absolute; left: 0; top: calc(11px + .5em); }
+[data-m="voix"] { --c: var(--lampe); } [data-m="texto"] { --c: var(--texto); } [data-m="centre"] { --c: var(--centre); } [data-m="site"] { --c: var(--site); }
 .forfait li.minutes { font-weight: 650; }
-.forfait--vedette { background: #FBFBFC; }
+.forfait--vedette { position: relative; z-index: 1; border-radius: 24px; background: linear-gradient(180deg, #FFF1E8 0%, rgba(255, 241, 232, 0) 260px), var(--blanc); box-shadow: var(--ombre-flotte), inset 0 0 0 2px var(--lampe); }
+.choix-forfait { display: none; }
+@keyframes entree { from { opacity: 0; transform: translateY(10px); } }
+@media (max-width: 959px) {
+  .js .choix-forfait { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; max-width: 440px; margin: 0 auto 16px; padding: 4px; border-radius: 999px; background: rgba(14, 26, 43, .07); }
+  .choix-forfait button { min-height: 44px; padding: 0 8px; border: 0; border-radius: 999px; background: transparent; color: var(--encre); font: 600 .9375rem/1 var(--police); cursor: pointer; transition: background-color .25s, box-shadow .25s; }
+  .choix-forfait button[aria-pressed="true"] { background: var(--blanc); box-shadow: var(--ombre-douce); }
+  .js .forfait.masque { display: none; }
+  .js .forfait + .forfait { border-top: 0; }
+  .forfait.entre { animation: entree .4s var(--sortie); }
+  .js .forfait--vedette { border-radius: var(--r-tuile); }
+}
 @media (min-width: 960px) {
   /* Les rangées (nom, phrase, prix, départ, bouton, liste) s'alignent d'une colonne à l'autre */
   .forfaits { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(6, auto); }
   .forfait { grid-row: span 6; grid-template-rows: subgrid; }
   .forfait + .forfait { border-top: 0; border-left: 1px solid var(--trait); }
+  /* La carte vedette a déjà son anneau orange : pas de filet de chaque côté */
+  .forfait.forfait--vedette, .forfait--vedette + .forfait { border-left: 0; }
   .forfait__pour { min-height: 3.2em; }
 }
 
-.carte { display: grid; gap: 24px; margin-top: 20px; }
-.carte__tete { display: grid; gap: 10px; max-width: 44em; }
-.carte__tete p { color: var(--texte-2); }
+.carte { margin-top: 20px; }
+.carte > summary { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 16px; align-items: start; cursor: pointer; list-style: none; }
+.carte > summary::-webkit-details-marker { display: none; }
+.carte > summary h3, .carte__texte { grid-column: 1; }
+.carte__texte { max-width: 44em; }
+.carte__chevron { grid-column: 2; grid-row: 1 / span 2; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--gris); color: var(--encre); transition: transform .35s var(--sortie), background-color .2s; }
+.carte__chevron svg { width: 20px; height: 20px; }
+.carte > summary:hover .carte__chevron { background: var(--trait); }
+.carte[open] .carte__chevron { transform: rotate(180deg); }
+.carte__corps { display: grid; gap: 24px; margin-top: 24px; }
+.modules b::before { margin-right: 10px; vertical-align: 1px; }
+.carte__texte { color: var(--texte-2); }
 .table-defile { overflow-x: auto; }
 .modules { width: 100%; border-collapse: collapse; font-size: .975rem; }
 .modules th, .modules td { padding: 13px 0; border-top: 1px solid var(--trait); text-align: left; vertical-align: top; }
@@ -292,7 +387,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .modules td:not(:first-child), .modules th:not(:first-child) { width: 7.5rem; padding-left: 12px; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 @media (max-width: 560px) { .modules { font-size: .9375rem; } .modules td:not(:first-child), .modules th:not(:first-child) { width: 4.75rem; } }
 .modules td:first-child b { font-weight: 650; }
-.modules td:first-child span { display: block; color: var(--texte-2); font-size: .875rem; }
+.modules td:first-child span { display: block; padding-left: 18px; color: var(--texte-2); font-size: .875rem; }
 .extras { display: grid; gap: 8px; color: var(--texte-2); font-size: .9375rem; }
 .extras b { color: var(--encre); font-weight: 600; }
 
@@ -324,6 +419,13 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .form h3 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.025em; }
 .form__forfait { padding: 10px 14px; background: var(--gris); border-radius: 12px; font-size: .9375rem; font-weight: 600; }
 .champs { display: grid; gap: 16px; }
+.plus > summary { display: flex; align-items: center; gap: 8px; min-height: 52px; padding: 0 16px; border-radius: var(--r-champ); background: var(--gris); font-size: .9375rem; font-weight: 600; cursor: pointer; list-style: none; }
+.plus > summary::-webkit-details-marker { display: none; }
+.plus > summary span { color: var(--texte-2); font-weight: 400; }
+.plus > summary svg { width: 18px; height: 18px; margin-left: auto; color: var(--texte-2); transition: transform .3s var(--sortie); }
+.plus[open] > summary { margin-bottom: 16px; }
+.plus[open] > summary svg { transform: rotate(45deg); }
+@media (min-width: 640px) { .plus > summary { display: none; } }
 .champ { display: grid; gap: 6px; }
 .champ label { font-size: .9375rem; font-weight: 600; }
 .champ label span { color: var(--texte-2); font-weight: 400; }
@@ -355,6 +457,14 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .pied__sources { padding-block: 20px; font-size: .8125rem; line-height: 1.6; }
 .pied__sources a { color: var(--texte-2); }
 .pied__bas { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font-size: .8125rem; }
+.barre { display: none; }
+@media (max-width: 639px) {
+  .js .barre { position: fixed; z-index: 55; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; padding: 10px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); background: rgba(255, 255, 255, .9); -webkit-backdrop-filter: saturate(180%) blur(18px); backdrop-filter: saturate(180%) blur(18px); border-top: 1px solid rgba(14, 26, 43, .08); box-shadow: 0 -12px 32px -20px rgba(14, 26, 43, .35); transform: translateY(110%); visibility: hidden; transition: transform .4s var(--sortie), visibility 0s linear .4s; }
+  .js .barre.visible { transform: none; visibility: visible; transition: transform .4s var(--sortie), visibility 0s; }
+  .barre .btn { min-height: 48px; padding: 0 18px; font-size: 1rem; }
+  /* Le champ qui reçoit le focus au clavier ne se cache pas sous la barre */
+  .js { scroll-padding-bottom: 84px; }
+}
 @media (min-width: 860px) { .pied__haut { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); } }
 
 @media (prefers-reduced-motion: reduce) {
@@ -419,8 +529,8 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
               <li data-t="4400"><span class="qui">Client</span><q>Mardi, 9 h.</q></li>
             </ol>
             <ul class="appel__suite">
-              <li data-t="5600"><b>Rendez-vous ajouté à l’agenda</b><span>Mardi 9 h · 12, rue Laval, Gatineau</span></li>
-              <li data-t="6200"><b>Résumé envoyé par texto</b><span>À vous et au client</span></li>
+              <li data-t="5600"><i class="puce puce--centre"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10.5l3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></i><div><b>Rendez-vous ajouté à l’agenda</b><span>Mardi 9 h · 12, rue Laval, Gatineau</span></div></li>
+              <li data-t="6200"><i class="puce puce--texto"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10.5l3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></i><div><b>Résumé envoyé par texto</b><span>À vous et au client</span></div></li>
             </ul>
           </div>
         </div>
@@ -447,13 +557,16 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
         <p class="lead">On écrit son script avec vous, pour votre métier : vos services, votre secteur, vos urgences. Elle suit vos règles, et vous passe l’appel quand il le faut.</p>
         <p class="petit">Les répliques citées sont un exemple fictif.</p>
       </div>
-      <ol class="etapes">
+      <div class="deroule__etapes">
+      <ol class="etapes" id="etapes">
         <li><h3>Elle se présente</h3><p>Elle dit qu’elle est l’assistante virtuelle de votre entreprise et passe à l’anglais si le client parle anglais.</p><p class="replique"><span class="qui">Léa</span><q>Bonjour, Plomberie Lavoie, ici Léa, l’assistante virtuelle.</q></p></li>
         <li><h3>Elle repère les urgences</h3><p>Dégât d’eau, odeur de gaz, chauffage en panne l’hiver : elle donne la consigne de sécurité et transfère l’appel à votre cellulaire tout de suite.</p></li>
         <li><h3>Elle prend le besoin et les coordonnées</h3><p>Le service, depuis quand, le nom, le numéro confirmé à voix haute et l’adresse. Si l’adresse est hors de votre secteur, elle le dit poliment.</p></li>
         <li><h3>Elle réserve</h3><p>Elle propose deux heures libres dans votre agenda. Avec le forfait Répondeur, elle promet plutôt un rappel avant une heure précise.</p><p class="replique"><span class="qui">Léa</span><q>Donc : chauffe-eau qui fuit, au 12, rue Laval, mardi 9 h. C’est bien ça ?</q></p></li>
         <li><h3>Elle vous envoie le résumé</h3><p>Un texto part à vous et au client. Si le client veut parler à quelqu’un, ou si elle ne comprend pas deux fois, elle vous transfère l’appel avec un résumé.</p></li>
       </ol>
+      <div class="points" id="points" aria-hidden="true"><i class="actif"></i><i></i><i></i><i></i><i></i></div>
+      </div>
     </div>
   </section>
 
@@ -476,16 +589,16 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
           </ul>
           <p class="offre-ligne">Seul : 149 $ par mois. Inclus dans Croissance et Complet.</p>
         </div>
-        <figure class="bord" aria-label="Exemple fictif du centre de contrôle">
+        <figure class="bord" id="bord" aria-label="Exemple fictif du centre de contrôle">
           <div class="bord__tete"><b>Aujourd’hui</b><span>Plomberie Lavoie</span></div>
           <ul class="bord__appels">
-            <li><span class="bord__heure">14 h 32</span><span class="bord__quoi"><b>Chauffe-eau qui fuit</b><span>12, rue Laval · mardi 9 h</span></span><span class="bord__statut">Rendez-vous</span></li>
-            <li><span class="bord__heure">11 h 05</span><span class="bord__quoi"><b>Odeur de gaz</b><span>Transféré à votre cellulaire</span></span><span class="bord__statut">Urgence</span></li>
-            <li><span class="bord__heure">9 h 40</span><span class="bord__quoi"><b>Soumission, salle de bain</b><span>Rappel promis avant 16 h</span></span><span class="bord__statut">Rappel</span></li>
+            <li style="--i:2"><span class="bord__heure">14 h 32</span><span class="bord__quoi"><b>Chauffe-eau qui fuit</b><span>12, rue Laval · mardi 9 h</span></span><span class="bord__statut bord__statut--rdv">Rendez-vous</span></li>
+            <li style="--i:1"><span class="bord__heure">11 h 05</span><span class="bord__quoi"><b>Odeur de gaz</b><span>Transféré à votre cellulaire</span></span><span class="bord__statut bord__statut--urgence">Urgence</span></li>
+            <li style="--i:0"><span class="bord__heure">9 h 40</span><span class="bord__quoi"><b>Soumission, salle de bain</b><span>Rappel promis avant 16 h</span></span><span class="bord__statut bord__statut--rappel">Rappel</span></li>
           </ul>
           <div class="bord__chiffres">
-            <div><b>86</b><span>appels répondus ce mois-ci</span><span class="barres" aria-hidden="true"><i style="--h:42%"></i><i style="--h:55%"></i><i style="--h:51%"></i><i style="--h:68%"></i><i style="--h:74%"></i><i style="--h:92%"></i></span></div>
-            <div><b>4,8</b><span>note Google, 37 avis</span><span class="etoiles" aria-hidden="true"><svg><use href="#i-etoile"/></svg><svg><use href="#i-etoile"/></svg><svg><use href="#i-etoile"/></svg><svg><use href="#i-etoile"/></svg><svg><use href="#i-etoile"/></svg></span></div>
+            <div><b id="bord-appels">86</b><span>appels répondus ce mois-ci</span><span class="barres" aria-hidden="true"><i style="--h:42%;--i:0"></i><i style="--h:55%;--i:1"></i><i style="--h:51%;--i:2"></i><i style="--h:68%;--i:3"></i><i style="--h:74%;--i:4"></i><i style="--h:92%;--i:5"></i></span></div>
+            <div><b>4,8</b><span>note Google, 37 avis</span><span class="etoiles" aria-hidden="true"><svg style="--i:0"><use href="#i-etoile"/></svg><svg style="--i:1"><use href="#i-etoile"/></svg><svg style="--i:2"><use href="#i-etoile"/></svg><svg style="--i:3"><use href="#i-etoile"/></svg><svg style="--i:4"><use href="#i-etoile"/></svg></span></div>
           </div>
           <figcaption class="exemple-note">Exemple fictif.</figcaption>
         </figure>
@@ -497,14 +610,16 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
           <p>Si quelqu’un raccroche avant de parler, il reçoit tout de suite un texto à votre nom. Le contact n’est pas perdu.</p>
           <p class="offre-ligne">Inclus avec le répondeur. Seul : 69 $ par mois.</p>
         </div>
-        <figure class="fil" aria-label="Exemple fictif d'un texto après un appel manqué">
+        <div class="module__scene module__scene--texto">
+        <figure class="fil" id="fil" aria-label="Exemple fictif d'un texto après un appel manqué">
           <ol>
-            <li><span class="bord__heure">14 h 32</span><span class="bord__quoi"><b>Appel manqué</b><span>Le 819 555-0142 a raccroché avant de parler.</span></span></li>
-            <li><span class="bord__heure">14 h 32</span><span class="bord__quoi"><b>Texto envoyé à votre nom</b><q>Désolé d’avoir manqué votre appel. Comment peut-on vous aider ?</q></span></li>
-            <li><span class="bord__heure">14 h 39</span><span class="bord__quoi"><b>Réponse du client</b><q>Une fuite sous l’évier. Vous pouvez passer demain ?</q></span></li>
+            <li data-etat="manque"><span class="bord__heure">14 h 32</span><span class="bord__quoi"><b>Appel manqué</b><span>Le 819 555-0142 a raccroché avant de parler.</span></span></li>
+            <li data-etat="envoye"><span class="bord__heure">14 h 32</span><span class="bord__quoi"><b>Texto envoyé à votre nom</b><q>Désolé d’avoir manqué votre appel. Comment peut-on vous aider ?</q><span class="fil__ecrit" aria-hidden="true"><i></i><i></i><i></i></span></span></li>
+            <li data-etat="reponse"><span class="bord__heure">14 h 39</span><span class="bord__quoi"><b>Réponse du client</b><q>Une fuite sous l’évier. Vous pouvez passer demain ?</q><span class="fil__ecrit" aria-hidden="true"><i></i><i></i><i></i></span></span></li>
           </ol>
           <figcaption class="exemple-note">Exemple fictif.</figcaption>
         </figure>
+        </div>
       </div>
 
       <div class="module module--inverse">
@@ -514,8 +629,9 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
           <p class="petit">Notre réalisation : Mobilo Moving, déménageur de Gatineau. Site bilingue avec estimation à partir d’une photo. <a class="lien-externe" href="https://themobilo.com" target="_blank" rel="noopener">themobilo.com</a></p>
           <p class="offre-ligne">Site : 99 $ par mois. Chatbot : 59 $ de plus.</p>
         </div>
+        <div class="module__scene module__scene--site">
         <a class="module__image" href="https://themobilo.com" target="_blank" rel="noopener" aria-label="Voir le site de Mobilo Moving (nouvel onglet)"><img src="assets/mobilo-apercu.webp" srcset="assets/mobilo-apercu-720.webp 720w, assets/mobilo-apercu.webp 1440w" sizes="(min-width: 960px) 600px, 100vw" width="1440" height="900" alt="Page d'accueil du site de Mobilo Moving" loading="lazy" decoding="async"></a>
-      </div>
+        </div>
       </div>
     </div>
   </section>
@@ -561,68 +677,75 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
         <p class="petit">Installé et suivi par les deux cofondateurs, Hugo Martin et Yacine Eddaoudi, à Gatineau.</p>
       </div>
 
-      <div class="forfaits">
-        <div class="forfait">
+      <div class="choix-forfait" id="choix-forfait" role="group" aria-label="Voir un forfait" aria-controls="liste-forfaits">
+        <button type="button" data-plan="Répondeur" aria-pressed="false">Répondeur</button>
+        <button type="button" data-plan="Croissance" aria-pressed="true">Croissance</button>
+        <button type="button" data-plan="Complet" aria-pressed="false">Complet</button>
+      </div>
+      <div class="forfaits" id="liste-forfaits">
+        <div class="forfait" data-nom="Répondeur">
           <div class="forfait__nom"><h3>Répondeur</h3></div>
           <p class="forfait__pour">Pour ne plus perdre un seul appel.</p>
           <p class="forfait__prix"><b>199 $</b><span>par mois</span></p>
           <p class="forfait__depart">Frais de départ : 299 $</p>
           <a class="btn btn--contour" href="#contact" data-forfait="Répondeur">Choisir Répondeur</a>
           <ul>
-            <li>Réceptionniste virtuelle 24 h sur&nbsp;24, en français et en anglais</li>
-            <li>Script écrit pour votre métier, avec les urgences</li>
-            <li>Résumé par texto à vous et au client après chaque appel</li>
-            <li>Transfert de l’appel à votre cellulaire</li>
-            <li>Texto automatique si quelqu’un raccroche avant de parler</li>
-            <li class="minutes">250 minutes d’appel par mois</li>
+            <li data-m="voix">Réceptionniste virtuelle 24 h sur&nbsp;24, en français et en anglais</li>
+            <li data-m="voix">Script écrit pour votre métier, avec les urgences</li>
+            <li data-m="voix">Résumé par texto à vous et au client après chaque appel</li>
+            <li data-m="voix">Transfert de l’appel à votre cellulaire</li>
+            <li data-m="texto">Texto automatique si quelqu’un raccroche avant de parler</li>
+            <li class="minutes" data-m="voix">250 minutes d’appel par mois</li>
           </ul>
         </div>
-        <div class="forfait forfait--vedette">
+        <div class="forfait forfait--vedette" data-nom="Croissance">
           <div class="forfait__nom"><h3>Croissance</h3><span class="etiquette">Recommandé</span></div>
           <p class="forfait__pour">Pour remplir l’agenda tout seul.</p>
           <p class="forfait__prix"><b>299 $</b><span>par mois</span></p>
           <p class="forfait__depart">Frais de départ : 399 $</p>
           <a class="btn" href="#contact" data-forfait="Croissance">Choisir Croissance</a>
           <ul>
-            <li>Tout le forfait Répondeur</li>
-            <li>Rendez-vous réservés dans votre agenda</li>
-            <li>Demandes d’avis Google après chaque travail</li>
-            <li>Centre de contrôle sur cellulaire et ordinateur</li>
-            <li>Courriels automatiques : relance des soumissions, rappels de rendez-vous</li>
-            <li>Graphiques et rapport mensuel</li>
-            <li class="minutes">500 minutes d’appel par mois</li>
+            <li data-m="voix">Tout le forfait Répondeur</li>
+            <li data-m="centre">Rendez-vous réservés dans votre agenda</li>
+            <li data-m="centre">Demandes d’avis Google après chaque travail</li>
+            <li data-m="centre">Centre de contrôle sur cellulaire et ordinateur</li>
+            <li data-m="centre">Courriels automatiques : relance des soumissions, rappels de rendez-vous</li>
+            <li data-m="centre">Graphiques et rapport mensuel</li>
+            <li class="minutes" data-m="voix">500 minutes d’appel par mois</li>
           </ul>
         </div>
-        <div class="forfait">
+        <div class="forfait" data-nom="Complet">
           <div class="forfait__nom"><h3>Complet</h3></div>
           <p class="forfait__pour">Toute votre présence en ligne, gérée par nous.</p>
           <p class="forfait__prix"><b>399 $</b><span>par mois</span></p>
           <p class="forfait__depart">Frais de départ : 799 $, site inclus</p>
           <a class="btn btn--contour" href="#contact" data-forfait="Complet">Choisir Complet</a>
           <ul>
-            <li>Tout le forfait Croissance</li>
-            <li>Site web sur mesure, bilingue, hébergé et mis à jour</li>
-            <li>Graphiques des visites et de la provenance des clients</li>
+            <li data-m="centre">Tout le forfait Croissance</li>
+            <li data-m="site">Site web sur mesure, bilingue, hébergé et mis à jour</li>
+            <li data-m="site">Graphiques des visites et de la provenance des clients</li>
             <li>Soutien prioritaire</li>
-            <li class="minutes">600 minutes d’appel par mois</li>
+            <li class="minutes" data-m="voix">600 minutes d’appel par mois</li>
           </ul>
         </div>
       </div>
 
-      <div class="tuile carte">
-        <div class="carte__tete">
+      <details class="tuile carte" id="a-la-carte" open>
+        <summary>
           <h3>Ou à la carte</h3>
-          <p>Prenez seulement ce qu’il vous faut. Plusieurs modules ensemble coûtent moins cher : on vous fait le calcul pendant l’audit.</p>
-        </div>
+          <span class="carte__texte">Prenez seulement ce qu’il vous faut. Plusieurs modules ensemble coûtent moins cher : on vous fait le calcul pendant l’audit.</span>
+          <span class="carte__chevron"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 7.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </summary>
+        <div class="carte__corps">
         <div class="table-defile">
           <table class="modules">
             <thead><tr><th scope="col">Module</th><th scope="col">Par mois</th><th scope="col">Départ</th></tr></thead>
             <tbody>
-              <tr><td><b>Répondeur vocal IA</b><span>Inclut le texto après appel manqué, 250 minutes</span></td><td>199 $</td><td>299 $</td></tr>
-              <tr><td><b>Texto après appel manqué</b></td><td>69 $</td><td>99 $</td></tr>
-              <tr><td><b>Site web</b><span>Sur mesure, bilingue, hébergé</span></td><td>99 $</td><td>499 $</td></tr>
-              <tr><td><b>Centre de contrôle</b><span>Clients, agenda, avis, courriels, rapport</span></td><td>149 $</td><td>199 $</td></tr>
-              <tr><td><b>Chatbot IA sur votre site</b><span>Avec le site web, ou sur votre site actuel</span></td><td>+ 59 $</td><td>+ 199 $</td></tr>
+              <tr data-m="voix"><td><b>Répondeur vocal IA</b><span>Inclut le texto après appel manqué, 250 minutes</span></td><td>199 $</td><td>299 $</td></tr>
+              <tr data-m="texto"><td><b>Texto après appel manqué</b></td><td>69 $</td><td>99 $</td></tr>
+              <tr data-m="site"><td><b>Site web</b><span>Sur mesure, bilingue, hébergé</span></td><td>99 $</td><td>499 $</td></tr>
+              <tr data-m="centre"><td><b>Centre de contrôle</b><span>Clients, agenda, avis, courriels, rapport</span></td><td>149 $</td><td>199 $</td></tr>
+              <tr data-m="site"><td><b>Chatbot IA sur votre site</b><span>Avec le site web, ou sur votre site actuel</span></td><td>+ 59 $</td><td>+ 199 $</td></tr>
             </tbody>
           </table>
         </div>
@@ -630,7 +753,8 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
           <p><b>Minutes en plus :</b> 0,39 $ la minute, et on vous avertit à 80 % de votre forfait. Si vous dépassez souvent : un bloc de 250 minutes de plus pour 79 $ par mois.</p>
           <p><b>Deuxième numéro ou succursale :</b> 49 $ par mois. <b>Répondeur pour tous vos appels,</b> pas seulement ceux que vous manquez : sur devis.</p>
         </div>
-      </div>
+        </div>
+      </details>
     </div>
   </section>
 
@@ -691,7 +815,11 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
           <div class="champ"><label for="f-entreprise">Entreprise</label><input id="f-entreprise" name="entreprise" autocomplete="organization" required></div>
           <div class="champ"><label for="f-tel">Téléphone</label><input id="f-tel" name="telephone" type="tel" autocomplete="tel" inputmode="tel" required></div>
           <div class="champ"><label for="f-courriel">Courriel <span>(facultatif)</span></label><input id="f-courriel" name="courriel" type="email" autocomplete="email"></div>
-          <div class="champ"><label for="f-metier">Votre métier</label>
+        </div>
+        <details class="plus" id="plus" open>
+        <summary>Ajouter des détails <span>(facultatif)</span><svg aria-hidden="true"><use href="#i-plus"/></svg></summary>
+        <div class="champs">
+          <div class="champ"><label for="f-metier">Votre métier <span>(facultatif)</span></label>
             <select id="f-metier" name="metier">
               <option value="">Choisir votre métier</option>
               <option>Plomberie</option>
@@ -716,6 +844,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
           </div>
           <div class="champ champ--large"><label for="f-message">Un mot sur votre situation <span>(facultatif)</span></label><textarea id="f-message" name="message" placeholder="Ex. : je rate des appels quand je suis sur un chantier"></textarea></div>
         </div>
+        </details>
         <p class="form__mention">On utilise ces renseignements pour vous rappeler, préparer votre audit et en faire le suivi. Le formulaire passe par Web3Forms et nos courriels par Google : ils peuvent être traités hors du Québec. <a href="confidentialite.html">Politique de confidentialité</a></p>
         <button class="btn" type="submit">Demander mon audit gratuit</button>
         <p class="form__resultat" role="status" aria-live="polite"></p>
@@ -757,6 +886,11 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
   </div>
 </footer>
 
+<nav class="barre" id="barre" aria-label="Nous joindre">
+  <a class="btn btn--contour" href="tel:+18734558990" aria-label="Appeler le 873 455-8990"><span class="tel">873 455-8990</span></a>
+  <a class="btn" href="#contact">Audit gratuit</a>
+</nav>
+
 <script>
 (function () {
   var doc = document.documentElement;
@@ -765,6 +899,27 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
   var mq = matchMedia('(prefers-reduced-motion: reduce)');
   var calme = mq.matches;
   var fmt = function (n) { return n.toLocaleString('fr-CA', { maximumFractionDigits: 0 }); };
+  var avecIO = 'IntersectionObserver' in window;
+  var grand = matchMedia('(min-width: 960px)'), moyen = matchMedia('(min-width: 640px)');
+  // Fait monter un nombre jusqu'à sa valeur (ralenti à la fin)
+  function compter(el, de, a, ms, fin) {
+    var t0 = null;
+    function pas(t) { if (!t0) t0 = t; var k = Math.min(1, (t - t0) / ms), e = 1 - Math.pow(1 - k, 3); el.textContent = fmt(Math.round(de + (a - de) * e)); if (k < 1) fin.id = requestAnimationFrame(pas); }
+    cancelAnimationFrame(fin.id); fin.id = requestAnimationFrame(pas);
+  }
+  // Une démonstration qui se joue une seule fois, quand elle arrive à l'écran (sinon : l'état final, tout de suite)
+  function aLecran(el, jouer, seuil) {
+    if (!el || !avecIO || calme) return;
+    el.classList.add('attente');
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (!e.isIntersecting) return; io.disconnect(); el.classList.remove('attente'); el.classList.add('vu'); if (jouer) jouer(); });
+    }, { threshold: seuil || .35 });
+    io.observe(el);
+  }
+
+  // En-tête : une ombre dès qu'on défile
+  var nav = document.getElementById('nav'), tic = false;
+  addEventListener('scroll', function () { if (tic) return; tic = true; requestAnimationFrame(function () { nav.classList.toggle('defile', scrollY > 8); tic = false; }); }, { passive: true });
 
   // Logo : le nom s'affiche au chargement, puis se replie sur l'icône
   var logo = document.getElementById('logo');
@@ -774,21 +929,21 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
   // Avec JavaScript, il se déroule une fois à l'arrivée ; le bouton le rejoue ou l'arrête.
   var appel = document.getElementById('appel'), lignes = appel.querySelectorAll('[data-t]');
   var etat = document.getElementById('a-etat'), duree = document.getElementById('a-duree');
-  var bouton = document.getElementById('reprise');
+  var bouton = document.getElementById('reprise'), fond = appel.parentNode;
   var FIN_APPEL = 5200, FIN = 6800, SECONDES = 48;
   var minuteries = [], chrono = null, joue = false;
   function enMinutes(s) { return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); }
   function arreter() { minuteries.forEach(clearTimeout); minuteries = []; clearInterval(chrono); }
   function finale() {
     arreter(); joue = false;
-    appel.classList.remove('joue', 'en-cours');
+    appel.classList.remove('joue', 'en-cours'); fond.classList.remove('vive');
     lignes.forEach(function (l) { l.classList.add('on'); });
     etat.textContent = 'Appel terminé'; duree.textContent = enMinutes(SECONDES);
     bouton.textContent = 'Rejouer l’appel';
   }
   function jouer() {
     arreter(); joue = true;
-    appel.classList.add('joue', 'en-cours');
+    appel.classList.add('joue', 'en-cours'); fond.classList.add('vive');
     lignes.forEach(function (l) { l.classList.remove('on'); });
     etat.textContent = 'En ligne avec Léa'; duree.textContent = '0:00';
     bouton.textContent = 'Arrêter';
@@ -798,7 +953,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
       duree.textContent = enMinutes(s);
     }, 200);
     lignes.forEach(function (l) { minuteries.push(setTimeout(function () { l.classList.add('on'); }, +l.dataset.t)); });
-    minuteries.push(setTimeout(function () { clearInterval(chrono); duree.textContent = enMinutes(SECONDES); appel.classList.remove('en-cours'); etat.textContent = 'Appel terminé'; }, FIN_APPEL));
+    minuteries.push(setTimeout(function () { clearInterval(chrono); duree.textContent = enMinutes(SECONDES); appel.classList.remove('en-cours'); fond.classList.remove('vive'); etat.textContent = 'Appel terminé'; }, FIN_APPEL));
     minuteries.push(setTimeout(finale, FIN));
   }
   bouton.addEventListener('click', function () { if (joue) finale(); else jouer(); });
@@ -807,20 +962,92 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
   function selonSysteme(e) { calme = e.matches; if (calme && joue) finale(); }
   if (mq.addEventListener) mq.addEventListener('change', selonSysteme); else if (mq.addListener) mq.addListener(selonSysteme);
 
+  // Déroulé : chaque étape s'allume quand on y arrive ; au cellulaire, les étapes se glissent
+  var listeEtapes = document.getElementById('etapes'), points = document.querySelectorAll('#points i');
+  if (avecIO) {
+    var ioE = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('vu'); ioE.unobserve(e.target); } }); }, { rootMargin: '0px 0px -30% 0px', threshold: .5 });
+    listeEtapes.querySelectorAll('li').forEach(function (li) { ioE.observe(li); });
+  }
+  function selonLargeur() {
+    if (moyen.matches) { listeEtapes.removeAttribute('tabindex'); listeEtapes.removeAttribute('aria-label'); }
+    else { listeEtapes.tabIndex = 0; listeEtapes.setAttribute('aria-label', 'Les cinq étapes d’un appel, à faire glisser'); }
+  }
+  selonLargeur();
+  var ticE = false;
+  listeEtapes.addEventListener('scroll', function () {
+    if (ticE) return; ticE = true;
+    requestAnimationFrame(function () {
+      var li = listeEtapes.querySelector('li'), pasL = li.getBoundingClientRect().width + 12;
+      var i = Math.max(0, Math.min(points.length - 1, Math.round(listeEtapes.scrollLeft / pasL)));
+      if (listeEtapes.scrollLeft + listeEtapes.clientWidth >= listeEtapes.scrollWidth - 4) i = points.length - 1;
+      points.forEach(function (pt, k) { pt.classList.toggle('actif', k === i); });
+      ticE = false;
+    });
+  }, { passive: true });
+
+  // Centre de contrôle : les appels de la journée arrivent, le compteur monte
+  var chiffre = document.getElementById('bord-appels'), animChiffre = {};
+  aLecran(document.getElementById('bord'), function () { compter(chiffre, 0, 86, 1200, animChiffre); });
+
+  // Texto après un appel manqué : l'appel, puis le texto qui s'écrit, puis la réponse
+  var fil = document.getElementById('fil');
+  aLecran(fil, function () {
+    var li = fil.querySelectorAll('li');
+    fil.classList.add('joue');
+    [[0, function () { li[0].classList.add('montre'); }],
+     [700, function () { li[1].classList.add('montre', 'ecrit'); }],
+     [1700, function () { li[1].classList.remove('ecrit'); }],
+     [2500, function () { li[2].classList.add('montre', 'ecrit'); }],
+     [3500, function () { li[2].classList.remove('ecrit'); fil.classList.remove('joue'); }]
+    ].forEach(function (e) { setTimeout(e[1], e[0]); });
+  }, .5);
+
   // Calculateur : un scénario, pas une mesure
   var ra = document.getElementById('r-appels'), rt = document.getElementById('r-taux'), rv = document.getElementById('r-valeur');
   var oa = document.getElementById('o-appels'), ot = document.getElementById('o-taux'), ov = document.getElementById('o-valeur'), perte = document.getElementById('perte');
   var champScenario = document.querySelector('[name=scenario_calculateur]');
+  var affiche = null, animPerte = {};
   function remplir(r) { r.style.setProperty('--p', ((r.value - r.min) / (r.max - r.min) * 100) + '%'); }
   function calculer() {
     [ra, rt, rv].forEach(remplir);
     oa.textContent = ra.value; ot.textContent = rt.value + ' sur 10'; ov.textContent = fmt(+rv.value) + ' $';
     var cible = Math.round(ra.value * 4.33 * (rt.value / 10) * rv.value / 10) * 10;
-    perte.textContent = fmt(cible);
+    if (affiche === null || calme) perte.textContent = fmt(cible); else compter(perte, affiche, cible, 280, animPerte);
+    affiche = cible;
     return cible;
   }
   [ra, rt, rv].forEach(function (r) { r.addEventListener('input', function () { var c = calculer(); champScenario.value = ra.value + ' appels manqués par semaine, ' + rt.value + ' sur 10 deviendraient clients, contrat moyen de ' + rv.value + ' $ : ' + fmt(c) + ' $ par mois'; }); });
   calculer();
+
+  // Forfaits au cellulaire : un seul à la fois, on choisit en haut (Croissance d'abord)
+  var choix = document.getElementById('choix-forfait'), plans = document.querySelectorAll('.forfait[data-nom]');
+  function montrerPlan(nom, anime) {
+    choix.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.plan === nom ? 'true' : 'false'); });
+    plans.forEach(function (pl) {
+      var on = pl.dataset.nom === nom; pl.classList.toggle('masque', !on);
+      if (on && anime && !calme) { pl.classList.remove('entre'); void pl.offsetWidth; pl.classList.add('entre'); }
+    });
+  }
+  choix.addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) montrerPlan(b.dataset.plan, true); });
+  montrerPlan('Croissance', false);
+
+  // À la carte : ouvert sur grand écran, replié au cellulaire. Détails du formulaire : repliés au cellulaire.
+  document.getElementById('a-la-carte').open = grand.matches;
+  var plus = document.getElementById('plus');
+  plus.open = moyen.matches;
+  function selonMoyen() { selonLargeur(); if (moyen.matches) plus.open = true; }
+  if (moyen.addEventListener) moyen.addEventListener('change', selonMoyen); else if (moyen.addListener) moyen.addListener(selonMoyen);
+
+  // Barre du bas : après le premier écran, cachée sur le formulaire et le pied de page
+  var barre = document.getElementById('barre');
+  if (avecIO) {
+    var vus = { hero: true, contact: false, pied: false };
+    var ioB = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { var k = e.target.dataset.barre; vus[k] = k === 'hero' ? (e.isIntersecting || e.boundingClientRect.top > 0) : e.isIntersecting; });
+      barre.classList.toggle('visible', !vus.hero && !vus.contact && !vus.pied);
+    });
+    [[document.querySelector('.hero__actions'), 'hero'], [document.getElementById('contact'), 'contact'], [document.querySelector('.pied'), 'pied']].forEach(function (c) { c[0].dataset.barre = c[1]; ioB.observe(c[0]); });
+  }
 
   // Bouton d'un forfait : le formulaire garde le forfait choisi
   var champForfait = document.querySelector('[name=forfait]'), texteForfait = document.querySelector('.form__forfait');
@@ -832,6 +1059,8 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
   // Avec JavaScript, on reste sur la page. La validation est celle du navigateur.
   var form = document.getElementById('formulaire');
   var envoyer = form.querySelector('button[type=submit]');
+  // un champ facultatif mal rempli dans les détails repliés : on les ouvre pour le montrer
+  form.addEventListener('invalid', function (e) { if (plus.contains(e.target)) plus.open = true; }, true);
   var resultat = form.querySelector('.form__resultat');
   function message(texte, ok, avecCourriel) {
     resultat.textContent = texte; resultat.style.color = ok ? '#17623F' : '#B42318';
