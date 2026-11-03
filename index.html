@@ -3,424 +3,367 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Agence UIO · Plus de clients pour les métiers, Gatineau-Ottawa</title>
-<meta name="description" content="Texto automatique après chaque appel manqué, demandes d'avis Google, site sur mesure et rapport mensuel pour les entrepreneurs de Gatineau-Ottawa.">
+<title>Agence UIO · Réceptionniste virtuelle pour les métiers, Gatineau-Ottawa</title>
+<meta name="description" content="Une réceptionniste virtuelle répond à vos appels 24 h sur 24, en français et en anglais, prend les rendez-vous et vous texte un résumé. À partir de 199 $ par mois, sans contrat. Gatineau et Ottawa.">
 <link rel="canonical" href="https://agenceuio.ca/">
-<meta name="theme-color" content="#F3F6F9">
+<meta name="theme-color" content="#FFFFFF">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="fr_CA">
 <meta property="og:site_name" content="Agence UIO">
-<meta property="og:title" content="Vos appels manqués deviennent des clients">
-<meta property="og:description" content="Texto automatique après chaque appel manqué, demandes d'avis Google, site sur mesure. Gatineau et Ottawa.">
+<meta property="og:title" content="Chaque appel répondu, même sur le chantier">
+<meta property="og:description" content="Une réceptionniste virtuelle 24 h sur 24, en français et en anglais, pour les entrepreneurs de Gatineau et d’Ottawa. À partir de 199 $ par mois, sans contrat.">
 <meta property="og:url" content="https://agenceuio.ca/">
 <meta property="og:image" content="https://agenceuio.ca/assets/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Agence UIO : vos appels manqués deviennent des clients">
+<meta property="og:image:alt" content="Agence UIO : chaque appel répondu, même sur le chantier">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/svg+xml" href="assets/logo/uio-icone.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="preload" href="assets/fonts/big-shoulders.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="assets/fonts/geologica.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/hanken-grotesk.woff2" as="font" type="font/woff2" crossorigin>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"LocalBusiness","@id":"https://agenceuio.ca/#agence","name":"Agence UIO","url":"https://agenceuio.ca/","logo":"https://agenceuio.ca/assets/apple-touch-icon.png","image":"https://agenceuio.ca/assets/og-image.jpg","telephone":"+1-873-455-8990","email":"info@agenceuio.ca","priceRange":"79-249 $ par mois","areaServed":[{"@type":"City","name":"Gatineau"},{"@type":"City","name":"Ottawa"}],"address":{"@type":"PostalAddress","addressLocality":"Gatineau","addressRegion":"QC","addressCountry":"CA"},"sameAs":["https://www.instagram.com/agence.uio/"]}
+{"@context":"https://schema.org","@type":"LocalBusiness","@id":"https://agenceuio.ca/#agence","name":"Agence UIO","url":"https://agenceuio.ca/","logo":"https://agenceuio.ca/assets/apple-touch-icon.png","image":"https://agenceuio.ca/assets/og-image.jpg","telephone":"+1-873-455-8990","email":"info@agenceuio.ca","priceRange":"69-399 $ par mois","areaServed":[{"@type":"City","name":"Gatineau"},{"@type":"City","name":"Ottawa"}],"address":{"@type":"PostalAddress","addressLocality":"Gatineau","addressRegion":"QC","addressCountry":"CA"},"sameAs":["https://www.instagram.com/agence.uio/"]}
 </script>
 <style>
-/* Polices hébergées sur le site : aucune requête vers Google. */
+/* Police hébergée sur le site : aucune requête vers Google. */
 /*FONTES*/
-@font-face { font-family: "Big Shoulders Display"; src: url("assets/fonts/big-shoulders.woff2") format("woff2"); font-weight: 600 900; font-style: normal; font-display: swap; }
-@font-face { font-family: "Geologica"; src: url("assets/fonts/geologica.woff2") format("woff2"); font-weight: 300 800; font-style: oblique 0deg 12deg; font-display: swap; }
-/*FIN-FONTES*/
+@font-face { font-family: "Hanken Grotesk"; src: url("assets/fonts/hanken-grotesk.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
 
 :root {
-  --glace: #F3F6F9;        /* fond : blanc glace, un peu bleuté */
-  --blanc: #FFFFFF;        /* panneaux clairs */
-  --encre: #0E1A2B;        /* marine du logo : texte, bande de score, contact */
-  --encre-2: #1C2B42;      /* survol sur marine */
-  --acier: #46566B;        /* texte secondaire sur fond clair */
-  --trait: #D3DCE6;        /* filets sur fond clair */
-  --trait-fonce: #2A3A52;  /* filets sur marine */
-  --brume: #AEBBCB;        /* texte secondaire sur marine */
-  --lampe: #FF6A2B;        /* orange du logo : SEULEMENT le direct (bande, but) et le bouton d'action */
-  --selection: #D5E0EC;    /* sélection de texte, bleu glace */
-  --contour: #7A899E;      /* contour des champs au repos : 3,6:1 sur blanc */
-  --anneau: var(--encre);  /* anneau de focus, suit la surface (blanc sur marine) */
-  --affiche: "Big Shoulders Display", "Arial Narrow", sans-serif;
-  --texte: "Geologica", "Segoe UI", system-ui, sans-serif;
+  --blanc: #FFFFFF;
+  --gris: #F5F5F7;         /* bandes et tuiles : le gris clair d'Apple */
+  --encre: #0E1A2B;        /* marine du logo : tout le texte */
+  --texte-2: #5B6472;      /* texte secondaire : 6:1 sur blanc, 5,5:1 sur gris */
+  --trait: #E3E5E8;        /* filets fins */
+  --trait-gris: #DCDFE3;   /* filets sur les bandes grises */
+  --contour: #868D98;      /* contour des champs au repos : 3,3:1 sur blanc */
+  --repos: #CDD1D7;        /* piste des curseurs, barres passées du graphique : décoratif */
+  --eteint: #AEB4BD;       /* point « Appel terminé » */
+  --lampe: #FF6A2B;        /* orange du logo : SEULEMENT l'action (boutons, curseurs) et le direct (point, onde) */
+  --lampe-survol: #FF7E47;
+  --selection: #FFE1D3;
+  --anneau: var(--encre);  /* anneau de focus */
+  --police: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
   --m: max(20px, 4vw);
+  --r-tuile: 28px;
+  --r-carte: 20px;
+  --r-champ: 12px;
   --sortie: cubic-bezier(.16, 1, .3, 1);
   color-scheme: light;
 }
+
 *, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 88px; scrollbar-color: #9AA9BB var(--glace); }
-body { margin: 0; background: var(--glace); color: var(--encre); font: 400 1.0625rem/1.6 var(--texte); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; caret-color: var(--encre); }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 88px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--blanc); color: var(--encre); font: 400 1.0625rem/1.6 var(--police); letter-spacing: -.006em; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
 body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 60; background: var(--blanc); }
-::selection { background: var(--selection); color: var(--encre); }
-img, svg { display: block; max-width: 100%; }
-h1, h2, h3, p, ul, ol, dl, dd, figure, blockquote { margin: 0; }
+h1, h2, h3, p, ul, ol, dl, dd, figure, blockquote, table { margin: 0; }
 ul, ol { padding: 0; list-style: none; }
-a { color: var(--encre); text-decoration-thickness: 1px; text-underline-offset: .22em; }
-a:hover { text-decoration-thickness: 2px; }
-strong, b { font-weight: 650; }
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; }
+::selection { background: var(--selection); color: var(--encre); }
 :focus-visible { outline: 3px solid var(--anneau); outline-offset: 3px; }
-.fonce, .bande, .tableau { --anneau: #fff; }
-.form { --anneau: var(--encre); }
-.wrap { width: 100%; max-width: calc(1240px + 2 * var(--m)); margin-inline: auto; padding-left: max(var(--m), env(safe-area-inset-left, 0px)); padding-right: max(var(--m), env(safe-area-inset-right, 0px)); }
-.skip { position: absolute; left: 16px; top: -80px; z-index: 100; padding: 12px 18px; background: var(--encre); color: #fff; border-radius: 2px; font-weight: 600; }
+.cache { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.skip { position: absolute; left: 16px; top: -80px; z-index: 100; padding: 12px 18px; background: var(--encre); color: #fff; border-radius: 999px; font-weight: 600; text-decoration: none; }
 .skip:focus { top: calc(12px + env(safe-area-inset-top, 0px)); }
-.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.chiffres { font-family: var(--affiche); font-variant-numeric: tabular-nums lining-nums; }
-.tel { white-space: nowrap; }
+.wrap { width: 100%; max-width: 1180px; margin-inline: auto; padding-left: max(var(--m), env(safe-area-inset-left, 0px)); padding-right: max(var(--m), env(safe-area-inset-right, 0px)); }
 
-/* Titres : Big Shoulders en casse normale, jamais en capitales partout */
-h1, h2 { font-family: var(--affiche); font-weight: 800; line-height: .92; letter-spacing: -.012em; text-wrap: balance; }
-h2 { font-size: clamp(2.5rem, 5.4vw, 4.4rem); max-width: 16ch; }
-h3 { font: 650 1.25rem/1.25 var(--texte); letter-spacing: -.01em; text-wrap: balance; }
-.intro { max-width: 58ch; margin-top: 22px; color: var(--acier); font-size: 1.125rem; }
+/* Titres : une seule famille, serrée en grand, comme une page de produit */
+h1, h2 { font-weight: 700; letter-spacing: -.034em; text-wrap: balance; }
+h1 { font-size: clamp(2.6rem, min(6.1vw, 10.5vh), 4.75rem); line-height: 1.02; letter-spacing: -.04em; }
+h2 { font-size: clamp(2.1rem, 4.4vw, 3.5rem); line-height: 1.06; }
+h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: -.018em; text-wrap: balance; }
+.lead { font-size: clamp(1.125rem, 1.45vw, 1.3125rem); line-height: 1.5; color: var(--texte-2); letter-spacing: -.012em; text-wrap: pretty; }
+.petit { font-size: .875rem; line-height: 1.5; color: var(--texte-2); }
+.tel { white-space: nowrap; font-variant-numeric: tabular-nums; }
 
-/* Boutons : rectangles francs, texte marine sur orange (contraste 6:1) */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 56px; padding: 10px 26px; text-align: center; border: 0; border-radius: 2px; background: var(--lampe); color: var(--encre); font: 650 1.0625rem/1.1 var(--texte); text-decoration: none; cursor: pointer; transition: background-color .2s, transform .2s var(--sortie); }
-.btn:hover { background: #FF8250; }
-.btn:active { transform: translateY(1px); }
-.btn--petit { min-height: 44px; padding: 0 16px; font-size: .95rem; white-space: nowrap; }
-.btn--contour { background: transparent; color: var(--encre); box-shadow: inset 0 0 0 2px var(--encre); }
+/* Boutons en pilule : orange pour l'action, contour marine pour le reste */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 0 26px; border: 0; border-radius: 999px; background: var(--lampe); color: var(--encre); font: 650 1.0625rem/1.1 var(--police); letter-spacing: -.01em; text-align: center; text-decoration: none; cursor: pointer; transition: background-color .2s, color .2s, box-shadow .2s; }
+.btn:hover { background: var(--lampe-survol); }
+.btn--petit { min-height: 40px; padding: 0 16px; font-size: .9375rem; white-space: nowrap; }
+.btn--contour { background: transparent; box-shadow: inset 0 0 0 1.5px var(--encre); }
 .btn--contour:hover { background: var(--encre); color: #fff; }
-.btn[disabled] { opacity: .6; cursor: progress; }
-.lien-tel { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; color: var(--encre); font-weight: 600; text-decoration: none; }
-.lien-tel span { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .22em; }
-.lien-tel:hover span { text-decoration-thickness: 2px; }
+.lien { display: inline-flex; align-items: center; min-height: 44px; color: var(--encre); font-weight: 600; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.lien:hover { text-decoration-thickness: 2px; }
 
 /* Logo : l'icône seule, le mot glisse au survol (choix de Yacine) */
 .logo { display: inline-flex; align-items: center; min-height: 48px; color: var(--encre); text-decoration: none; }
-.logo__icone { width: 40px; height: 40px; flex: none; transition: transform .4s var(--sortie); }
+.logo__icone { width: 38px; height: 38px; flex: none; transition: transform .4s var(--sortie); }
 .logo__icone .onde { opacity: .3; transition: opacity .3s; }
 .logo__mot { display: grid; gap: 4px; overflow: hidden; max-width: 0; opacity: 0; transform: translateX(-8px); white-space: nowrap; transition: max-width .5s var(--sortie), opacity .3s, transform .5s var(--sortie), margin .5s var(--sortie); }
 .logo__mot svg { width: 44px; height: 24px; }
-.logo__mot small { font: 600 .62rem/1 var(--texte); letter-spacing: .12em; text-transform: uppercase; color: var(--acier); }
+.logo__mot small { font-size: .62rem; font-weight: 600; line-height: 1; letter-spacing: .12em; text-transform: uppercase; color: var(--texte-2); }
 .logo:hover .logo__mot, .logo:focus-visible .logo__mot, .logo.ouvert .logo__mot { max-width: 170px; opacity: 1; transform: none; margin-left: 10px; }
 .logo:hover .onde, .logo:focus-visible .onde, .logo.ouvert .onde { opacity: 1; }
 @media (hover: hover) { .logo:hover .logo__icone { transform: rotate(-5deg); } }
-@media (hover: none) { .logo .logo__mot { max-width: 170px; opacity: 1; transform: none; margin-left: 10px; } .logo .onde { opacity: 1; } }
 
-/* En-tête */
-.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; background: var(--blanc); border-bottom: 1px solid var(--trait); }
-.nav__rangee { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 72px; }
-.nav__liens { display: none; gap: 30px; }
-.nav__liens a { color: var(--encre); font-size: .98rem; font-weight: 500; text-decoration: none; padding-block: 12px; background: linear-gradient(var(--encre), var(--encre)) left bottom / 0 2px no-repeat; transition: background-size .3s var(--sortie); }
-.nav__liens a:hover { background-size: 100% 2px; }
-.nav__actions { display: flex; align-items: center; gap: 8px; }
-.nav__tel { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 44px; min-height: 44px; padding: 0 10px; color: var(--encre); font-weight: 600; text-decoration: none; border-radius: 2px; }
-.nav__tel:hover { background: var(--glace); }
-@media (min-width: 1020px) { .nav__liens { display: flex; } .nav .logo { min-width: 200px; } }
-/* Cellulaire : l'icône seule (pas de survol au doigt), le numéro écrit en entier ; sous 360 px, le bouton d'audit suffit */
 @media (max-width: 430px) { .nav .logo__mot { display: none; } }
+
+/* En-tête : blanc translucide, comme une barre de navigation de produit */
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; background: rgba(255, 255, 255, .86); -webkit-backdrop-filter: saturate(180%) blur(18px); backdrop-filter: saturate(180%) blur(18px); border-bottom: 1px solid rgba(14, 26, 43, .08); }
+.nav__rangee { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; }
+.nav__liens { display: none; gap: 30px; }
+.nav__liens a { color: var(--encre); font-size: .9375rem; font-weight: 500; text-decoration: none; opacity: .8; transition: opacity .2s; }
+.nav__liens a:hover { opacity: 1; }
+.nav__actions { display: flex; align-items: center; gap: 6px; }
+.nav__tel { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 999px; color: var(--encre); font-size: .9375rem; font-weight: 600; text-decoration: none; transition: background-color .2s; }
+.nav__tel:hover { background: var(--gris); }
+@media (min-width: 960px) { .nav__liens { display: flex; } }
 @media (max-width: 359px) { .nav__tel { display: none; } }
 
-/* ============ Le direct : bande de score + titre + jeu par jeu ============ */
-.direct { padding-block: clamp(20px, 3vw, 36px) clamp(56px, 7vw, 96px); }
-.bande { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; grid-template-areas: "heure match score fin"; align-items: stretch; background: var(--encre); color: #fff; overflow: hidden; }
-.bande__cell--heure { grid-area: heure; }
-.bande__match { grid-area: match; }
-.bande .score { grid-area: score; }
-.bande__fin { grid-area: fin; }
-.bande__legende { margin-top: 10px; color: var(--acier); font-size: .84rem; }
-.bande__cell { display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 12px 18px; min-width: 0; }
-.bande__cell + .bande__cell { border-left: 1px solid var(--trait-fonce); }
-.bande__direct { display: inline-flex; align-items: center; gap: 8px; font-size: .78rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; font-style: oblique 8deg; }
-.bande__direct::before { content: ""; width: 10px; height: 10px; background: var(--lampe); }
-.bande__heure { font: 800 2.1rem/1 var(--affiche); font-variant-numeric: tabular-nums; }
-.bande__equipe { font-weight: 600; font-size: .98rem; line-height: 1.25; }
-.bande__statut { color: var(--brume); font-size: .9rem; line-height: 1.3; min-height: 1.3em; }
-.bande__statut.alerte { color: var(--lampe); }
-.score { display: grid; grid-template-columns: repeat(2, auto); align-items: center; padding: 0; }
-.score__cote { display: grid; grid-template-columns: auto auto; align-items: center; gap: 14px; height: 100%; padding: 10px 18px; }
-.score__cote + .score__cote { border-left: 1px solid var(--trait-fonce); }
-.score__nom { font-size: .78rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--brume); }
-.score__pts { font: 900 3.3rem/.9 var(--affiche); font-variant-numeric: tabular-nums; min-width: .62em; text-align: center; }
-.score__cote--vous { transition: background-color .5s; }
-.score__cote--vous.but { background: var(--lampe); color: var(--encre); }
-.score__cote--vous.but .score__nom { color: var(--encre); }
-.bande__fin { display: flex; align-items: center; padding: 8px 12px; border-left: 1px solid var(--trait-fonce); }
-.reprise { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 1px solid #4A5D78; border-radius: 2px; background: transparent; color: #fff; font: 600 .9rem/1 var(--texte); cursor: pointer; }
-.reprise:hover { background: var(--encre-2); border-color: var(--brume); }
-.reprise svg { width: 12px; height: 12px; fill: currentColor; }
+/* ============ Premier écran : le titre, et l'appel qui se déroule ============ */
+.hero { padding-block: clamp(32px, 5vw, 72px) clamp(64px, 8vw, 120px); }
+.hero__grille { display: grid; gap: 40px; align-items: start; }
+.hero__texte { display: grid; gap: 22px; justify-items: start; }
+.hero__texte .lead { max-width: 31em; }
+.hero__prix { font-weight: 600; font-size: 1.0625rem; }
+.hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 24px; margin-top: 6px; }
+@media (min-width: 960px) { .hero__grille { grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); gap: 64px; } .hero__texte { padding-top: clamp(8px, 2vw, 32px); } }
 
-.direct__corps { display: grid; gap: 28px; margin-top: clamp(36px, 5vw, 64px); }
-.direct h1 { font-size: clamp(3.1rem, 8.2vw, 6rem); max-width: 13ch; }
-.direct__texte { display: grid; gap: 18px; align-content: end; }
-.direct__texte p { max-width: 50ch; font-size: 1.15rem; color: var(--acier); }
-.direct__texte p strong { color: var(--encre); }
-.direct__texte .direct__offre { padding-top: 16px; border-top: 1px solid var(--trait); color: var(--encre); font-size: 1rem; }
-.direct__actions { margin-top: 8px; }
-.direct__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 26px; }
-
-/* Jeu par jeu : quatre moments, un filet qui se remplit quand il arrive */
-.jeu { display: grid; gap: 0; margin-top: clamp(40px, 5vw, 64px); counter-reset: jeu; }
-.jeu li { position: relative; display: grid; grid-template-columns: 84px 1fr; align-content: start; gap: 4px 18px; padding: 18px 0 20px; border-top: 1px solid var(--trait); }
-.jeu li::before { content: ""; position: absolute; top: -1px; left: 0; height: 3px; width: 100%; background: var(--encre); transform-origin: left; }
-.jeu li:last-child::before { background: var(--lampe); }
-.jeu__heure { grid-row: span 2; font: 800 1.9rem/1 var(--affiche); font-variant-numeric: tabular-nums; }
-.jeu__quoi { font-weight: 650; font-size: 1.02rem; line-height: 1.3; }
-.jeu__detail { color: var(--acier); font-size: .96rem; line-height: 1.5; }
-.jeu__detail q { quotes: "«\00a0" "\00a0»"; }
-.js .jeu.joue li::before { transform: scaleX(0); }
-.js .jeu.joue li .jeu__heure, .js .jeu.joue li .jeu__quoi, .js .jeu.joue li .jeu__detail { opacity: .28; transition: opacity .35s; }
-.js .jeu.joue li.on::before { transform: scaleX(1); transition: transform .7s var(--sortie); }
-.js .jeu.joue li.on .jeu__heure, .js .jeu.joue li.on .jeu__quoi, .js .jeu.joue li.on .jeu__detail { opacity: 1; }
-
-@media (min-width: 900px) {
-  .direct__corps { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 48px; align-items: end; }
-  .jeu { grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: 24px; }
-  .jeu li { grid-template-columns: 1fr; padding-top: 20px; }
-  .jeu__heure { grid-row: auto; font-size: 2.4rem; margin-bottom: 6px; }
-}
-@media (max-width: 759px) {
-  /* Cellulaire : l'heure et le score en haut, ce qui se passe en dessous */
-  .bande { display: flex; flex-wrap: wrap; }
-  .bande__cell--heure { order: 1; flex: 1 0 auto; }
-  .bande .score { order: 2; flex: 0 0 auto; }
-  .bande__match { order: 3; flex: 1 1 180px; border-left: 0 !important; border-top: 1px solid var(--trait-fonce); }
-  .bande__fin { order: 4; flex: 0 0 auto; border-top: 1px solid var(--trait-fonce); padding: 8px 10px; }
-  .bande__statut { min-height: 2.6em; }
-  .score__cote { grid-template-columns: auto; justify-items: center; gap: 4px; padding: 8px 14px; }
-  .score__nom { font-size: .72rem; letter-spacing: .07em; }
-  .score__pts { font-size: 2.5rem; }
-}
-@media (max-width: 359px) { .bande .score, .bande__fin { flex-grow: 1; } }
-@media (max-width: 400px) {
-  .bande__cell { padding-inline: 14px; }
-  .score__cote { padding-inline: 10px; }
-  .bande__heure { font-size: 1.8rem; }
-}
+.scene { display: grid; gap: 12px; }
+.scene__fond { padding: clamp(16px, 2.8vw, 36px); background: var(--gris); border-radius: var(--r-tuile); }
+.appel { display: grid; gap: 16px; max-width: 460px; margin-inline: auto; padding: clamp(18px, 2.2vw, 26px); background: var(--blanc); border-radius: var(--r-carte); }
+.appel__tete { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--texte-2); font-size: .875rem; font-weight: 500; }
+.appel__etat { display: inline-flex; align-items: center; gap: 8px; }
+.appel__point { width: 8px; height: 8px; border-radius: 50%; background: var(--eteint); transition: background-color .3s; }
+.appel.en-cours .appel__point { background: var(--lampe); }
+.appel__duree { font-variant-numeric: tabular-nums; }
+.appel__qui { display: grid; gap: 2px; }
+.appel__qui b { font-size: 1.5rem; font-weight: 650; line-height: 1.2; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.appel__qui span { color: var(--texte-2); font-size: .9375rem; }
+.voix { display: flex; align-items: center; gap: 3px; height: 30px; }
+.voix i { flex: 1 1 0; max-width: 4px; height: var(--h); border-radius: 2px; background: var(--lampe); }
+.appel.en-cours .voix i { animation: voix .8s ease-in-out infinite alternate; animation-delay: calc(var(--i) * -63ms); }
+@keyframes voix { from { transform: scaleY(.3); } to { transform: scaleY(1); } }
+.transcription { display: grid; gap: 12px; }
+.transcription li, .appel__suite li { transition: opacity .5s var(--sortie), transform .5s var(--sortie); }
+.transcription li { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: 12px; align-items: baseline; }
+.transcription .qui { color: var(--texte-2); font-size: .8125rem; font-weight: 600; }
+.transcription q { font-size: 1rem; line-height: 1.45; quotes: "«\00a0" "\00a0»"; }
+.appel__suite { display: grid; gap: 12px; padding-top: 16px; border-top: 1px solid var(--trait); }
+.appel__suite li { display: grid; gap: 1px; }
+.appel__suite b { font-size: .9375rem; font-weight: 650; }
+.appel__suite span { color: var(--texte-2); font-size: .875rem; }
+.js .appel.joue li:not(.on) { opacity: 0; transform: translateY(6px); }
+.scene__legende { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 16px; padding-inline: 6px; }
+.rejouer { min-height: 44px; padding: 0; border: 0; background: none; color: var(--encre); font: 600 .875rem/1 var(--police); text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
 
 /* ============ Sections ============ */
-.section { padding-block: clamp(72px, 9vw, 128px); }
-.section--serree { padding-block: clamp(56px, 7vw, 96px); }
-.blanc { background: var(--blanc); }
-.fonce { background: var(--encre); color: #fff; }
-.fonce h2 { color: #fff; }
-.fonce .intro { color: var(--brume); }
+.section { padding-block: clamp(80px, 11vw, 152px); }
+.gris { background: var(--gris); }
+.tete { display: grid; gap: 18px; max-width: 780px; margin-bottom: clamp(40px, 5vw, 64px); }
+.tete .lead { max-width: 36em; }
+.tete--centre { margin-inline: auto; text-align: center; justify-items: center; }
 
-/* Le problème + calculateur : une bande segmentée pleine largeur, comme la bande de score */
-.probleme { display: grid; gap: 22px; }
-.probleme__faits { display: grid; gap: 14px; max-width: 56ch; font-size: 1.125rem; }
-.probleme__faits p { color: var(--acier); }
-.probleme__faits b { color: var(--encre); font-family: var(--affiche); font-size: 1.4em; font-weight: 800; line-height: 0; font-variant-numeric: tabular-nums; }
-.source { color: var(--acier); font-size: .84rem; }
-.tableau { margin-top: clamp(40px, 5vw, 64px); background: var(--encre); color: #fff; }
-.tableau__tete, .tableau__cellules > *, .tableau__pied { padding: clamp(20px, 2.4vw, 28px); }
-.tableau__tete { display: grid; gap: 8px; border-bottom: 1px solid var(--trait-fonce); }
-.tableau h3 { font: 800 clamp(1.8rem, 2.8vw, 2.3rem)/1 var(--affiche); letter-spacing: -.005em; }
-.tableau__tete p { max-width: 70ch; color: var(--brume); font-size: .95rem; text-wrap: balance; }
-.tableau__tete .phrase { display: inline-block; }
-.tableau__cellules { display: grid; }
-.tableau__cellules > * + * { border-top: 1px solid var(--trait-fonce); }
-.curseur { display: grid; grid-template-rows: 1fr auto; gap: 14px; }
-.curseur label { display: grid; align-content: end; gap: 10px; color: var(--brume); font-size: .92rem; line-height: 1.35; }
-.curseur output { display: block; font: 800 2.4rem/1 var(--affiche); font-variant-numeric: tabular-nums; color: #fff; white-space: nowrap; }
-.curseur input { --p: 50%; width: 100%; height: 32px; margin: 0; background: transparent; accent-color: #fff; cursor: pointer; -webkit-appearance: none; appearance: none; }
-.curseur input::-webkit-slider-runnable-track { height: 6px; background: linear-gradient(90deg, #fff var(--p), #33445E var(--p)); }
-.curseur input::-moz-range-track { height: 6px; background: #33445E; }
-.curseur input::-moz-range-progress { height: 6px; background: #fff; }
-.curseur input::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; margin-top: -8px; background: var(--encre); border: 3px solid #fff; }
-.curseur input::-moz-range-thumb { width: 16px; height: 16px; border-radius: 0; background: var(--encre); border: 3px solid #fff; }
-.resultat { display: grid; align-content: space-between; gap: 12px; background: var(--encre-2); }
-.resultat p { color: var(--brume); font-size: .92rem; line-height: 1.35; }
-.resultat__montant { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
-.resultat__montant span:first-child { font: 900 clamp(3.4rem, 6vw, 4.6rem)/.9 var(--affiche); font-variant-numeric: tabular-nums; color: #fff; }
-.resultat__montant span:last-child { color: var(--brume); font-weight: 600; }
-.tableau__pied { display: grid; gap: 18px; border-top: 1px solid var(--trait-fonce); }
-.tableau__pied small { max-width: 72ch; color: var(--brume); font-size: .82rem; line-height: 1.5; }
-.tableau__pied .btn { width: 100%; }
+/* Le problème : un énoncé centré, puis la source */
+.enonce { display: grid; gap: 22px; justify-items: center; text-align: center; }
+.enonce h2 { max-width: 26ch; }
+.enonce .lead { max-width: 34em; }
+.enonce .lead strong { color: var(--encre); font-weight: 650; }
+
+/* Le déroulé d'un appel : titre collant à gauche, étapes à droite */
+.deroule { display: grid; gap: 36px; }
+.deroule__tete { display: grid; gap: 18px; align-content: start; }
+.etapes { counter-reset: etape; }
+.etapes li { display: grid; grid-template-columns: 2.6rem minmax(0, 1fr); gap: 10px 14px; padding-block: clamp(26px, 3vw, 36px); border-top: 1px solid var(--trait); }
+.etapes li:last-child { border-bottom: 1px solid var(--trait); }
+.etapes li::before { counter-increment: etape; content: counter(etape); grid-row: span 3; color: var(--texte-2); font-size: clamp(1.5rem, 2.2vw, 2rem); font-weight: 700; line-height: 1.15; letter-spacing: -.028em; font-variant-numeric: tabular-nums; }
+.etapes p { color: var(--texte-2); }
+.etapes h3 { font-size: clamp(1.5rem, 2.2vw, 2rem); font-weight: 700; line-height: 1.15; letter-spacing: -.028em; }
+.replique { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: 12px; align-items: baseline; margin-top: 6px; }
+.replique .qui { color: var(--texte-2); font-size: .8125rem; font-weight: 600; }
+.replique q { color: var(--encre); font-size: 1.25rem; line-height: 1.4; letter-spacing: -.012em; quotes: "«\00a0" "\00a0»"; }
 @media (min-width: 960px) {
-  .probleme { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 64px; align-items: end; }
-  .tableau__cellules { grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.3fr); }
-  .tableau__cellules > * + * { border-top: 0; border-left: 1px solid var(--trait-fonce); }
-  .tableau__pied { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 40px; }
-  .tableau__pied .btn { width: auto; }
+  .deroule { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 80px; align-items: start; }
+  .deroule__tete { position: sticky; top: 112px; }
 }
 
-/* Services : une rangée par service, l'exemple à droite */
-.services__tete { display: grid; gap: 18px; }
-.rangs { margin-top: clamp(40px, 5vw, 64px); border-bottom: 1px solid var(--trait); }
-.rang { display: grid; gap: 22px; padding-block: clamp(28px, 3.4vw, 44px); border-top: 1px solid var(--trait); }
-.rang h3 { font: 800 clamp(1.9rem, 3.2vw, 2.6rem)/.98 var(--affiche); letter-spacing: -.005em; max-width: 19ch; }
-.rang__texte p { margin-top: 16px; max-width: 52ch; color: var(--acier); }
-.rang__note { display: inline-block; margin-top: 14px; color: var(--encre); font-size: .86rem; font-weight: 650; }
-.rang--vedette h3 { font-size: clamp(2.4rem, 4.4vw, 3.6rem); }
-.exemple { align-self: center; justify-self: start; width: 100%; max-width: 420px; }
-.exemple__legende { margin-top: 10px; color: var(--acier); font-size: .8rem; }
-.fil { background: var(--blanc); border: 1px solid var(--trait); }
-.fil li { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 2px 14px; padding: 12px 16px; }
-.fil li + li { border-top: 1px solid var(--trait); }
-.fil__heure { grid-row: span 2; font: 800 1.3rem/1.1 var(--affiche); font-variant-numeric: tabular-nums; }
-.fil b { font-size: .86rem; font-weight: 650; }
-.fil q, .fil__quoi { color: var(--acier); font-size: .95rem; line-height: 1.4; }
-.fil q { quotes: "«\00a0" "\00a0»"; }
-.avis { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; align-items: center; padding: 18px; background: var(--blanc); border: 1px solid var(--trait); }
-.avis__note { grid-row: span 2; font: 900 3.4rem/.9 var(--affiche); font-variant-numeric: tabular-nums; }
-.etoiles { display: flex; gap: 3px; color: var(--encre); }
-.etoiles svg { width: 18px; height: 18px; }
-.avis p { color: var(--acier); font-size: .9rem; line-height: 1.35; }
-.mini-site { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 16px 18px; background: var(--blanc); border: 1px solid var(--trait); }
-.mini-site b { display: block; font-size: 1rem; }
-.mini-site span { color: var(--acier); font-size: .86rem; }
-.mini-site i { display: inline-flex; align-items: center; padding: 10px 14px; background: var(--encre); color: #fff; border-radius: 2px; font-style: normal; font-weight: 650; font-size: .9rem; }
-.option { display: grid; gap: 6px 24px; margin-top: 28px; padding: 22px 24px; background: var(--blanc); border: 1px solid var(--trait); }
-.option b { font-weight: 650; }
-.option p { color: var(--acier); }
-.option__prix { font: 800 1.7rem/1 var(--affiche); white-space: nowrap; }
-@media (min-width: 860px) {
-  .rang { grid-template-columns: minmax(0, 1fr) minmax(0, 420px); gap: 48px; align-items: center; }
-  .option { grid-template-columns: auto 1fr auto; align-items: center; }
-}
+/* Ce qui suit l'appel : une grande tuile, puis deux modules en rangées */
+.tuile { --pad: clamp(24px, 4.2vw, 56px); padding: var(--pad); background: var(--blanc); border-radius: var(--r-tuile); }
+.tuile h3, .module__texte h3 { font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 700; line-height: 1.1; letter-spacing: -.03em; }
+.centre { display: grid; gap: 40px; }
+.centre__texte { display: grid; gap: 18px; align-content: start; }
+.inclus li { display: grid; gap: 2px; padding-block: 14px; border-top: 1px solid var(--trait); }
+.inclus li:last-child { border-bottom: 1px solid var(--trait); }
+.inclus b { font-weight: 650; }
+.inclus span { color: var(--texte-2); font-size: .975rem; line-height: 1.5; }
+.offre-ligne { font-weight: 600; }
+@media (min-width: 960px) { .centre { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: center; } }
 
-/* Démarche : trois périodes empilées, la durée tient lieu d'horloge */
-#t-demarche { max-width: 21ch; }
-.periodes { margin-top: clamp(36px, 5vw, 56px); border-bottom: 1px solid var(--trait); }
-.periode { display: grid; gap: 10px 48px; padding-block: clamp(22px, 3vw, 34px); border-top: 1px solid var(--trait); }
-.periode__horloge { display: grid; gap: 6px; align-content: start; }
-.periode__nom { color: var(--acier); font-size: .9rem; font-weight: 600; }
-.periode__nom sup { font-size: .7em; }
-.periode__duree { font: 800 clamp(2.1rem, 3.6vw, 3rem)/1 var(--affiche); font-variant-numeric: tabular-nums; }
-.periode h3 { font-size: 1.3rem; }
-.periode__texte p { margin-top: 8px; max-width: 58ch; color: var(--acier); }
-@media (min-width: 860px) { .periode { grid-template-columns: minmax(0, 380px) minmax(0, 1fr); align-items: baseline; } }
+.bord { display: grid; gap: 16px; padding: clamp(16px, 2.4vw, 28px); background: var(--gris); border-radius: var(--r-carte); }
+.bord__tete { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.bord__tete b { font-size: 1.125rem; font-weight: 650; letter-spacing: -.015em; }
+.bord__tete span { color: var(--texte-2); font-size: .875rem; }
+.bord__appels { display: grid; }
+.bord__appels li { display: grid; grid-template-columns: 4.2rem minmax(0, 1fr) auto; align-items: center; gap: 4px 12px; padding-block: 12px; border-top: 1px solid var(--trait-gris); }
+.bord__appels li:last-child { border-bottom: 1px solid var(--trait-gris); }
+.bord__heure { color: var(--texte-2); font-size: .875rem; font-variant-numeric: tabular-nums; }
+.bord__quoi { display: grid; min-width: 0; }
+.bord__quoi b { font-size: .9375rem; font-weight: 600; line-height: 1.3; }
+.bord__quoi span { color: var(--texte-2); font-size: .8125rem; line-height: 1.35; }
+.bord__statut { padding: 4px 10px; border-radius: 999px; background: var(--blanc); font-size: .75rem; font-weight: 600; white-space: nowrap; }
 
-/* Rapport mensuel : la feuille de match */
-.rapport__points { display: grid; gap: 10px; margin-top: 20px; }
-.rapport__points li, .contact__liste li { position: relative; padding-left: 22px; }
-/* La puce : le petit carré de la bande de score, à l'encre */
-.rapport__points li::before, .contact__liste li::before { content: ""; position: absolute; left: 0; top: .58em; width: 8px; height: 8px; background: currentColor; }
-.feuille { background: var(--blanc); border: 1px solid var(--trait); overflow: hidden; }
-.feuille__tete { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 16px 20px; background: var(--encre); color: #fff; }
-.feuille__tete b { font: 800 1.45rem/1 var(--affiche); }
-.feuille__tete span { color: var(--brume); font-size: .82rem; text-align: right; }
-.feuille__chiffres { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.feuille__chiffres div { padding: 18px 20px; border-bottom: 1px solid var(--trait); }
-.feuille__chiffres div:nth-child(odd) { border-right: 1px solid var(--trait); }
-.feuille__chiffres b { display: block; font: 900 2.9rem/.9 var(--affiche); font-variant-numeric: tabular-nums; }
-.feuille__chiffres span { color: var(--acier); font-size: .88rem; line-height: 1.35; }
-.feuille__graph { padding: 18px 20px 20px; }
-.feuille__graph p { color: var(--acier); font-size: .84rem; font-weight: 600; }
-.barres { display: flex; gap: 10px; height: 128px; margin-top: 12px; }
-.barres span { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; min-width: 0; }
-.barres i { display: block; height: calc(var(--h) * .9); background: #C7D2DE; }
-.barres span:last-child i { background: var(--encre); }
-.barres small { color: var(--acier); font-size: .76rem; line-height: 1; text-align: center; }
-.feuille__note { padding: 0 20px 18px; color: var(--acier); font-size: .8rem; }
+.bord__chiffres { display: grid; grid-template-columns: 1fr 1fr; }
+.bord__chiffres div { display: grid; gap: 4px; align-content: start; padding-block: 4px; }
+.bord__chiffres div:first-child { padding-right: 16px; }
+.bord__chiffres div + div { padding-left: 16px; border-left: 1px solid var(--trait-gris); }
+.bord__chiffres b { font-size: 1.75rem; font-weight: 700; line-height: 1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.bord__chiffres span { color: var(--texte-2); font-size: .8125rem; line-height: 1.35; }
+.barres { display: flex; align-items: flex-end; gap: 5px; height: 40px; }
+.barres i { flex: 1; height: var(--h); border-radius: 4px 4px 0 0; background: var(--repos); }
+.barres i:last-child { background: var(--encre); }
+.etoiles { display: inline-flex; gap: 2px; color: var(--encre); }
+.etoiles svg { width: 14px; height: 14px; }
+.exemple-note { color: var(--texte-2); font-size: .8125rem; }
+@media (max-width: 480px) { .bord__appels li { grid-template-columns: minmax(0, 1fr) auto; } .bord__heure { grid-column: 1 / -1; } }
 
-/* Réalisation */
-.realisation { display: grid; gap: 36px; }
-.realisation__image { overflow: hidden; border: 1px solid var(--trait); background: var(--blanc); }
-.realisation__image img { width: 100%; height: auto; }
-.realisation__texte p { margin-top: 18px; max-width: 46ch; color: var(--acier); font-size: 1.1rem; }
-.realisation__texte ul { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
-.realisation__texte li { padding: 7px 12px; background: var(--glace); border-radius: 2px; font-size: .88rem; font-weight: 600; }
-.realisation__texte .lien-externe { display: inline-block; margin-top: 26px; font-weight: 650; }
-@media (min-width: 960px) { .realisation { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 64px; align-items: center; } }
-
-/* Tarifs : un tableau de comparaison, pas trois cartes */
-.tarifs__tete { display: grid; gap: 18px; }
-.grille-prix { margin-top: clamp(40px, 5vw, 60px); }
-.forfait { padding: 26px 0 30px; border-top: 1px solid var(--trait); }
-.forfait__nom { display: flex; align-items: center; gap: 12px; }
-.forfait__nom h3 { font: 800 2.2rem/1 var(--affiche); }
-.forfait__badge { padding: 5px 9px; background: var(--encre); color: #fff; border-radius: 2px; font-size: .76rem; font-weight: 700; letter-spacing: .04em; }
-.forfait__pour { margin-top: 6px; color: var(--acier); }
-.forfait__prix { display: flex; align-items: baseline; gap: 6px; margin-top: 18px; }
-.forfait__prix b { font: 900 4.2rem/.85 var(--affiche); font-variant-numeric: tabular-nums; }
-.forfait__prix span { color: var(--acier); font-weight: 600; }
-.forfait__cond { margin-top: 10px; color: var(--acier); font-size: .86rem; line-height: 1.45; max-width: 34ch; }
-.forfait ul { margin-top: 20px; border-bottom: 1px solid var(--trait); }
-.forfait li { padding-block: 10px; border-top: 1px solid var(--trait); font-size: .98rem; line-height: 1.4; }
-.forfait li.inclus { color: var(--acier); }
-.forfait .btn { margin-top: 24px; width: 100%; }
-.forfait--vedette { position: relative; }
-.precisions { display: grid; gap: 18px; margin-top: 36px; padding-top: 26px; border-top: 1px solid var(--trait); }
-.precisions div b { display: block; font-weight: 650; }
-.precisions div span { color: var(--acier); font-size: .95rem; }
-.precisions p { color: var(--acier); font-size: .86rem; }
+/* Les deux modules suivants : en rangées sur la bande grise, côtés alternés, sans tuile */
+.module { display: grid; gap: 28px; align-items: center; margin-top: clamp(64px, 8vw, 112px); }
+.module__texte { display: grid; gap: 16px; align-content: center; max-width: 34em; }
+.module__texte p { color: var(--texte-2); }
+.module__texte .offre-ligne { color: var(--encre); }
+.fil { display: grid; gap: 12px; padding: clamp(18px, 2.6vw, 30px); background: var(--blanc); border-radius: var(--r-carte); }
+.fil li { display: grid; grid-template-columns: 4.2rem minmax(0, 1fr); align-items: baseline; gap: 4px 12px; padding-block: 14px; border-top: 1px solid var(--trait); }
+.fil li:first-child { padding-top: 0; border-top: 0; }
+.fil q { color: var(--encre); font-size: 1rem; line-height: 1.45; quotes: "«\00a0" "\00a0»"; }
+.module__image { display: block; overflow: hidden; border-radius: var(--r-carte); background: var(--blanc); }
+.module__image img { width: 100%; transition: transform .6s var(--sortie); }
+.module__image:hover img { transform: scale(1.02); }
+@media (max-width: 480px) { .fil li { grid-template-columns: minmax(0, 1fr); } }
 @media (min-width: 960px) {
-  .grille-prix { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--trait); }
-  .forfait { padding: 30px 28px 34px; border-top: 0; }
-  .forfait + .forfait { border-left: 1px solid var(--trait); }
-  .forfait:first-child { padding-left: 0; }
-  .forfait:last-child { padding-right: 0; }
-  .forfait--vedette { background: var(--glace); padding-inline: 28px !important; box-shadow: inset 0 4px 0 var(--encre); }
-  .precisions { grid-template-columns: repeat(3, minmax(0, 1fr)) auto; align-items: start; gap: 28px; }
+  .module { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 72px; }
+  .module--inverse { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); }
+  .module--inverse .module__texte { order: 2; }
 }
+
+/* Calculateur : une tuile grise ; le résultat à côté des curseurs, derrière un filet */
+.calcul { display: grid; gap: 36px; padding: clamp(24px, 4.2vw, 56px); background: var(--gris); border-radius: var(--r-tuile); }
+.calcul__tete { display: grid; gap: 14px; max-width: 40em; }
+.calcul__corps { display: grid; gap: 28px; }
+.curseurs { display: grid; gap: 28px; align-content: center; }
+.curseur label { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; color: var(--texte-2); font-size: .975rem; font-weight: 500; }
+.curseur output { color: var(--encre); font-size: 1.5rem; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.curseur input { --p: 50%; width: 100%; height: 32px; margin: 8px 0 0; background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none; }
+.curseur input::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--lampe) var(--p), var(--repos) var(--p)); }
+.curseur input::-moz-range-track { height: 6px; border-radius: 3px; background: var(--repos); }
+.curseur input::-moz-range-progress { height: 6px; border-radius: 3px; background: var(--lampe); }
+.curseur input::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; margin-top: -10px; border: 1.5px solid var(--contour); border-radius: 50%; background: var(--blanc); }
+.curseur input::-moz-range-thumb { width: 23px; height: 23px; border: 1.5px solid var(--contour); border-radius: 50%; background: var(--blanc); }
+.resultat { display: grid; gap: 10px; align-content: center; padding-top: 28px; border-top: 1px solid var(--trait-gris); }
+.resultat p { color: var(--texte-2); }
+.resultat .resultat__montant { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; color: var(--encre); font-size: clamp(3rem, 6vw, 4.5rem); font-weight: 700; line-height: 1; letter-spacing: -.045em; font-variant-numeric: tabular-nums; }
+.resultat__montant .unite { font-size: 1.125rem; font-weight: 600; letter-spacing: -.01em; }
+.resultat .btn { margin-top: 8px; justify-self: start; }
+@media (min-width: 960px) { .calcul__corps { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 0; } .curseurs { padding-right: 56px; } .resultat { padding: 0 0 0 56px; border-top: 0; border-left: 1px solid var(--trait-gris); } }
+
+/* Forfaits : une tuile, trois colonnes séparées par des filets */
+.forfaits { display: grid; background: var(--blanc); border-radius: var(--r-tuile); overflow: hidden; }
+.forfait { display: grid; align-content: start; gap: 18px; padding: clamp(26px, 3vw, 40px); }
+.forfait + .forfait { border-top: 1px solid var(--trait); }
+.forfait__nom { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.forfait__nom h3 { font-size: 1.625rem; font-weight: 700; letter-spacing: -.025em; }
+.etiquette { padding: 4px 10px; border-radius: 999px; background: var(--encre); color: #fff; font-size: .75rem; font-weight: 600; }
+.forfait__pour { color: var(--texte-2); }
+.forfait__prix { display: flex; align-items: baseline; gap: 6px; }
+.forfait__prix b { font-size: 3rem; font-weight: 700; line-height: 1; letter-spacing: -.045em; font-variant-numeric: tabular-nums; }
+.forfait__prix span { color: var(--texte-2); font-weight: 500; }
+.forfait__depart { margin-top: -8px; color: var(--texte-2); font-size: .9375rem; }
+.forfait .btn { width: 100%; }
+.forfait ul { margin-top: 4px; }
+.forfait li { padding-block: 11px; border-top: 1px solid var(--trait); font-size: .975rem; line-height: 1.45; }
+.forfait li.minutes { font-weight: 650; }
+.forfait--vedette { background: #FBFBFC; }
+@media (min-width: 960px) {
+  /* Les rangées (nom, phrase, prix, départ, bouton, liste) s'alignent d'une colonne à l'autre */
+  .forfaits { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(6, auto); }
+  .forfait { grid-row: span 6; grid-template-rows: subgrid; }
+  .forfait + .forfait { border-top: 0; border-left: 1px solid var(--trait); }
+  .forfait__pour { min-height: 3.2em; }
+}
+
+.carte { display: grid; gap: 24px; margin-top: 20px; }
+.carte__tete { display: grid; gap: 10px; max-width: 44em; }
+.carte__tete p { color: var(--texte-2); }
+.table-defile { overflow-x: auto; }
+.modules { width: 100%; border-collapse: collapse; font-size: .975rem; }
+.modules th, .modules td { padding: 13px 0; border-top: 1px solid var(--trait); text-align: left; vertical-align: top; }
+.modules thead th { border-top: 0; padding-top: 0; color: var(--texte-2); font-size: .8125rem; font-weight: 600; }
+.modules td:not(:first-child), .modules th:not(:first-child) { width: 7.5rem; padding-left: 12px; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+@media (max-width: 560px) { .modules { font-size: .9375rem; } .modules td:not(:first-child), .modules th:not(:first-child) { width: 4.75rem; } }
+.modules td:first-child b { font-weight: 650; }
+.modules td:first-child span { display: block; color: var(--texte-2); font-size: .875rem; }
+.extras { display: grid; gap: 8px; color: var(--texte-2); font-size: .9375rem; }
+.extras b { color: var(--encre); font-weight: 600; }
 
 /* Questions */
 .faq { display: grid; gap: 40px; }
-.faq__aside p { margin-top: 18px; max-width: 34ch; color: var(--acier); }
-.faq__aside .lien-tel { margin-top: 14px; }
-.faq__aside a.courriel { display: inline-block; margin-top: 2px; font-weight: 600; }
+.faq__aside { display: grid; gap: 16px; align-content: start; }
+.faq__aside p { color: var(--texte-2); }
+.faq__moyens { display: grid; justify-items: start; }
 .questions details { border-top: 1px solid var(--trait); }
 .questions details:last-child { border-bottom: 1px solid var(--trait); }
-.questions summary { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 20px 0; font-size: 1.12rem; font-weight: 600; line-height: 1.35; cursor: pointer; list-style: none; }
+.questions summary { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 64px; padding-block: 16px; font-size: 1.125rem; font-weight: 600; letter-spacing: -.012em; line-height: 1.35; cursor: pointer; list-style: none; }
 .questions summary::-webkit-details-marker { display: none; }
-.questions summary svg { flex: none; width: 22px; height: 22px; color: var(--encre); transition: transform .3s var(--sortie); }
+.questions summary svg { width: 20px; height: 20px; flex: none; color: var(--texte-2); transition: transform .3s var(--sortie); }
 .questions details[open] summary svg { transform: rotate(45deg); }
-.questions summary:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .22em; }
-.questions details p { padding: 0 0 22px; max-width: 64ch; color: var(--acier); }
-@media (min-width: 960px) { .faq { grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: 72px; } .faq__aside { position: sticky; top: 112px; align-self: start; } }
+.questions details p { max-width: 62ch; padding-bottom: 22px; color: var(--texte-2); }
+@media (min-width: 960px) { .faq { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 80px; } .faq__aside { position: sticky; top: 112px; } }
 
-/* Contact : le seul grand panneau marine */
-.contact { display: grid; gap: 44px; }
-.contact__liste { display: grid; gap: 12px; margin-top: 28px; }
-.contact__liste li { color: #fff; }
-.contact__equipe { margin-top: 30px; padding-top: 24px; border-top: 1px solid var(--trait-fonce); color: var(--brume); max-width: 46ch; }
-.noms { display: grid; gap: 8px; margin-top: 16px; }
-.noms li { display: flex; justify-self: start; }
-.noms b { padding: 9px 14px 7px; background: #fff; color: var(--encre); font: 800 1.4rem/1 var(--affiche); }
-.noms span { display: flex; align-items: center; padding: 0 12px; background: var(--encre-2); color: var(--brume); font-size: .85rem; font-weight: 600; }
-.contact__moyens { display: flex; flex-wrap: wrap; gap: 6px 26px; margin-top: 16px; }
-.fonce .lien-tel { color: #fff; }
-.fonce a.courriel { color: #fff; font-weight: 600; min-height: 48px; display: inline-flex; align-items: center; }
-.form { display: grid; gap: 16px; padding: clamp(22px, 3vw, 34px); background: var(--blanc); color: var(--encre); }
-.form h3 { font: 800 2rem/1 var(--affiche); }
-.form__forfait { padding: 10px 12px; background: var(--glace); border-radius: 2px; font-size: .9rem; font-weight: 600; }
+/* Contact */
+.contact { display: grid; gap: 48px; }
+.contact__texte { display: grid; gap: 22px; align-content: start; }
+.debut { counter-reset: debut; display: grid; gap: 0; }
+.debut li { display: grid; grid-template-columns: 2rem minmax(0, 1fr); gap: 12px; padding-block: 14px; border-top: 1px solid var(--trait-gris); }
+.debut li:last-child { border-bottom: 1px solid var(--trait-gris); }
+.debut li::before { counter-increment: debut; content: counter(debut); color: var(--texte-2); font-weight: 600; font-variant-numeric: tabular-nums; }
+.equipe { color: var(--texte-2); }
+.equipe b { color: var(--encre); font-weight: 600; }
+.contact__moyens { display: flex; flex-wrap: wrap; gap: 0 24px; }
+.form { display: grid; gap: 18px; padding: clamp(22px, 3.4vw, 40px); background: var(--blanc); border-radius: var(--r-tuile); }
+.form h3 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.025em; }
+.form__forfait { padding: 10px 14px; background: var(--gris); border-radius: 12px; font-size: .9375rem; font-weight: 600; }
 .champs { display: grid; gap: 16px; }
 .champ { display: grid; gap: 6px; }
-.champ label { font-size: .92rem; font-weight: 600; }
-.champ label span { color: var(--acier); font-weight: 400; }
-.champ input, .champ select, .champ textarea { width: 100%; min-height: 50px; padding: 12px 14px; border: 1.5px solid var(--contour); border-radius: 2px; background: var(--blanc); color: var(--encre); font: 400 1rem/1.4 var(--texte); transition: border-color .2s, box-shadow .2s; }
-.champ textarea { min-height: 104px; resize: vertical; }
-.champ input::placeholder, .champ textarea::placeholder { color: #5E6E82; }
-.champ input:hover, .champ select:hover, .champ textarea:hover { border-color: var(--acier); }
+.champ label { font-size: .9375rem; font-weight: 600; }
+.champ label span { color: var(--texte-2); font-weight: 400; }
+.champ input, .champ select, .champ textarea { width: 100%; min-height: 52px; padding: 12px 14px; border: 1.5px solid var(--contour); border-radius: var(--r-champ); background: var(--blanc); color: var(--encre); font: 400 1rem/1.4 var(--police); transition: border-color .2s, box-shadow .2s; }
+.champ textarea { min-height: 108px; resize: vertical; }
+.champ input, .champ textarea { caret-color: var(--encre); }
+.champ select { -webkit-appearance: none; appearance: none; padding-right: 44px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 7.5l5 5 5-5' fill='none' stroke='%235B6472' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; background-size: 18px 18px; cursor: pointer; }
+.champ input::placeholder, .champ textarea::placeholder { color: #6B7380; }
+.champ input:hover, .champ select:hover, .champ textarea:hover { border-color: var(--texte-2); }
 .champ input:focus, .champ select:focus, .champ textarea:focus { outline: none; border-color: var(--encre); box-shadow: 0 0 0 2px var(--encre); }
-.champ input:user-invalid { border-color: #B42318; }
-.form__mention { color: var(--acier); font-size: .82rem; line-height: 1.5; }
+.champ input:user-invalid, .champ textarea:user-invalid { border-color: #B42318; }
+.form__mention { color: var(--texte-2); font-size: .8125rem; line-height: 1.55; }
+.form__mention a { color: var(--encre); }
 .form .btn { width: 100%; }
+.form .btn:disabled { opacity: .6; cursor: progress; }
 .form__resultat { min-height: 1.4em; font-size: .95rem; font-weight: 600; }
-.cache { position: absolute !important; left: -9999px; width: 1px; height: 1px; opacity: 0; }
-@media (min-width: 560px) { .champs { grid-template-columns: 1fr 1fr; } .champ--large { grid-column: 1 / -1; } }
-@media (min-width: 1020px) { .contact { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 72px; align-items: start; } }
+.form__resultat a { color: inherit; }
+@media (min-width: 640px) { .champs { grid-template-columns: 1fr 1fr; } .champ--large { grid-column: 1 / -1; } }
+@media (min-width: 960px) { .contact { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 72px; } }
 
 /* Pied de page */
-.pied { padding-block: 56px calc(40px + env(safe-area-inset-bottom, 0px)); background: var(--blanc); border-top: 1px solid var(--trait); font-size: .92rem; }
-.pied__haut { display: grid; gap: 30px; }
-.pied__haut p { margin-top: 12px; max-width: 34ch; color: var(--acier); }
-.pied h2 { font: 650 .9rem/1.3 var(--texte); letter-spacing: 0; max-width: none; margin-bottom: 10px; }
-.pied ul { display: grid; gap: 4px; }
-.pied li a { display: inline-flex; align-items: center; min-height: 36px; color: var(--encre); text-decoration: none; }
-.pied li a:hover { text-decoration: underline; }
-.pied__sources { margin-top: 36px; padding-top: 22px; border-top: 1px solid var(--trait); color: var(--acier); font-size: .8rem; line-height: 1.55; }
-.pied__sources a { color: var(--acier); }
-.pied__bas { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 20px; margin-top: 18px; color: var(--acier); font-size: .82rem; }
-@media (min-width: 860px) { .pied__haut { grid-template-columns: 2fr 1fr 1fr; gap: 48px; } }
+.pied { padding-block: 48px calc(36px + env(safe-area-inset-bottom, 0px)); background: var(--gris); border-top: 1px solid var(--trait-gris); font-size: .875rem; color: var(--texte-2); }
+.pied__haut { display: grid; gap: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--trait-gris); }
+.pied__haut p { max-width: 32em; margin-top: 10px; }
+.pied h2 { margin-bottom: 8px; color: var(--encre); font-size: .875rem; font-weight: 650; letter-spacing: 0; }
+.pied ul { display: grid; }
+.pied ul a { display: inline-flex; align-items: center; min-height: 36px; color: var(--texte-2); text-decoration: none; }
+.pied ul a:hover { color: var(--encre); text-decoration: underline; }
+.pied__sources { padding-block: 20px; font-size: .8125rem; line-height: 1.6; }
+.pied__sources a { color: var(--texte-2); }
+.pied__bas { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font-size: .8125rem; }
+@media (min-width: 860px) { .pied__haut { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); } }
 
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+  *, *::before, *::after { transition-duration: .01ms !important; animation: none !important; }
 }
 </style>
 </head>
 <body>
 <a class="skip" href="#contenu">Aller au contenu</a>
-
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-plus" viewBox="0 0 20 20"><path d="M10 4v12M4 10h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
   <symbol id="i-etoile" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.2 1.3-6.6L2.5 9.3l6.6-.8z"/></symbol>
@@ -435,9 +378,8 @@ h3 { font: 650 1.25rem/1.25 var(--texte); letter-spacing: -.01em; text-wrap: bal
       <span class="logo__mot" aria-hidden="true"><svg viewBox="0 0 183 99" fill="currentColor"><use href="#i-mot" width="183" height="99"/></svg><small>Agence Gatineau</small></span>
     </a>
     <nav class="nav__liens" aria-label="Navigation principale">
-      <a href="#services">Services</a>
-      <a href="#demarche">Démarche</a>
-      <a href="#tarifs">Tarifs</a>
+      <a href="#repondeur">Le répondeur</a>
+      <a href="#forfaits">Forfaits</a>
       <a href="#questions">Questions</a>
     </nav>
     <div class="nav__actions">
@@ -449,280 +391,245 @@ h3 { font: 650 1.25rem/1.25 var(--texte); letter-spacing: -.01em; text-wrap: bal
 
 <main id="contenu">
 
-  <section class="direct" aria-labelledby="titre">
-    <div class="wrap">
-      <div class="bande" id="bande" aria-label="Démonstration fictive d'un appel manqué rattrapé">
-        <div class="bande__cell bande__cell--heure">
-          <span class="bande__direct">En direct</span>
-          <span class="bande__heure" id="b-heure">16 h</span>
-        </div>
-        <div class="bande__cell bande__match">
-          <span class="bande__equipe">Plomberie Lavoie, Hull</span>
-          <span class="bande__statut" id="b-statut">Rendez-vous pris à 16 h. Le contrat reste chez vous.</span>
-        </div>
-        <div class="score" aria-label="Score du jour">
-          <div class="score__cote score__cote--vous but" id="b-vous"><span class="score__nom">Vous</span><span class="score__pts" id="b-pts">1</span></div>
-          <div class="score__cote"><span class="score__nom">Concurrent</span><span class="score__pts">0</span></div>
-        </div>
-        <div class="bande__fin">
-          <button class="reprise" id="reprise" type="button"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1l9 5-9 5z"/></svg><span>Rejouer</span></button>
-        </div>
-      </div>
-      <p class="bande__legende">Démonstration fictive : Plomberie Lavoie est une entreprise inventée.</p>
-
-      <div class="direct__corps">
-        <h1 id="titre">Vos appels manqués deviennent des clients.</h1>
-        <div class="direct__texte">
-          <p>Un client appelle pendant que vous êtes sur un chantier ? Il reçoit tout de suite un texto à votre nom et vous écrit son besoin. Vous le rappelez quand vous êtes libre.</p>
-          <p class="direct__offre">Forfait Croissance : <strong>149 $ par mois</strong>, prêt en 5 jours ouvrables. Vous gardez votre numéro.</p>
-          <div class="direct__actions">
-            <a class="btn" href="#contact">Demander mon audit gratuit</a>
-            <a class="lien-tel" href="tel:+18734558990"><span>Appeler le <span class="tel">873 455-8990</span></span></a>
-          </div>
+  <section class="hero" aria-labelledby="titre">
+    <div class="wrap hero__grille">
+      <div class="hero__texte">
+        <h1 id="titre">Chaque appel répondu. Même sur le chantier.</h1>
+        <p class="lead">Une réceptionniste virtuelle répond à vos appels 24 h sur&nbsp;24, en français et en anglais. Elle prend le rendez-vous et vous envoie le résumé par texto.</p>
+        <p class="hero__prix">À partir de 199 $ par mois. Sans contrat.</p>
+        <div class="hero__actions">
+          <a class="btn" href="#contact">Demander mon audit gratuit</a>
+          <a class="lien" href="tel:+18734558990">Appeler le&nbsp;<span class="tel">873 455-8990</span></a>
         </div>
       </div>
 
-      <ol class="jeu" id="jeu" aria-label="Ce qui se passe après un appel manqué, exemple fictif">
-        <li data-t="300"><span class="jeu__heure">14 h 32</span><span class="jeu__quoi">Appel manqué</span><span class="jeu__detail">Vous êtes sous un évier. Le client tombe sur la boîte vocale.</span></li>
-        <li data-t="1500"><span class="jeu__heure">14 h 32</span><span class="jeu__quoi">Texto automatique</span><span class="jeu__detail"><q>Bonjour, ici Plomberie Lavoie ! On est sur un chantier. Comment peut-on vous aider ?</q></span></li>
-        <li data-t="2900"><span class="jeu__heure">14 h 35</span><span class="jeu__quoi">Le client répond</span><span class="jeu__detail"><q>J’ai un dégât d’eau sous l’évier, vous pouvez venir aujourd’hui ?</q></span></li>
-        <li data-t="4300"><span class="jeu__heure">16 h</span><span class="jeu__quoi">Rendez-vous pris</span><span class="jeu__detail">Vous répondez entre deux tâches. Le contrat ne part pas chez un concurrent.</span></li>
-      </ol>
-    </div>
-  </section>
-
-  <section class="section blanc" id="calcul" aria-labelledby="t-probleme">
-    <div class="wrap">
-      <div class="probleme">
-        <h2 id="t-probleme">Un appel sans réponse, c’est souvent un contrat pour un concurrent.</h2>
-        <div class="probleme__faits">
-          <p><b>27 %</b> des appels aux entreprises de services à domicile restent sans réponse, et <b>moins de 3 %</b> des gens qui tombent sur la boîte vocale laissent un message. Les autres appellent le suivant sur la liste.</p>
-          <p class="source">Source : Invoca, mai 2024, données de sa plateforme.</p>
-        </div>
-      </div>
-      <div class="tableau" id="calculateur">
-        <div class="tableau__tete">
-          <h3>Combien vous coûtent vos appels manqués ?</h3>
-          <p><span class="phrase">Bougez les curseurs pour faire votre scénario.</span> <span class="phrase">Le calcul se fait dans votre navigateur, rien n’est envoyé.</span></p>
-        </div>
-        <div class="tableau__cellules">
-          <div class="curseur">
-            <label for="r-appels">Appels manqués par semaine <output id="o-appels" for="r-appels">5</output></label>
-            <input type="range" id="r-appels" min="0" max="30" value="5">
-          </div>
-          <div class="curseur">
-            <label for="r-taux">Sur 10 appelants, combien deviendraient clients <output id="o-taux" for="r-taux">3 sur 10</output></label>
-            <input type="range" id="r-taux" min="1" max="10" value="3">
-          </div>
-          <div class="curseur">
-            <label for="r-valeur">Valeur moyenne d’un contrat <output id="o-valeur" for="r-valeur">450 $</output></label>
-            <input type="range" id="r-valeur" min="100" max="5000" step="50" value="450">
-          </div>
-          <div class="resultat">
-            <p>Contrats qui pourraient vous échapper, selon ce scénario :</p>
-            <div class="resultat__montant"><span id="perte">2 920</span><span>$ par mois</span></div>
-          </div>
-        </div>
-        <div class="tableau__pied">
-          <small>Calcul : appels manqués × 4,33 semaines × part qui deviendrait cliente × valeur d’un contrat. C’est un chiffre d’affaires possible, pas un profit ni un résultat garanti.</small>
-          <a class="btn" href="#contact">Vérifier mon potentiel avec un audit</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="services" aria-labelledby="t-services">
-    <div class="wrap">
-      <div class="services__tete">
-        <h2 id="t-services">Ce qui vous fait perdre des clients, on s’en occupe.</h2>
-        <p class="intro">On installe, on surveille, on ajuste. Vous continuez votre travail, et les demandes vous arrivent par texto et par courriel.</p>
-      </div>
-      <div class="rangs">
-        <article class="rang rang--vedette">
-          <div class="rang__texte">
-            <h3>Texto automatique après chaque appel manqué</h3>
-            <p>Quelques secondes après un appel sans réponse, le client reçoit un texto à votre nom. Il explique son besoin par écrit et vous le rappelez quand vous êtes libre. Le contact est gardé, même si vous ne pouviez pas répondre.</p>
-            <span class="rang__note">Le plus rentable</span>
-          </div>
-          <figure class="exemple">
-            <ol class="fil">
-              <li><span class="fil__heure">7 h 48</span><b>Appel manqué</b><span class="fil__quoi">Le client tombe sur la boîte vocale.</span></li>
-              <li><span class="fil__heure">7 h 48</span><b>Texto automatique</b><q>Bonjour ! On vous rappelle d’ici 30 minutes. C’est pour quoi ?</q></li>
-              <li><span class="fil__heure">7 h 51</span><b>Le client</b><q>Ma fournaise ne part plus.</q></li>
-              <li><span class="fil__heure">7 h 56</span><b>Vous</b><q>On est là avant midi.</q></li>
+      <figure class="scene">
+        <div class="scene__fond">
+          <div class="appel" id="appel" aria-label="Démonstration fictive : un appel répondu par la réceptionniste virtuelle">
+            <div class="appel__tete">
+              <span class="appel__etat"><span class="appel__point" aria-hidden="true"></span><span id="a-etat">Appel terminé</span></span>
+              <span class="appel__duree" id="a-duree">0:48</span>
+            </div>
+            <p class="appel__qui"><b>819 555-0142</b><span>Plomberie Lavoie · répondu par Léa</span></p>
+            <div class="voix" aria-hidden="true"><i style="--i:0;--h:87%"></i><i style="--i:1;--h:78%"></i><i style="--i:2;--h:63%"></i><i style="--i:3;--h:78%"></i><i style="--i:4;--h:61%"></i><i style="--i:5;--h:74%"></i><i style="--i:6;--h:54%"></i><i style="--i:7;--h:81%"></i><i style="--i:8;--h:87%"></i><i style="--i:9;--h:40%"></i><i style="--i:10;--h:81%"></i><i style="--i:11;--h:73%"></i><i style="--i:12;--h:53%"></i><i style="--i:13;--h:100%"></i><i style="--i:14;--h:57%"></i><i style="--i:15;--h:72%"></i><i style="--i:16;--h:60%"></i><i style="--i:17;--h:50%"></i><i style="--i:18;--h:90%"></i><i style="--i:19;--h:57%"></i><i style="--i:20;--h:64%"></i><i style="--i:21;--h:69%"></i><i style="--i:22;--h:46%"></i><i style="--i:23;--h:94%"></i><i style="--i:24;--h:61%"></i><i style="--i:25;--h:60%"></i><i style="--i:26;--h:92%"></i><i style="--i:27;--h:59%"></i></div>
+            <ol class="transcription">
+              <li data-t="300"><span class="qui">Léa</span><q>Bonjour, Plomberie Lavoie, ici Léa, l’assistante virtuelle. L’appel est enregistré. Comment je peux vous aider ?</q></li>
+              <li data-t="1800"><span class="qui">Client</span><q>Mon chauffe-eau fuit un peu. Vous pouvez passer cette semaine ?</q></li>
+              <li data-t="3200"><span class="qui">Léa</span><q>Oui. Je vous propose mardi à 9 h ou mercredi à 13 h.</q></li>
+              <li data-t="4400"><span class="qui">Client</span><q>Mardi, 9 h.</q></li>
             </ol>
-            <figcaption class="exemple__legende">Exemple fictif d’échange par texto.</figcaption>
-          </figure>
-        </article>
-        <article class="rang">
-          <div class="rang__texte">
-            <h3>Demandes d’avis Google automatisées</h3>
-            <p>Après chaque travail, votre client reçoit un texto avec le lien pour laisser un avis. Des avis authentiques renforcent votre crédibilité et peuvent aider votre visibilité sur Google Maps.</p>
-            <span class="rang__note">Seulement 52 % des PME disent tenir leur profil Google à jour (FCEI, 2025).</span>
-          </div>
-          <figure class="exemple">
-            <div class="avis" aria-hidden="true">
-              <span class="avis__note chiffres">4,8</span>
-              <span class="etoiles"><svg><use href="#i-etoile"/></svg><svg><use href="#i-etoile"/></svg><svg><use href="#i-etoile"/></svg><svg><use href="#i-etoile"/></svg><svg><use href="#i-etoile"/></svg></span>
-              <p>« Rapide et propre, je recommande. »</p>
-            </div>
-            <figcaption class="exemple__legende">Exemple fictif de note et d’avis.</figcaption>
-          </figure>
-        </article>
-        <article class="rang">
-          <div class="rang__texte">
-            <h3>Un site qui fait appeler</h3>
-            <p>Rapide sur cellulaire, bouton d’appel toujours visible, vos services et vos secteurs bien présentés. En français et en anglais, avec la politique de confidentialité que demande la Loi 25.</p>
-          </div>
-          <figure class="exemple">
-            <div class="mini-site" aria-hidden="true">
-              <span><b>Plomberie Lavoie</b><span>Urgences 7 jours sur 7, Gatineau et Hull</span></span>
-              <i>Appeler</i>
-            </div>
-            <figcaption class="exemple__legende">Exemple fictif : le bouton d’appel reste visible sur cellulaire.</figcaption>
-          </figure>
-        </article>
-        <article class="rang" id="rapport">
-          <div class="rang__texte">
-            <h3>Un rapport d’une page, chaque mois</h3>
-            <p>Appels manqués rattrapés, demandes reçues, nouveaux avis, visites. Pas de jargon : vous voyez ce que le service a fait pour vous ce mois-ci.</p>
-            <ul class="rapport__points">
-              <li><span>Envoyé le 1er de chaque mois, par courriel</span></li>
-              <li><span>Comparé au mois précédent</span></li>
-              <li><span>Une recommandation concrète pour le mois suivant</span></li>
+            <ul class="appel__suite">
+              <li data-t="5600"><b>Rendez-vous ajouté à l’agenda</b><span>Mardi 9 h · 12, rue Laval, Gatineau</span></li>
+              <li data-t="6200"><b>Résumé envoyé par texto</b><span>À vous et au client</span></li>
             </ul>
           </div>
-          <figure class="exemple feuille">
-            <div class="feuille__tete"><b>Rapport d’octobre</b><span>Plomberie Lavoie<br>exemple fictif</span></div>
-            <div class="feuille__chiffres">
-              <div><b>23</b><span>appels manqués rattrapés</span></div>
-              <div><b>31</b><span>demandes de soumission</span></div>
-              <div><b>+7</b><span>avis Google, note de 4,8</span></div>
-              <div><b>412</b><span>visites du site</span></div>
-            </div>
-            <div class="feuille__graph">
-              <p>Appels manqués rattrapés, par mois</p>
-              <div class="barres" aria-hidden="true">
-                <span style="--h:38%"><i></i><small>mai</small></span>
-                <span style="--h:46%"><i></i><small>juin</small></span>
-                <span style="--h:52%"><i></i><small>juil.</small></span>
-                <span style="--h:61%"><i></i><small>août</small></span>
-                <span style="--h:72%"><i></i><small>sept.</small></span>
-                <span style="--h:86%"><i></i><small>oct.</small></span>
-              </div>
-            </div>
-            <figcaption class="feuille__note">Exemple fictif, pour illustrer le format du rapport.</figcaption>
-          </figure>
-        </article>
-      </div>
-      <div class="option">
-        <b>En option : un assistant IA sur votre site.</b>
-        <p>Il répond aux questions le soir et la fin de semaine, en français et en anglais, et vous transmet les demandes.</p>
-        <span class="option__prix chiffres">+ 39 $/mois</span>
-      </div>
+        </div>
+        <figcaption class="scene__legende">
+          <span class="petit">Démonstration fictive : entreprise et numéro inventés.</span>
+          <button class="rejouer" id="reprise" type="button">Rejouer l’appel</button>
+        </figcaption>
+      </figure>
     </div>
   </section>
 
-  <section class="section section--serree blanc" aria-labelledby="t-realisation">
-    <div class="wrap realisation">
-      <a class="realisation__image" href="https://themobilo.com" target="_blank" rel="noopener" aria-label="Voir le site de Mobilo Moving (nouvel onglet)">
-        <img src="assets/mobilo-apercu.webp" srcset="assets/mobilo-apercu-720.webp 720w, assets/mobilo-apercu.webp 1440w" sizes="(min-width: 960px) 60vw, 100vw" width="1440" height="900" alt="Page d'accueil du site de Mobilo Moving" loading="lazy" decoding="async">
-      </a>
-      <div class="realisation__texte">
-        <h2 id="t-realisation">Mobilo Moving</h2>
-        <p>Déménageur de Gatineau. Un site bilingue qui transforme les visiteurs en demandes de soumission, avec estimation à partir d’une photo.</p>
-        <ul>
-          <li>Bilingue</li>
-          <li>Estimateur de prix</li>
-          <li>Réponses automatiques</li>
-          <li>Estimation par photo</li>
-        </ul>
-        <a class="lien-externe" href="https://themobilo.com" target="_blank" rel="noopener">Voir le site en ligne, themobilo.com</a>
-      </div>
+  <section class="section gris" aria-labelledby="t-probleme">
+    <div class="wrap enonce">
+      <h2 id="t-probleme">Un appel manqué, c’est souvent un client perdu.</h2>
+      <p class="lead"><strong>27 %</strong> des appels aux entreprises de services à domicile restent sans réponse, et <strong>moins de 3 %</strong> des gens qui tombent sur la boîte vocale laissent un message. Les autres appellent souvent le suivant sur la liste.</p>
+      <p class="petit">Source : Invoca, mai 2024, données de sa plateforme.</p>
     </div>
   </section>
 
-  <section class="section section--serree" id="demarche" aria-labelledby="t-demarche">
-    <div class="wrap">
-      <h2 id="t-demarche">Trois étapes.<br> Aucune configuration de votre côté.</h2>
-      <ol class="periodes">
-        <li class="periode">
-          <p class="periode__horloge"><span class="periode__nom">1<sup>re</sup> période</span><span class="periode__duree">15 minutes</span></p>
-          <div class="periode__texte">
-            <h3>Audit gratuit</h3>
-            <p>On regarde votre site, votre fiche Google et vos avis, et on vous montre où vous perdez des clients. Sans engagement.</p>
-          </div>
-        </li>
-        <li class="periode">
-          <p class="periode__horloge"><span class="periode__nom">2<sup>e</sup> période</span><span class="periode__duree">5 jours ouvrables</span></p>
-          <div class="periode__texte">
-            <h3>On installe tout</h3>
-            <p>Vous répondez à un court questionnaire. Dès sa réception, on construit le site, on branche le texto d’appel manqué et les demandes d’avis, puis on teste avec vous.</p>
-          </div>
-        </li>
-        <li class="periode">
-          <p class="periode__horloge"><span class="periode__nom">3<sup>e</sup> période</span><span class="periode__duree">Chaque mois</span></p>
-          <div class="periode__texte">
-            <h3>Les clients arrivent</h3>
-            <p>Vous recevez les demandes par texto et par courriel. Chaque mois, un rapport simple vous montre les résultats.</p>
-          </div>
-        </li>
+  <section class="section" id="repondeur" aria-labelledby="t-repondeur">
+    <div class="wrap deroule">
+      <div class="deroule__tete">
+        <h2 id="t-repondeur">Elle répond comme vous le feriez.</h2>
+        <p class="lead">On écrit son script avec vous, pour votre métier : vos services, votre secteur, vos urgences. Elle suit vos règles, et vous passe l’appel quand il le faut.</p>
+        <p class="petit">Les répliques citées sont un exemple fictif.</p>
+      </div>
+      <ol class="etapes">
+        <li><h3>Elle se présente</h3><p>Elle dit qu’elle est l’assistante virtuelle de votre entreprise et passe à l’anglais si le client parle anglais.</p><p class="replique"><span class="qui">Léa</span><q>Bonjour, Plomberie Lavoie, ici Léa, l’assistante virtuelle.</q></p></li>
+        <li><h3>Elle repère les urgences</h3><p>Dégât d’eau, odeur de gaz, chauffage en panne l’hiver : elle donne la consigne de sécurité et transfère l’appel à votre cellulaire tout de suite.</p></li>
+        <li><h3>Elle prend le besoin et les coordonnées</h3><p>Le service, depuis quand, le nom, le numéro confirmé à voix haute et l’adresse. Si l’adresse est hors de votre secteur, elle le dit poliment.</p></li>
+        <li><h3>Elle réserve</h3><p>Elle propose deux heures libres dans votre agenda. Avec le forfait Répondeur, elle promet plutôt un rappel avant une heure précise.</p><p class="replique"><span class="qui">Léa</span><q>Donc : chauffe-eau qui fuit, au 12, rue Laval, mardi 9 h. C’est bien ça ?</q></p></li>
+        <li><h3>Elle vous envoie le résumé</h3><p>Un texto part à vous et au client. Si le client veut parler à quelqu’un, ou si elle ne comprend pas deux fois, elle vous transfère l’appel avec un résumé.</p></li>
       </ol>
     </div>
   </section>
 
-  <section class="section blanc" id="tarifs" aria-labelledby="t-tarifs">
+  <section class="section gris" aria-labelledby="t-suite">
     <div class="wrap">
-      <div class="tarifs__tete">
-        <h2 id="t-tarifs">Un prix clair, chaque mois.</h2>
-        <p class="intro">Pas de gros chèque au départ avec l’engagement de 12 mois. Comparez le forfait à la valeur d’un seul contrat dans votre métier.</p>
+      <div class="tete">
+        <h2 id="t-suite">Tout ce qui suit l’appel, au même endroit.</h2>
+        <p class="lead">Avec les forfaits Croissance et Complet, chaque appel devient une fiche dans votre centre de contrôle, sur votre cellulaire et votre ordinateur.</p>
       </div>
-      <div class="grille-prix">
-        <div class="forfait">
-          <div class="forfait__nom"><h3>Essentiel</h3></div>
-          <p class="forfait__pour">Pour être trouvé et appelé.</p>
-          <div class="forfait__prix"><b>79 $</b><span>/mois</span></div>
-          <p class="forfait__cond">Avec engagement de 12 mois. Au mois à mois : 399 $ de frais de départ.</p>
-          <ul>
-            <li>Site sur mesure, français et anglais</li>
-            <li>Fiche Google optimisée</li>
-            <li>Hébergement et petites modifications</li>
-            <li>Rapport mensuel</li>
+
+      <div class="tuile centre">
+        <div class="centre__texte">
+          <h3>Le centre de contrôle</h3>
+          <ul class="inclus">
+            <li><b>Les appels et les clients</b><span>Chaque appel avec son résumé, son besoin et sa suite.</span></li>
+            <li><b>L’agenda</b><span>Les rendez-vous pris par la réceptionniste, avec les rappels.</span></li>
+            <li><b>Les avis Google</b><span>Une demande d’avis part après chaque travail.</span></li>
+            <li><b>Les courriels automatiques</b><span>Relance des soumissions et rappels de rendez-vous.</span></li>
+            <li><b>Les graphiques et le rapport du mois</b><span>Appels pris, travaux réservés, avis reçus.</span></li>
           </ul>
-          <a class="btn btn--contour" href="#contact" data-forfait="Essentiel">Demander mon audit</a>
+          <p class="offre-ligne">Seul : 149 $ par mois. Inclus dans Croissance et Complet.</p>
+        </div>
+        <figure class="bord" aria-label="Exemple fictif du centre de contrôle">
+          <div class="bord__tete"><b>Aujourd’hui</b><span>Plomberie Lavoie</span></div>
+          <ul class="bord__appels">
+            <li><span class="bord__heure">14 h 32</span><span class="bord__quoi"><b>Chauffe-eau qui fuit</b><span>12, rue Laval · mardi 9 h</span></span><span class="bord__statut">Rendez-vous</span></li>
+            <li><span class="bord__heure">11 h 05</span><span class="bord__quoi"><b>Odeur de gaz</b><span>Transféré à votre cellulaire</span></span><span class="bord__statut">Urgence</span></li>
+            <li><span class="bord__heure">9 h 40</span><span class="bord__quoi"><b>Soumission, salle de bain</b><span>Rappel promis avant 16 h</span></span><span class="bord__statut">Rappel</span></li>
+          </ul>
+          <div class="bord__chiffres">
+            <div><b>86</b><span>appels répondus ce mois-ci</span><span class="barres" aria-hidden="true"><i style="--h:42%"></i><i style="--h:55%"></i><i style="--h:51%"></i><i style="--h:68%"></i><i style="--h:74%"></i><i style="--h:92%"></i></span></div>
+            <div><b>4,8</b><span>note Google, 37 avis</span><span class="etoiles" aria-hidden="true"><svg><use href="#i-etoile"/></svg><svg><use href="#i-etoile"/></svg><svg><use href="#i-etoile"/></svg><svg><use href="#i-etoile"/></svg><svg><use href="#i-etoile"/></svg></span></div>
+          </div>
+          <figcaption class="exemple-note">Exemple fictif.</figcaption>
+        </figure>
+      </div>
+
+      <div class="module">
+        <div class="module__texte">
+          <h3>Le texto après un appel manqué</h3>
+          <p>Si quelqu’un raccroche avant de parler, il reçoit tout de suite un texto à votre nom. Le contact n’est pas perdu.</p>
+          <p class="offre-ligne">Inclus avec le répondeur. Seul : 69 $ par mois.</p>
+        </div>
+        <figure class="fil" aria-label="Exemple fictif d'un texto après un appel manqué">
+          <ol>
+            <li><span class="bord__heure">14 h 32</span><span class="bord__quoi"><b>Appel manqué</b><span>Le 819 555-0142 a raccroché avant de parler.</span></span></li>
+            <li><span class="bord__heure">14 h 32</span><span class="bord__quoi"><b>Texto envoyé à votre nom</b><q>Désolé d’avoir manqué votre appel. Comment peut-on vous aider ?</q></span></li>
+            <li><span class="bord__heure">14 h 39</span><span class="bord__quoi"><b>Réponse du client</b><q>Une fuite sous l’évier. Vous pouvez passer demain ?</q></span></li>
+          </ol>
+          <figcaption class="exemple-note">Exemple fictif.</figcaption>
+        </figure>
+      </div>
+
+      <div class="module module--inverse">
+        <div class="module__texte">
+          <h3>Un site qui fait appeler</h3>
+          <p>Site sur mesure, bilingue, hébergé et mis à jour. En option, un chatbot IA fait pour votre métier : estimateur de prix, questions fréquentes, prise de rendez-vous.</p>
+          <p class="petit">Notre réalisation : Mobilo Moving, déménageur de Gatineau. Site bilingue avec estimation à partir d’une photo. <a class="lien-externe" href="https://themobilo.com" target="_blank" rel="noopener">themobilo.com</a></p>
+          <p class="offre-ligne">Site : 99 $ par mois. Chatbot : 59 $ de plus.</p>
+        </div>
+        <a class="module__image" href="https://themobilo.com" target="_blank" rel="noopener" aria-label="Voir le site de Mobilo Moving (nouvel onglet)"><img src="assets/mobilo-apercu.webp" srcset="assets/mobilo-apercu-720.webp 720w, assets/mobilo-apercu.webp 1440w" sizes="(min-width: 960px) 600px, 100vw" width="1440" height="900" alt="Page d'accueil du site de Mobilo Moving" loading="lazy" decoding="async"></a>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="calcul" aria-labelledby="t-calcul">
+    <div class="wrap">
+      <div class="calcul" id="calculateur">
+        <div class="calcul__tete">
+          <h2 id="t-calcul">Combien vous coûtent vos appels manqués ?</h2>
+          <p class="lead">Bougez les curseurs. Le calcul se fait dans votre navigateur, rien n’est envoyé.</p>
+        </div>
+        <div class="calcul__corps">
+          <div class="curseurs">
+            <div class="curseur">
+              <label for="r-appels">Appels manqués par semaine <output id="o-appels" for="r-appels">5</output></label>
+              <input type="range" id="r-appels" min="0" max="30" value="5">
+            </div>
+            <div class="curseur">
+              <label for="r-taux">Sur 10 appelants, combien deviendraient clients <output id="o-taux" for="r-taux">3 sur 10</output></label>
+              <input type="range" id="r-taux" min="1" max="10" value="3">
+            </div>
+            <div class="curseur">
+              <label for="r-valeur">Valeur moyenne d’un contrat <output id="o-valeur" for="r-valeur">450 $</output></label>
+              <input type="range" id="r-valeur" min="100" max="5000" step="50" value="450">
+            </div>
+          </div>
+          <div class="resultat">
+            <p class="resultat__montant"><span id="perte">2 920</span><span class="unite">$ par mois</span></p>
+            <p>En contrats qui pourraient vous échapper, selon ce scénario.</p>
+            <a class="btn" href="#contact">Vérifier avec un audit gratuit</a>
+            <p class="petit">Calcul : appels manqués × 4,33 semaines × part qui deviendrait cliente × valeur d’un contrat. C’est un chiffre d’affaires possible, pas un profit ni un résultat garanti.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section gris" id="forfaits" aria-labelledby="t-forfaits">
+    <div class="wrap">
+      <div class="tete tete--centre">
+        <h2 id="t-forfaits">Trois forfaits. Aucun contrat.</h2>
+        <p class="lead">Prix par mois, en dollars canadiens, avant taxes. Les frais de départ paient l’installation et les tests de votre script. Vous arrêtez quand vous voulez.</p>
+        <p class="petit">Installé et suivi par les deux cofondateurs, Hugo Martin et Yacine Eddaoudi, à Gatineau.</p>
+      </div>
+
+      <div class="forfaits">
+        <div class="forfait">
+          <div class="forfait__nom"><h3>Répondeur</h3></div>
+          <p class="forfait__pour">Pour ne plus perdre un seul appel.</p>
+          <p class="forfait__prix"><b>199 $</b><span>par mois</span></p>
+          <p class="forfait__depart">Frais de départ : 299 $</p>
+          <a class="btn btn--contour" href="#contact" data-forfait="Répondeur">Choisir Répondeur</a>
+          <ul>
+            <li>Réceptionniste virtuelle 24 h sur&nbsp;24, en français et en anglais</li>
+            <li>Script écrit pour votre métier, avec les urgences</li>
+            <li>Résumé par texto à vous et au client après chaque appel</li>
+            <li>Transfert de l’appel à votre cellulaire</li>
+            <li>Texto automatique si quelqu’un raccroche avant de parler</li>
+            <li class="minutes">250 minutes d’appel par mois</li>
+          </ul>
         </div>
         <div class="forfait forfait--vedette">
-          <div class="forfait__nom"><h3>Croissance</h3><span class="forfait__badge">Recommandé</span></div>
-          <p class="forfait__pour">Pour répondre à chaque appel manqué.</p>
-          <div class="forfait__prix"><b>149 $</b><span>/mois</span></div>
-          <p class="forfait__cond">Avec engagement de 12 mois. Au mois à mois : 399 $ de frais de départ.</p>
+          <div class="forfait__nom"><h3>Croissance</h3><span class="etiquette">Recommandé</span></div>
+          <p class="forfait__pour">Pour remplir l’agenda tout seul.</p>
+          <p class="forfait__prix"><b>299 $</b><span>par mois</span></p>
+          <p class="forfait__depart">Frais de départ : 399 $</p>
+          <a class="btn" href="#contact" data-forfait="Croissance">Choisir Croissance</a>
           <ul>
-            <li>Texto automatique après chaque appel manqué</li>
-            <li>Demandes d’avis Google automatisées</li>
-            <li>Suivi des demandes par texto et courriel</li>
-            <li class="inclus">Tout le forfait Essentiel</li>
+            <li>Tout le forfait Répondeur</li>
+            <li>Rendez-vous réservés dans votre agenda</li>
+            <li>Demandes d’avis Google après chaque travail</li>
+            <li>Centre de contrôle sur cellulaire et ordinateur</li>
+            <li>Courriels automatiques : relance des soumissions, rappels de rendez-vous</li>
+            <li>Graphiques et rapport mensuel</li>
+            <li class="minutes">500 minutes d’appel par mois</li>
           </ul>
-          <a class="btn" href="#contact" data-forfait="Croissance">Demander mon audit gratuit</a>
         </div>
         <div class="forfait">
-          <div class="forfait__nom"><h3>Pro</h3></div>
-          <p class="forfait__pour">Pour remplir l’agenda.</p>
-          <div class="forfait__prix"><b>249 $</b><span>/mois</span></div>
-          <p class="forfait__cond">Avec engagement de 12 mois. Au mois à mois : 399 $ de frais de départ.</p>
+          <div class="forfait__nom"><h3>Complet</h3></div>
+          <p class="forfait__pour">Toute votre présence en ligne, gérée par nous.</p>
+          <p class="forfait__prix"><b>399 $</b><span>par mois</span></p>
+          <p class="forfait__depart">Frais de départ : 799 $, site inclus</p>
+          <a class="btn btn--contour" href="#contact" data-forfait="Complet">Choisir Complet</a>
           <ul>
-            <li>Relance automatique des soumissions sans réponse</li>
-            <li>Prise de rendez-vous en ligne</li>
-            <li>Publications sur votre fiche Google</li>
-            <li class="inclus">Tout le forfait Croissance</li>
+            <li>Tout le forfait Croissance</li>
+            <li>Site web sur mesure, bilingue, hébergé et mis à jour</li>
+            <li>Graphiques des visites et de la provenance des clients</li>
+            <li>Soutien prioritaire</li>
+            <li class="minutes">600 minutes d’appel par mois</li>
           </ul>
-          <a class="btn btn--contour" href="#contact" data-forfait="Pro">Demander mon audit</a>
         </div>
       </div>
-      <div class="precisions">
-        <div><b>Frais de départ</b><span>0 $ avec un engagement de 12 mois, ou 399 $ au mois à mois.</span></div>
-        <div><b>Votre site vous appartient</b><span>Après 12 mois, il est à vous si vous partez.</span></div>
-        <div><b>Option assistant IA</b><span>+ 39 $/mois, avec tous les forfaits.</span></div>
-        <p>Prix en dollars canadiens.</p>
+
+      <div class="tuile carte">
+        <div class="carte__tete">
+          <h3>Ou à la carte</h3>
+          <p>Prenez seulement ce qu’il vous faut. Plusieurs modules ensemble coûtent moins cher : on vous fait le calcul pendant l’audit.</p>
+        </div>
+        <div class="table-defile">
+          <table class="modules">
+            <thead><tr><th scope="col">Module</th><th scope="col">Par mois</th><th scope="col">Départ</th></tr></thead>
+            <tbody>
+              <tr><td><b>Répondeur vocal IA</b><span>Inclut le texto après appel manqué, 250 minutes</span></td><td>199 $</td><td>299 $</td></tr>
+              <tr><td><b>Texto après appel manqué</b></td><td>69 $</td><td>99 $</td></tr>
+              <tr><td><b>Site web</b><span>Sur mesure, bilingue, hébergé</span></td><td>99 $</td><td>499 $</td></tr>
+              <tr><td><b>Centre de contrôle</b><span>Clients, agenda, avis, courriels, rapport</span></td><td>149 $</td><td>199 $</td></tr>
+              <tr><td><b>Chatbot IA sur votre site</b><span>Avec le site web, ou sur votre site actuel</span></td><td>+ 59 $</td><td>+ 199 $</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="extras">
+          <p><b>Minutes en plus :</b> 0,39 $ la minute, et on vous avertit à 80 % de votre forfait. Si vous dépassez souvent : un bloc de 250 minutes de plus pour 79 $ par mois.</p>
+          <p><b>Deuxième numéro ou succursale :</b> 49 $ par mois. <b>Répondeur pour tous vos appels,</b> pas seulement ceux que vous manquez : sur devis.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -730,47 +637,44 @@ h3 { font: 650 1.25rem/1.25 var(--texte); letter-spacing: -.01em; text-wrap: bal
   <section class="section" id="questions" aria-labelledby="t-questions">
     <div class="wrap faq">
       <div class="faq__aside">
-        <h2 id="t-questions">Ce qu’on nous demande souvent.</h2>
-        <p>Une autre question ? On vous répond au plus tard le jour ouvrable suivant.</p>
-        <a class="lien-tel" href="tel:+18734558990"><span class="tel">873 455-8990</span></a><br>
-        <a class="courriel" href="mailto:info@agenceuio.ca">info@agenceuio.ca</a>
+        <h2 id="t-questions">Vos questions.</h2>
+        <p>Une autre question ? Hugo ou Yacine vous répond au plus tard le jour ouvrable suivant.</p>
+        <div class="faq__moyens">
+          <a class="lien" href="tel:+18734558990"><span class="tel">873 455-8990</span></a>
+          <a class="lien" href="mailto:info@agenceuio.ca">info@agenceuio.ca</a>
+        </div>
       </div>
       <div class="questions">
-        <details><summary>Est-ce que je dois changer de numéro de téléphone ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Non. Vous gardez votre numéro. On active simplement le renvoi « si pas de réponse » chez votre fournisseur, et on s’en occupe avec vous.</p></details>
-        <details><summary>J’ai déjà un site. Dois-je le refaire ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Pas forcément. Le texto d’appel manqué et les demandes d’avis fonctionnent avec n’importe quel site. L’audit gratuit vous dira si votre site vous fait perdre des clients.</p></details>
-        <details><summary>Est-ce que je suis lié par un contrat ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Vous choisissez : 0 $ de frais de départ avec un engagement de 12 mois, ou au mois à mois avec des frais de départ de 399 $.</p></details>
-        <details><summary>Qui répond après le premier texto ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Vous. Le premier texto part tout seul, puis la réponse de votre client vous arrive par texto et par courriel. Vous le rappelez ou lui écrivez quand vous êtes libre.</p></details>
-        <details><summary>Est-ce que ça marche avec mon fournisseur de cellulaire ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>On le vérifie avec vous pendant l’audit gratuit, avant que vous vous engagiez. Il faut que votre forfait permette le renvoi d’appel « si pas de réponse ».</p></details>
-        <details><summary>Garantissez-vous un nombre de clients ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Non. Le nombre de contrats dépend de vos appels, de vos prix et de votre service. On s’engage à installer les outils et à les faire fonctionner, et le rapport mensuel vous montre ce qu’ils ont donné.</p></details>
-        <details><summary>Je n’ai pas le temps de m’occuper de ça.<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>C’est justement le but. Un questionnaire de 10 minutes, une rencontre de test, et on s’occupe du reste. Les 5 jours ouvrables commencent quand on a reçu votre questionnaire.</p></details>
+        <details><summary>Est-ce que mes clients savent qu’ils parlent à une IA ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Oui. Elle se présente comme l’assistante virtuelle de votre entreprise et annonce que l’appel est enregistré. Si le client veut parler à quelqu’un, elle vous passe l’appel.</p></details>
+        <details><summary>Est-ce qu’elle comprend bien le français d’ici ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Elle parle français et anglais. Avant de l’activer, on teste votre script avec de vrais appels : accents, bruit de chantier, client pressé. On l’active seulement quand les tests sont bons.</p></details>
+        <details><summary>Que fait-elle avec une urgence ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Vous décidez ce qui est urgent dans votre métier. Pour un dégât d’eau ou une odeur de gaz, par exemple, elle donne la consigne de sécurité et transfère l’appel à votre cellulaire tout de suite.</p></details>
+        <details><summary>Et si elle ne sait pas répondre ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Si le client demande à parler à quelqu’un, ou si elle ne comprend pas deux fois de suite, elle vous transfère l’appel avec un résumé. Si vous ne répondez pas, elle prend le message et vous envoie un texto urgent.</p></details>
+        <details><summary>Est-ce que je garde mon numéro ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Oui. Les appels que vous ne prenez pas sont renvoyés vers la réceptionniste ; on active le renvoi avec vous chez votre fournisseur. Elle peut aussi prendre tous vos appels : c’est sur devis.</p></details>
+        <details><summary>Combien de minutes sont incluses ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>250, 500 ou 600 minutes par mois, selon le forfait. On vous avertit à 80 %. Au-delà, c’est 0,39 $ la minute, ou un bloc de minutes si vous dépassez souvent.</p></details>
+        <details><summary>Est-ce que je suis lié par un contrat ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Non. C’est au mois, et vous arrêtez quand vous voulez. Les frais de départ paient l’installation et les tests de votre script.</p></details>
+        <details><summary>J’ai déjà un site. Dois-je le refaire ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Non. Le répondeur et le centre de contrôle fonctionnent avec n’importe quel site. Le chatbot IA peut aussi s’ajouter à votre site actuel, si on peut y installer le code.</p></details>
         <details><summary>Les demandes d’avis, c’est permis par Google ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Oui, tant qu’on ne filtre pas. Tous vos clients reçoivent la même demande, sans récompense et sans trier ceux qui sont satisfaits, comme le demandent les règles de Google.</p></details>
-        <details><summary>À qui appartient ma fiche Google ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>À vous. On y travaille avec un accès de gestionnaire, que vous pouvez retirer en tout temps.</p></details>
-        <details><summary>Et la Loi 25 sur les renseignements personnels ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>On installe sur votre site une politique de confidentialité avec le nom de votre responsable, et on vous explique ce que les outils installés demandent de votre côté. Les textos tiennent compte des demandes d’arrêt (ARRÊT ou STOP).</p></details>
-        <details><summary>Vous travaillez seulement avec les plombiers ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>On se spécialise dans les métiers où un appel manqué coûte cher : plomberie, chauffage et climatisation, électricité, toiture, déménagement. Pour un autre domaine, appelez-nous ou écrivez-nous.</p></details>
+        <details><summary>Et la Loi 25 sur les renseignements personnels ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Les appels et les fiches de vos clients contiennent des renseignements personnels. On vous explique ce que les outils demandent de votre côté, on installe une politique de confidentialité sur votre site, et les textos respectent les demandes d’arrêt (ARRÊT ou STOP).</p></details>
+        <details><summary>Garantissez-vous un nombre de clients ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Non. Le nombre de contrats dépend de vos appels, de vos prix et de votre service. On s’engage à installer les outils et à les faire fonctionner, et chaque résumé d’appel vous montre ce qu’ils font pour vous.</p></details>
+        <details><summary>Vous travaillez seulement avec les plombiers ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>On se spécialise dans les métiers où un appel manqué coûte cher : plomberie, chauffage et climatisation, électricité, garages, toiture, déménagement. Pour un autre domaine, appelez-nous ou écrivez-nous.</p></details>
       </div>
     </div>
   </section>
 
-  <section class="section fonce" id="contact" aria-labelledby="t-contact">
+  <section class="section gris" id="contact" aria-labelledby="t-contact">
     <div class="wrap contact">
-      <div>
-        <h2 id="t-contact">Voyons combien de clients vous perdez.</h2>
-        <p class="intro">Laissez vos coordonnées. On vous rappelle au plus tard le jour ouvrable suivant pour un audit de 15 minutes, gratuit et sans engagement.</p>
-        <ul class="contact__liste">
-          <li><span>Votre site sur cellulaire, vu par un client</span></li>
-          <li><span>Votre fiche Google et vos avis face aux concurrents</span></li>
-          <li><span>Une estimation des appels que vous manquez</span></li>
-        </ul>
-        <div class="contact__equipe">
-          <p>Vous parlez directement aux deux cofondateurs, à Gatineau.</p>
-          <ul class="noms">
-            <li><b>Hugo Martin</b><span>Cofondateur</span></li>
-            <li><b>Yacine Eddaoudi</b><span>Cofondateur</span></li>
-          </ul>
-        </div>
+      <div class="contact__texte">
+        <h2 id="t-contact">Parlons de vos appels.</h2>
+        <p class="lead">Laissez vos coordonnées. On vous rappelle au plus tard le jour ouvrable suivant pour un audit gratuit de 15 minutes, sans engagement.</p>
+        <ol class="debut" aria-label="Comment on commence">
+          <li><span>L’audit gratuit : vos appels, votre site et votre fiche Google, en 15 minutes.</span></li>
+          <li><span>On écrit le script de votre réceptionniste avec vous, puis on le teste avec de vrais appels.</span></li>
+          <li><span>On l’active. Vous recevez les résumés, et on ajuste au besoin.</span></li>
+        </ol>
+        <p class="equipe">Vous parlez directement aux deux cofondateurs, à Gatineau : <b>Hugo Martin</b> et <b>Yacine Eddaoudi</b>.</p>
         <div class="contact__moyens">
-          <a class="lien-tel" href="tel:+18734558990"><span class="tel">873 455-8990</span></a>
-          <a class="courriel" href="mailto:info@agenceuio.ca">info@agenceuio.ca</a>
+          <a class="lien" href="tel:+18734558990"><span class="tel">873 455-8990</span></a>
+          <a class="lien" href="mailto:info@agenceuio.ca">info@agenceuio.ca</a>
         </div>
       </div>
       <form class="form" id="formulaire" action="https://api.web3forms.com/submit" method="POST" accept-charset="UTF-8">
@@ -793,6 +697,7 @@ h3 { font: 650 1.25rem/1.25 var(--texte); letter-spacing: -.01em; text-wrap: bal
               <option>Plomberie</option>
               <option>Chauffage et climatisation</option>
               <option>Électricité</option>
+              <option>Garage</option>
               <option>Toiture</option>
               <option>Déménagement</option>
               <option>Paysagement</option>
@@ -828,7 +733,7 @@ h3 { font: 650 1.25rem/1.25 var(--texte); letter-spacing: -.01em; text-wrap: bal
           <svg class="logo__icone" viewBox="0 0 512 512" aria-hidden="true"><use href="#i-logo"/><path class="onde" d="M 337.92 122.88 A 61.44 61.44 0 0 1 399.36 184.32" fill="none" stroke="#FF6A2B" stroke-width="30.72" stroke-linecap="round"/><path class="onde" d="M 337.92 66.56 A 117.76 117.76 0 0 1 455.68 184.32" fill="none" stroke="#FF6A2B" stroke-width="30.72" stroke-linecap="round"/></svg>
           <span class="logo__mot" aria-hidden="true"><svg viewBox="0 0 183 99" fill="currentColor"><use href="#i-mot" width="183" height="99"/></svg><small>Agence Gatineau</small></span>
         </a>
-        <p>Plus de clients pour les entrepreneurs de Gatineau et d’Ottawa.</p>
+        <p>Une réceptionniste virtuelle, et tout ce qui suit l’appel, pour les entrepreneurs de Gatineau et d’Ottawa.</p>
       </div>
       <div>
         <h2>Nous joindre</h2>
@@ -847,7 +752,7 @@ h3 { font: 650 1.25rem/1.25 var(--texte); letter-spacing: -.01em; text-wrap: bal
         </ul>
       </div>
     </div>
-    <p class="pied__sources">Sources des chiffres : <a href="https://www.invoca.com/uk/blog/how-much-missed-sales-calls-cost-home-services-businesses" target="_blank" rel="noopener">Invoca, mai 2024</a> (appels sans réponse et messages vocaux, services à domicile, données de sa plateforme) ; <a href="https://www.cfib-fcei.ca/hubfs/Your%20Voice%20Survey%20September%202025_FR.pdf" target="_blank" rel="noopener">FCEI, sondage Votre voix de septembre 2025</a> (52 % des 2 460 répondants disent tenir à jour leur profil Google).</p>
+    <p class="pied__sources">Source du chiffre : <a href="https://www.invoca.com/uk/blog/how-much-missed-sales-calls-cost-home-services-businesses" target="_blank" rel="noopener">Invoca, mai 2024</a> (appels sans réponse et messages vocaux, services à domicile, données de sa plateforme). Prix en dollars canadiens, avant taxes.</p>
     <div class="pied__bas"><span>© <span id="annee">2026</span> Agence UIO, Gatineau, Québec</span><span>Fait à Gatineau</span></div>
   </div>
 </footer>
@@ -865,40 +770,36 @@ h3 { font: 650 1.25rem/1.25 var(--texte); letter-spacing: -.01em; text-wrap: bal
   var logo = document.getElementById('logo');
   if (!calme) { logo.classList.add('ouvert'); setTimeout(function () { logo.classList.remove('ouvert'); }, 2400); }
 
-  // Le direct : au repos, la bande et le jeu par jeu montrent la fin (rendez-vous pris, 1 à 0).
-  // Avec JavaScript, la séquence se joue une fois à l'arrivée, et le bouton la rejoue ou l'arrête.
-  var jeu = document.getElementById('jeu'), moments = jeu.querySelectorAll('li');
-  var heure = document.getElementById('b-heure'), statut = document.getElementById('b-statut');
-  var vous = document.getElementById('b-vous'), pts = document.getElementById('b-pts');
-  var bouton = document.getElementById('reprise'), etiquette = bouton.querySelector('span'), icone = bouton.querySelector('path');
-  var etapes = [
-    //   : espaces insécables, comme dans le reste du texte (« 16 h » ne se coupe pas)
-    { h: '14 h 32', s: 'Appel manqué. Vous êtes sur un chantier.', alerte: true },
-    { h: '14 h 32', s: 'Texto automatique envoyé à votre nom.' },
-    { h: '14 h 35', s: 'Le client répond : dégât d’eau sous l’évier.' },
-    { h: '16 h', s: 'Rendez-vous pris à 16 h. Le contrat reste chez vous.', but: true }
-  ];
-  var minuteries = [], joue = false;
-  function arreter() { minuteries.forEach(clearTimeout); minuteries = []; }
-  function majBouton() { etiquette.textContent = joue ? 'Arrêter' : 'Rejouer'; icone.setAttribute('d', joue ? 'M2 1h3v10H2zM7 1h3v10H7z' : 'M2 1l9 5-9 5z'); }
-  function poser(i) {
-    var e = etapes[i]; heure.textContent = e.h; statut.textContent = e.s;
-    statut.classList.toggle('alerte', !!e.alerte);
-    moments[i].classList.add('on');
-    if (e.but) { pts.textContent = '1'; vous.classList.add('but'); }
-  }
+  // L'appel : au repos, la carte montre la fin (rendez-vous ajouté, résumé envoyé).
+  // Avec JavaScript, il se déroule une fois à l'arrivée ; le bouton le rejoue ou l'arrête.
+  var appel = document.getElementById('appel'), lignes = appel.querySelectorAll('[data-t]');
+  var etat = document.getElementById('a-etat'), duree = document.getElementById('a-duree');
+  var bouton = document.getElementById('reprise');
+  var FIN_APPEL = 5200, FIN = 6800, SECONDES = 48;
+  var minuteries = [], chrono = null, joue = false;
+  function enMinutes(s) { return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); }
+  function arreter() { minuteries.forEach(clearTimeout); minuteries = []; clearInterval(chrono); }
   function finale() {
-    arreter(); joue = false; jeu.classList.remove('joue');
-    moments.forEach(function (m) { m.classList.add('on'); });
-    heure.textContent = etapes[3].h; statut.textContent = etapes[3].s; statut.classList.remove('alerte');
-    pts.textContent = '1'; vous.classList.add('but'); majBouton();
+    arreter(); joue = false;
+    appel.classList.remove('joue', 'en-cours');
+    lignes.forEach(function (l) { l.classList.add('on'); });
+    etat.textContent = 'Appel terminé'; duree.textContent = enMinutes(SECONDES);
+    bouton.textContent = 'Rejouer l’appel';
   }
   function jouer() {
-    arreter(); joue = true; majBouton();
-    jeu.classList.add('joue'); moments.forEach(function (m) { m.classList.remove('on'); });
-    pts.textContent = '0'; vous.classList.remove('but'); heure.textContent = etapes[0].h; statut.textContent = ''; statut.classList.remove('alerte');
-    moments.forEach(function (m, i) { minuteries.push(setTimeout(function () { poser(i); }, +m.dataset.t)); });
-    minuteries.push(setTimeout(function () { joue = false; jeu.classList.remove('joue'); majBouton(); }, 5600));
+    arreter(); joue = true;
+    appel.classList.add('joue', 'en-cours');
+    lignes.forEach(function (l) { l.classList.remove('on'); });
+    etat.textContent = 'En ligne avec Léa'; duree.textContent = '0:00';
+    bouton.textContent = 'Arrêter';
+    var debut = Date.now();
+    chrono = setInterval(function () {
+      var s = Math.min(SECONDES, Math.round((Date.now() - debut) / FIN_APPEL * SECONDES));
+      duree.textContent = enMinutes(s);
+    }, 200);
+    lignes.forEach(function (l) { minuteries.push(setTimeout(function () { l.classList.add('on'); }, +l.dataset.t)); });
+    minuteries.push(setTimeout(function () { clearInterval(chrono); duree.textContent = enMinutes(SECONDES); appel.classList.remove('en-cours'); etat.textContent = 'Appel terminé'; }, FIN_APPEL));
+    minuteries.push(setTimeout(finale, FIN));
   }
   bouton.addEventListener('click', function () { if (joue) finale(); else jouer(); });
   document.addEventListener('visibilitychange', function () { if (document.hidden && joue) finale(); });
@@ -913,7 +814,7 @@ h3 { font: 650 1.25rem/1.25 var(--texte); letter-spacing: -.01em; text-wrap: bal
   function remplir(r) { r.style.setProperty('--p', ((r.value - r.min) / (r.max - r.min) * 100) + '%'); }
   function calculer() {
     [ra, rt, rv].forEach(remplir);
-    oa.textContent = ra.value; ot.textContent = rt.value + ' sur 10'; ov.textContent = fmt(+rv.value) + ' $';
+    oa.textContent = ra.value; ot.textContent = rt.value + ' sur 10'; ov.textContent = fmt(+rv.value) + ' $';
     var cible = Math.round(ra.value * 4.33 * (rt.value / 10) * rv.value / 10) * 10;
     perte.textContent = fmt(cible);
     return cible;
@@ -924,7 +825,7 @@ h3 { font: 650 1.25rem/1.25 var(--texte); letter-spacing: -.01em; text-wrap: bal
   // Bouton d'un forfait : le formulaire garde le forfait choisi
   var champForfait = document.querySelector('[name=forfait]'), texteForfait = document.querySelector('.form__forfait');
   document.querySelectorAll('[data-forfait]').forEach(function (a) {
-    a.addEventListener('click', function () { champForfait.value = a.dataset.forfait; texteForfait.textContent = 'Forfait qui vous intéresse : ' + a.dataset.forfait; texteForfait.hidden = false; });
+    a.addEventListener('click', function () { champForfait.value = a.dataset.forfait; texteForfait.textContent = 'Forfait qui vous intéresse : ' + a.dataset.forfait; texteForfait.hidden = false; });
   });
 
   // Formulaire : sans JavaScript, il est envoyé normalement à Web3Forms (POST).
@@ -939,10 +840,11 @@ h3 { font: 650 1.25rem/1.25 var(--texte); letter-spacing: -.01em; text-wrap: bal
       resultat.appendChild(document.createTextNode(' ')); resultat.appendChild(a); resultat.appendChild(document.createTextNode('.'));
     }
   }
+  var ECHEC = 'L’envoi n’a pas fonctionné. Réessayez, appelez le 873 455-8990 ou écrivez-nous à';
   form.addEventListener('submit', async function (ev) {
     ev.preventDefault();
     if (envoyer.disabled) return;
-    if (form.dataset.apercu) { message('Aperçu seulement : sur agenceuio.ca, votre demande serait envoyée.', true); return; }
+    if (form.dataset.apercu) { message('Aperçu seulement : sur agenceuio.ca, votre demande serait envoyée.', true); return; }
     var d = Object.fromEntries(new FormData(form));
     d.subject = 'Audit gratuit · ' + (d.entreprise || 'site agenceuio.ca');
     envoyer.disabled = true; envoyer.textContent = 'Envoi en cours…'; message('', true);
@@ -952,9 +854,9 @@ h3 { font: 650 1.25rem/1.25 var(--texte); letter-spacing: -.01em; text-wrap: bal
       var rep = await fetch(form.action, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(d), signal: ctrl ? ctrl.signal : undefined });
       var json = await rep.json().catch(function () { return {}; });
       if (rep.ok && json.success) { message('Demande reçue. On vous rappelle au plus tard le jour ouvrable suivant.', true); form.reset(); champForfait.value = ''; champScenario.value = ''; texteForfait.hidden = true; }
-      else message('L’envoi n’a pas fonctionné. Réessayez, appelez le 873 455-8990 ou écrivez-nous à', false, true);
+      else message(ECHEC, false, true);
     } catch (e) {
-      message('L’envoi n’a pas fonctionné. Réessayez, appelez le 873 455-8990 ou écrivez-nous à', false, true);
+      message(ECHEC, false, true);
     } finally { clearTimeout(delai); envoyer.disabled = false; envoyer.textContent = 'Demander mon audit gratuit'; }
   });
 })();
