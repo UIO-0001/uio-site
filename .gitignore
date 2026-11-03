@@ -8,3 +8,7 @@ __pycache__/
 .playwright-cli/
 .taste-skill/
 *.mov
+.claude/
+# Fiches de design d'Impeccable : hors du site public (tout fichier commité est servi), copie dans les fichiers du projet
+PRODUCT.md
+DESIGN.md
