@@ -46,6 +46,8 @@
   --centre: #2F6FEB; --centre-teinte: #EBF1FE; --centre-fonce: #1D4FB8;
   --site: #F2A900;   --site-teinte: #FFF5D9;   --site-fonce: #7A5200;
   --urgence: #B42318; --urgence-teinte: #FDECEA;
+  /* Bandes de contraste : le marine du logo pris comme fond (texte secondaire à 9,6:1) */
+  --nuit: #0E1A2B; --nuit-texte: #B7C1CF; --nuit-trait: rgba(255, 255, 255, .14);
   --ombre-flotte: 0 1px 2px rgba(14, 26, 43, .06), 0 12px 28px -10px rgba(14, 26, 43, .18), 0 32px 72px -28px rgba(14, 26, 43, .24);
   --ombre-douce: 0 1px 2px rgba(14, 26, 43, .06), 0 6px 16px -8px rgba(14, 26, 43, .22);
   --lampe: #FF6A2B;        /* orange du logo : l'action (boutons, curseurs), le direct (point, onde) et la couleur du répondeur */
@@ -129,17 +131,20 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .hero__grille { display: grid; gap: 40px; align-items: start; }
 .hero__texte { display: grid; gap: 22px; justify-items: start; }
 .hero__texte .lead { max-width: 31em; }
-.hero__prix { font-weight: 600; font-size: 1.0625rem; }
+/* Les faits en bref, sous le bouton : prix, sans contrat, installée par nous */
+.faits { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: .9375rem; font-weight: 600; }
+.faits li { display: inline-flex; align-items: center; gap: 8px; }
+.faits li::before { content: ""; width: 6px; height: 6px; flex: none; border-radius: 50%; background: var(--lampe); }
 .hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 24px; margin-top: 6px; }
 @media (min-width: 960px) { .hero__grille { grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); gap: 64px; } .hero__texte { padding-top: clamp(8px, 2vw, 32px); } }
 
 .scene { display: grid; gap: 12px; }
-.scene__fond { position: relative; isolation: isolate; overflow: hidden; padding: clamp(16px, 2.8vw, 36px); border-radius: var(--r-tuile);
+.scene__fond { position: relative; isolation: isolate; overflow: hidden; container-type: inline-size; padding: clamp(16px, 2.8vw, 36px); border-radius: var(--r-tuile);
   background: radial-gradient(75% 60% at 92% 4%, rgba(255, 122, 61, .32), rgba(255, 122, 61, 0) 70%), radial-gradient(65% 55% at 4% 100%, rgba(255, 186, 110, .3), rgba(255, 186, 110, 0) 70%), linear-gradient(165deg, #FFF6F0, #FFEADD); }
 .scene__fond::after { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(45% 40% at 50% 42%, rgba(255, 106, 43, .26), rgba(255, 106, 43, 0) 72%); opacity: 0; transition: opacity .8s var(--sortie); }
 .scene__fond.vive::after { opacity: 1; animation: lueur 2.6s ease-in-out infinite alternate; }
 @keyframes lueur { from { transform: scale(.9); } to { transform: scale(1.12); } }
-.appel { position: relative; display: grid; gap: 16px; max-width: 460px; margin-inline: auto; padding: clamp(18px, 2.2vw, 26px); background: var(--blanc); border-radius: var(--r-carte); box-shadow: var(--ombre-flotte); }
+.appel { position: relative; display: flex; flex-direction: column; gap: 16px; max-width: 460px; margin-inline: auto; padding: clamp(18px, 2.2vw, 26px); background: var(--blanc); border-radius: var(--r-carte); box-shadow: var(--ombre-flotte); }
 .appel__tete { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--texte-2); font-size: .875rem; font-weight: 500; }
 .appel__etat { display: inline-flex; align-items: center; gap: 8px; }
 .appel__point { width: 8px; height: 8px; border-radius: 50%; background: var(--eteint); transition: background-color .3s; }
@@ -155,10 +160,13 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 @keyframes voix { from { transform: scaleY(.3); } to { transform: scaleY(1); } }
 .transcription { display: grid; gap: 12px; }
 .transcription li, .appel__suite li { transition: opacity .5s var(--sortie), transform .5s var(--sortie); }
-.transcription li { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: 12px; align-items: baseline; }
+.transcription li { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: 4px 12px; align-items: baseline; }
+/* Ce qu'elle dit vient de votre script : la source sous la réplique */
+.transcription .selon { grid-column: 2; display: inline-flex; align-items: center; gap: 6px; color: var(--voix-fonce); font-size: .75rem; font-weight: 650; letter-spacing: .01em; }
+.transcription .selon::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--lampe); }
 .transcription .qui { color: var(--texte-2); font-size: .8125rem; font-weight: 600; }
 .transcription q { font-size: 1rem; line-height: 1.45; quotes: "«\00a0" "\00a0»"; }
-.appel__suite { display: grid; gap: 12px; padding-top: 16px; border-top: 1px solid var(--trait); }
+.appel__suite { display: grid; gap: 12px; margin-top: auto; padding-top: 16px; border-top: 1px solid var(--trait); }
 .appel__suite li { display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: 12px; align-items: start; }
 .appel__suite li > div { display: grid; gap: 1px; }
 .puce { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; }
@@ -167,11 +175,19 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .js .appel.joue li:not(.on) .puce path { stroke-dashoffset: 15; }
 .puce--centre { background: var(--centre-teinte); color: var(--centre-fonce); }
 .puce--texto { background: var(--texto-teinte); color: var(--texto-fonce); }
+.puce--urgence { background: var(--urgence-teinte); color: var(--urgence); }
 .appel__suite b { font-size: .9375rem; font-weight: 650; }
 .appel__suite span { color: var(--texte-2); font-size: .875rem; }
 .js .appel.joue li:not(.on) { opacity: 0; transform: translateY(6px); }
 .scene__legende { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 16px; padding-inline: 6px; }
 .rejouer { min-height: 44px; padding: 0; border: 0; background: none; color: var(--encre); font: 600 .875rem/1 var(--police); text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+/* Le métier de la démonstration : quatre pastilles sur la scène, deux par rangée quand la place manque */
+.metiers { display: none; }
+.js .metiers { display: grid; grid-template-columns: repeat(4, auto); justify-content: center; gap: 6px; margin-bottom: clamp(14px, 2vw, 22px); }
+.metiers button { min-height: 44px; padding: 0 14px; border: 0; border-radius: 999px; background: rgba(255, 255, 255, .8); box-shadow: inset 0 0 0 1px rgba(14, 26, 43, .1); color: var(--encre); font: 600 .875rem/1 var(--police); letter-spacing: -.01em; white-space: nowrap; cursor: pointer; transition: background-color .2s, color .2s, box-shadow .2s; }
+.metiers button:hover { background: var(--blanc); }
+.metiers button[aria-pressed="true"] { background: var(--encre); color: #fff; box-shadow: var(--ombre-douce); }
+@container (max-width: 399px) { .js .metiers { grid-template-columns: 1fr 1fr; justify-content: stretch; } }
 
 /* ============ Sections ============ */
 .section { padding-block: clamp(80px, 11vw, 152px); }
@@ -180,11 +196,25 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .tete .lead { max-width: 36em; }
 .tete--centre { margin-inline: auto; text-align: center; justify-items: center; }
 
-/* Le problème : un énoncé centré, puis la source */
-.enonce { display: grid; gap: 22px; justify-items: center; text-align: center; }
-.enonce h2 { max-width: 26ch; }
-.enonce .lead { max-width: 34em; }
-.enonce .lead strong { color: var(--voix-fonce); font-weight: 700; }
+/* Bandes de nuit : le marine du logo, une lueur orange, le texte en blanc */
+.nuit { position: relative; isolation: isolate; overflow: hidden; background: var(--nuit); color: #FFFFFF; --anneau: #FFFFFF; }
+.nuit .lead, .nuit .petit { color: var(--nuit-texte); }
+.nuit::before { content: ""; position: absolute; z-index: -1; right: -12%; bottom: -55%; width: min(900px, 90vw); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 106, 43, .2), rgba(255, 106, 43, 0)); pointer-events: none; }
+
+/* Le problème : deux chiffres, une source */
+.silence { display: grid; gap: clamp(40px, 5vw, 72px); }
+.silence h2 { max-width: 19ch; }
+.silence__chiffres { display: grid; gap: 32px; }
+.silence__chiffres li { display: grid; align-content: start; gap: 14px; padding-top: 28px; border-top: 1px solid var(--nuit-trait); color: var(--nuit-texte); font-size: clamp(1.0625rem, 1.3vw, 1.25rem); line-height: 1.45; }
+.silence__chiffres b { color: #FFFFFF; font-size: clamp(4.25rem, 10vw, 8rem); font-weight: 700; line-height: .9; letter-spacing: -.055em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.silence__chiffres .moins { font-size: .3em; font-weight: 650; letter-spacing: -.01em; }
+.silence .petit { margin-top: calc(-1 * clamp(16px, 2.5vw, 36px)); }
+@media (min-width: 760px) {
+  .silence__chiffres { grid-template-columns: 1fr 1fr; gap: 0; }
+  .silence__chiffres li { padding-right: clamp(24px, 4vw, 64px); }
+  .silence__chiffres li + li { padding-left: clamp(24px, 4vw, 64px); border-left: 1px solid var(--nuit-trait); }
+  .silence__chiffres li { max-width: none; }
+}
 
 /* Le déroulé d'un appel : titre collant à gauche, étapes à droite */
 .deroule { display: grid; gap: 36px; }
@@ -219,20 +249,47 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
   .deroule__tete { position: sticky; top: 112px; }
 }
 
-/* Ce qui suit l'appel : une grande tuile, puis deux modules en rangées */
+/* Ce qui suit l'appel : trois modules en onglets, un seul à l'écran.
+   Sans JavaScript, pas d'onglets : les trois modules l'un sous l'autre. */
 .tuile { --pad: clamp(24px, 4.2vw, 56px); padding: var(--pad); background: var(--blanc); border-radius: var(--r-tuile); }
-.tuile h3, .module__texte h3 { font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 700; line-height: 1.1; letter-spacing: -.03em; }
-.centre { display: grid; gap: 40px; }
-.centre__texte { display: grid; gap: 18px; align-content: start; }
+.tuile h3, .panneau__texte h3 { font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 700; line-height: 1.1; letter-spacing: -.03em; }
+.onglets { display: none; }
+.js .onglets { display: inline-grid; grid-auto-flow: column; gap: 4px; margin-bottom: 20px; padding: 4px; border-radius: 999px; background: rgba(14, 26, 43, .07); }
+.onglets button { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 0 20px; border: 0; border-radius: 999px; background: transparent; color: var(--encre); font: 600 1rem/1.15 var(--police); letter-spacing: -.01em; white-space: nowrap; cursor: pointer; transition: background-color .25s, box-shadow .25s; }
+.onglets button::before { content: ""; width: 8px; height: 8px; flex: none; border-radius: 50%; background: var(--c); transition: box-shadow .35s var(--sortie); }
+.onglets button:hover { background: rgba(255, 255, 255, .6); }
+.onglets button[aria-selected="true"] { background: var(--blanc); box-shadow: var(--ombre-douce); }
+.onglets button[aria-selected="true"]::before { box-shadow: 0 0 0 4px var(--ct); }
+.panneaux { display: grid; gap: 20px; }
+.panneau { display: grid; gap: 28px; padding: clamp(20px, 3.6vw, 48px); background: var(--blanc); border-radius: var(--r-tuile); }
+.panneau__texte { display: grid; gap: 16px; align-content: center; }
+.panneau__texte > p { color: var(--texte-2); }
+.panneau__texte > .offre-ligne { color: var(--encre); }
+.panneau__scene { display: grid; align-content: center; min-width: 0; padding: clamp(16px, 3.4vw, 44px); border-radius: var(--r-carte); }
+.panneau--centre .panneau__scene { background: radial-gradient(70% 60% at 92% 0%, rgba(47, 111, 235, .2), rgba(47, 111, 235, 0) 70%), var(--centre-teinte); }
+.panneau--texto .panneau__scene { background: radial-gradient(70% 60% at 92% 0%, rgba(30, 158, 90, .18), rgba(30, 158, 90, 0) 70%), var(--texto-teinte); }
+.panneau--site .panneau__scene { background: radial-gradient(70% 60% at 8% 0%, rgba(242, 169, 0, .24), rgba(242, 169, 0, 0) 70%), var(--site-teinte); }
 .inclus li { display: grid; gap: 2px; padding-block: 14px; border-top: 1px solid var(--trait); }
 .inclus li:last-child { border-bottom: 1px solid var(--trait); }
-.tuile.centre { background: var(--centre-teinte); }
-.centre .inclus li { border-color: rgba(29, 79, 184, .15); }
 @media (max-width: 639px) { .inclus span { display: none; } .inclus li { padding-block: 12px; } }
 .inclus b { font-weight: 650; }
 .inclus span { color: var(--texte-2); font-size: .975rem; line-height: 1.5; }
 .offre-ligne { font-weight: 600; }
-@media (min-width: 960px) { .centre { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: center; } }
+.panneau.entre { animation: entree .45s var(--sortie); }
+@media (min-width: 960px) {
+  /* La scène teintée remplit toute la hauteur du panneau : l'écran blanc flotte au centre */
+  .panneau { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 48px; align-items: stretch; }
+  /* Les trois panneaux occupent la même case : la section garde la hauteur du plus grand, rien ne saute */
+  .js .panneaux { grid-template-areas: "p"; }
+  .js .panneau { grid-area: p; }
+  .js .panneau.inactif { visibility: hidden; }
+}
+@media (max-width: 959px) { .js .panneau.inactif { display: none; } }
+@media (max-width: 759px) { .o-long { display: none; } }
+@media (max-width: 639px) {
+  .js .onglets { display: grid; grid-auto-columns: minmax(0, 1fr); width: 100%; }
+  .onglets button { gap: 8px; padding: 0 8px; font-size: .9375rem; }
+}
 
 .bord { display: grid; gap: 16px; padding: clamp(16px, 2.4vw, 28px); background: var(--blanc); border-radius: var(--r-carte); box-shadow: var(--ombre-flotte); }
 .bord__tete { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
@@ -270,14 +327,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .exemple-note { color: var(--texte-2); font-size: .8125rem; }
 @media (max-width: 480px) { .bord__appels li { grid-template-columns: minmax(0, 1fr) auto; } .bord__heure { grid-column: 1 / -1; } }
 
-/* Les deux modules suivants : en rangées sur la bande grise, côtés alternés, sans tuile */
-.module { display: grid; gap: 28px; align-items: center; margin-top: clamp(64px, 8vw, 112px); }
-.module__texte { display: grid; gap: 16px; align-content: center; max-width: 34em; }
-.module__texte p { color: var(--texte-2); }
-.module__texte .offre-ligne { color: var(--encre); }
-.module__scene { display: grid; min-width: 0; padding: clamp(20px, 4vw, 48px); border-radius: var(--r-tuile); }
-.module__scene--texto { background: radial-gradient(70% 60% at 92% 0%, rgba(30, 158, 90, .18), rgba(30, 158, 90, 0) 70%), var(--texto-teinte); }
-.module__scene--site { background: radial-gradient(70% 60% at 8% 0%, rgba(242, 169, 0, .24), rgba(242, 169, 0, 0) 70%), var(--site-teinte); }
+/* Le fil du texto et la capture du site : des écrans blancs posés sur la scène du module */
 .fil { display: grid; gap: 12px; padding: clamp(18px, 2.6vw, 30px); background: var(--blanc); border-radius: var(--r-carte); box-shadow: var(--ombre-flotte); }
 .fil li { transition: opacity .45s var(--sortie), transform .45s var(--sortie); }
 .js .fil.attente li, .js .fil.joue li:not(.montre) { opacity: 0; transform: translateY(8px); }
@@ -299,11 +349,6 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .module__image img { width: 100%; transition: transform .6s var(--sortie); }
 .module__image:hover img { transform: scale(1.02); }
 @media (max-width: 480px) { .fil li { grid-template-columns: minmax(0, 1fr); } }
-@media (min-width: 960px) {
-  .module { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 72px; }
-  .module--inverse { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); }
-  .module--inverse .module__texte { order: 2; }
-}
 
 /* Calculateur : une tuile grise ; le résultat à côté des curseurs, derrière un filet */
 .calcul { display: grid; gap: 36px; padding: clamp(24px, 4.2vw, 56px); background: radial-gradient(60% 75% at 100% 100%, rgba(255, 122, 61, .16), rgba(255, 122, 61, 0) 72%), var(--gris); border-radius: var(--r-tuile); }
@@ -344,9 +389,13 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 /* La pastille dit de quel module vient chaque ligne : orange répondeur, vert texto, bleu centre de contrôle, ambre site */
 .forfait li::before, .modules b::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--contour)); }
 .forfait li::before { position: absolute; left: 0; top: calc(11px + .5em); }
-[data-m="voix"] { --c: var(--lampe); } [data-m="texto"] { --c: var(--texto); } [data-m="centre"] { --c: var(--centre); } [data-m="site"] { --c: var(--site); }
+[data-m="voix"] { --c: var(--lampe); --ct: var(--voix-teinte); } [data-m="texto"] { --c: var(--texto); --ct: var(--texto-teinte); } [data-m="centre"] { --c: var(--centre); --ct: var(--centre-teinte); } [data-m="site"] { --c: var(--site); --ct: var(--site-teinte); }
 .forfait li.minutes { font-weight: 650; }
-.forfait--vedette { position: relative; z-index: 1; border-radius: 24px; background: linear-gradient(180deg, #FFF1E8 0%, rgba(255, 241, 232, 0) 260px), var(--blanc); box-shadow: var(--ombre-flotte), inset 0 0 0 2px var(--lampe); }
+/* Le forfait vedette : la seule carte foncée, avec la lueur orange du répondeur en haut */
+.forfait--vedette { position: relative; z-index: 1; border-radius: 24px; background: radial-gradient(110% 55% at 50% 0%, rgba(255, 106, 43, .15), rgba(255, 106, 43, 0) 70%), var(--nuit); color: #FFFFFF; box-shadow: var(--ombre-flotte); --anneau: #FFFFFF; }
+.forfait--vedette .forfait__pour, .forfait--vedette .forfait__prix span, .forfait--vedette .forfait__depart { color: var(--nuit-texte); }
+.forfait--vedette li { border-top-color: var(--nuit-trait); }
+.forfait__valeur { display: block; margin-top: 2px; }
 .choix-forfait { display: none; }
 @keyframes entree { from { opacity: 0; transform: translateY(10px); } }
 @media (max-width: 959px) {
@@ -363,7 +412,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
   .forfaits { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(6, auto); }
   .forfait { grid-row: span 6; grid-template-rows: subgrid; }
   .forfait + .forfait { border-top: 0; border-left: 1px solid var(--trait); }
-  /* La carte vedette a déjà son anneau orange : pas de filet de chaque côté */
+  /* La carte vedette est foncée : pas de filet de chaque côté */
   .forfait.forfait--vedette, .forfait--vedette + .forfait { border-left: 0; }
   .forfait__pour { min-height: 3.2em; }
 }
@@ -391,6 +440,47 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .extras { display: grid; gap: 8px; color: var(--texte-2); font-size: .9375rem; }
 .extras b { color: var(--encre); font-weight: 600; }
 
+/* Vous n'installez rien : quatre étapes, ce que vous avez à faire au bas de chacune */
+.tete--deux { max-width: none; }
+@media (min-width: 960px) { .tete--deux { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 64px; align-items: end; } .tete--deux .lead { max-width: none; } }
+.parcours { counter-reset: parcours; display: grid; gap: 1px; overflow: hidden; border: 1px solid var(--trait); border-radius: var(--r-tuile); background: var(--trait); }
+.parcours li { display: grid; grid-template-rows: auto auto 1fr auto; gap: 12px; padding: clamp(22px, 2.6vw, 32px); background: var(--gris); }
+.parcours li::before { counter-increment: parcours; content: counter(parcours); display: grid; place-items: center; width: 2.25rem; height: 2.25rem; margin-bottom: 4px; border-radius: 50%; background: var(--voix-teinte); color: var(--voix-fonce); font-weight: 700; font-variant-numeric: tabular-nums; transition: transform .5s var(--sortie), opacity .4s; transition-delay: calc(var(--i, 0) * 150ms); }
+.js .parcours.attente li::before { opacity: 0; transform: scale(.4); }
+.parcours h3 { font-size: 1.375rem; font-weight: 700; letter-spacing: -.022em; }
+.parcours p { color: var(--texte-2); }
+.parcours .parcours__vous { padding-top: 14px; border-top: 1px solid var(--trait-gris); color: var(--encre); font-size: .9375rem; font-weight: 600; }
+.parcours__vous span { color: var(--texte-2); font-weight: 500; }
+.parcours .parcours__ensuite { background: radial-gradient(90% 60% at 100% 0%, rgba(255, 106, 43, .15), rgba(255, 106, 43, 0) 70%), var(--nuit); color: #FFFFFF; --anneau: #FFFFFF; }
+.parcours .parcours__ensuite::before { background: var(--lampe); color: var(--encre); }
+.parcours .parcours__ensuite p { color: var(--nuit-texte); }
+.parcours .parcours__ensuite .parcours__vous { border-top-color: var(--nuit-trait); color: #FFFFFF; }
+.parcours__ensuite .parcours__vous span { color: var(--nuit-texte); }
+.parcours__total { margin-top: 16px; padding: 18px clamp(20px, 2.6vw, 32px); border-radius: var(--r-carte); background: var(--gris); font-weight: 600; }
+.parcours__total span { color: var(--texte-2); font-weight: 500; }
+@media (min-width: 640px) {
+  .parcours { grid-template-columns: 1fr 1fr; }
+  /* Chaque étape prend quatre rangées de la grille : les titres, les textes et les lignes « Vous » s'alignent */
+  @supports (grid-template-rows: subgrid) { .parcours li { grid-row: span 4; grid-template-rows: subgrid; } }
+}
+@media (min-width: 1100px) { .parcours { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 639px) {
+  .parcours { display: flex; gap: 12px; margin-inline: calc(-1 * var(--m)); padding: 4px var(--m) 8px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--m); scrollbar-width: none; border: 0; border-radius: 0; background: none; }
+  .parcours::-webkit-scrollbar { display: none; }
+  .parcours li { flex: 0 0 86%; border-radius: var(--r-carte); scroll-snap-align: start; }
+}
+
+/* La confiance : ce qu'elle fait et ne fait pas, en quatre réponses */
+.confiance { display: grid; gap: 36px; padding: clamp(24px, 4.2vw, 56px); border-radius: var(--r-tuile); background: radial-gradient(55% 70% at 0% 0%, rgba(255, 106, 43, .1), rgba(255, 106, 43, 0) 70%), var(--blanc); }
+.confiance__tete { display: grid; gap: 18px; align-content: start; justify-items: start; }
+.confiance h2 { font-size: clamp(2rem, 3.4vw, 2.75rem); }
+.garanties { display: grid; }
+.garanties li { display: grid; align-content: start; gap: 8px; padding-block: 22px; border-top: 1px solid var(--trait); }
+.garanties h3 { font-size: 1.1875rem; font-weight: 650; }
+.garanties p { color: var(--texte-2); }
+@media (min-width: 760px) { .garanties { grid-template-columns: 1fr 1fr; column-gap: 40px; } }
+@media (min-width: 960px) { .confiance { grid-template-columns: minmax(0, 6fr) minmax(0, 7fr); gap: 64px; } .confiance__tete { position: sticky; top: 112px; } }
+
 /* Questions */
 .faq { display: grid; gap: 40px; }
 .faq__aside { display: grid; gap: 16px; align-content: start; }
@@ -408,12 +498,16 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 /* Contact */
 .contact { display: grid; gap: 48px; }
 .contact__texte { display: grid; gap: 22px; align-content: start; }
-.debut { counter-reset: debut; display: grid; gap: 0; }
-.debut li { display: grid; grid-template-columns: 2rem minmax(0, 1fr); gap: 12px; padding-block: 14px; border-top: 1px solid var(--trait-gris); }
-.debut li:last-child { border-bottom: 1px solid var(--trait-gris); }
-.debut li::before { counter-increment: debut; content: counter(debut); color: var(--texte-2); font-weight: 600; font-variant-numeric: tabular-nums; }
 .equipe { color: var(--texte-2); }
 .equipe b { color: var(--encre); font-weight: 600; }
+/* Le contact sur la bande de nuit : le formulaire blanc flotte, une lueur respire derrière */
+.nuit .equipe { color: var(--nuit-texte); }
+.nuit .equipe b, .nuit .lien { color: #FFFFFF; }
+.nuit .form { color: var(--encre); --anneau: var(--encre); box-shadow: 0 2px 6px rgba(0, 0, 0, .2), 0 40px 90px -40px rgba(0, 0, 0, .65); }
+.nuit .orbe { position: absolute; z-index: -1; right: -4%; top: 10%; width: min(640px, 70vw); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 42% 40%, rgba(255, 150, 95, .5), rgba(255, 106, 43, .26) 36%, rgba(255, 106, 43, .07) 58%, rgba(255, 106, 43, 0) 70%); filter: blur(24px); pointer-events: none; animation: respire 7s ease-in-out infinite alternate; }
+@media (max-width: 959px) { .nuit .orbe { top: auto; bottom: 2%; right: -35%; width: 115vw; } }
+#contact.nuit::before { display: none; }
+@keyframes respire { from { transform: scale(.92); opacity: .75; } to { transform: scale(1.06); opacity: 1; } }
 .contact__moyens { display: flex; flex-wrap: wrap; gap: 0 24px; }
 .form { display: grid; gap: 18px; padding: clamp(22px, 3.4vw, 40px); background: var(--blanc); border-radius: var(--r-tuile); }
 .form h3 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.025em; }
@@ -506,16 +600,26 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
       <div class="hero__texte">
         <h1 id="titre">Chaque appel répondu. Même sur le chantier.</h1>
         <p class="lead">Une réceptionniste virtuelle répond à vos appels 24 h sur&nbsp;24, en français et en anglais. Elle prend le rendez-vous et vous envoie le résumé par texto.</p>
-        <p class="hero__prix">À partir de 199 $ par mois. Sans contrat.</p>
         <div class="hero__actions">
           <a class="btn" href="#contact">Demander mon audit gratuit</a>
           <a class="lien" href="tel:+18734558990">Appeler le&nbsp;<span class="tel">873 455-8990</span></a>
         </div>
+        <ul class="faits">
+          <li>À partir de 199 $ par mois</li>
+          <li>Sans contrat</li>
+          <li>Installée par nous</li>
+        </ul>
       </div>
 
       <figure class="scene">
         <div class="scene__fond">
-          <div class="appel" id="appel" aria-label="Démonstration fictive : un appel répondu par la réceptionniste virtuelle">
+          <div class="metiers" id="metiers" role="group" aria-label="Choisir le métier de la démonstration">
+            <button type="button" data-metier="plomberie" aria-pressed="true">Plomberie</button>
+            <button type="button" data-metier="chauffage" aria-pressed="false">Chauffage</button>
+            <button type="button" data-metier="electricite" aria-pressed="false">Électricité</button>
+            <button type="button" data-metier="garage" aria-pressed="false">Garage</button>
+          </div>
+          <div class="appel" id="appel" role="group" aria-label="Démonstration fictive : un appel répondu par la réceptionniste virtuelle">
             <div class="appel__tete">
               <span class="appel__etat"><span class="appel__point" aria-hidden="true"></span><span id="a-etat">Appel terminé</span></span>
               <span class="appel__duree" id="a-duree">0:48</span>
@@ -525,7 +629,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
             <ol class="transcription">
               <li data-t="300"><span class="qui">Léa</span><q>Bonjour, Plomberie Lavoie, ici Léa, l’assistante virtuelle. L’appel est enregistré. Comment je peux vous aider ?</q></li>
               <li data-t="1800"><span class="qui">Client</span><q>Mon chauffe-eau fuit un peu. Vous pouvez passer cette semaine ?</q></li>
-              <li data-t="3200"><span class="qui">Léa</span><q>Oui. Je vous propose mardi à 9 h ou mercredi à 13 h.</q></li>
+              <li data-t="3200"><span class="qui">Léa</span><q>Oui. Je vous propose mardi à 9 h ou mercredi à 13 h.</q><small class="selon">Selon votre agenda</small></li>
               <li data-t="4400"><span class="qui">Client</span><q>Mardi, 9 h.</q></li>
             </ol>
             <ul class="appel__suite">
@@ -535,18 +639,21 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
           </div>
         </div>
         <figcaption class="scene__legende">
-          <span class="petit">Démonstration fictive : entreprise et numéro inventés.</span>
+          <span class="petit">Démonstrations fictives : entreprises et numéros inventés.</span>
           <button class="rejouer" id="reprise" type="button">Rejouer l’appel</button>
         </figcaption>
       </figure>
     </div>
   </section>
 
-  <section class="section gris" aria-labelledby="t-probleme">
-    <div class="wrap enonce">
-      <h2 id="t-probleme">Un appel manqué, c’est souvent un client perdu.</h2>
-      <p class="lead"><strong>27 %</strong> des appels aux entreprises de services à domicile restent sans réponse, et <strong>moins de 3 %</strong> des gens qui tombent sur la boîte vocale laissent un message. Les autres appellent souvent le suivant sur la liste.</p>
-      <p class="petit">Source : Invoca, mai 2024, données de sa plateforme.</p>
+  <section class="section nuit" aria-labelledby="t-probleme">
+    <div class="wrap silence">
+      <h2 id="t-probleme">Un appel manqué, c’est souvent un contrat pour le concurrent.</h2>
+      <ul class="silence__chiffres" id="chiffres">
+        <li><b><span data-compte="27">27</span> %</b> des appels aux entreprises de services à domicile restent sans réponse.</li>
+        <li><b><span class="moins">moins de</span> <span data-compte="3">3</span> %</b> des gens qui tombent sur la boîte vocale laissent un message.</li>
+      </ul>
+      <p class="petit">Source : Invoca, mai 2024, données de sa plateforme aux États-Unis.</p>
     </div>
   </section>
 
@@ -570,67 +677,79 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
     </div>
   </section>
 
-  <section class="section gris" aria-labelledby="t-suite">
+  <section class="section gris" id="modules" aria-labelledby="t-suite">
     <div class="wrap">
       <div class="tete">
         <h2 id="t-suite">Tout ce qui suit l’appel, au même endroit.</h2>
-        <p class="lead">Avec les forfaits Croissance et Complet, chaque appel devient une fiche dans votre centre de contrôle, sur votre cellulaire et votre ordinateur.</p>
+        <p class="lead">Chaque appel devient une fiche, un rendez-vous ou un texto. Choisissez un module pour le voir travailler.</p>
       </div>
 
-      <div class="tuile centre">
-        <div class="centre__texte">
-          <h3>Le centre de contrôle</h3>
-          <ul class="inclus">
-            <li><b>Les appels et les clients</b><span>Chaque appel avec son résumé, son besoin et sa suite.</span></li>
-            <li><b>L’agenda</b><span>Les rendez-vous pris par la réceptionniste, avec les rappels.</span></li>
-            <li><b>Les avis Google</b><span>Une demande d’avis part après chaque travail.</span></li>
-            <li><b>Les courriels automatiques</b><span>Relance des soumissions et rappels de rendez-vous.</span></li>
-            <li><b>Les graphiques et le rapport du mois</b><span>Appels pris, travaux réservés, avis reçus.</span></li>
-          </ul>
-          <p class="offre-ligne">Seul : 149 $ par mois. Inclus dans Croissance et Complet.</p>
-        </div>
-        <figure class="bord" id="bord" aria-label="Exemple fictif du centre de contrôle">
-          <div class="bord__tete"><b>Aujourd’hui</b><span>Plomberie Lavoie</span></div>
-          <ul class="bord__appels">
-            <li style="--i:2"><span class="bord__heure">14 h 32</span><span class="bord__quoi"><b>Chauffe-eau qui fuit</b><span>12, rue Laval · mardi 9 h</span></span><span class="bord__statut bord__statut--rdv">Rendez-vous</span></li>
-            <li style="--i:1"><span class="bord__heure">11 h 05</span><span class="bord__quoi"><b>Odeur de gaz</b><span>Transféré à votre cellulaire</span></span><span class="bord__statut bord__statut--urgence">Urgence</span></li>
-            <li style="--i:0"><span class="bord__heure">9 h 40</span><span class="bord__quoi"><b>Soumission, salle de bain</b><span>Rappel promis avant 16 h</span></span><span class="bord__statut bord__statut--rappel">Rappel</span></li>
-          </ul>
-          <div class="bord__chiffres">
-            <div><b id="bord-appels">86</b><span>appels répondus ce mois-ci</span><span class="barres" aria-hidden="true"><i style="--h:42%;--i:0"></i><i style="--h:55%;--i:1"></i><i style="--h:51%;--i:2"></i><i style="--h:68%;--i:3"></i><i style="--h:74%;--i:4"></i><i style="--h:92%;--i:5"></i></span></div>
-            <div><b>4,8</b><span>note Google, 37 avis</span><span class="etoiles" aria-hidden="true"><svg style="--i:0"><use href="#i-etoile"/></svg><svg style="--i:1"><use href="#i-etoile"/></svg><svg style="--i:2"><use href="#i-etoile"/></svg><svg style="--i:3"><use href="#i-etoile"/></svg><svg style="--i:4"><use href="#i-etoile"/></svg></span></div>
+      <div class="onglets" id="onglets" aria-label="Les modules">
+        <button type="button" id="o-centre" data-m="centre" aria-controls="p-centre"><span>Centre<span class="o-long"> de contrôle</span></span></button>
+        <button type="button" id="o-texto" data-m="texto" aria-controls="p-texto"><span>Texto<span class="o-long"> après appel manqué</span></span></button>
+        <button type="button" id="o-site" data-m="site" aria-controls="p-site"><span>Site web</span></button>
+      </div>
+
+      <div class="panneaux">
+        <div class="panneau panneau--centre" id="p-centre">
+          <div class="panneau__texte">
+            <h3>Le centre de contrôle</h3>
+            <p>Avec les forfaits Croissance et Complet, chaque appel devient une fiche, sur votre cellulaire et votre ordinateur.</p>
+            <ul class="inclus">
+              <li><b>Les appels et les clients</b><span>Chaque appel avec son résumé, son besoin et sa suite.</span></li>
+              <li><b>L’agenda</b><span>Les rendez-vous pris par la réceptionniste, avec les rappels.</span></li>
+              <li><b>Les avis Google</b><span>Une demande d’avis part après chaque travail.</span></li>
+              <li><b>Les courriels automatiques</b><span>Relance des soumissions et rappels de rendez-vous.</span></li>
+              <li><b>Les graphiques et le rapport du mois</b><span>Appels pris, travaux réservés, avis reçus.</span></li>
+            </ul>
+            <p class="offre-ligne">Seul : 149 $ par mois. Inclus dans Croissance et Complet.</p>
           </div>
-          <figcaption class="exemple-note">Exemple fictif.</figcaption>
-        </figure>
-      </div>
+          <div class="panneau__scene">
+            <figure class="bord" id="bord" aria-label="Exemple fictif du centre de contrôle">
+              <div class="bord__tete"><b>Aujourd’hui</b><span>Plomberie Lavoie</span></div>
+              <ul class="bord__appels">
+                <li style="--i:2"><span class="bord__heure">14 h 32</span><span class="bord__quoi"><b>Chauffe-eau qui fuit</b><span>12, rue Laval · mardi 9 h</span></span><span class="bord__statut bord__statut--rdv">Rendez-vous</span></li>
+                <li style="--i:1"><span class="bord__heure">11 h 05</span><span class="bord__quoi"><b>Odeur de gaz</b><span>Transféré à votre cellulaire</span></span><span class="bord__statut bord__statut--urgence">Urgence</span></li>
+                <li style="--i:0"><span class="bord__heure">9 h 40</span><span class="bord__quoi"><b>Soumission, salle de bain</b><span>Rappel promis avant 16 h</span></span><span class="bord__statut bord__statut--rappel">Rappel</span></li>
+              </ul>
+              <div class="bord__chiffres">
+                <div><b id="bord-appels">86</b><span>appels répondus ce mois-ci</span><span class="barres" aria-hidden="true"><i style="--h:42%;--i:0"></i><i style="--h:55%;--i:1"></i><i style="--h:51%;--i:2"></i><i style="--h:68%;--i:3"></i><i style="--h:74%;--i:4"></i><i style="--h:92%;--i:5"></i></span></div>
+                <div><b>4,8</b><span>note Google, 37 avis</span><span class="etoiles" aria-hidden="true"><svg style="--i:0"><use href="#i-etoile"/></svg><svg style="--i:1"><use href="#i-etoile"/></svg><svg style="--i:2"><use href="#i-etoile"/></svg><svg style="--i:3"><use href="#i-etoile"/></svg><svg style="--i:4"><use href="#i-etoile"/></svg></span></div>
+              </div>
+              <figcaption class="exemple-note">Exemple fictif.</figcaption>
+            </figure>
+          </div>
+        </div>
 
-      <div class="module">
-        <div class="module__texte">
-          <h3>Le texto après un appel manqué</h3>
-          <p>Si quelqu’un raccroche avant de parler, il reçoit tout de suite un texto à votre nom. Le contact n’est pas perdu.</p>
-          <p class="offre-ligne">Inclus avec le répondeur. Seul : 69 $ par mois.</p>
+        <div class="panneau panneau--texto" id="p-texto">
+          <div class="panneau__texte">
+            <h3>Le texto après un appel manqué</h3>
+            <p>Si quelqu’un raccroche avant de parler, il reçoit tout de suite un texto à votre nom. Le contact n’est pas perdu.</p>
+            <p>Le texto donne le nom de votre entreprise et respecte les demandes d’arrêt (ARRÊT ou STOP).</p>
+            <p class="offre-ligne">Inclus avec le répondeur. Seul : 69 $ par mois.</p>
+          </div>
+          <div class="panneau__scene">
+            <figure class="fil" id="fil" aria-label="Exemple fictif d'un texto après un appel manqué">
+              <ol>
+                <li data-etat="manque"><span class="bord__heure">14 h 32</span><span class="bord__quoi"><b>Appel manqué</b><span>Le 819 555-0142 a raccroché avant de parler.</span></span></li>
+                <li data-etat="envoye"><span class="bord__heure">14 h 32</span><span class="bord__quoi"><b>Texto envoyé à votre nom</b><q>Désolé d’avoir manqué votre appel. Comment peut-on vous aider ?</q><span class="fil__ecrit" aria-hidden="true"><i></i><i></i><i></i></span></span></li>
+                <li data-etat="reponse"><span class="bord__heure">14 h 39</span><span class="bord__quoi"><b>Réponse du client</b><q>Une fuite sous l’évier. Vous pouvez passer demain ?</q><span class="fil__ecrit" aria-hidden="true"><i></i><i></i><i></i></span></span></li>
+              </ol>
+              <figcaption class="exemple-note">Exemple fictif.</figcaption>
+            </figure>
+          </div>
         </div>
-        <div class="module__scene module__scene--texto">
-        <figure class="fil" id="fil" aria-label="Exemple fictif d'un texto après un appel manqué">
-          <ol>
-            <li data-etat="manque"><span class="bord__heure">14 h 32</span><span class="bord__quoi"><b>Appel manqué</b><span>Le 819 555-0142 a raccroché avant de parler.</span></span></li>
-            <li data-etat="envoye"><span class="bord__heure">14 h 32</span><span class="bord__quoi"><b>Texto envoyé à votre nom</b><q>Désolé d’avoir manqué votre appel. Comment peut-on vous aider ?</q><span class="fil__ecrit" aria-hidden="true"><i></i><i></i><i></i></span></span></li>
-            <li data-etat="reponse"><span class="bord__heure">14 h 39</span><span class="bord__quoi"><b>Réponse du client</b><q>Une fuite sous l’évier. Vous pouvez passer demain ?</q><span class="fil__ecrit" aria-hidden="true"><i></i><i></i><i></i></span></span></li>
-          </ol>
-          <figcaption class="exemple-note">Exemple fictif.</figcaption>
-        </figure>
-        </div>
-      </div>
 
-      <div class="module module--inverse">
-        <div class="module__texte">
-          <h3>Un site qui fait appeler</h3>
-          <p>Site sur mesure, bilingue, hébergé et mis à jour. En option, un chatbot IA fait pour votre métier : estimateur de prix, questions fréquentes, prise de rendez-vous.</p>
-          <p class="petit">Notre réalisation : Mobilo Moving, déménageur de Gatineau. Site bilingue avec estimation à partir d’une photo. <a class="lien-externe" href="https://themobilo.com" target="_blank" rel="noopener">themobilo.com</a></p>
-          <p class="offre-ligne">Site : 99 $ par mois. Chatbot : 59 $ de plus.</p>
-        </div>
-        <div class="module__scene module__scene--site">
-        <a class="module__image" href="https://themobilo.com" target="_blank" rel="noopener" aria-label="Voir le site de Mobilo Moving (nouvel onglet)"><img src="assets/mobilo-apercu.webp" srcset="assets/mobilo-apercu-720.webp 720w, assets/mobilo-apercu.webp 1440w" sizes="(min-width: 960px) 600px, 100vw" width="1440" height="900" alt="Page d'accueil du site de Mobilo Moving" loading="lazy" decoding="async"></a>
+        <div class="panneau panneau--site" id="p-site">
+          <div class="panneau__texte">
+            <h3>Un site qui fait appeler</h3>
+            <p>Site sur mesure, bilingue, hébergé et mis à jour. En option, un chatbot IA fait pour votre métier : estimateur de prix, questions fréquentes, prise de rendez-vous.</p>
+            <p class="petit">Notre réalisation : Mobilo Moving, déménageur de Gatineau. Site bilingue avec estimation à partir d’une photo. <a class="lien-externe" href="https://themobilo.com" target="_blank" rel="noopener">themobilo.com</a></p>
+            <p class="offre-ligne">Site : 99 $ par mois. Chatbot : 59 $ de plus.</p>
+          </div>
+          <div class="panneau__scene">
+            <a class="module__image" href="https://themobilo.com" target="_blank" rel="noopener" aria-label="Voir le site de Mobilo Moving (nouvel onglet)"><img src="assets/mobilo-apercu.webp" srcset="assets/mobilo-apercu-720.webp 720w, assets/mobilo-apercu.webp 1440w" sizes="(min-width: 960px) 600px, 100vw" width="1440" height="900" alt="Page d'accueil du site de Mobilo Moving" loading="lazy" decoding="async"></a>
+          </div>
         </div>
       </div>
     </div>
@@ -702,7 +821,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
           <div class="forfait__nom"><h3>Croissance</h3><span class="etiquette">Recommandé</span></div>
           <p class="forfait__pour">Pour remplir l’agenda tout seul.</p>
           <p class="forfait__prix"><b>299 $</b><span>par mois</span></p>
-          <p class="forfait__depart">Frais de départ : 399 $</p>
+          <p class="forfait__depart">Frais de départ : 399 $ <span class="forfait__valeur">À la carte : 348 $ par mois</span></p>
           <a class="btn" href="#contact" data-forfait="Croissance">Choisir Croissance</a>
           <ul>
             <li data-m="voix">Tout le forfait Répondeur</li>
@@ -718,7 +837,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
           <div class="forfait__nom"><h3>Complet</h3></div>
           <p class="forfait__pour">Toute votre présence en ligne, gérée par nous.</p>
           <p class="forfait__prix"><b>399 $</b><span>par mois</span></p>
-          <p class="forfait__depart">Frais de départ : 799 $, site inclus</p>
+          <p class="forfait__depart">Frais de départ : 799 $, site inclus <span class="forfait__valeur">À la carte : 447 $ par mois</span></p>
           <a class="btn btn--contour" href="#contact" data-forfait="Complet">Choisir Complet</a>
           <ul>
             <li data-m="centre">Tout le forfait Croissance</li>
@@ -758,10 +877,61 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
     </div>
   </section>
 
+  <section class="section" id="installation" aria-labelledby="t-installation">
+    <div class="wrap">
+      <div class="tete tete--deux">
+        <h2 id="t-installation">Vous restez sur le chantier. On installe tout.</h2>
+        <p class="lead">Vous nous expliquez comment vous travaillez. On écrit le script, on le teste avec de vrais appels, on installe tout et on suit les résultats avec vous.</p>
+      </div>
+      <ol class="parcours" id="parcours">
+        <li style="--i:0">
+          <h3>L’audit gratuit</h3>
+          <p>On regarde vos appels, votre site et votre fiche Google, puis on vous dit ce qu’on ferait à votre place.</p>
+          <p class="parcours__vous"><span>Vous :</span> un appel de 15 minutes</p>
+        </li>
+        <li style="--i:1">
+          <h3>Le script</h3>
+          <p>On écrit avec vous ce qu’elle dit : vos services, votre secteur, vos urgences, et quand elle doit vous passer l’appel.</p>
+          <p class="parcours__vous"><span>Vous :</span> quelques réponses</p>
+        </li>
+        <li style="--i:2">
+          <h3>Les tests</h3>
+          <p>On l’appelle comme vos clients le feraient : accents, bruit de chantier, client pressé. On l’active seulement quand les tests sont bons.</p>
+          <p class="parcours__vous"><span>Vous :</span> votre accord</p>
+        </li>
+        <li class="parcours__ensuite" style="--i:3">
+          <h3>La mise en service</h3>
+          <p>On active avec vous le renvoi de vos appels. Vous recevez les résumés, et on ajuste le script au besoin.</p>
+          <p class="parcours__vous"><span>Vous :</span> lire vos résumés</p>
+        </li>
+      </ol>
+      <div class="points" id="points-parcours" aria-hidden="true"><i class="actif"></i><i></i><i></i><i></i></div>
+      <p class="parcours__total">Ce qu’on vous demande, en tout : <span>un appel, quelques réponses, puis votre accord.</span></p>
+    </div>
+  </section>
+
+  <section class="section gris" id="confiance" aria-labelledby="t-confiance">
+    <div class="wrap">
+      <div class="confiance">
+        <div class="confiance__tete">
+          <h2 id="t-confiance">Vous décidez de ce qu’elle dit.</h2>
+          <p class="lead">Elle suit le script que vous avez approuvé, et elle vous passe l’appel quand il le faut. Rien n’est activé sans votre accord.</p>
+          <a class="lien" href="confidentialite.html">Lire notre politique de confidentialité</a>
+        </div>
+        <ul class="garanties">
+          <li><h3>Elle dit qu’elle est virtuelle</h3><p>Elle se présente comme l’assistante virtuelle de votre entreprise et annonce que l’appel est enregistré.</p></li>
+          <li><h3>Les urgences vont à vous</h3><p>Vous décidez ce qui est urgent. Pour un dégât d’eau ou une odeur de gaz, elle donne la consigne de sécurité et transfère l’appel à votre cellulaire.</p></li>
+          <li><h3>Un humain quand il le faut</h3><p>Le client veut parler à quelqu’un, ou elle ne comprend pas deux fois de suite&nbsp;: elle vous passe l’appel avec un résumé. Si vous ne répondez pas, elle prend le message et vous envoie un texto urgent.</p></li>
+          <li><h3>Vos données et la Loi 25</h3><p>On vous explique ce que les outils demandent de votre côté, on installe une politique de confidentialité sur votre site, et les textos respectent ARRÊT et STOP.</p></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
   <section class="section" id="questions" aria-labelledby="t-questions">
     <div class="wrap faq">
       <div class="faq__aside">
-        <h2 id="t-questions">Vos questions.</h2>
+        <h2 id="t-questions">Les questions qu’on nous pose.</h2>
         <p>Une autre question ? Hugo ou Yacine vous répond au plus tard le jour ouvrable suivant.</p>
         <div class="faq__moyens">
           <a class="lien" href="tel:+18734558990"><span class="tel">873 455-8990</span></a>
@@ -769,32 +939,24 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
         </div>
       </div>
       <div class="questions">
-        <details><summary>Est-ce que mes clients savent qu’ils parlent à une IA ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Oui. Elle se présente comme l’assistante virtuelle de votre entreprise et annonce que l’appel est enregistré. Si le client veut parler à quelqu’un, elle vous passe l’appel.</p></details>
         <details><summary>Est-ce qu’elle comprend bien le français d’ici ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Elle parle français et anglais. Avant de l’activer, on teste votre script avec de vrais appels : accents, bruit de chantier, client pressé. On l’active seulement quand les tests sont bons.</p></details>
-        <details><summary>Que fait-elle avec une urgence ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Vous décidez ce qui est urgent dans votre métier. Pour un dégât d’eau ou une odeur de gaz, par exemple, elle donne la consigne de sécurité et transfère l’appel à votre cellulaire tout de suite.</p></details>
-        <details><summary>Et si elle ne sait pas répondre ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Si le client demande à parler à quelqu’un, ou si elle ne comprend pas deux fois de suite, elle vous transfère l’appel avec un résumé. Si vous ne répondez pas, elle prend le message et vous envoie un texto urgent.</p></details>
         <details><summary>Est-ce que je garde mon numéro ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Oui. Les appels que vous ne prenez pas sont renvoyés vers la réceptionniste ; on active le renvoi avec vous chez votre fournisseur. Elle peut aussi prendre tous vos appels : c’est sur devis.</p></details>
         <details><summary>Combien de minutes sont incluses ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>250, 500 ou 600 minutes par mois, selon le forfait. On vous avertit à 80 %. Au-delà, c’est 0,39 $ la minute, ou un bloc de minutes si vous dépassez souvent.</p></details>
         <details><summary>Est-ce que je suis lié par un contrat ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Non. C’est au mois, et vous arrêtez quand vous voulez. Les frais de départ paient l’installation et les tests de votre script.</p></details>
         <details><summary>J’ai déjà un site. Dois-je le refaire ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Non. Le répondeur et le centre de contrôle fonctionnent avec n’importe quel site. Le chatbot IA peut aussi s’ajouter à votre site actuel, si on peut y installer le code.</p></details>
         <details><summary>Les demandes d’avis, c’est permis par Google ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Oui, tant qu’on ne filtre pas. Tous vos clients reçoivent la même demande, sans récompense et sans trier ceux qui sont satisfaits, comme le demandent les règles de Google.</p></details>
-        <details><summary>Et la Loi 25 sur les renseignements personnels ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Les appels et les fiches de vos clients contiennent des renseignements personnels. On vous explique ce que les outils demandent de votre côté, on installe une politique de confidentialité sur votre site, et les textos respectent les demandes d’arrêt (ARRÊT ou STOP).</p></details>
         <details><summary>Garantissez-vous un nombre de clients ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Non. Le nombre de contrats dépend de vos appels, de vos prix et de votre service. On s’engage à installer les outils et à les faire fonctionner, et chaque résumé d’appel vous montre ce qu’ils font pour vous.</p></details>
         <details><summary>Vous travaillez seulement avec les plombiers ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>On se spécialise dans les métiers où un appel manqué coûte cher : plomberie, chauffage et climatisation, électricité, garages, toiture, déménagement. Pour un autre domaine, appelez-nous ou écrivez-nous.</p></details>
       </div>
     </div>
   </section>
 
-  <section class="section gris" id="contact" aria-labelledby="t-contact">
+  <section class="section nuit" id="contact" aria-labelledby="t-contact">
+    <div class="orbe" aria-hidden="true"></div>
     <div class="wrap contact">
       <div class="contact__texte">
         <h2 id="t-contact">Parlons de vos appels.</h2>
         <p class="lead">Laissez vos coordonnées. On vous rappelle au plus tard le jour ouvrable suivant pour un audit gratuit de 15 minutes, sans engagement.</p>
-        <ol class="debut" aria-label="Comment on commence">
-          <li><span>L’audit gratuit : vos appels, votre site et votre fiche Google, en 15 minutes.</span></li>
-          <li><span>On écrit le script de votre réceptionniste avec vous, puis on le teste avec de vrais appels.</span></li>
-          <li><span>On l’active. Vous recevez les résumés, et on ajuste au besoin.</span></li>
-        </ol>
         <p class="equipe">Vous parlez directement aux deux cofondateurs, à Gatineau : <b>Hugo Martin</b> et <b>Yacine Eddaoudi</b>.</p>
         <div class="contact__moyens">
           <a class="lien" href="tel:+18734558990"><span class="tel">873 455-8990</span></a>
@@ -927,18 +1089,76 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 
   // L'appel : au repos, la carte montre la fin (rendez-vous ajouté, résumé envoyé).
   // Avec JavaScript, il se déroule une fois à l'arrivée ; le bouton le rejoue ou l'arrête.
+  // Les pastilles changent de métier : le même moteur, un autre script.
   var appel = document.getElementById('appel'), lignes = appel.querySelectorAll('[data-t]');
   var etat = document.getElementById('a-etat'), duree = document.getElementById('a-duree');
   var bouton = document.getElementById('reprise'), fond = appel.parentNode;
-  var FIN_APPEL = 5200, FIN = 6800, SECONDES = 48;
+  var FIN_APPEL = 5200, FIN = 6800, SECONDES = 48, FIN_TEXTE = 'Appel terminé';
   var minuteries = [], chrono = null, joue = false;
+  var METIERS = {
+    plomberie: { num: '819 555-0142', nom: 'Plomberie Lavoie', s: 48, lignes: [
+      ['Client', 'Mon chauffe-eau fuit un peu. Vous pouvez passer cette semaine ?'],
+      ['Léa', 'Oui. Je vous propose mardi à 9 h ou mercredi à 13 h.', 'Selon votre agenda'],
+      ['Client', 'Mardi, 9 h.']],
+      suite: [['centre', 'Rendez-vous ajouté à l’agenda', 'Mardi 9 h · 12, rue Laval, Gatineau'], ['texto', 'Résumé envoyé par texto', 'À vous et au client']] },
+    chauffage: { num: '819 555-0187', nom: 'Chauffage Gagnon', s: 34, fin: 'Appel transféré', lignes: [
+      ['Client', 'Ma fournaise ne part plus, et il fait 15 degrés dans la maison.'],
+      ['Léa', 'C’est une urgence. Je vous transfère tout de suite au technicien, restez en ligne.', 'Urgence prévue dans votre script'],
+      ['Client', 'Merci, j’attends.']],
+      suite: [['urgence', 'Appel transféré à votre cellulaire', 'Fournaise en panne · 15 °C dans la maison'], ['texto', 'Résumé envoyé par texto', 'À vous, avec le numéro du client']] },
+    electricite: { num: '613 555-0119', nom: 'Électrique Roy', s: 52, lignes: [
+      ['Client', 'J’aimerais une soumission pour une borne de recharge dans mon garage.'],
+      ['Léa', 'Avec plaisir. Un électricien vous rappelle aujourd’hui avant 16 h.', 'Selon votre script : soumissions'],
+      ['Client', 'Parfait, merci.']],
+      suite: [['centre', 'Rappel promis avant 16 h', 'Soumission · borne de recharge'], ['texto', 'Résumé envoyé par texto', 'À vous et au client']] },
+    garage: { num: '613 555-0164', nom: 'Garage Dubé', s: 41, lignes: [
+      ['Client', 'Hi! Do you do winter tire changes this week?', '', 'en'],
+      ['Léa', 'Yes, we do. I have Thursday at 8 a.m. or Friday at 2 p.m.', 'Passée à l’anglais', 'en'],
+      ['Client', 'Thursday, 8 a.m. works.', '', 'en']],
+      suite: [['centre', 'Rendez-vous ajouté à l’agenda', 'Jeudi 8 h · Pose des pneus d’hiver'], ['texto', 'Résumé envoyé par texto', 'À vous et au client']] }
+  };
+  var DEPARTS = [300, 1800, 3200, 4400], DEPARTS_SUITE = [5600, 6200];
+  var COCHE = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10.5l3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  // Espaces insécables du français (avant ? ! : ; et entre un nombre et son unité), comme dans le reste de la page
+  function typo(t) { return t.replace(/ ([?!:;»])/g, '\u00a0$1').replace(/(\d) (h\b|°|%)/g, '$1\u00a0$2'); }
+  function noeud(tag, cls, texte) { var e = document.createElement(tag); if (cls) e.className = cls; if (texte) e.textContent = typo(texte); return e; }
+  function remplirCarte(carte, m) {
+    carte.querySelector('.appel__qui b').textContent = m.num;
+    carte.querySelector('.appel__qui span').textContent = m.nom + ' · répondu par Léa';
+    var ol = carte.querySelector('.transcription'), ul = carte.querySelector('.appel__suite');
+    ol.textContent = ''; ul.textContent = '';
+    [['Léa', 'Bonjour, ' + m.nom + ', ici Léa, l’assistante virtuelle. L’appel est enregistré. Comment je peux vous aider ?']].concat(m.lignes).forEach(function (l, i) {
+      var li = noeud('li'), q = noeud('q', '', l[1]);
+      li.dataset.t = DEPARTS[i]; if (l[3]) q.lang = l[3];
+      li.appendChild(noeud('span', 'qui', l[0])); li.appendChild(q);
+      if (l[2]) li.appendChild(noeud('small', 'selon', l[2]));
+      ol.appendChild(li);
+    });
+    m.suite.forEach(function (x, i) {
+      var li = noeud('li'), puce = noeud('i', 'puce puce--' + x[0]), d = noeud('div');
+      li.dataset.t = DEPARTS_SUITE[i]; puce.innerHTML = COCHE;
+      d.appendChild(noeud('b', '', x[1])); d.appendChild(noeud('span', '', x[2]));
+      li.appendChild(puce); li.appendChild(d); ul.appendChild(li);
+    });
+  }
+  // La carte garde la hauteur du plus long des quatre appels : rien ne saute quand on change de métier
+  function egaliser() {
+    var c = appel.cloneNode(true), h = 0;
+    c.removeAttribute('id'); c.classList.remove('joue', 'en-cours'); c.setAttribute('aria-hidden', 'true');
+    c.querySelectorAll('[id]').forEach(function (n) { n.removeAttribute('id'); });
+    c.style.cssText = 'position:absolute;left:0;top:0;visibility:hidden;min-height:0;width:' + appel.offsetWidth + 'px';
+    fond.appendChild(c);
+    Object.keys(METIERS).forEach(function (k) { remplirCarte(c, METIERS[k]); h = Math.max(h, c.offsetHeight); });
+    fond.removeChild(c);
+    appel.style.minHeight = h + 'px';
+  }
   function enMinutes(s) { return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); }
   function arreter() { minuteries.forEach(clearTimeout); minuteries = []; clearInterval(chrono); }
   function finale() {
     arreter(); joue = false;
     appel.classList.remove('joue', 'en-cours'); fond.classList.remove('vive');
     lignes.forEach(function (l) { l.classList.add('on'); });
-    etat.textContent = 'Appel terminé'; duree.textContent = enMinutes(SECONDES);
+    etat.textContent = FIN_TEXTE; duree.textContent = enMinutes(SECONDES);
     bouton.textContent = 'Rejouer l’appel';
   }
   function jouer() {
@@ -953,11 +1173,24 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
       duree.textContent = enMinutes(s);
     }, 200);
     lignes.forEach(function (l) { minuteries.push(setTimeout(function () { l.classList.add('on'); }, +l.dataset.t)); });
-    minuteries.push(setTimeout(function () { clearInterval(chrono); duree.textContent = enMinutes(SECONDES); appel.classList.remove('en-cours'); fond.classList.remove('vive'); etat.textContent = 'Appel terminé'; }, FIN_APPEL));
+    minuteries.push(setTimeout(function () { clearInterval(chrono); duree.textContent = enMinutes(SECONDES); appel.classList.remove('en-cours'); fond.classList.remove('vive'); etat.textContent = FIN_TEXTE; }, FIN_APPEL));
     minuteries.push(setTimeout(finale, FIN));
   }
   bouton.addEventListener('click', function () { if (joue) finale(); else jouer(); });
   document.addEventListener('visibilitychange', function () { if (document.hidden && joue) finale(); });
+  var metiers = document.getElementById('metiers');
+  metiers.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b || b.getAttribute('aria-pressed') === 'true') return;
+    var m = METIERS[b.dataset.metier];
+    metiers.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+    arreter(); remplirCarte(appel, m); lignes = appel.querySelectorAll('[data-t]');
+    SECONDES = m.s; FIN_TEXTE = m.fin || 'Appel terminé';
+    if (calme) finale(); else jouer();
+  });
+  egaliser();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(egaliser);
+  var largeurVue = innerWidth, ticR = null;
+  addEventListener('resize', function () { clearTimeout(ticR); ticR = setTimeout(function () { if (innerWidth !== largeurVue) { largeurVue = innerWidth; egaliser(); } }, 150); });
   if (!calme) jouer(); else finale();
   function selonSysteme(e) { calme = e.matches; if (calme && joue) finale(); }
   if (mq.addEventListener) mq.addEventListener('change', selonSysteme); else if (mq.addListener) mq.addListener(selonSysteme);
@@ -968,39 +1201,80 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
     var ioE = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('vu'); ioE.unobserve(e.target); } }); }, { rootMargin: '0px 0px -30% 0px', threshold: .5 });
     listeEtapes.querySelectorAll('li').forEach(function (li) { ioE.observe(li); });
   }
-  function selonLargeur() {
-    if (moyen.matches) { listeEtapes.removeAttribute('tabindex'); listeEtapes.removeAttribute('aria-label'); }
-    else { listeEtapes.tabIndex = 0; listeEtapes.setAttribute('aria-label', 'Les cinq étapes d’un appel, à faire glisser'); }
+  // Au cellulaire, une liste d'étapes se glisse ; les points suivent
+  function carrousel(liste, pts, nom) {
+    var tic = false;
+    function selon() {
+      if (moyen.matches) { liste.removeAttribute('tabindex'); liste.removeAttribute('aria-label'); }
+      else { liste.tabIndex = 0; liste.setAttribute('aria-label', nom); }
+    }
+    liste.addEventListener('scroll', function () {
+      if (tic) return; tic = true;
+      requestAnimationFrame(function () {
+        var li = liste.querySelector('li'), pasL = li.getBoundingClientRect().width + 12;
+        var i = Math.max(0, Math.min(pts.length - 1, Math.round(liste.scrollLeft / pasL)));
+        if (liste.scrollLeft + liste.clientWidth >= liste.scrollWidth - 4) i = pts.length - 1;
+        pts.forEach(function (pt, k) { pt.classList.toggle('actif', k === i); });
+        tic = false;
+      });
+    }, { passive: true });
+    selon();
+    return selon;
   }
-  selonLargeur();
-  var ticE = false;
-  listeEtapes.addEventListener('scroll', function () {
-    if (ticE) return; ticE = true;
-    requestAnimationFrame(function () {
-      var li = listeEtapes.querySelector('li'), pasL = li.getBoundingClientRect().width + 12;
-      var i = Math.max(0, Math.min(points.length - 1, Math.round(listeEtapes.scrollLeft / pasL)));
-      if (listeEtapes.scrollLeft + listeEtapes.clientWidth >= listeEtapes.scrollWidth - 4) i = points.length - 1;
-      points.forEach(function (pt, k) { pt.classList.toggle('actif', k === i); });
-      ticE = false;
+  var selonEtapes = carrousel(listeEtapes, points, 'Les cinq étapes d’un appel, à faire glisser');
+  var selonParcours = carrousel(document.getElementById('parcours'), document.querySelectorAll('#points-parcours i'), 'Les quatre étapes de l’installation, à faire glisser');
+  function selonLargeur() { selonEtapes(); selonParcours(); }
+
+  // Le coût du silence : les deux chiffres montent quand la bande arrive à l'écran
+  var chiffres = document.getElementById('chiffres'), comptes = chiffres.querySelectorAll('[data-compte]');
+  if (avecIO && !calme) comptes.forEach(function (n) { n.textContent = '0'; });
+  aLecran(chiffres, function () { comptes.forEach(function (n) { compter(n, 0, +n.dataset.compte, +n.dataset.compte > 9 ? 1100 : 700, {}); }); }, .6);
+
+  // Ce qui suit l'appel : trois onglets (flèches gauche et droite au clavier), un seul panneau à l'écran
+  var onglets = document.getElementById('onglets'), tabs = [].slice.call(onglets.querySelectorAll('button'));
+  var panneaux = tabs.map(function (b) { return document.getElementById(b.getAttribute('aria-controls')); });
+  onglets.setAttribute('role', 'tablist');
+  tabs.forEach(function (b, i) { b.setAttribute('role', 'tab'); panneaux[i].setAttribute('role', 'tabpanel'); panneaux[i].setAttribute('aria-labelledby', b.id); panneaux[i].tabIndex = 0; });
+  var fil = document.getElementById('fil'), filJoue = false;
+  if (!calme) fil.classList.add('attente');
+  // Texto après un appel manqué : il se joue la première fois qu'on ouvre son onglet
+  function jouerFil() {
+    if (filJoue) return; filJoue = true; fil.classList.remove('attente');
+    if (calme) return;
+    var li = fil.querySelectorAll('li');
+    fil.classList.add('joue');
+    [[150, function () { li[0].classList.add('montre'); }],
+     [850, function () { li[1].classList.add('montre', 'ecrit'); }],
+     [1850, function () { li[1].classList.remove('ecrit'); }],
+     [2650, function () { li[2].classList.add('montre', 'ecrit'); }],
+     [3650, function () { li[2].classList.remove('ecrit'); fil.classList.remove('joue'); }]
+    ].forEach(function (e) { setTimeout(e[1], e[0]); });
+  }
+  function ouvrir(i, focus, anime) {
+    tabs.forEach(function (b, k) {
+      var on = k === i;
+      b.setAttribute('aria-selected', on ? 'true' : 'false'); b.tabIndex = on ? 0 : -1;
+      panneaux[k].classList.toggle('inactif', !on); panneaux[k].inert = !on;
+      if (on && anime && !calme) { panneaux[k].classList.remove('entre'); void panneaux[k].offsetWidth; panneaux[k].classList.add('entre'); }
     });
-  }, { passive: true });
+    if (focus) tabs[i].focus();
+    if (panneaux[i].contains(fil)) jouerFil();
+  }
+  onglets.addEventListener('click', function (e) { var b = e.target.closest('[role=tab]'); if (b && b.getAttribute('aria-selected') !== 'true') ouvrir(tabs.indexOf(b), false, true); });
+  onglets.addEventListener('keydown', function (e) {
+    var i = tabs.indexOf(document.activeElement); if (i < 0) return;
+    var n = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
+    if (n === undefined) return;
+    e.preventDefault(); ouvrir((n + tabs.length) % tabs.length, true, true);
+  });
+  ouvrir(0, false, false);
 
   // Centre de contrôle : les appels de la journée arrivent, le compteur monte
   var chiffre = document.getElementById('bord-appels'), animChiffre = {};
   aLecran(document.getElementById('bord'), function () { compter(chiffre, 0, 86, 1200, animChiffre); });
 
-  // Texto après un appel manqué : l'appel, puis le texto qui s'écrit, puis la réponse
-  var fil = document.getElementById('fil');
-  aLecran(fil, function () {
-    var li = fil.querySelectorAll('li');
-    fil.classList.add('joue');
-    [[0, function () { li[0].classList.add('montre'); }],
-     [700, function () { li[1].classList.add('montre', 'ecrit'); }],
-     [1700, function () { li[1].classList.remove('ecrit'); }],
-     [2500, function () { li[2].classList.add('montre', 'ecrit'); }],
-     [3500, function () { li[2].classList.remove('ecrit'); fil.classList.remove('joue'); }]
-    ].forEach(function (e) { setTimeout(e[1], e[0]); });
-  }, .5);
+  // Vous n'installez rien : les quatre étapes s'allument l'une après l'autre
+  aLecran(document.getElementById('parcours'), null, .3);
 
   // Calculateur : un scénario, pas une mesure
   var ra = document.getElementById('r-appels'), rt = document.getElementById('r-taux'), rv = document.getElementById('r-valeur');
