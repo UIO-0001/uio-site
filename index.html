@@ -56,6 +56,7 @@
   --anneau: var(--encre);  /* anneau de focus */
   --police: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
   --m: max(20px, 4vw);
+  --largeur: clamp(1180px, 80vw, 1440px);  /* la page : 1180 px, puis un peu plus large sur un grand écran */
   --r-tuile: 28px;
   --r-carte: 20px;
   --r-champ: 12px;
@@ -77,7 +78,7 @@ a { color: inherit; }
 .cache { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .skip { position: absolute; left: 16px; top: -80px; z-index: 100; padding: 12px 18px; background: var(--encre); color: #fff; border-radius: 999px; font-weight: 600; text-decoration: none; }
 .skip:focus { top: calc(12px + env(safe-area-inset-top, 0px)); }
-.wrap { width: 100%; max-width: 1180px; margin-inline: auto; padding-left: max(var(--m), env(safe-area-inset-left, 0px)); padding-right: max(var(--m), env(safe-area-inset-right, 0px)); }
+.wrap { width: 100%; max-width: var(--largeur); margin-inline: auto; padding-left: max(var(--m), env(safe-area-inset-left, 0px)); padding-right: max(var(--m), env(safe-area-inset-right, 0px)); }
 
 /* Titres : une seule famille, serrée en grand, comme une page de produit */
 h1, h2 { font-weight: 700; letter-spacing: -.034em; text-wrap: balance; }
@@ -637,10 +638,50 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
 @media (prefers-reduced-motion: reduce) { html #uio-btn, html #uio-box { transition: none; } }
 @media (min-width: 860px) { .pied__haut { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); } }
 
+/* Grand écran : des photos de gens de métier vont jusqu'au bord de l'écran, à droite du premier écran
+   (la photo suit le métier choisi), à gauche du script et à droite des étapes de l'installation.
+   Sous 1440 px, rien ne change : la photo y serait trop étroite. Ce sont des photos d'illustration : jamais nos clients ni notre équipe. */
+.photo-metier, .scene__photos { display: none; }
+.scene__photo[data-photo="plomberie"] { --photo: image-set(url("assets/photos/plomberie-560.webp") 1x, url("assets/photos/plomberie-1120.webp") 2x); --grande: url("assets/photos/plomberie-1120.webp"); --pos: 100% 30%; }
+.scene__photo[data-photo="chauffage"] { --photo: image-set(url("assets/photos/chauffage-560.webp") 1x, url("assets/photos/chauffage-1120.webp") 2x); --grande: url("assets/photos/chauffage-1120.webp"); --pos: 100% 30%; }
+.scene__photo[data-photo="electricite"] { --photo: image-set(url("assets/photos/electricite-560.webp") 1x, url("assets/photos/electricite-1120.webp") 2x); --grande: url("assets/photos/electricite-1120.webp"); --pos: 100% 30%; }
+.scene__photo[data-photo="garage"] { --photo: image-set(url("assets/photos/garage-560.webp") 1x, url("assets/photos/garage-1120.webp") 2x); --grande: url("assets/photos/garage-1120.webp"); --pos: 100% 30%; }
+.script__photo { --photo: image-set(url("assets/photos/script-720.webp") 1x, url("assets/photos/script-1440.webp") 2x); --grande: url("assets/photos/script-1440.webp"); --pos: 0% 35%; }
+.parcours__photo { --photo: image-set(url("assets/photos/atelier-420.webp") 1x, url("assets/photos/atelier-840.webp") 2x); --grande: url("assets/photos/atelier-840.webp"); --pos: 50% 35%; }
+@supports (overflow-x: clip) {
+  @media (min-width: 1440px) {
+    /* --saillie : de l'arête du contenu jusqu'au bord de l'écran */
+    :root { --saillie: calc((100vw - var(--largeur)) / 2 + var(--m)); }
+    .hero, #repondeur, #installation { overflow-x: clip; }
+    .photo-metier { display: block; position: absolute; top: 0; bottom: 0; background: #E6DED6 var(--pos, 50% 40%) / cover no-repeat; }
+    .photo-metier.pret { background-image: var(--photo); }
+    .photo-note { position: absolute; z-index: 1; bottom: 16px; padding: 5px 10px; border-radius: 999px; background: rgba(255, 255, 255, .86); color: var(--encre); font-size: .75rem; font-weight: 600; line-height: 1.25; letter-spacing: 0; white-space: nowrap; }
+    .scene__photos .photo-note { right: 20px; }
+    .script__photo .photo-note { left: 16px; }
+
+    /* Premier écran : la scène de l'appel s'étire jusqu'au bord droit, la photo paraît à droite de la carte */
+    .scene__fond { margin-right: calc(-1 * var(--saillie)); padding-right: calc(clamp(16px, 2.8vw, 36px) + var(--saillie)); border-radius: var(--r-tuile) 0 0 var(--r-tuile); background-size: calc(100% - var(--saillie)) 100%; background-repeat: no-repeat; }
+    .scene__fond::after { right: var(--saillie); }
+    .scene__photos { display: block; position: absolute; z-index: -2; top: 0; bottom: 0; right: 0; width: calc(var(--saillie) + 220px); }
+    .scene__photo { left: 0; right: 0; opacity: 0; transition: opacity .7s var(--sortie); -webkit-mask-image: linear-gradient(90deg, transparent, #000 200px); mask-image: linear-gradient(90deg, transparent, #000 200px); }
+    .scene__photo.actif { opacity: 1; }
+
+    /* Le script du répondeur : sa tuile s'étire jusqu'au bord gauche */
+    .script__fond { position: relative; isolation: isolate; margin-left: calc(-1 * var(--saillie)); padding-left: calc(clamp(14px, 1.6vw, 20px) + var(--saillie)); border-radius: 0 var(--r-tuile) var(--r-tuile) 0; background-size: calc(100% - var(--saillie)) 100%; background-position: 100% 0; background-repeat: no-repeat; }
+    .script__photo { z-index: -1; left: 0; width: calc(var(--saillie) + 180px); -webkit-mask-image: linear-gradient(270deg, transparent, #000 160px); mask-image: linear-gradient(270deg, transparent, #000 160px); }
+
+    /* Les étapes de l'installation : une photo à leur droite, jusqu'au bord de l'écran */
+    .parcours-cadre { position: relative; }
+    .parcours__photo { left: calc(100% + 12px); width: calc(var(--saillie) - 12px); border-radius: var(--r-tuile) 0 0 var(--r-tuile); }
+  }
+  @media (min-width: 2000px) { .photo-metier.pret { background-image: var(--grande); } }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .01ms !important; animation: none !important; }
 }
 </style>
+<noscript><style>.photo-metier { background-image: var(--photo); }</style></noscript>
 </head>
 <body>
 <a class="skip" href="#contenu">Aller au contenu</a>
@@ -696,6 +737,13 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
 
       <figure class="scene">
         <div class="scene__fond">
+          <div class="scene__photos" aria-hidden="true">
+            <span class="photo-metier scene__photo actif pret" data-photo="plomberie"></span>
+            <span class="photo-metier scene__photo" data-photo="chauffage"></span>
+            <span class="photo-metier scene__photo" data-photo="electricite"></span>
+            <span class="photo-metier scene__photo" data-photo="garage"></span>
+            <span class="photo-note">Photo d’illustration</span>
+          </div>
           <div class="metiers" id="metiers" role="group" aria-label="Choisir le métier de la démonstration">
             <button type="button" data-metier="plomberie" aria-pressed="true">Plomberie</button>
             <button type="button" data-metier="chauffage" aria-pressed="false">Chauffage</button>
@@ -756,6 +804,7 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
         <p class="petit">Les répliques citées sont un exemple fictif.</p>
         <figure class="script" aria-label="Exemple fictif : un extrait du script de Plomberie Lavoie">
           <div class="script__fond">
+            <span class="photo-metier script__photo" aria-hidden="true"><span class="photo-note">Photo d’illustration</span></span>
             <div class="script__carte">
               <div class="script__tete"><b>Script de Plomberie Lavoie</b><span class="script__statut">Approuvé par vous</span></div>
               <dl>
@@ -989,6 +1038,7 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
         <h2 id="t-installation">Vous restez sur le chantier. On installe tout.</h2>
         <p class="lead">Vous nous expliquez comment vous travaillez. On écrit le script, on le teste avec de vrais appels, on installe tout et on suit les résultats avec vous.</p>
       </div>
+      <div class="parcours-cadre">
       <ol class="parcours" id="parcours">
         <li style="--i:0">
           <h3>L’audit gratuit</h3>
@@ -1011,6 +1061,8 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
           <p class="parcours__vous"><span>Vous :</span> lire vos résumés</p>
         </li>
       </ol>
+      <span class="photo-metier parcours__photo" aria-hidden="true"></span>
+      </div>
       <div class="points" id="points-parcours" aria-hidden="true"><i class="actif"></i><i></i><i></i><i></i></div>
       <p class="parcours__total">Ce qu’on vous demande, en tout : <span>un appel, quelques réponses, puis votre accord.</span></p>
     </div>
@@ -1303,6 +1355,7 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
     var b = e.target.closest('button'); if (!b || b.getAttribute('aria-pressed') === 'true') return;
     var m = METIERS[b.dataset.metier];
     metiers.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+    document.querySelectorAll('.scene__photo').forEach(function (p) { var oui = p.dataset.photo === b.dataset.metier; p.classList.toggle('actif', oui); if (oui) p.classList.add('pret'); });
     arreter(); remplirCarte(appel, m); remplirResume(m); lignes = appel.querySelectorAll('[data-t]');
     SECONDES = m.s; FIN_TEXTE = m.fin || 'Appel terminé';
     if (calme) finale(); else jouer();
@@ -1500,6 +1553,18 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
     document.body.appendChild(s);
   }
   if (document.readyState === 'complete') chargerChatbot(); else addEventListener('load', chargerChatbot);
+
+  // Les photos de métier (grand écran seulement ; ailleurs, elles ne se chargent jamais) : celle du premier
+  // écran vient avec la page, les autres quand la souris approche des métiers, celles du bas quand on en approche
+  function pret(p) { p.classList.add('pret'); }
+  function photosMetiers() { document.querySelectorAll('.scene__photo').forEach(pret); }
+  metiers.addEventListener('pointerenter', photosMetiers, { once: true });
+  metiers.addEventListener('focusin', photosMetiers, { once: true });
+  var photosBas = document.querySelectorAll('.script__photo, .parcours__photo');
+  if (avecIO) {
+    var ioP = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { pret(e.target); ioP.unobserve(e.target); } }); }, { rootMargin: '900px 0px' });
+    photosBas.forEach(function (p) { ioP.observe(p); });
+  } else photosBas.forEach(pret);
 })();
 </script>
 </body>
