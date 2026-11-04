@@ -193,6 +193,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .appel__suite span { color: var(--texte-2); font-size: .875rem; }
 .js .appel.joue li:not(.on) { opacity: 0; transform: translateY(6px); }
 .scene__legende { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 16px; padding-inline: 6px; }
+.essai-chat { justify-self: start; }
 .rejouer { min-height: 44px; padding: 0; border: 0; background: none; color: var(--encre); font: 600 .875rem/1 var(--police); text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
 /* Le métier de la démonstration : quatre pastilles sur la scène, deux par rangée quand la place manque */
 .metiers { display: none; }
@@ -615,6 +616,25 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
   /* Le champ qui reçoit le focus au clavier ne se cache pas sous la barre */
   .js { scroll-padding-bottom: 84px; }
 }
+/* Le chatbot de l'agence, chargé depuis notre serveur : la police du site ; au cellulaire,
+   le bouton et la fenêtre montent au-dessus de la barre du bas quand elle est là */
+html #uio-btn, html #uio-box { font-family: var(--police); }
+/* Un liseré blanc garde le bouton visible sur les bandes marine ; au clavier, un anneau marine
+   entre deux liserés blancs se voit sur le blanc comme sur le marine */
+html #uio-btn { box-shadow: 0 0 0 2px #FFFFFF, 0 8px 22px -6px rgba(14, 26, 43, .45); }
+html #uio-btn:focus-visible { outline: 3px solid var(--encre); outline-offset: 3px; box-shadow: 0 0 0 3px #FFFFFF, 0 0 0 9px #FFFFFF, 0 8px 22px -6px rgba(14, 26, 43, .45); }
+html #uio-box #uio-close:focus-visible { outline-color: #FFFFFF; }
+/* Le champ et le bouton d'envoi comme ceux du formulaire du site */
+html #uio-box #uio-input { border: 1.5px solid var(--contour); border-radius: var(--r-champ); color: var(--encre); }
+html #uio-box #uio-input:focus-visible { outline: none; border-color: var(--encre); box-shadow: 0 0 0 2px var(--encre); }
+html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
+@media (max-width: 639px) {
+  html #uio-btn { right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); width: 52px; height: 52px; transition: bottom .4s var(--sortie), transform .2s; }
+  html #uio-box { right: 10px; left: 10px; width: auto; bottom: calc(78px + env(safe-area-inset-bottom, 0px)); height: min(72vh, 560px); transition: bottom .4s var(--sortie); }
+  html.avec-barre #uio-btn { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
+  html.avec-barre #uio-box { bottom: calc(142px + env(safe-area-inset-bottom, 0px)); height: min(64vh, 520px); max-height: calc(100vh - 160px - env(safe-area-inset-bottom, 0px)); }
+}
+@media (prefers-reduced-motion: reduce) { html #uio-btn, html #uio-box { transition: none; } }
 @media (min-width: 860px) { .pied__haut { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); } }
 
 @media (prefers-reduced-motion: reduce) {
@@ -829,6 +849,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
           <div class="panneau__texte">
             <h3>Un site qui fait appeler</h3>
             <p>Site sur mesure, bilingue, hébergé et mis à jour. En option, un chatbot IA fait pour votre métier : estimateur de prix, questions fréquentes, prise de rendez-vous.</p>
+            <button class="rejouer essai-chat" id="essayer-chat" type="button" hidden>Essayer le chatbot de cette page</button>
             <p class="petit">Notre réalisation : Mobilo Moving, déménageur de Gatineau. Site bilingue avec estimation à partir d’une photo. <a class="lien-externe" href="https://themobilo.com" target="_blank" rel="noopener">themobilo.com</a></p>
             <p class="offre-ligne">Site : 99 $ par mois. Chatbot : 59 $ de plus.</p>
           </div>
@@ -1417,7 +1438,9 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
     var vus = { hero: true, contact: false, pied: false };
     var ioB = new IntersectionObserver(function (es) {
       es.forEach(function (e) { var k = e.target.dataset.barre; vus[k] = k === 'hero' ? (e.isIntersecting || e.boundingClientRect.top > 0) : e.isIntersecting; });
-      barre.classList.toggle('visible', !vus.hero && !vus.contact && !vus.pied);
+      var avecBarre = !vus.hero && !vus.contact && !vus.pied;
+      barre.classList.toggle('visible', avecBarre);
+      document.documentElement.classList.toggle('avec-barre', avecBarre);
     });
     [[document.querySelector('.hero__actions'), 'hero'], [document.getElementById('contact'), 'contact'], [document.querySelector('.pied'), 'pied']].forEach(function (c) { c[0].dataset.barre = c[1]; ioB.observe(c[0]); });
   }
@@ -1461,6 +1484,22 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
       message(ECHEC, false, true);
     } finally { clearTimeout(delai); envoyer.disabled = false; envoyer.textContent = 'Demander mon audit gratuit'; }
   });
+
+  // Le chatbot de l'agence vient de notre serveur (uio-backend). Il se charge une fois la page prête,
+  // pour ne jamais la ralentir ; s'il répond, le module Site propose de l'essayer.
+  var essai = document.getElementById('essayer-chat');
+  function chargerChatbot() {
+    var s = document.createElement('script');
+    s.src = 'https://uio-backend.onrender.com/chatbot.js?client=uio';
+    s.async = true;
+    s.onload = function () {
+      if (!essai || !window.UIOChat) return;
+      essai.hidden = false;
+      essai.addEventListener('click', function () { window.UIOChat.open(); });
+    };
+    document.body.appendChild(s);
+  }
+  if (document.readyState === 'complete') chargerChatbot(); else addEventListener('load', chargerChatbot);
 })();
 </script>
 </body>
