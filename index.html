@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Agence UIO · Réceptionniste virtuelle pour les métiers, Gatineau-Ottawa</title>
-<meta name="description" content="Une réceptionniste virtuelle répond à vos appels 24 h sur 24, en français et en anglais, prend les rendez-vous et vous texte un résumé. À partir de 199 $ par mois, sans contrat. Gatineau et Ottawa.">
+<title>Agence UIO · Agent répondeur IA pour les métiers, Gatineau-Ottawa</title>
+<meta name="description" content="Un agent répondeur IA prend vos appels 24 h sur 24, en français et en anglais, réserve les rendez-vous et vous texte un résumé. À partir de 199 $ par mois, sans contrat. Gatineau et Ottawa.">
 <link rel="canonical" href="https://agenceuio.ca/">
 <meta name="theme-color" content="#FFFFFF">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="fr_CA">
 <meta property="og:site_name" content="Agence UIO">
 <meta property="og:title" content="Chaque appel répondu, même sur le chantier">
-<meta property="og:description" content="Une réceptionniste virtuelle 24 h sur 24, en français et en anglais, pour les entrepreneurs de Gatineau et d’Ottawa. À partir de 199 $ par mois, sans contrat.">
+<meta property="og:description" content="Un agent répondeur IA 24 h sur 24, en français et en anglais, pour les entrepreneurs de Gatineau et d’Ottawa. À partir de 199 $ par mois, sans contrat.">
 <meta property="og:url" content="https://agenceuio.ca/">
 <meta property="og:image" content="https://agenceuio.ca/assets/og-image.jpg">
 <meta property="og:image:width" content="1200">
@@ -45,7 +45,7 @@
   --texto: #1E9E5A;  --texto-teinte: #E8F6EE;  --texto-fonce: #166B3D;
   --centre: #2F6FEB; --centre-teinte: #EBF1FE; --centre-fonce: #1D4FB8;
   --site: #F2A900;   --site-teinte: #FFF5D9;   --site-fonce: #7A5200;
-  --urgence: #B42318; --urgence-teinte: #FDECEA;
+  --urgence: #B42318; --urgence-teinte: #FDECEA; --urgence-vif: #F97066;
   /* Bandes de contraste : le marine du logo pris comme fond (texte secondaire à 9,6:1) */
   --nuit: #0E1A2B; --nuit-texte: #B7C1CF; --nuit-trait: rgba(255, 255, 255, .14);
   --ombre-flotte: 0 1px 2px rgba(14, 26, 43, .06), 0 12px 28px -10px rgba(14, 26, 43, .18), 0 32px 72px -28px rgba(14, 26, 43, .24);
@@ -98,7 +98,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .lien { display: inline-flex; align-items: center; min-height: 44px; color: var(--encre); font-weight: 600; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
 .lien:hover { text-decoration-thickness: 2px; }
 
-/* Logo : l'icône seule, le mot glisse au survol (choix de Yacine) */
+/* Logo : l'icône seule, le mot glisse au survol */
 .logo { display: inline-flex; align-items: center; min-height: 48px; color: var(--encre); text-decoration: none; }
 .logo__icone { width: 38px; height: 38px; flex: none; transition: transform .4s var(--sortie); }
 .logo__icone .onde { opacity: .3; transition: opacity .3s; }
@@ -131,10 +131,23 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .hero__grille { display: grid; gap: 40px; align-items: start; }
 .hero__texte { display: grid; gap: 22px; justify-items: start; }
 .hero__texte .lead { max-width: 31em; }
-/* Les faits en bref, sous le bouton : prix, sans contrat, installée par nous */
+/* Les faits en bref, sous le bouton : prix, sans contrat, installé par nous */
 .faits { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: .9375rem; font-weight: 600; }
 .faits li { display: inline-flex; align-items: center; gap: 8px; }
 .faits li::before { content: ""; width: 6px; height: 6px; flex: none; border-radius: 50%; background: var(--lampe); }
+/* Le résumé par texto : ce que l'entrepreneur reçoit à la fin de l'appel (grand écran, où la place est libre) */
+.resume { display: none; }
+@media (min-width: 960px) {
+  .resume { display: grid; gap: 10px; width: min(100%, 440px); margin-top: 14px; transition: opacity .6s var(--sortie), transform .6s var(--sortie); }
+  .js .resume.attente { opacity: 0; transform: translateY(14px); }
+}
+.resume__carte { display: grid; gap: 6px; padding: 14px 18px 16px; border-radius: var(--r-carte); background: var(--blanc); box-shadow: var(--ombre-flotte); }
+.resume__tete { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; font-size: .875rem; }
+.resume__tete svg { width: 26px; height: 26px; border-radius: 7px; }
+.resume__tete b { font-weight: 650; }
+.resume__quand { color: var(--texte-2); font-size: .8125rem; }
+.resume__texte { font-size: .9375rem; line-height: 1.5; }
+.resume figcaption { padding-inline: 4px; }
 .hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 24px; margin-top: 6px; }
 @media (min-width: 960px) { .hero__grille { grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); gap: 64px; } .hero__texte { padding-top: clamp(8px, 2vw, 32px); } }
 
@@ -161,7 +174,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .transcription { display: grid; gap: 12px; }
 .transcription li, .appel__suite li { transition: opacity .5s var(--sortie), transform .5s var(--sortie); }
 .transcription li { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: 4px 12px; align-items: baseline; }
-/* Ce qu'elle dit vient de votre script : la source sous la réplique */
+/* Ce qu'il dit vient de votre script : la source sous la réplique */
 .transcription .selon { grid-column: 2; display: inline-flex; align-items: center; gap: 6px; color: var(--voix-fonce); font-size: .75rem; font-weight: 650; letter-spacing: .01em; }
 .transcription .selon::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--lampe); }
 .transcription .qui { color: var(--texte-2); font-size: .8125rem; font-weight: 600; }
@@ -208,13 +221,27 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .silence__chiffres li { display: grid; align-content: start; gap: 14px; padding-top: 28px; border-top: 1px solid var(--nuit-trait); color: var(--nuit-texte); font-size: clamp(1.0625rem, 1.3vw, 1.25rem); line-height: 1.45; }
 .silence__chiffres b { color: #FFFFFF; font-size: clamp(4.25rem, 10vw, 8rem); font-weight: 700; line-height: .9; letter-spacing: -.055em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .silence__chiffres .moins { font-size: .3em; font-weight: 650; letter-spacing: -.01em; }
-.silence .petit { margin-top: calc(-1 * clamp(16px, 2.5vw, 36px)); }
+.silence > .petit { margin-top: calc(-1 * clamp(16px, 2.5vw, 36px)); }
 @media (min-width: 760px) {
   .silence__chiffres { grid-template-columns: 1fr 1fr; gap: 0; }
   .silence__chiffres li { padding-right: clamp(24px, 4vw, 64px); }
   .silence__chiffres li + li { padding-left: clamp(24px, 4vw, 64px); border-left: 1px solid var(--nuit-trait); }
   .silence__chiffres li { max-width: none; }
 }
+/* À côté du titre : deux appels manqués et une boîte vocale vide (grand écran, où la place est libre) */
+.manques { display: none; }
+@media (min-width: 960px) {
+  .silence { grid-template-columns: minmax(0, 1fr) minmax(0, 360px); column-gap: 64px; }
+  .silence__chiffres, .silence > .petit { grid-column: 1 / -1; }
+  .manques { display: grid; gap: 10px; align-self: center; }
+}
+.manques ul { display: grid; gap: 8px; }
+.manques li { display: grid; grid-template-columns: 10px minmax(0, 1fr); align-items: center; gap: 2px 14px; padding: 14px 18px; border-radius: 16px; background: rgba(255, 255, 255, .06); box-shadow: inset 0 0 0 1px var(--nuit-trait); }
+.manques li::before { content: ""; grid-row: span 2; width: 10px; height: 10px; border-radius: 50%; background: var(--urgence-vif); }
+.manques li.vide::before { background: var(--nuit-texte); }
+.manques b { font-size: .9375rem; font-weight: 650; line-height: 1.3; }
+.manques span { color: var(--nuit-texte); font-size: .875rem; line-height: 1.35; font-variant-numeric: tabular-nums; }
+.manques figcaption { padding-inline: 4px; }
 
 /* Le déroulé d'un appel : titre collant à gauche, étapes à droite */
 .deroule { display: grid; gap: 36px; }
@@ -248,6 +275,22 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
   .deroule { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 80px; align-items: start; }
   .deroule__tete { position: sticky; top: 112px; }
 }
+/* Un extrait de script sous le titre (grand écran, où la place est libre) ; il remplace la légende */
+.script { display: none; }
+@media (min-width: 960px) {
+  .script { display: grid; gap: 10px; margin-top: 10px; }
+  .deroule__tete > .petit { display: none; }
+}
+@media (min-width: 960px) and (max-height: 879px) { .deroule__tete { position: static; } }
+.script__fond { padding: clamp(14px, 1.6vw, 20px); border-radius: var(--r-tuile); background: radial-gradient(70% 60% at 100% 0%, rgba(255, 122, 61, .22), rgba(255, 122, 61, 0) 70%), linear-gradient(165deg, #FFF6F0, #FFEADD); }
+.script__carte { display: grid; padding: 16px 20px 6px; border-radius: var(--r-carte); background: var(--blanc); box-shadow: var(--ombre-flotte); }
+.script__tete { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; padding-bottom: 12px; }
+.script__tete b { font-size: 1rem; font-weight: 650; letter-spacing: -.01em; }
+.script__statut { padding: 4px 10px; border-radius: 999px; background: var(--voix-teinte); color: var(--voix-fonce); font-size: .75rem; font-weight: 650; white-space: nowrap; }
+.script dl > div { display: grid; grid-template-columns: 6.25rem minmax(0, 1fr); gap: 12px; padding-block: 9px; border-top: 1px solid var(--trait); }
+.script dt { color: var(--texte-2); font-size: .8125rem; font-weight: 600; line-height: 1.6; }
+.script dd { font-size: .9375rem; line-height: 1.45; }
+.script figcaption { padding-inline: 6px; }
 
 /* Ce qui suit l'appel : trois modules en onglets, un seul à l'écran.
    Sans JavaScript, pas d'onglets : les trois modules l'un sous l'autre. */
@@ -369,7 +412,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .resultat .resultat__montant { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; color: var(--encre); font-size: clamp(3rem, 6vw, 4.5rem); font-weight: 700; line-height: 1; letter-spacing: -.045em; font-variant-numeric: tabular-nums; }
 .resultat__montant .unite { font-size: 1.125rem; font-weight: 600; letter-spacing: -.01em; }
 .resultat .btn { margin-top: 8px; justify-self: start; }
-@media (min-width: 960px) { .calcul__corps { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 0; } .curseurs { padding-right: 56px; } .resultat { padding: 0 0 0 56px; border-top: 0; border-left: 1px solid var(--trait-gris); } }
+@media (min-width: 960px) { .calcul__tete { max-width: none; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: end; gap: 0; } .calcul__tete .lead { padding-left: 57px; } .calcul__corps { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 0; } .curseurs { padding-right: 56px; } .resultat { padding: 0 0 0 56px; border-top: 0; border-left: 1px solid var(--trait-gris); } }
 
 /* Forfaits : une tuile, trois colonnes séparées par des filets */
 .forfaits { display: grid; background: var(--blanc); border-radius: var(--r-tuile); }
@@ -470,7 +513,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
   .parcours li { flex: 0 0 86%; border-radius: var(--r-carte); scroll-snap-align: start; }
 }
 
-/* La confiance : ce qu'elle fait et ne fait pas, en quatre réponses */
+/* La confiance : ce qu'il fait et ne fait pas, en quatre réponses */
 .confiance { display: grid; gap: 36px; padding: clamp(24px, 4.2vw, 56px); border-radius: var(--r-tuile); background: radial-gradient(55% 70% at 0% 0%, rgba(255, 106, 43, .1), rgba(255, 106, 43, 0) 70%), var(--blanc); }
 .confiance__tete { display: grid; gap: 18px; align-content: start; justify-items: start; }
 .confiance h2 { font-size: clamp(2rem, 3.4vw, 2.75rem); }
@@ -479,7 +522,13 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .garanties h3 { font-size: 1.1875rem; font-weight: 650; }
 .garanties p { color: var(--texte-2); }
 @media (min-width: 760px) { .garanties { grid-template-columns: 1fr 1fr; column-gap: 40px; } }
-@media (min-width: 960px) { .confiance { grid-template-columns: minmax(0, 6fr) minmax(0, 7fr); gap: 64px; } .confiance__tete { position: sticky; top: 112px; } }
+@media (min-width: 960px) {
+  .confiance { gap: 28px; }
+  .confiance__tete { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); grid-template-rows: auto auto; column-gap: 64px; }
+  .confiance__tete h2 { grid-row: 1 / 3; }
+  .confiance__tete .lead { align-self: end; }
+  .garanties { column-gap: 64px; }
+}
 
 /* Questions */
 .faq { display: grid; gap: 40px; }
@@ -509,6 +558,13 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 #contact.nuit::before { display: none; }
 @keyframes respire { from { transform: scale(.92); opacity: .75; } to { transform: scale(1.06); opacity: 1; } }
 .contact__moyens { display: flex; flex-wrap: wrap; gap: 0 24px; }
+/* Ce qu'on regarde pendant l'audit (grand écran, où la place est libre) */
+.audit { display: none; }
+@media (min-width: 960px) { .audit { display: grid; gap: 14px; margin-top: 10px; padding-top: 26px; border-top: 1px solid var(--nuit-trait); } }
+.audit p { font-weight: 650; }
+.audit ul { display: grid; gap: 10px; }
+.audit li { display: grid; grid-template-columns: 6px minmax(0, 1fr); gap: 14px; align-items: start; color: var(--nuit-texte); }
+.audit li::before { content: ""; width: 6px; height: 6px; margin-top: .65em; border-radius: 50%; background: var(--lampe); }
 .form { display: grid; gap: 18px; padding: clamp(22px, 3.4vw, 40px); background: var(--blanc); border-radius: var(--r-tuile); }
 .form h3 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.025em; }
 .form__forfait { padding: 10px 14px; background: var(--gris); border-radius: 12px; font-size: .9375rem; font-weight: 600; }
@@ -599,7 +655,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
     <div class="wrap hero__grille">
       <div class="hero__texte">
         <h1 id="titre">Chaque appel répondu. Même sur le chantier.</h1>
-        <p class="lead">Une réceptionniste virtuelle répond à vos appels 24 h sur&nbsp;24, en français et en anglais. Elle prend le rendez-vous et vous envoie le résumé par texto.</p>
+        <p class="lead">Un agent répondeur IA prend vos appels 24 h sur&nbsp;24, en français et en anglais. Il réserve le rendez-vous et vous envoie le résumé par texto.</p>
         <div class="hero__actions">
           <a class="btn" href="#contact">Demander mon audit gratuit</a>
           <a class="lien" href="tel:+18734558990">Appeler le&nbsp;<span class="tel">873 455-8990</span></a>
@@ -607,8 +663,15 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
         <ul class="faits">
           <li>À partir de 199 $ par mois</li>
           <li>Sans contrat</li>
-          <li>Installée par nous</li>
+          <li>Installé par nous</li>
         </ul>
+        <figure class="resume" id="resume" aria-label="Exemple fictif : le texto que vous recevez après l'appel">
+          <div class="resume__carte">
+            <div class="resume__tete"><svg viewBox="0 0 512 512" aria-hidden="true"><use href="#i-logo"/><path d="M 337.92 122.88 A 61.44 61.44 0 0 1 399.36 184.32" fill="none" stroke="#FF6A2B" stroke-width="30.72" stroke-linecap="round"/><path d="M 337.92 66.56 A 117.76 117.76 0 0 1 455.68 184.32" fill="none" stroke="#FF6A2B" stroke-width="30.72" stroke-linecap="round"/></svg><b>Agent répondeur</b><span class="resume__quand">à l’instant</span></div>
+            <p class="resume__texte" id="resume-texte">Nouveau rendez-vous : mardi 9 h, 12, rue Laval, Gatineau. Chauffe-eau qui fuit. Client : 819 555-0142.</p>
+          </div>
+          <figcaption class="petit">Le texto que vous recevez après chaque appel. Exemple fictif.</figcaption>
+        </figure>
       </div>
 
       <figure class="scene">
@@ -619,17 +682,17 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
             <button type="button" data-metier="electricite" aria-pressed="false">Électricité</button>
             <button type="button" data-metier="garage" aria-pressed="false">Garage</button>
           </div>
-          <div class="appel" id="appel" role="group" aria-label="Démonstration fictive : un appel répondu par la réceptionniste virtuelle">
+          <div class="appel" id="appel" role="group" aria-label="Démonstration fictive : un appel répondu par l'agent répondeur">
             <div class="appel__tete">
               <span class="appel__etat"><span class="appel__point" aria-hidden="true"></span><span id="a-etat">Appel terminé</span></span>
               <span class="appel__duree" id="a-duree">0:48</span>
             </div>
-            <p class="appel__qui"><b>819 555-0142</b><span>Plomberie Lavoie · répondu par Léa</span></p>
+            <p class="appel__qui"><b>819 555-0142</b><span>Plomberie Lavoie · agent répondeur</span></p>
             <div class="voix" aria-hidden="true"><i style="--i:0;--h:87%"></i><i style="--i:1;--h:78%"></i><i style="--i:2;--h:63%"></i><i style="--i:3;--h:78%"></i><i style="--i:4;--h:61%"></i><i style="--i:5;--h:74%"></i><i style="--i:6;--h:54%"></i><i style="--i:7;--h:81%"></i><i style="--i:8;--h:87%"></i><i style="--i:9;--h:40%"></i><i style="--i:10;--h:81%"></i><i style="--i:11;--h:73%"></i><i style="--i:12;--h:53%"></i><i style="--i:13;--h:100%"></i><i style="--i:14;--h:57%"></i><i style="--i:15;--h:72%"></i><i style="--i:16;--h:60%"></i><i style="--i:17;--h:50%"></i><i style="--i:18;--h:90%"></i><i style="--i:19;--h:57%"></i><i style="--i:20;--h:64%"></i><i style="--i:21;--h:69%"></i><i style="--i:22;--h:46%"></i><i style="--i:23;--h:94%"></i><i style="--i:24;--h:61%"></i><i style="--i:25;--h:60%"></i><i style="--i:26;--h:92%"></i><i style="--i:27;--h:59%"></i></div>
             <ol class="transcription">
-              <li data-t="300"><span class="qui">Léa</span><q>Bonjour, Plomberie Lavoie, ici Léa, l’assistante virtuelle. L’appel est enregistré. Comment je peux vous aider ?</q></li>
+              <li data-t="300"><span class="qui">Agent</span><q>Bonjour, Plomberie Lavoie, ici l’agent répondeur virtuel. L’appel est enregistré. Comment je peux vous aider ?</q></li>
               <li data-t="1800"><span class="qui">Client</span><q>Mon chauffe-eau fuit un peu. Vous pouvez passer cette semaine ?</q></li>
-              <li data-t="3200"><span class="qui">Léa</span><q>Oui. Je vous propose mardi à 9 h ou mercredi à 13 h.</q><small class="selon">Selon votre agenda</small></li>
+              <li data-t="3200"><span class="qui">Agent</span><q>Oui. Je vous propose mardi à 9 h ou mercredi à 13 h.</q><small class="selon">Selon votre agenda</small></li>
               <li data-t="4400"><span class="qui">Client</span><q>Mardi, 9 h.</q></li>
             </ol>
             <ul class="appel__suite">
@@ -649,6 +712,14 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
   <section class="section nuit" aria-labelledby="t-probleme">
     <div class="wrap silence">
       <h2 id="t-probleme">Un appel manqué, c’est souvent un contrat pour le concurrent.</h2>
+      <figure class="manques" aria-label="Exemple fictif : deux appels manqués et une boîte vocale vide">
+        <ul>
+          <li><b>Appel manqué · 7 h 42</b><span>819 555-0173</span></li>
+          <li><b>Appel manqué · 12 h 15</b><span>613 555-0128</span></li>
+          <li class="vide"><b>Boîte vocale</b><span>Aucun nouveau message</span></li>
+        </ul>
+        <figcaption class="petit">Exemple fictif.</figcaption>
+      </figure>
       <ul class="silence__chiffres" id="chiffres">
         <li><b><span data-compte="27">27</span> %</b> des appels aux entreprises de services à domicile restent sans réponse.</li>
         <li><b><span class="moins">moins de</span> <span data-compte="3">3</span> %</b> des gens qui tombent sur la boîte vocale laissent un message.</li>
@@ -660,17 +731,31 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
   <section class="section" id="repondeur" aria-labelledby="t-repondeur">
     <div class="wrap deroule">
       <div class="deroule__tete">
-        <h2 id="t-repondeur">Elle répond comme vous le feriez.</h2>
-        <p class="lead">On écrit son script avec vous, pour votre métier : vos services, votre secteur, vos urgences. Elle suit vos règles, et vous passe l’appel quand il le faut.</p>
+        <h2 id="t-repondeur">Il répond comme vous le feriez.</h2>
+        <p class="lead">On écrit son script avec vous, pour votre métier : vos services, votre secteur, vos urgences. Il suit vos règles et vous passe l’appel quand il le faut.</p>
         <p class="petit">Les répliques citées sont un exemple fictif.</p>
+        <figure class="script" aria-label="Exemple fictif : un extrait du script de Plomberie Lavoie">
+          <div class="script__fond">
+            <div class="script__carte">
+              <div class="script__tete"><b>Script de Plomberie Lavoie</b><span class="script__statut">Approuvé par vous</span></div>
+              <dl>
+                <div><dt>Accueil</dt><dd>Il se présente comme l’agent répondeur virtuel et dit que l’appel est enregistré.</dd></div>
+                <div><dt>Urgences</dt><dd>Dégât d’eau, odeur de gaz : la consigne de sécurité, puis le transfert à votre cellulaire.</dd></div>
+                <div><dt>Secteur</dt><dd>Gatineau, Chelsea et Cantley. Ailleurs, il le dit poliment.</dd></div>
+                <div><dt>Rendez-vous</dt><dd>Du lundi au vendredi, de 8 h à 16 h. Il propose deux heures libres.</dd></div>
+              </dl>
+            </div>
+          </div>
+          <figcaption class="petit">Le script et les répliques citées sont un exemple fictif.</figcaption>
+        </figure>
       </div>
       <div class="deroule__etapes">
       <ol class="etapes" id="etapes">
-        <li><h3>Elle se présente</h3><p>Elle dit qu’elle est l’assistante virtuelle de votre entreprise et passe à l’anglais si le client parle anglais.</p><p class="replique"><span class="qui">Léa</span><q>Bonjour, Plomberie Lavoie, ici Léa, l’assistante virtuelle.</q></p></li>
-        <li><h3>Elle repère les urgences</h3><p>Dégât d’eau, odeur de gaz, chauffage en panne l’hiver : elle donne la consigne de sécurité et transfère l’appel à votre cellulaire tout de suite.</p></li>
-        <li><h3>Elle prend le besoin et les coordonnées</h3><p>Le service, depuis quand, le nom, le numéro confirmé à voix haute et l’adresse. Si l’adresse est hors de votre secteur, elle le dit poliment.</p></li>
-        <li><h3>Elle réserve</h3><p>Elle propose deux heures libres dans votre agenda. Avec le forfait Répondeur, elle promet plutôt un rappel avant une heure précise.</p><p class="replique"><span class="qui">Léa</span><q>Donc : chauffe-eau qui fuit, au 12, rue Laval, mardi 9 h. C’est bien ça ?</q></p></li>
-        <li><h3>Elle vous envoie le résumé</h3><p>Un texto part à vous et au client. Si le client veut parler à quelqu’un, ou si elle ne comprend pas deux fois, elle vous transfère l’appel avec un résumé.</p></li>
+        <li><h3>Il se présente</h3><p>Il dit qu’il est l’agent répondeur virtuel de votre entreprise et passe à l’anglais si le client parle anglais.</p><p class="replique"><span class="qui">Agent</span><q>Bonjour, Plomberie Lavoie, ici l’agent répondeur virtuel.</q></p></li>
+        <li><h3>Il repère les urgences</h3><p>Dégât d’eau, odeur de gaz, chauffage en panne l’hiver : il donne la consigne de sécurité et transfère l’appel à votre cellulaire tout de suite.</p></li>
+        <li><h3>Il prend le besoin et les coordonnées</h3><p>Le service, depuis quand, le nom, le numéro confirmé à voix haute et l’adresse. Si l’adresse est hors de votre secteur, il le dit poliment.</p></li>
+        <li><h3>Il réserve</h3><p>Il propose deux heures libres dans votre agenda. Avec le forfait Répondeur, il promet plutôt un rappel avant une heure précise.</p><p class="replique"><span class="qui">Agent</span><q>Donc : chauffe-eau qui fuit, au 12, rue Laval, mardi 9 h. C’est bien ça ?</q></p></li>
+        <li><h3>Il vous envoie le résumé</h3><p>Un texto part à vous et au client. Si le client veut parler à quelqu’un, ou si l’agent ne comprend pas deux fois, il vous transfère l’appel avec un résumé.</p></li>
       </ol>
       <div class="points" id="points" aria-hidden="true"><i class="actif"></i><i></i><i></i><i></i><i></i></div>
       </div>
@@ -697,7 +782,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
             <p>Avec les forfaits Croissance et Complet, chaque appel devient une fiche, sur votre cellulaire et votre ordinateur.</p>
             <ul class="inclus">
               <li><b>Les appels et les clients</b><span>Chaque appel avec son résumé, son besoin et sa suite.</span></li>
-              <li><b>L’agenda</b><span>Les rendez-vous pris par la réceptionniste, avec les rappels.</span></li>
+              <li><b>L’agenda</b><span>Les rendez-vous pris par l’agent répondeur, avec les rappels.</span></li>
               <li><b>Les avis Google</b><span>Une demande d’avis part après chaque travail.</span></li>
               <li><b>Les courriels automatiques</b><span>Relance des soumissions et rappels de rendez-vous.</span></li>
               <li><b>Les graphiques et le rapport du mois</b><span>Appels pris, travaux réservés, avis reçus.</span></li>
@@ -793,7 +878,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
       <div class="tete tete--centre">
         <h2 id="t-forfaits">Trois forfaits. Aucun contrat.</h2>
         <p class="lead">Prix par mois, en dollars canadiens, avant taxes. Les frais de départ paient l’installation et les tests de votre script. Vous arrêtez quand vous voulez.</p>
-        <p class="petit">Installé et suivi par les deux cofondateurs, Hugo Martin et Yacine Eddaoudi, à Gatineau.</p>
+        <p class="petit">Installé et suivi par notre équipe, à Gatineau.</p>
       </div>
 
       <div class="choix-forfait" id="choix-forfait" role="group" aria-label="Voir un forfait" aria-controls="liste-forfaits">
@@ -809,7 +894,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
           <p class="forfait__depart">Frais de départ : 299 $</p>
           <a class="btn btn--contour" href="#contact" data-forfait="Répondeur">Choisir Répondeur</a>
           <ul>
-            <li data-m="voix">Réceptionniste virtuelle 24 h sur&nbsp;24, en français et en anglais</li>
+            <li data-m="voix">Agent répondeur IA 24 h sur&nbsp;24, en français et en anglais</li>
             <li data-m="voix">Script écrit pour votre métier, avec les urgences</li>
             <li data-m="voix">Résumé par texto à vous et au client après chaque appel</li>
             <li data-m="voix">Transfert de l’appel à votre cellulaire</li>
@@ -860,7 +945,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
           <table class="modules">
             <thead><tr><th scope="col">Module</th><th scope="col">Par mois</th><th scope="col">Départ</th></tr></thead>
             <tbody>
-              <tr data-m="voix"><td><b>Répondeur vocal IA</b><span>Inclut le texto après appel manqué, 250 minutes</span></td><td>199 $</td><td>299 $</td></tr>
+              <tr data-m="voix"><td><b>Agent répondeur IA</b><span>Inclut le texto après appel manqué, 250 minutes</span></td><td>199 $</td><td>299 $</td></tr>
               <tr data-m="texto"><td><b>Texto après appel manqué</b></td><td>69 $</td><td>99 $</td></tr>
               <tr data-m="site"><td><b>Site web</b><span>Sur mesure, bilingue, hébergé</span></td><td>99 $</td><td>499 $</td></tr>
               <tr data-m="centre"><td><b>Centre de contrôle</b><span>Clients, agenda, avis, courriels, rapport</span></td><td>149 $</td><td>199 $</td></tr>
@@ -870,7 +955,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
         </div>
         <div class="extras">
           <p><b>Minutes en plus :</b> 0,39 $ la minute, et on vous avertit à 80 % de votre forfait. Si vous dépassez souvent : un bloc de 250 minutes de plus pour 79 $ par mois.</p>
-          <p><b>Deuxième numéro ou succursale :</b> 49 $ par mois. <b>Répondeur pour tous vos appels,</b> pas seulement ceux que vous manquez : sur devis.</p>
+          <p><b>Deuxième numéro ou succursale :</b> 49 $ par mois. <b>Agent répondeur pour tous vos appels,</b> pas seulement ceux que vous manquez : sur devis.</p>
         </div>
         </div>
       </details>
@@ -891,7 +976,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
         </li>
         <li style="--i:1">
           <h3>Le script</h3>
-          <p>On écrit avec vous ce qu’elle dit : vos services, votre secteur, vos urgences, et quand elle doit vous passer l’appel.</p>
+          <p>On écrit avec vous ce qu’il dit : vos services, votre secteur, vos urgences, et quand il doit vous passer l’appel.</p>
           <p class="parcours__vous"><span>Vous :</span> quelques réponses</p>
         </li>
         <li style="--i:2">
@@ -914,14 +999,14 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
     <div class="wrap">
       <div class="confiance">
         <div class="confiance__tete">
-          <h2 id="t-confiance">Vous décidez de ce qu’elle dit.</h2>
-          <p class="lead">Elle suit le script que vous avez approuvé, et elle vous passe l’appel quand il le faut. Rien n’est activé sans votre accord.</p>
+          <h2 id="t-confiance">Vous décidez de ce qu’il dit.</h2>
+          <p class="lead">Il suit le script que vous avez approuvé et vous passe l’appel au besoin. Rien n’est activé sans votre accord.</p>
           <a class="lien" href="confidentialite.html">Lire notre politique de confidentialité</a>
         </div>
         <ul class="garanties">
-          <li><h3>Elle dit qu’elle est virtuelle</h3><p>Elle se présente comme l’assistante virtuelle de votre entreprise et annonce que l’appel est enregistré.</p></li>
-          <li><h3>Les urgences vont à vous</h3><p>Vous décidez ce qui est urgent. Pour un dégât d’eau ou une odeur de gaz, elle donne la consigne de sécurité et transfère l’appel à votre cellulaire.</p></li>
-          <li><h3>Un humain quand il le faut</h3><p>Le client veut parler à quelqu’un, ou elle ne comprend pas deux fois de suite&nbsp;: elle vous passe l’appel avec un résumé. Si vous ne répondez pas, elle prend le message et vous envoie un texto urgent.</p></li>
+          <li><h3>Il dit qu’il est virtuel</h3><p>Il se présente comme l’agent répondeur virtuel de votre entreprise et annonce que l’appel est enregistré.</p></li>
+          <li><h3>Les urgences vont à vous</h3><p>Vous décidez ce qui est urgent. Pour un dégât d’eau ou une odeur de gaz, il donne la consigne de sécurité et transfère l’appel à votre cellulaire.</p></li>
+          <li><h3>Un humain quand il le faut</h3><p>Si le client veut parler à quelqu’un, ou si l’agent ne comprend pas deux fois de suite, il vous passe l’appel avec un résumé. Si vous ne répondez pas, il prend le message et vous envoie un texto urgent.</p></li>
           <li><h3>Vos données et la Loi 25</h3><p>On vous explique ce que les outils demandent de votre côté, on installe une politique de confidentialité sur votre site, et les textos respectent ARRÊT et STOP.</p></li>
         </ul>
       </div>
@@ -932,18 +1017,18 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
     <div class="wrap faq">
       <div class="faq__aside">
         <h2 id="t-questions">Les questions qu’on nous pose.</h2>
-        <p>Une autre question ? Hugo ou Yacine vous répond au plus tard le jour ouvrable suivant.</p>
+        <p>Une autre question ? On vous répond au plus tard le jour ouvrable suivant.</p>
         <div class="faq__moyens">
           <a class="lien" href="tel:+18734558990"><span class="tel">873 455-8990</span></a>
           <a class="lien" href="mailto:info@agenceuio.ca">info@agenceuio.ca</a>
         </div>
       </div>
       <div class="questions">
-        <details><summary>Est-ce qu’elle comprend bien le français d’ici ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Elle parle français et anglais. Avant de l’activer, on teste votre script avec de vrais appels : accents, bruit de chantier, client pressé. On l’active seulement quand les tests sont bons.</p></details>
-        <details><summary>Est-ce que je garde mon numéro ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Oui. Les appels que vous ne prenez pas sont renvoyés vers la réceptionniste ; on active le renvoi avec vous chez votre fournisseur. Elle peut aussi prendre tous vos appels : c’est sur devis.</p></details>
+        <details><summary>Est-ce qu’il comprend bien le français d’ici ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Il parle français et anglais. Avant de l’activer, on teste votre script avec de vrais appels : accents, bruit de chantier, client pressé. On l’active seulement quand les tests sont bons.</p></details>
+        <details><summary>Est-ce que je garde mon numéro ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Oui. Les appels que vous ne prenez pas sont renvoyés vers l’agent répondeur ; on active le renvoi avec vous chez votre fournisseur. Il peut aussi prendre tous vos appels : c’est sur devis.</p></details>
         <details><summary>Combien de minutes sont incluses ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>250, 500 ou 600 minutes par mois, selon le forfait. On vous avertit à 80 %. Au-delà, c’est 0,39 $ la minute, ou un bloc de minutes si vous dépassez souvent.</p></details>
         <details><summary>Est-ce que je suis lié par un contrat ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Non. C’est au mois, et vous arrêtez quand vous voulez. Les frais de départ paient l’installation et les tests de votre script.</p></details>
-        <details><summary>J’ai déjà un site. Dois-je le refaire ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Non. Le répondeur et le centre de contrôle fonctionnent avec n’importe quel site. Le chatbot IA peut aussi s’ajouter à votre site actuel, si on peut y installer le code.</p></details>
+        <details><summary>J’ai déjà un site. Dois-je le refaire ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Non. L’agent répondeur et le centre de contrôle fonctionnent avec n’importe quel site. Le chatbot IA peut aussi s’ajouter à votre site actuel, si on peut y installer le code.</p></details>
         <details><summary>Les demandes d’avis, c’est permis par Google ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Oui, tant qu’on ne filtre pas. Tous vos clients reçoivent la même demande, sans récompense et sans trier ceux qui sont satisfaits, comme le demandent les règles de Google.</p></details>
         <details><summary>Garantissez-vous un nombre de clients ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Non. Le nombre de contrats dépend de vos appels, de vos prix et de votre service. On s’engage à installer les outils et à les faire fonctionner, et chaque résumé d’appel vous montre ce qu’ils font pour vous.</p></details>
         <details><summary>Vous travaillez seulement avec les plombiers ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>On se spécialise dans les métiers où un appel manqué coûte cher : plomberie, chauffage et climatisation, électricité, garages, toiture, déménagement. Pour un autre domaine, appelez-nous ou écrivez-nous.</p></details>
@@ -957,10 +1042,18 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
       <div class="contact__texte">
         <h2 id="t-contact">Parlons de vos appels.</h2>
         <p class="lead">Laissez vos coordonnées. On vous rappelle au plus tard le jour ouvrable suivant pour un audit gratuit de 15 minutes, sans engagement.</p>
-        <p class="equipe">Vous parlez directement aux deux cofondateurs, à Gatineau : <b>Hugo Martin</b> et <b>Yacine Eddaoudi</b>.</p>
+        <p class="equipe">Vous parlez directement à l’équipe qui installe votre agent, à Gatineau.</p>
         <div class="contact__moyens">
           <a class="lien" href="tel:+18734558990"><span class="tel">873 455-8990</span></a>
           <a class="lien" href="mailto:info@agenceuio.ca">info@agenceuio.ca</a>
+        </div>
+        <div class="audit">
+          <p>Pendant l’audit, on regarde avec vous :</p>
+          <ul>
+            <li>vos appels manqués, et à quelles heures ils arrivent ;</li>
+            <li>votre fiche Google et votre site ;</li>
+            <li>ce qu’on ferait à votre place, avec le forfait et son prix.</li>
+          </ul>
         </div>
       </div>
       <form class="form" id="formulaire" action="https://api.web3forms.com/submit" method="POST" accept-charset="UTF-8">
@@ -1024,7 +1117,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
           <svg class="logo__icone" viewBox="0 0 512 512" aria-hidden="true"><use href="#i-logo"/><path class="onde" d="M 337.92 122.88 A 61.44 61.44 0 0 1 399.36 184.32" fill="none" stroke="#FF6A2B" stroke-width="30.72" stroke-linecap="round"/><path class="onde" d="M 337.92 66.56 A 117.76 117.76 0 0 1 455.68 184.32" fill="none" stroke="#FF6A2B" stroke-width="30.72" stroke-linecap="round"/></svg>
           <span class="logo__mot" aria-hidden="true"><svg viewBox="0 0 183 99" fill="currentColor"><use href="#i-mot" width="183" height="99"/></svg><small>Agence Gatineau</small></span>
         </a>
-        <p>Une réceptionniste virtuelle, et tout ce qui suit l’appel, pour les entrepreneurs de Gatineau et d’Ottawa.</p>
+        <p>Un agent répondeur IA, et tout ce qui suit l’appel, pour les entrepreneurs de Gatineau et d’Ottawa.</p>
       </div>
       <div>
         <h2>Nous joindre</h2>
@@ -1096,38 +1189,40 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
   var FIN_APPEL = 5200, FIN = 6800, SECONDES = 48, FIN_TEXTE = 'Appel terminé';
   var minuteries = [], chrono = null, joue = false;
   var METIERS = {
-    plomberie: { num: '819 555-0142', nom: 'Plomberie Lavoie', s: 48, lignes: [
+    plomberie: { num: '819 555-0142', nom: 'Plomberie Lavoie', s: 48, resume: 'Nouveau rendez-vous : mardi 9 h, 12, rue Laval, Gatineau. Chauffe-eau qui fuit. Client : 819 555-0142.', lignes: [
       ['Client', 'Mon chauffe-eau fuit un peu. Vous pouvez passer cette semaine ?'],
-      ['Léa', 'Oui. Je vous propose mardi à 9 h ou mercredi à 13 h.', 'Selon votre agenda'],
+      ['Agent', 'Oui. Je vous propose mardi à 9 h ou mercredi à 13 h.', 'Selon votre agenda'],
       ['Client', 'Mardi, 9 h.']],
       suite: [['centre', 'Rendez-vous ajouté à l’agenda', 'Mardi 9 h · 12, rue Laval, Gatineau'], ['texto', 'Résumé envoyé par texto', 'À vous et au client']] },
-    chauffage: { num: '819 555-0187', nom: 'Chauffage Gagnon', s: 34, fin: 'Appel transféré', lignes: [
+    chauffage: { num: '819 555-0187', nom: 'Chauffage Gagnon', s: 34, resume: 'Urgence transférée à votre cellulaire : fournaise en panne, 15 °C dans la maison. Client : 819 555-0187.', fin: 'Appel transféré', lignes: [
       ['Client', 'Ma fournaise ne part plus, et il fait 15 degrés dans la maison.'],
-      ['Léa', 'C’est une urgence. Je vous transfère tout de suite au technicien, restez en ligne.', 'Urgence prévue dans votre script'],
+      ['Agent', 'C’est une urgence. Je vous transfère tout de suite au technicien, restez en ligne.', 'Urgence prévue dans votre script'],
       ['Client', 'Merci, j’attends.']],
       suite: [['urgence', 'Appel transféré à votre cellulaire', 'Fournaise en panne · 15 °C dans la maison'], ['texto', 'Résumé envoyé par texto', 'À vous, avec le numéro du client']] },
-    electricite: { num: '613 555-0119', nom: 'Électrique Roy', s: 52, lignes: [
+    electricite: { num: '613 555-0119', nom: 'Électrique Roy', s: 52, resume: 'À rappeler avant 16 h : soumission pour une borne de recharge. Client : 613 555-0119.', lignes: [
       ['Client', 'J’aimerais une soumission pour une borne de recharge dans mon garage.'],
-      ['Léa', 'Avec plaisir. Un électricien vous rappelle aujourd’hui avant 16 h.', 'Selon votre script : soumissions'],
+      ['Agent', 'Avec plaisir. Un électricien vous rappelle aujourd’hui avant 16 h.', 'Selon votre script : soumissions'],
       ['Client', 'Parfait, merci.']],
       suite: [['centre', 'Rappel promis avant 16 h', 'Soumission · borne de recharge'], ['texto', 'Résumé envoyé par texto', 'À vous et au client']] },
-    garage: { num: '613 555-0164', nom: 'Garage Dubé', s: 41, lignes: [
+    garage: { num: '613 555-0164', nom: 'Garage Dubé', s: 41, resume: 'Nouveau rendez-vous : jeudi 8 h, pose des pneus d’hiver. Client anglophone : 613 555-0164.', lignes: [
       ['Client', 'Hi! Do you do winter tire changes this week?', '', 'en'],
-      ['Léa', 'Yes, we do. I have Thursday at 8 a.m. or Friday at 2 p.m.', 'Passée à l’anglais', 'en'],
+      ['Agent', 'Yes, we do. I have Thursday at 8 a.m. or Friday at 2 p.m.', 'Passée à l’anglais', 'en'],
       ['Client', 'Thursday, 8 a.m. works.', '', 'en']],
       suite: [['centre', 'Rendez-vous ajouté à l’agenda', 'Jeudi 8 h · Pose des pneus d’hiver'], ['texto', 'Résumé envoyé par texto', 'À vous et au client']] }
   };
   var DEPARTS = [300, 1800, 3200, 4400], DEPARTS_SUITE = [5600, 6200];
+  // Le résumé par texto du premier écran arrive quand l'appel l'envoie, et suit le métier choisi
+  var resume = document.getElementById('resume'), resumeTexte = document.getElementById('resume-texte');
   var COCHE = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10.5l3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   // Espaces insécables du français (avant ? ! : ; et entre un nombre et son unité), comme dans le reste de la page
   function typo(t) { return t.replace(/ ([?!:;»])/g, '\u00a0$1').replace(/(\d) (h\b|°|%)/g, '$1\u00a0$2'); }
   function noeud(tag, cls, texte) { var e = document.createElement(tag); if (cls) e.className = cls; if (texte) e.textContent = typo(texte); return e; }
   function remplirCarte(carte, m) {
     carte.querySelector('.appel__qui b').textContent = m.num;
-    carte.querySelector('.appel__qui span').textContent = m.nom + ' · répondu par Léa';
+    carte.querySelector('.appel__qui span').textContent = m.nom + ' · agent répondeur';
     var ol = carte.querySelector('.transcription'), ul = carte.querySelector('.appel__suite');
     ol.textContent = ''; ul.textContent = '';
-    [['Léa', 'Bonjour, ' + m.nom + ', ici Léa, l’assistante virtuelle. L’appel est enregistré. Comment je peux vous aider ?']].concat(m.lignes).forEach(function (l, i) {
+    [['Agent', 'Bonjour, ' + m.nom + ', ici l’agent répondeur virtuel. L’appel est enregistré. Comment je peux vous aider ?']].concat(m.lignes).forEach(function (l, i) {
       var li = noeud('li'), q = noeud('q', '', l[1]);
       li.dataset.t = DEPARTS[i]; if (l[3]) q.lang = l[3];
       li.appendChild(noeud('span', 'qui', l[0])); li.appendChild(q);
@@ -1141,21 +1236,23 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
       li.appendChild(puce); li.appendChild(d); ul.appendChild(li);
     });
   }
+  function remplirResume(m) { if (resumeTexte) resumeTexte.textContent = typo(m.resume); }
   // La carte garde la hauteur du plus long des quatre appels : rien ne saute quand on change de métier
   function egaliser() {
     var c = appel.cloneNode(true), h = 0;
     c.removeAttribute('id'); c.classList.remove('joue', 'en-cours'); c.setAttribute('aria-hidden', 'true');
     c.querySelectorAll('[id]').forEach(function (n) { n.removeAttribute('id'); });
-    c.style.cssText = 'position:absolute;left:0;top:0;visibility:hidden;min-height:0;width:' + appel.offsetWidth + 'px';
+    c.style.cssText = 'position:absolute;left:0;top:0;visibility:hidden;min-height:0;width:' + appel.getBoundingClientRect().width + 'px';
     fond.appendChild(c);
-    Object.keys(METIERS).forEach(function (k) { remplirCarte(c, METIERS[k]); h = Math.max(h, c.offsetHeight); });
+    Object.keys(METIERS).forEach(function (k) { remplirCarte(c, METIERS[k]); h = Math.max(h, c.getBoundingClientRect().height); });
     fond.removeChild(c);
-    appel.style.minHeight = h + 'px';
+    appel.style.minHeight = Math.ceil(h) + 'px';
   }
   function enMinutes(s) { return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); }
   function arreter() { minuteries.forEach(clearTimeout); minuteries = []; clearInterval(chrono); }
   function finale() {
     arreter(); joue = false;
+    if (resume) resume.classList.remove('attente');
     appel.classList.remove('joue', 'en-cours'); fond.classList.remove('vive');
     lignes.forEach(function (l) { l.classList.add('on'); });
     etat.textContent = FIN_TEXTE; duree.textContent = enMinutes(SECONDES);
@@ -1163,9 +1260,10 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
   }
   function jouer() {
     arreter(); joue = true;
+    if (resume) resume.classList.add('attente');
     appel.classList.add('joue', 'en-cours'); fond.classList.add('vive');
     lignes.forEach(function (l) { l.classList.remove('on'); });
-    etat.textContent = 'En ligne avec Léa'; duree.textContent = '0:00';
+    etat.textContent = 'En ligne avec l’agent'; duree.textContent = '0:00';
     bouton.textContent = 'Arrêter';
     var debut = Date.now();
     chrono = setInterval(function () {
@@ -1173,6 +1271,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
       duree.textContent = enMinutes(s);
     }, 200);
     lignes.forEach(function (l) { minuteries.push(setTimeout(function () { l.classList.add('on'); }, +l.dataset.t)); });
+    minuteries.push(setTimeout(function () { if (resume) resume.classList.remove('attente'); }, DEPARTS_SUITE[1] + 250));
     minuteries.push(setTimeout(function () { clearInterval(chrono); duree.textContent = enMinutes(SECONDES); appel.classList.remove('en-cours'); fond.classList.remove('vive'); etat.textContent = FIN_TEXTE; }, FIN_APPEL));
     minuteries.push(setTimeout(finale, FIN));
   }
@@ -1183,7 +1282,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
     var b = e.target.closest('button'); if (!b || b.getAttribute('aria-pressed') === 'true') return;
     var m = METIERS[b.dataset.metier];
     metiers.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-    arreter(); remplirCarte(appel, m); lignes = appel.querySelectorAll('[data-t]');
+    arreter(); remplirCarte(appel, m); remplirResume(m); lignes = appel.querySelectorAll('[data-t]');
     SECONDES = m.s; FIN_TEXTE = m.fin || 'Appel terminé';
     if (calme) finale(); else jouer();
   });
