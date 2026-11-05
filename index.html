@@ -677,6 +677,115 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
   @media (min-width: 2000px) { .photo-metier.pret { background-image: var(--grande); } }
 }
 
+/* ============ v11 : le verre liquide ============
+   Des taches de couleur coulent lentement derrière quelques surfaces de verre (la carte de l'appel, le texto,
+   les écrans des modules), une lentille glisse d'un choix à l'autre, et les bandes de nuit s'ouvrent au défilement.
+   Le verre reste rare : le reste de la page garde ses bandes blanches et grises. Hors de l'écran, tout dort. */
+@property --angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+:root {
+  --verre: rgba(255, 255, 255, .6);
+  --verre-fort: rgba(255, 255, 255, .78);
+  --verre-flou: blur(22px) saturate(180%);
+  --verre-rebord: inset 0 1px 0 rgba(255, 255, 255, .95), inset 0 -1px 0 rgba(14, 26, 43, .04);
+  --coule: cubic-bezier(.34, 1.4, .5, 1);
+}
+@media (max-width: 639px) { :root { --verre-flou: blur(14px) saturate(170%); } }
+.dort, .dort::before, .dort::after, .dort *, .dort *::before, .dort *::after { animation-play-state: paused !important; }
+
+/* L'aurore du premier écran : trois taches qui dérivent, orange, ambre, et un bleu léger pour le contraste */
+.hero { position: relative; isolation: isolate; }
+.aurore { position: absolute; z-index: -1; inset: 0; overflow: hidden; pointer-events: none; }
+.aurore i { position: absolute; width: var(--t); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(closest-side, var(--c), rgba(255, 255, 255, 0)); will-change: transform; animation: derive var(--d) ease-in-out infinite alternate; }
+.aurore i:nth-child(1) { --t: min(820px, 90vw); --c: rgba(255, 106, 43, .2); --d: 19s; left: -18%; top: -22%; }
+.aurore i:nth-child(2) { --t: min(700px, 80vw); --c: rgba(47, 111, 235, .12); --d: 23s; right: -10%; top: -8%; animation-delay: -7s; }
+.aurore i:nth-child(3) { --t: min(620px, 80vw); --c: rgba(242, 169, 0, .17); --d: 27s; left: 28%; bottom: -30%; animation-delay: -13s; }
+@keyframes derive { 0% { transform: translate3d(0, 0, 0) scale(1); } 50% { transform: translate3d(7%, 9%, 0) scale(1.1); } 100% { transform: translate3d(-6%, 4%, 0) scale(.92); } }
+
+/* La scène de l'appel : du liquide coloré bouge derrière la carte de verre */
+.scene__fond::before { content: ""; position: absolute; z-index: -1; inset: -10%; pointer-events: none; will-change: transform; animation: coule 15s ease-in-out infinite alternate;
+  background: radial-gradient(26% 30% at 28% 26%, rgba(255, 106, 43, .5), rgba(255, 106, 43, 0) 70%), radial-gradient(30% 34% at 74% 72%, rgba(255, 168, 92, .55), rgba(255, 168, 92, 0) 70%), radial-gradient(20% 24% at 76% 22%, rgba(47, 111, 235, .22), rgba(47, 111, 235, 0) 70%), radial-gradient(22% 26% at 22% 80%, rgba(242, 169, 0, .3), rgba(242, 169, 0, 0) 70%); }
+@keyframes coule { from { transform: translate3d(-4%, -3%, 0) rotate(-4deg) scale(1); } to { transform: translate3d(4%, 4%, 0) rotate(10deg) scale(1.1); } }
+
+/* Les surfaces de verre : translucides, floues derrière, un rebord de lumière en haut à gauche */
+.appel, .resume__carte, .bord, .fil { position: relative; isolation: isolate; -webkit-backdrop-filter: var(--verre-flou); backdrop-filter: var(--verre-flou); box-shadow: var(--verre-rebord), var(--ombre-flotte); }
+.appel { background: var(--verre); }
+.resume__carte, .bord, .fil { background: var(--verre-fort); }
+.appel::before, .resume__carte::before, .bord::before, .fil::before, .forfait--vedette::before, .manques li::after {
+  content: ""; position: absolute; z-index: 2; inset: 0; padding: 1.5px; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(140deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, .25) 28%, rgba(255, 255, 255, 0) 55%, rgba(255, 255, 255, .55) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+/* Le reflet suit la souris (souris seulement) : sous le texte, jamais par-dessus */
+.reflet::after { content: ""; position: absolute; z-index: -1; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .45s var(--sortie);
+  background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 0%), rgba(255, 255, 255, .95), rgba(255, 255, 255, 0) 65%); }
+.reflet:hover::after { opacity: 1; }
+.forfait--vedette.reflet::after { background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 0%), rgba(255, 140, 90, .22), rgba(255, 106, 43, 0) 65%); }
+
+/* La lentille : une goutte de verre qui glisse vers le choix, s'étire en route et reprend sa forme */
+.a-lentille { position: relative; }
+.a-lentille > button { position: relative; z-index: 1; }
+.a-lentille > button[aria-pressed="true"], .a-lentille > button[aria-selected="true"] { background: transparent; box-shadow: none; }
+.lentille { position: absolute; z-index: 0; left: 0; top: 0; width: var(--l-w, 0); height: var(--l-h, 0); border-radius: 999px; pointer-events: none; transform: translate3d(var(--l-x, 0), var(--l-y, 0), 0);
+  background: rgba(255, 255, 255, .92); box-shadow: inset 0 1px 0 #fff, inset 0 0 0 1px rgba(255, 255, 255, .7), var(--ombre-douce);
+  transition: transform .6s var(--coule), width .6s var(--coule), height .45s var(--coule); }
+.lentille.fige { transition: none; }
+.lentille.goutte { animation: goutte .6s ease-out; }
+@keyframes goutte { 30% { scale: 1.14 .8; } 62% { scale: .95 1.07; } 100% { scale: 1 1; } }
+/* Les métiers : une barre de verre sur la scène, la goutte est marine */
+.js .metiers { width: fit-content; margin-inline: auto; padding: 4px; gap: 2px; border-radius: 999px; background: rgba(255, 255, 255, .42); -webkit-backdrop-filter: var(--verre-flou); backdrop-filter: var(--verre-flou); box-shadow: var(--verre-rebord), inset 0 0 0 1px rgba(255, 255, 255, .55), 0 8px 24px -14px rgba(14, 26, 43, .35); }
+.metiers.a-lentille > button { background: transparent; box-shadow: none; transition: color .35s var(--sortie), background-color .2s; }
+.metiers.a-lentille > button:hover { background: rgba(255, 255, 255, .45); }
+.metiers.a-lentille > button[aria-pressed="true"] { color: #fff; background: transparent; }
+.metiers .lentille { background: linear-gradient(180deg, #23324A, var(--encre)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), 0 6px 16px -6px rgba(14, 26, 43, .55); }
+@container (max-width: 399px) { .js .metiers { width: 100%; border-radius: 26px; } }
+
+/* Les boutons orange : un peu de lustre, un éclat qui traverse au survol */
+.btn:not(.btn--contour) { position: relative; overflow: hidden; isolation: isolate; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), inset 0 -1px 0 rgba(150, 50, 10, .2), 0 8px 20px -10px rgba(255, 106, 43, .75); }
+.btn:not(.btn--contour)::after { content: ""; position: absolute; z-index: -1; inset: 0; pointer-events: none; background: linear-gradient(105deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, .55) 50%, rgba(255, 255, 255, 0) 70%); transform: translateX(-120%); transition: transform .9s var(--sortie); }
+@media (hover: hover) { .btn:not(.btn--contour):hover::after { transform: translateX(120%); } }
+
+/* Les bandes de nuit : une carte qui s'ouvre jusqu'aux bords en entrant, deux lueurs qui tournent */
+.js .nuit.ouvre { --bord: var(--m); clip-path: inset(0 calc(var(--r, 0) * var(--bord)) round calc(var(--r, 0) * 44px)); }
+@media (max-width: 639px) { .js .nuit.ouvre { --bord: 10px; } }
+.nuit::before { animation: lueur-nuit 18s ease-in-out infinite alternate; will-change: transform; }
+.nuit::after { content: ""; position: absolute; z-index: -1; left: -14%; top: -40%; width: min(760px, 85vw); aspect-ratio: 1; border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, rgba(47, 111, 235, .2), rgba(47, 111, 235, 0)); will-change: transform; animation: lueur-nuit 22s ease-in-out -9s infinite alternate-reverse; }
+@keyframes lueur-nuit { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(-12%, -10%, 0) scale(1.15); } }
+/* Les appels manqués : du verre sombre qui se pose un à un */
+.manques li { position: relative; background: rgba(255, 255, 255, .07); -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14); transition: opacity .8s var(--sortie), transform .9s var(--sortie), filter .8s var(--sortie); transition-delay: calc(var(--i, 0) * 160ms); }
+.manques li::after { opacity: .35; }
+.manques li:nth-child(2) { --i: 1; } .manques li:nth-child(3) { --i: 2; }
+.js .manques.attente li { opacity: 0; transform: translateX(32px); filter: blur(8px); }
+
+/* Les écrans des modules : une goutte de la couleur du module bouge sous l'écran de verre */
+.panneau__scene { position: relative; isolation: isolate; overflow: hidden; }
+.panneau__scene::before, .panneau__scene::after { content: ""; position: absolute; z-index: -1; width: 62%; aspect-ratio: 1; border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, var(--goutte), rgba(255, 255, 255, 0)); will-change: transform; animation: derive 17s ease-in-out infinite alternate; }
+.panneau__scene::before { left: -14%; bottom: -34%; }
+.panneau__scene::after { right: -12%; top: -30%; width: 48%; animation-duration: 21s; animation-delay: -8s; }
+.panneau--centre { --goutte: rgba(47, 111, 235, .34); } .panneau--texto { --goutte: rgba(30, 158, 90, .3); } .panneau--site { --goutte: rgba(242, 169, 0, .4); }
+
+/* Le forfait vedette : un filet de lumière fait le tour de la carte */
+.forfait--vedette { isolation: isolate; }
+.forfait--vedette::before { padding: 1.5px; background: conic-gradient(from var(--angle), rgba(255, 106, 43, 0) 0deg, rgba(255, 106, 43, .95) 50deg, rgba(255, 214, 186, .95) 80deg, rgba(255, 106, 43, 0) 140deg, rgba(255, 255, 255, .1) 220deg, rgba(255, 106, 43, 0) 360deg); animation: tourne 8s linear infinite; }
+@keyframes tourne { to { --angle: 360deg; } }
+
+/* La barre du haut : une pilule de verre qui flotte, et se resserre en défilant */
+.nav { padding-top: 10px; background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; border-bottom: 0; pointer-events: none; }
+.nav.defile { box-shadow: none; }
+.nav .nav__rangee { position: relative; isolation: isolate; width: calc(100% - 2 * var(--m)); max-width: calc(var(--largeur) - 2 * var(--m)); height: 60px; padding-inline: 10px 8px; border-radius: 999px; pointer-events: auto;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .8), rgba(255, 255, 255, .62)); -webkit-backdrop-filter: blur(20px) saturate(190%); backdrop-filter: blur(20px) saturate(190%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), inset 0 0 0 1px rgba(14, 26, 43, .06), 0 10px 30px -18px rgba(14, 26, 43, .35);
+  transition: max-width .7s var(--coule), box-shadow .4s var(--sortie), background-color .4s; }
+.nav .nav__rangee::before { content: ""; position: absolute; z-index: 2; inset: 0; padding: 1.5px; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(100deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, .2) 30%, rgba(255, 255, 255, 0) 60%, rgba(255, 255, 255, .8));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+.nav.defile .nav__rangee { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), inset 0 0 0 1px rgba(14, 26, 43, .07), 0 16px 40px -18px rgba(14, 26, 43, .45); }
+@media (min-width: 1100px) { .nav.defile .nav__rangee { max-width: 1040px; } }
+.nav .nav__liens a { padding: 8px 14px; margin-inline: -14px; border-radius: 999px; transition: opacity .2s, background-color .25s; }
+.nav .nav__liens a:hover { background: rgba(14, 26, 43, .06); }
+@media (max-width: 639px) { .nav { padding-top: 8px; } .nav .nav__rangee { width: calc(100% - 20px); height: 56px; padding-inline: 8px; } }
+
+@supports (overflow-x: clip) { @media (min-width: 1440px) { .scene__fond::before { right: calc(var(--saillie) - 10%); } } }
+@media (prefers-reduced-motion: reduce) { .js .nuit.ouvre { clip-path: none; } .js .manques.attente li { opacity: 1; transform: none; filter: none; } }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .01ms !important; animation: none !important; }
 }
@@ -713,6 +822,7 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
 <main id="contenu">
 
   <section class="hero" aria-labelledby="titre">
+    <div class="aurore" aria-hidden="true"><i></i><i></i><i></i></div>
     <div class="wrap hero__grille">
       <div class="hero__texte">
         <h1 id="titre">Chaque appel répondu. Même sur le chantier.</h1>
@@ -1024,7 +1134,7 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
           </table>
         </div>
         <div class="extras">
-          <p><b>Minutes en plus :</b> 0,39 $ la minute, et on vous avertit à 80 % de votre forfait. Si vous dépassez souvent : un bloc de 250 minutes de plus pour 79 $ par mois.</p>
+          <p><b>Minutes en plus :</b> 0,39 $ la minute, et on vous avertit à 80 % de votre forfait. Si vous dépassez souvent : un bloc de 250 minutes de plus pour 99 $ par mois.</p>
           <p><b>Deuxième numéro ou succursale :</b> 49 $ par mois. <b>Agent répondeur pour tous vos appels,</b> pas seulement ceux que vous manquez : sur devis.</p>
         </div>
         </div>
@@ -1565,6 +1675,85 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
     var ioP = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { pret(e.target); ioP.unobserve(e.target); } }); }, { rootMargin: '900px 0px' });
     photosBas.forEach(function (p) { ioP.observe(p); });
   } else photosBas.forEach(pret);
+})();
+</script>
+<script>
+/* v11 : le verre liquide. La lentille des sélecteurs, le reflet sous la souris, les bandes de nuit qui s'ouvrent,
+   et les animations qui dorment hors de l'écran. Sans JavaScript ou en mouvement réduit : tout reste à sa place. */
+(function () {
+  var calme = matchMedia('(prefers-reduced-motion: reduce)');
+  var avecIO = 'IntersectionObserver' in window;
+
+  function lentille(groupe, attr, cls) {
+    if (!groupe) return;
+    var l = document.createElement('span');
+    l.className = 'lentille fige'; l.setAttribute('aria-hidden', 'true');
+    groupe.insertBefore(l, groupe.firstChild);
+    groupe.classList.add('a-lentille');
+    var actif = null;
+    function placer(anime) {
+      var b = groupe.querySelector('button[' + attr + '="true"]');
+      if (!b || !b.offsetWidth) return;
+      if (!anime) l.classList.add('fige');
+      l.style.setProperty('--l-x', b.offsetLeft + 'px'); l.style.setProperty('--l-y', b.offsetTop + 'px');
+      l.style.setProperty('--l-w', b.offsetWidth + 'px'); l.style.setProperty('--l-h', b.offsetHeight + 'px');
+      if (anime && actif && b !== actif && !calme.matches) { l.classList.remove('goutte'); void l.offsetWidth; l.classList.add('goutte'); }
+      actif = b;
+      if (!anime) requestAnimationFrame(function () { requestAnimationFrame(function () { l.classList.remove('fige'); }); });
+    }
+    placer(false);
+    new MutationObserver(function () { placer(true); }).observe(groupe, { subtree: true, attributes: true, attributeFilter: [attr] });
+    if ('ResizeObserver' in window) new ResizeObserver(function () { placer(false); }).observe(groupe);
+    else addEventListener('resize', function () { placer(false); });
+  }
+  lentille(document.getElementById('metiers'), 'aria-pressed');
+  lentille(document.getElementById('onglets'), 'aria-selected');
+  lentille(document.getElementById('choix-forfait'), 'aria-pressed');
+
+  // Le reflet : seulement avec une souris
+  if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    document.querySelectorAll('.appel, .resume__carte, .bord, .fil, .forfait--vedette').forEach(function (c) {
+      c.classList.add('reflet');
+      c.addEventListener('pointermove', function (e) {
+        var r = c.getBoundingClientRect();
+        c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px');
+      }, { passive: true });
+    });
+  }
+
+  // Les appels manqués se posent quand la bande arrive
+  var manques = document.querySelector('.manques');
+  if (manques && avecIO && !calme.matches) {
+    manques.classList.add('attente');
+    var ioM = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { ioM.disconnect(); manques.classList.remove('attente'); } }, { threshold: .4 });
+    ioM.observe(manques);
+  }
+
+  // Les bandes de nuit s'ouvrent jusqu'aux bords pendant qu'elles entrent dans l'écran
+  var bandes = [].slice.call(document.querySelectorAll('.nuit')), tic = false;
+  function ouvrir() {
+    tic = false;
+    var vh = innerHeight;
+    bandes.forEach(function (b) {
+      var r = b.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > vh) return;
+      var p = Math.min(1, Math.max(0, (vh - r.top) / (vh * .55)));
+      b.style.setProperty('--r', (1 - p).toFixed(3));
+    });
+  }
+  function selonCalme() {
+    bandes.forEach(function (b) { b.classList.toggle('ouvre', !calme.matches); });
+    if (!calme.matches) ouvrir();
+  }
+  selonCalme();
+  addEventListener('scroll', function () { if (!tic && !calme.matches) { tic = true; requestAnimationFrame(ouvrir); } }, { passive: true });
+  if (calme.addEventListener) calme.addEventListener('change', selonCalme);
+
+  // Hors de l'écran, les animations continues dorment (batterie du cellulaire)
+  if (avecIO) {
+    var ioD = new IntersectionObserver(function (es) { es.forEach(function (e) { e.target.classList.toggle('dort', !e.isIntersecting); }); }, { rootMargin: '120px 0px' });
+    document.querySelectorAll('.hero, .nuit, #modules, #forfaits').forEach(function (s) { ioD.observe(s); });
+  }
 })();
 </script>
 </body>
