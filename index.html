@@ -55,8 +55,8 @@
   --selection: #FFE1D3;
   --anneau: var(--encre);  /* anneau de focus */
   --police: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
-  --m: max(20px, 4vw);
-  --largeur: clamp(1180px, 80vw, 1440px);  /* la page : 1180 px, puis un peu plus large sur un grand écran */
+  --m: clamp(20px, 4vw, 56px);
+  --largeur: clamp(1180px, 86vw, 1520px);  /* la page : 1180 px, puis un peu plus large sur un grand écran */
   --r-tuile: 28px;
   --r-carte: 20px;
   --r-champ: 12px;
@@ -205,7 +205,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 @container (max-width: 399px) { .js .metiers { grid-template-columns: 1fr 1fr; justify-content: stretch; } }
 
 /* ============ Sections ============ */
-.section { padding-block: clamp(80px, 11vw, 152px); }
+.section { padding-block: clamp(72px, 9vw, 128px); }
 .gris { background: var(--gris); }
 .tete { display: grid; gap: 18px; max-width: 780px; margin-bottom: clamp(40px, 5vw, 64px); }
 .tete .lead { max-width: 36em; }
@@ -790,21 +790,21 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
    en miroir de la photo à droite. Exemples fictifs ; seulement quand la marge est assez large (1640 px et plus). */
 .repondus { display: none; }
 @media (min-width: 1640px) {
-  .repondus { --marge: calc((100vw - var(--largeur)) / 2 + var(--m)); display: grid; gap: 26px; position: absolute; z-index: 0; left: 0; top: 186px; width: calc(var(--marge) - 44px); pointer-events: none;
+  .repondus { --marge: calc((100vw - var(--largeur)) / 2 + var(--m)); display: grid; gap: 26px; position: absolute; z-index: 0; left: 0; top: 186px; width: calc(var(--marge) - 22px); pointer-events: none;
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 22px); mask-image: linear-gradient(90deg, transparent, #000 22px); }
-  .repondus li { display: grid; grid-template-columns: 8px minmax(0, 1fr); align-items: center; gap: 2px 10px; padding: 12px 16px 12px 30px; border-radius: 0 18px 18px 0;
+  .repondus li { display: grid; grid-template-columns: 8px minmax(0, 1fr); align-items: center; gap: 2px 10px; padding: 10px 12px 10px 22px; border-radius: 0 16px 16px 0;
     background: rgba(255, 255, 255, .66); -webkit-backdrop-filter: blur(18px) saturate(180%); backdrop-filter: blur(18px) saturate(180%);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), inset -1px 0 0 rgba(255, 255, 255, .8), 0 12px 28px -14px rgba(14, 26, 43, .3);
     margin-right: var(--x, 0); animation: flotte var(--d, 7s) ease-in-out infinite alternate; animation-delay: var(--de, 0s); }
   .repondus li::before { content: ""; grid-row: span 2; width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--lampe)); }
-  .repondus b { font-size: .8125rem; font-weight: 650; line-height: 1.25; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .repondus b { font-size: .75rem; font-weight: 650; line-height: 1.25; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .repondus li > * { min-width: 0; }
-  .repondus span { color: var(--texte-2); font-size: .8125rem; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .repondus li:nth-child(1) { --x: 0px; --d: 7s; }
-  .repondus li:nth-child(2) { --x: 10px; --d: 8.5s; --de: -3s; }
-  .repondus li:nth-child(3) { --x: 4px; --d: 7.5s; --de: -5s; --c: var(--urgence-vif); }
-  .repondus li:nth-child(4) { --x: 6px; --d: 9s; --de: -2s; }
-  .repondus .repondus__note { display: block; padding: 0 0 0 30px; background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; animation: none; color: var(--texte-2); font-size: .75rem; font-weight: 600; }
+  .repondus span { color: var(--texte-2); font-size: .75rem; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .repondus li:nth-child(2) { --x: 0px; --d: 7s; }
+  .repondus li:nth-child(3) { --x: 8px; --d: 8.5s; --de: -3s; }
+  .repondus li:nth-child(4) { --x: 4px; --d: 7.5s; --de: -5s; --c: var(--urgence-vif); }
+  .repondus li:nth-child(5) { --x: 6px; --d: 9s; --de: -2s; }
+  .repondus .repondus__note { display: block; margin-bottom: -10px; padding: 0 0 0 22px; line-height: 1.35; background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; animation: none; color: var(--texte-2); font-size: .75rem; font-weight: 600; }
   .repondus .repondus__note::before { display: none; }
   @keyframes flotte { from { translate: 0 -5px; } to { translate: 0 6px; } }
   /* Le titre prend un peu plus de place quand l'écran est large */
@@ -849,11 +849,11 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
   <section class="hero" aria-labelledby="titre">
     <div class="aurore" aria-hidden="true"><i></i><i></i><i></i></div>
     <ul class="repondus" aria-hidden="true">
-      <li><b>Répondu à 6 h 55</b><span>Fuite sous l’évier</span></li>
-      <li><b>Répondu à 12 h 30</b><span>Thermopompe</span></li>
-      <li><b>Urgence à 19 h 48</b><span>Transféré à vous</span></li>
-      <li><b>Répondu dimanche</b><span>Pneus d’hiver</span></li>
-      <li class="repondus__note">Exemples fictifs</li>
+      <li class="repondus__note">Appels répondus<br>Exemples fictifs</li>
+      <li><b>6 h 55</b><span>Fuite d’eau</span></li>
+      <li><b>12 h 30</b><span>Thermopompe</span></li>
+      <li><b>19 h 48</b><span>Urgence</span></li>
+      <li><b>Dimanche</b><span>Pneus d’hiver</span></li>
     </ul>
     <div class="wrap hero__grille">
       <div class="hero__texte">
@@ -975,7 +975,7 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
 
   <section class="section gris" id="modules" aria-labelledby="t-suite">
     <div class="wrap">
-      <div class="tete">
+      <div class="tete tete--deux">
         <h2 id="t-suite">Tout ce qui suit l’appel, au même endroit.</h2>
         <p class="lead">Chaque appel devient une fiche, un rendez-vous ou un texto. Choisissez un module pour le voir travailler.</p>
       </div>
@@ -1231,7 +1231,7 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
   <section class="section" id="questions" aria-labelledby="t-questions">
     <div class="wrap faq">
       <div class="faq__aside">
-        <h2 id="t-questions">Les questions qu’on nous pose.</h2>
+        <h2 id="t-questions">Les questions qu’on nous pose.</h2>
         <p>Une autre question ? On vous répond au plus tard le jour ouvrable suivant.</p>
         <div class="faq__moyens">
           <a class="lien" href="tel:+18734558990"><span class="tel">873 455-8990</span></a>
