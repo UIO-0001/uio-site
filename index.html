@@ -814,6 +814,7 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
 /* Le contact : un créneau tout de suite avec l'assistant, quand il est chargé */
 .lien--bouton { padding: 0; border: 0; background: none; font: inherit; font-weight: 600; text-align: left; cursor: pointer; }
 .contact__vite { color: var(--nuit-texte); }
+sup { font-size: .7em; line-height: 0; vertical-align: .45em; }
 /* Le calculateur : ce que coûte le forfait, à côté de ce que les appels manqués font perdre */
 .roi { padding: 12px 16px; border-radius: 14px; background: var(--voix-teinte); color: var(--encre); font-size: .9375rem; font-weight: 600; line-height: 1.45; }
 .resultat .roi { color: var(--encre); }
@@ -865,7 +866,7 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
     <div class="wrap hero__grille">
       <div class="hero__texte">
         <h1 id="titre">Chaque appel répondu. Même sur le chantier.</h1>
-        <p class="lead">Un agent répondeur IA prend vos appels 24 h sur&nbsp;24, en français et en anglais. Il réserve le rendez-vous et vous envoie le résumé par texto.</p>
+        <p class="lead">Un agent répondeur IA prend vos appels 24 h sur&nbsp;24, en français et en anglais : sur le chantier, le soir et la fin de semaine. Il ne vous passe que les urgences, réserve le rendez-vous et vous envoie le résumé par texto.</p>
         <div class="hero__actions">
           <a class="btn" href="#contact">Demander mon audit gratuit</a>
           <a class="lien" href="tel:+18734558990">Appeler le&nbsp;<span class="tel">873 455-8990</span></a>
@@ -940,10 +941,10 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
         <figcaption class="petit">Exemple fictif.</figcaption>
       </figure>
       <ul class="silence__chiffres" id="chiffres">
-        <li><b><span data-compte="27">27</span> %</b> des appels aux entreprises de services à domicile restent sans réponse.</li>
+        <li><b><span class="moins">de</span> 1 sur 7</b> à plus de 1 appel sur 4 reste sans réponse, selon les données des plateformes.</li>
         <li><b><span class="moins">moins de</span> <span data-compte="3">3</span> %</b> des gens qui tombent sur la boîte vocale laissent un message.</li>
       </ul>
-      <p class="petit">Source : Invoca, mai 2024, données de sa plateforme aux États-Unis.</p>
+      <p class="petit">Sources : données de plateformes d’appels (fournisseurs), dont Invoca, mai 2024, aux États-Unis.</p>
     </div>
   </section>
 
@@ -1113,45 +1114,45 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
           <div class="forfait__nom"><h3>Répondeur</h3></div>
           <p class="forfait__pour">Pour ne plus perdre un seul appel.</p>
           <p class="forfait__prix"><b>199 $</b><span>par mois</span></p>
-          <p class="forfait__depart">Frais de départ : 299 $</p>
+          <p class="forfait__depart">Frais de départ : 299 $, crédités sur votre 4<sup>e</sup> facture <span class="forfait__valeur">1<sup>er</sup> mois satisfait ou remboursé, frais de départ compris</span></p>
           <a class="btn btn--contour" href="#contact" data-forfait="Répondeur">Choisir Répondeur</a>
           <ul>
             <li data-m="voix">Agent répondeur IA 24 h sur&nbsp;24, en français et en anglais</li>
             <li data-m="voix">Script écrit pour votre métier, avec les urgences</li>
             <li data-m="voix">Résumé par texto à vous et au client après chaque appel</li>
-            <li data-m="voix">Transfert de l’appel à votre cellulaire</li>
+            <li data-m="voix">Seules les urgences sont transférées à votre cellulaire</li>
             <li data-m="texto">Texto automatique si quelqu’un raccroche avant de parler</li>
-            <li class="minutes" data-m="voix">250 minutes d’appel par mois</li>
+            <li data-m="voix">Suivi chaque mois : rapport par texto ou courriel, et 10 appels écoutés pour ajuster le script</li>
+            <li class="minutes" data-m="voix">250 minutes par mois, soit environ 80 à 190 appels</li>
           </ul>
         </div>
         <div class="forfait forfait--vedette" data-nom="Croissance">
           <div class="forfait__nom"><h3>Croissance</h3><span class="etiquette">Recommandé</span></div>
-          <p class="forfait__pour">Pour remplir l’agenda tout seul.</p>
+          <p class="forfait__pour">Rendez-vous dans l’agenda, avis Google et rapport mensuel.</p>
           <p class="forfait__prix"><b>299 $</b><span>par mois</span></p>
-          <p class="forfait__depart">Frais de départ : 399 $ <span class="forfait__valeur">À la carte : 348 $ par mois</span></p>
+          <p class="forfait__depart">Frais de départ : 399 $, crédités sur votre 4<sup>e</sup> facture <span class="forfait__valeur">1<sup>er</sup> mois satisfait ou remboursé, frais de départ compris</span> <span class="forfait__valeur">À la carte : 348 $ par mois</span></p>
           <a class="btn" href="#contact" data-forfait="Croissance">Choisir Croissance</a>
           <ul>
             <li data-m="voix">Tout le forfait Répondeur</li>
             <li data-m="centre">Rendez-vous réservés dans votre agenda</li>
             <li data-m="centre">Demandes d’avis Google après chaque travail</li>
-            <li data-m="centre">Centre de contrôle sur cellulaire et ordinateur</li>
             <li data-m="centre">Courriels automatiques : relance des soumissions, rappels de rendez-vous</li>
-            <li data-m="centre">Graphiques et rapport mensuel</li>
-            <li class="minutes" data-m="voix">500 minutes d’appel par mois</li>
+            <li data-m="centre">Rapport mensuel complet par texto ou courriel : appels, rendez-vous, avis</li>
+            <li class="minutes" data-m="voix">500 minutes par mois, soit environ 170 à 380 appels</li>
           </ul>
         </div>
         <div class="forfait" data-nom="Complet">
           <div class="forfait__nom"><h3>Complet</h3></div>
-          <p class="forfait__pour">Toute votre présence en ligne, gérée par nous.</p>
+          <p class="forfait__pour">Croissance + un site web sur mesure, pour 100 $ de plus par mois.</p>
           <p class="forfait__prix"><b>399 $</b><span>par mois</span></p>
-          <p class="forfait__depart">Frais de départ : 799 $, site inclus <span class="forfait__valeur">À la carte : 447 $ par mois</span></p>
+          <p class="forfait__depart">Frais de départ : 799 $, création du site incluse <span class="forfait__valeur">À la carte : 447 $ par mois</span></p>
           <a class="btn btn--contour" href="#contact" data-forfait="Complet">Choisir Complet</a>
           <ul>
             <li data-m="centre">Tout le forfait Croissance</li>
             <li data-m="site">Site web sur mesure, bilingue, hébergé et mis à jour</li>
             <li data-m="site">Graphiques des visites et de la provenance des clients</li>
             <li>Soutien prioritaire</li>
-            <li class="minutes" data-m="voix">600 minutes d’appel par mois</li>
+            <li class="minutes" data-m="voix">750 minutes par mois, soit environ 250 à 560 appels</li>
           </ul>
         </div>
       </div>
@@ -1176,8 +1177,8 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
           </table>
         </div>
         <div class="extras">
-          <p><b>Minutes en plus :</b> 0,39 $ la minute, et on vous avertit à 80 % de votre forfait. Si vous dépassez souvent : un bloc de 250 minutes de plus pour 99 $ par mois.</p>
-          <p><b>Deuxième numéro ou succursale :</b> 49 $ par mois. <b>Agent répondeur pour tous vos appels,</b> pas seulement ceux que vous manquez : sur devis.</p>
+          <p><b>Minutes en plus :</b> 0,39 $ la minute, et on vous avertit à 80 % de votre forfait. Si vous dépassez souvent : un bloc de 250 minutes de plus pour 99 $ par mois, cumulable. Très gros volumes : sur soumission. Le pourriel et les appels de moins de 15 secondes ne comptent jamais dans vos minutes.</p>
+          <p><b>Deuxième numéro ou succursale :</b> 49 $ par mois. <b>Agent répondeur pour tous vos appels,</b> pas seulement ceux que vous manquez : sur soumission.</p>
         </div>
         </div>
       </details>
@@ -1250,9 +1251,9 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
       </div>
       <div class="questions">
         <details><summary>Est-ce qu’il comprend bien le français d’ici ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Il parle français et anglais. Avant de l’activer, on teste votre script avec de vrais appels : accents, bruit de chantier, client pressé. On l’active seulement quand les tests sont bons.</p></details>
-        <details><summary>Est-ce que je garde mon numéro ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Oui. Les appels que vous ne prenez pas sont renvoyés vers l’agent répondeur ; on active le renvoi avec vous chez votre fournisseur. Il peut aussi prendre tous vos appels : c’est sur devis.</p></details>
-        <details><summary>Combien de minutes sont incluses ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>250, 500 ou 600 minutes par mois, selon le forfait. On vous avertit à 80 %. Au-delà, c’est 0,39 $ la minute, ou un bloc de minutes si vous dépassez souvent.</p></details>
-        <details><summary>Est-ce que je suis lié par un contrat ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Non. C’est au mois, et vous arrêtez quand vous voulez. Les frais de départ paient l’installation et les tests de votre script.</p></details>
+        <details><summary>Est-ce que je garde mon numéro ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Oui. Les appels que vous ne prenez pas sont renvoyés vers l’agent répondeur ; on active le renvoi avec vous chez votre fournisseur. Il peut aussi prendre tous vos appels : c’est sur soumission.</p></details>
+        <details><summary>Combien de minutes sont incluses ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>250, 500 ou 750 minutes par mois, selon le forfait, soit environ 80 à 190 appels pour 250 minutes. Le pourriel et les appels de moins de 15 secondes ne comptent jamais. On vous avertit à 80 %. Au-delà, c’est 0,39 $ la minute, ou un bloc de 250 minutes à 99 $ par mois si vous dépassez souvent.</p></details>
+        <details><summary>Est-ce que je suis lié par un contrat ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Non. C’est au mois, et vous arrêtez quand vous voulez. Les frais de départ paient l’installation et les tests de votre script. Avec Répondeur et Croissance, ils vous reviennent en crédit sur la 4<sup>e</sup> facture, et le premier mois est satisfait ou remboursé, frais de départ compris.</p></details>
         <details><summary>J’ai déjà un site. Dois-je le refaire ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Non. L’agent répondeur et le centre de contrôle fonctionnent avec n’importe quel site. Le chatbot IA s’ajoute aussi à la plupart des sites actuels (WordPress, Wix, Shopify, Squarespace) : on l’installe pour vous, sans toucher à votre design.</p></details>
         <details><summary>Les demandes d’avis, c’est permis par Google ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Oui, tant qu’on ne filtre pas. Tous vos clients reçoivent la même demande, sans récompense et sans trier ceux qui sont satisfaits, comme le demandent les règles de Google.</p></details>
         <details><summary>Garantissez-vous un nombre de clients ?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Non. Le nombre de contrats dépend de vos appels, de vos prix et de votre service. On s’engage à installer les outils et à les faire fonctionner, et chaque résumé d’appel vous montre ce qu’ils font pour vous.</p></details>
