@@ -7,6 +7,7 @@
 <meta name="description" content="Un agent répondeur IA prend vos appels 24 h sur 24, en français et en anglais, réserve les rendez-vous et vous texte un résumé. À partir de 199 $ par mois, sans contrat. Gatineau et Ottawa.">
 <link rel="canonical" href="https://agenceuio.ca/">
 <meta name="theme-color" content="#FFFFFF">
+<script>try{if(localStorage.getItem('uio-theme')==='sombre'){document.documentElement.setAttribute('data-theme','sombre');document.querySelector('meta[name="theme-color"]').setAttribute('content','#0D1524');}}catch(e){}</script>
 <meta property="og:type" content="website">
 <meta property="og:locale" content="fr_CA">
 <meta property="og:site_name" content="Agence UIO">
@@ -822,6 +823,77 @@ sup { font-size: .7em; line-height: 0; vertical-align: .45em; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .01ms !important; animation: none !important; }
 }
+
+/* ============ v12 : le mode sombre ============
+   Le visiteur le choisit avec le bouton lune de la barre du haut ; le site reste clair par défaut et le choix
+   est retenu sur l'appareil. Presque tout passe par les jetons ; les quelques fonds clairs écrits en dur sont repris ici.
+   Le texte reste marine sur l'orange, et la boîte du chatbot garde ses couleurs claires. */
+.theme { display: inline-grid; place-items: center; width: 44px; height: 44px; flex: none; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--encre); cursor: pointer; transition: background-color .2s; }
+.theme[hidden] { display: none; }
+.theme:hover { background: rgba(14, 26, 43, .06); }
+.theme svg { grid-area: 1 / 1; width: 20px; height: 20px; transition: opacity .3s var(--sortie), transform .5s var(--sortie); }
+.theme__soleil { opacity: 0; transform: rotate(-90deg) scale(.5); }
+html[data-theme="sombre"] .theme:hover { background: rgba(255, 255, 255, .08); }
+html[data-theme="sombre"] .theme__lune { opacity: 0; transform: rotate(90deg) scale(.5); }
+html[data-theme="sombre"] .theme__soleil { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .theme svg { transition: none; } }
+
+/* Sur téléphone, la barre ne garde que le logo et ce bouton (l'appel et l'audit sont dans la barre du bas) */
+@media (max-width: 639px) { .js .nav__actions { display: flex; } .js .nav__actions > :not(.theme) { display: none; } }
+
+html[data-theme="sombre"] {
+  --blanc: #0D1524; --gris: #131D2F; --encre: #EEF2F7; --texte-2: #A9B4C5;
+  --trait: #24314A; --trait-gris: #2A3851; --contour: #6F7C92; --repos: #34435C; --eteint: #5E6B82;
+  --voix-teinte: #2A1B15; --voix-fonce: #FF9D72;
+  --texto: #2DBE73; --texto-teinte: #10281E; --texto-fonce: #72DCA5;
+  --centre: #5C8FF6; --centre-teinte: #142041; --centre-fonce: #A3BEFB;
+  --site: #F2B01E; --site-teinte: #2A220E; --site-fonce: #F6CB62;
+  --urgence: #FF8A80; --urgence-teinte: #34181A; --urgence-vif: #F97066;
+  --nuit: #17263F; --nuit-texte: #C3CCDA;
+  --ombre-flotte: 0 1px 2px rgba(0, 0, 0, .4), 0 12px 28px -10px rgba(0, 0, 0, .55), 0 32px 72px -28px rgba(0, 0, 0, .6);
+  --ombre-douce: 0 1px 2px rgba(0, 0, 0, .35), 0 6px 16px -8px rgba(0, 0, 0, .5);
+  --selection: rgba(255, 106, 43, .4);
+  --verre: rgba(23, 33, 52, .62); --verre-fort: rgba(23, 33, 52, .8);
+  --verre-rebord: inset 0 1px 0 rgba(255, 255, 255, .09), inset 0 -1px 0 rgba(0, 0, 0, .25);
+  color-scheme: dark;
+}
+/* Texte marine sur l'orange et sur les fonds qui deviennent clairs */
+html[data-theme="sombre"] .btn:not(.btn--contour), html[data-theme="sombre"] .etiquette,
+html[data-theme="sombre"] .etapes li.vu::before, html[data-theme="sombre"] .parcours .parcours__ensuite::before,
+html[data-theme="sombre"] .skip, html[data-theme="sombre"] .btn--contour:hover,
+html[data-theme="sombre"] .metiers button[aria-pressed="true"], html[data-theme="sombre"] .metiers.a-lentille > button[aria-pressed="true"] { color: #0E1A2B; }
+html[data-theme="sombre"] .nav .nav__liens a:hover, html[data-theme="sombre"] .onglets button:hover,
+html[data-theme="sombre"] .metiers.a-lentille > button:hover { background: rgba(255, 255, 255, .08); }
+/* Le verre devient fumé */
+html[data-theme="sombre"] .nav .nav__rangee { background: linear-gradient(180deg, rgba(27, 38, 60, .82), rgba(20, 30, 48, .7)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), inset 0 0 0 1px rgba(255, 255, 255, .07), 0 10px 30px -18px rgba(0, 0, 0, .7); }
+html[data-theme="sombre"] .nav.defile .nav__rangee { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), inset 0 0 0 1px rgba(255, 255, 255, .08), 0 16px 40px -18px rgba(0, 0, 0, .8); }
+html[data-theme="sombre"] .nav .nav__rangee::before { background: linear-gradient(100deg, rgba(255, 255, 255, .22), rgba(255, 255, 255, .05) 30%, rgba(255, 255, 255, 0) 60%, rgba(255, 255, 255, .16)); }
+html[data-theme="sombre"] .appel::before, html[data-theme="sombre"] .resume__carte::before,
+html[data-theme="sombre"] .bord::before, html[data-theme="sombre"] .fil::before { background: linear-gradient(140deg, rgba(255, 255, 255, .24), rgba(255, 255, 255, .06) 28%, rgba(255, 255, 255, 0) 55%, rgba(255, 255, 255, .12) 100%); }
+html[data-theme="sombre"] .reflet:not(.forfait--vedette)::after { background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 0%), rgba(255, 255, 255, .07), rgba(255, 255, 255, 0) 65%); }
+html[data-theme="sombre"] .lentille { background: rgba(255, 255, 255, .12); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .16), inset 0 0 0 1px rgba(255, 255, 255, .08), var(--ombre-douce); }
+html[data-theme="sombre"] .metiers .lentille { background: linear-gradient(180deg, #FFFFFF, #DDE4EE); box-shadow: inset 0 1px 0 #FFFFFF, 0 6px 16px -6px rgba(0, 0, 0, .6); }
+html[data-theme="sombre"] .metiers:not(.a-lentille) button { background: rgba(255, 255, 255, .06); }
+html[data-theme="sombre"] .metiers:not(.a-lentille) button[aria-pressed="true"] { background: var(--encre); }
+html.js[data-theme="sombre"] .metiers { background: rgba(255, 255, 255, .05); }
+html[data-theme="sombre"] .repondus li { background: rgba(23, 33, 52, .72); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), inset -1px 0 0 rgba(255, 255, 255, .05), 0 12px 28px -14px rgba(0, 0, 0, .6); }
+html.js[data-theme="sombre"] .barre { background: rgba(13, 21, 36, .92); }
+html[data-theme="sombre"] .photo-note { background: rgba(13, 21, 36, .86); }
+html[data-theme="sombre"] .photo-metier { background-color: #1A2232; }
+/* Les scènes orangées passent au brun chaud */
+html[data-theme="sombre"] .scene__fond { background: radial-gradient(75% 60% at 92% 4%, rgba(255, 122, 61, .24), rgba(255, 122, 61, 0) 70%), radial-gradient(65% 55% at 4% 100%, rgba(255, 186, 110, .12), rgba(255, 186, 110, 0) 70%), linear-gradient(165deg, #1E1611, #2A1B12); }
+html[data-theme="sombre"] .script__fond { background: radial-gradient(70% 60% at 100% 0%, rgba(255, 122, 61, .18), rgba(255, 122, 61, 0) 70%), linear-gradient(165deg, #1E1611, #2A1B12); }
+html[data-theme="sombre"] .barres i { background: rgba(92, 143, 246, .5); }
+/* Formulaire et curseurs */
+html[data-theme="sombre"] .champ input::placeholder, html[data-theme="sombre"] .champ textarea::placeholder { color: #8C97AA; }
+html[data-theme="sombre"] .champ input:user-invalid, html[data-theme="sombre"] .champ textarea:user-invalid { border-color: var(--urgence); }
+html[data-theme="sombre"] .curseur input::-webkit-slider-thumb { background: #EEF2F7; border-color: #EEF2F7; box-shadow: 0 2px 8px rgba(0, 0, 0, .5); }
+html[data-theme="sombre"] .curseur input::-moz-range-thumb { background: #EEF2F7; border-color: #EEF2F7; box-shadow: 0 2px 8px rgba(0, 0, 0, .5); }
+/* Le carré marine du logo : un filet le détache du fond */
+html[data-theme="sombre"] .logo__icone { border-radius: 22%; box-shadow: 0 0 0 1px rgba(255, 255, 255, .16); }
+/* La boîte du chatbot reste claire */
+html[data-theme="sombre"] #uio-box { --encre: #0E1A2B; --contour: #868D98; --texte-2: #5B6472; color-scheme: light; }
+html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 22px -6px rgba(0, 0, 0, .6); }
 </style>
 <noscript><style>.photo-metier { background-image: var(--photo); }</style></noscript>
 </head>
@@ -830,7 +902,7 @@ sup { font-size: .7em; line-height: 0; vertical-align: .45em; }
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-plus" viewBox="0 0 20 20"><path d="M10 4v12M4 10h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
   <symbol id="i-etoile" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.2 1.3-6.6L2.5 9.3l6.6-.8z"/></symbol>
-  <symbol id="i-logo" viewBox="0 0 512 512"><rect width="512" height="512" rx="112.64" fill="#0E1A2B"/><path fill="#fff" transform="translate(74.96 389.12) scale(0.40960 -0.40960)" d="M243 -14Q149 -14 101.5 49.5Q54 113 54 243V528H216V264Q216 190 238.0 153.5Q260 117 305 117Q332 117 351.5 130.5Q371 144 384.5 168.5Q398 193 404.5 225.0Q411 257 411 295V528H572V214V0H444L441 163H421Q406 101 383.5 61.5Q361 22 327.0 4.0Q293 -14 243 -14Z"/></symbol>
+  <symbol id="i-logo" viewBox="0 0 512 512"><rect width="512" height="512" rx="112.64" fill="#0E1A2B"/><path fill="#fff" transform="translate(74.96 389.12) scale(0.40960 -0.40960)" d="M243 -14Q149 -14 101.5 49.5Q54 113 54 243V528H216V264Q216 190 238.0 153.5Q260 117 305 117Q332 117 351.5 130.5Q371 144 384.5 168.5Q398 193 404.5 225.0Q411 257 411 295V528H572V214V0H444L441 163H421Q406 101 383.5 61.5Q361 22 327.0 4.0Q293 -14 243 -14Z"/></symbol><symbol id="i-lune" viewBox="0 0 20 20"><path d="M16.6 12.3A6.9 6.9 0 0 1 7.7 3.4a6.9 6.9 0 1 0 8.9 8.9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol><symbol id="i-soleil" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10" cy="10" r="3.5"/><path d="M10 1.9v1.7M10 16.4v1.7M1.9 10h1.7M16.4 10h1.7M4.3 4.3l1.2 1.2M14.5 14.5l1.2 1.2M4.3 15.7l1.2-1.2M14.5 5.5l1.2-1.2"/></g></symbol>
   <symbol id="i-mot" viewBox="196 35 183 99"><path transform="translate(190.00 132.00) scale(0.12800 -0.12800)" d="M243 -14Q149 -14 101.5 49.5Q54 113 54 243V528H216V264Q216 190 238.0 153.5Q260 117 305 117Q332 117 351.5 130.5Q371 144 384.5 168.5Q398 193 404.5 225.0Q411 257 411 295V528H572V214V0H444L441 163H421Q406 101 383.5 61.5Q361 22 327.0 4.0Q293 -14 243 -14Z"/><path transform="translate(269.62 132.00) scale(0.12800 -0.12800)" d="M62 0V528H223V0ZM143 602Q97 602 72.5 621.5Q48 641 48 677Q48 715 72.5 734.5Q97 754 143 754Q190 754 214.5 734.5Q239 715 239 678Q239 641 214.5 621.5Q190 602 143 602Z"/><path transform="translate(304.69 132.00) scale(0.12800 -0.12800)" d="M305 -14Q225 -14 163.5 17.0Q102 48 67.0 110.0Q32 172 32 265Q32 358 67.0 419.5Q102 481 164.0 511.5Q226 542 306 542Q386 542 448.0 511.0Q510 480 545.0 418.5Q580 357 580 264Q580 169 544.0 107.0Q508 45 445.5 15.5Q383 -14 305 -14ZM310 103Q346 103 370.0 119.5Q394 136 406.0 170.0Q418 204 418 254Q418 307 405.0 343.5Q392 380 366.5 399.5Q341 419 301 419Q267 419 242.5 402.5Q218 386 206.0 352.0Q194 318 194 267Q194 185 224.5 144.0Q255 103 310 103Z"/></symbol>
 </svg>
 
@@ -846,6 +918,7 @@ sup { font-size: .7em; line-height: 0; vertical-align: .45em; }
       <a href="#questions">Questions</a>
     </nav>
     <div class="nav__actions">
+      <button class="theme" id="theme" type="button" aria-pressed="false" aria-label="Mode sombre" title="Mode sombre" hidden><svg class="theme__lune" aria-hidden="true"><use href="#i-lune"/></svg><svg class="theme__soleil" aria-hidden="true"><use href="#i-soleil"/></svg></button>
       <a class="nav__tel" href="tel:+18734558990" aria-label="Appeler Agence UIO au 873 455-8990"><span class="tel">873 455-8990</span></a>
       <a class="btn btn--petit" href="#contact">Audit gratuit</a>
     </div>
@@ -1807,6 +1880,25 @@ sup { font-size: .7em; line-height: 0; vertical-align: .45em; }
     var ioD = new IntersectionObserver(function (es) { es.forEach(function (e) { e.target.classList.toggle('dort', !e.isIntersecting); }); }, { rootMargin: '120px 0px' });
     document.querySelectorAll('.hero, .nuit, #modules, #forfaits').forEach(function (s) { ioD.observe(s); });
   }
+})();
+</script>
+<script>
+/* v12 : le mode sombre. Le bouton de la barre du haut bascule le thème ; le choix est retenu sur cet appareil. */
+(function () {
+  var b = document.getElementById('theme'); if (!b) return;
+  var html = document.documentElement, meta = document.querySelector('meta[name="theme-color"]');
+  function sombre() { return html.getAttribute('data-theme') === 'sombre'; }
+  function montrer() { var s = sombre(); b.setAttribute('aria-pressed', s ? 'true' : 'false'); if (meta) meta.setAttribute('content', s ? '#0D1524' : '#FFFFFF'); }
+  function basculer() {
+    if (sombre()) html.removeAttribute('data-theme'); else html.setAttribute('data-theme', 'sombre');
+    try { localStorage.setItem('uio-theme', sombre() ? 'sombre' : 'clair'); } catch (e) {}
+    montrer();
+  }
+  b.addEventListener('click', function () {
+    if (document.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches) document.startViewTransition(basculer);
+    else basculer();
+  });
+  b.hidden = false; montrer();
 })();
 </script>
 </body>
