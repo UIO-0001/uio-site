@@ -1242,7 +1242,7 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
     <div class="wrap faq">
       <div class="faq__aside">
         <h2 id="t-questions">Les questions qu’on nous pose.</h2>
-        <p>Une autre question ? On vous répond au plus tard le jour ouvrable suivant.</p>
+        <p>Une autre question ? On vous répond le jour même (ou dès le lendemain matin pour les demandes envoyées en soirée).</p>
         <div class="faq__moyens">
           <a class="lien" href="tel:+18734558990"><span class="tel">873 455-8990</span></a>
           <a class="lien" href="mailto:info@agenceuio.ca">info@agenceuio.ca</a>
@@ -1266,13 +1266,13 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
     <div class="wrap contact">
       <div class="contact__texte">
         <h2 id="t-contact">Parlons de vos appels.</h2>
-        <p class="lead">Laissez vos coordonnées. On vous rappelle au plus tard le jour ouvrable suivant pour un audit gratuit de 15 minutes, sans engagement.</p>
+        <p class="lead">Laissez vos coordonnées pour un audit gratuit de 15 minutes, sans engagement. Rappel le jour même (ou dès le lendemain matin pour les demandes envoyées en soirée).</p>
         <p class="equipe">Vous parlez directement à l’équipe qui installe votre agent, à Gatineau.</p>
         <div class="contact__moyens">
           <a class="lien" href="tel:+18734558990"><span class="tel">873 455-8990</span></a>
           <a class="lien" href="mailto:info@agenceuio.ca">info@agenceuio.ca</a>
         </div>
-        <p class="contact__vite" data-avec-chat hidden>Pressé ? <button class="lien lien--bouton" type="button" data-ouvre-chat>Choisissez votre créneau avec notre assistant</button>, à toute heure.</p>
+        <p class="contact__vite" data-avec-chat hidden>Pressé ? Notre assistant réserve votre audit à toute heure. <button class="lien lien--bouton" type="button" data-ouvre-chat>Choisir mon créneau</button></p>
         <div class="audit">
           <p>Pendant l’audit, on regarde avec vous :</p>
           <ul>
@@ -1694,7 +1694,7 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
     try {
       var rep = await fetch(form.action, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(d), signal: ctrl ? ctrl.signal : undefined });
       var json = await rep.json().catch(function () { return {}; });
-      if (rep.ok && json.success) { message('Demande reçue. On vous rappelle au plus tard le jour ouvrable suivant.', true); form.reset(); champForfait.value = ''; champScenario.value = ''; texteForfait.hidden = true; }
+      if (rep.ok && json.success) { message('Demande reçue. On vous rappelle le jour même (ou dès le lendemain matin pour les demandes envoyées en soirée).', true); form.reset(); champForfait.value = ''; champScenario.value = ''; texteForfait.hidden = true; }
       else message(ECHEC, false, true);
     } catch (e) {
       message(ECHEC, false, true);
