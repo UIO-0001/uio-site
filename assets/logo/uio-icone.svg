@@ -1,1 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512"><rect x="0" y="0" width="512" height="512" rx="112.64" fill="#0E1A2B"/><g fill="#fff"><path transform="translate(74.96 389.12) scale(0.40960 -0.40960)" d="M243 -14Q149 -14 101.5 49.5Q54 113 54 243V528H216V264Q216 190 238.0 153.5Q260 117 305 117Q332 117 351.5 130.5Q371 144 384.5 168.5Q398 193 404.5 225.0Q411 257 411 295V528H572V214V0H444L441 163H421Q406 101 383.5 61.5Q361 22 327.0 4.0Q293 -14 243 -14Z"/></g><path d="M 337.92 122.88 A 61.44 61.44 0 0 1 399.36 184.32" fill="none" stroke="#FF6A2B" stroke-width="30.72" stroke-linecap="round"/><path d="M 337.92 66.55999999999999 A 117.76 117.76 0 0 1 455.68 184.32" fill="none" stroke="#FF6A2B" stroke-width="30.72" stroke-linecap="round"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="108 108 864 864" width="512" height="512"><title>Agence UIO</title>
+<defs>
+<clipPath id="u-cadre"><rect x="108" y="108" width="864" height="864" rx="190.08"/></clipPath>
+<clipPath id="u-lentille"><circle cx="540" cy="540" r="388.8"/></clipPath>
+<filter id="u-flou" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="64.8"/></filter>
+<filter id="u-verre" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="84.35"/><feColorMatrix type="saturate" values="1.3"/></filter>
+<filter id="u-ombre" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="32.4"/></filter>
+<filter id="u-reflet" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="16.2"/></filter>
+<mask id="u-dehors" maskUnits="userSpaceOnUse" x="0" y="0" width="1080" height="1080"><rect width="1080" height="1080" fill="#fff"/><circle cx="540" cy="540" r="388.8" fill="#000"/></mask>
+</defs>
+<g clip-path="url(#u-cadre)">
+<rect x="108" y="108" width="864" height="864" fill="#F4F5F8"/><g filter="url(#u-flou)"><circle cx="356.4" cy="378" r="334.8" fill="#FF8A3D"/><circle cx="756" cy="734.4" r="324" fill="#3A86FF"/></g>
+<g mask="url(#u-dehors)"><circle cx="540" cy="561.6" r="388.8" fill="#000" fill-opacity=".18" filter="url(#u-ombre)"/></g>
+<g clip-path="url(#u-lentille)">
+<g filter="url(#u-verre)"><rect x="-64.8" y="-64.8" width="1209.6" height="1209.6" fill="#F4F5F8"/><g filter="url(#u-flou)"><circle cx="356.4" cy="378" r="334.8" fill="#FF8A3D"/><circle cx="756" cy="734.4" r="324" fill="#3A86FF"/></g></g>
+<circle cx="540" cy="540" r="388.8" fill="#FFFFFF" fill-opacity="0.42"/>
+<path fill="#FFFFFF" fill-opacity=".35" fill-rule="evenodd" filter="url(#u-reflet)" d="M43.2 43.2h993.6v993.6h-993.6Z M151.2 552.96a388.8 388.8 0 1 0 777.6 0a388.8 388.8 0 1 0 -777.6 0Z"/>
+<circle cx="540" cy="540" r="385.56" fill="none" stroke="#FFFFFF" stroke-opacity="0.9" stroke-width="6.48"/>
+</g>
+<path fill="#1F2937" transform="translate(393.12 696.6) scale(0.54)" d="M509 0H376L366 -55Q341 -27 307.5 -10Q274 7 234 7Q178 7 137 -18Q96 -43 73 -91.5Q50 -140 50 -208V-500H196V-226Q196 -176 216.5 -150Q237 -124 279 -124Q319 -124 341 -151Q363 -178 363 -228V-500H509Z"/>
+</g>
+</svg>
