@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 467 180" width="467" height="180"><title>Agence UIO</title><svg x="20" y="20" width="140" height="140" viewBox="108 108 864 864"><defs>
-<clipPath id="iB-cadre"><rect x="108" y="108" width="864" height="864" rx="190.08"/></clipPath>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 467 180" width="467" height="180"><title>Agence UIO</title><svg x="20" y="20" width="140" height="140" viewBox="64.8 64.8 950.4 950.4"><defs>
+<clipPath id="iB-cadre"><circle cx="540" cy="540" r="475.2"/></clipPath>
 <clipPath id="iB-lentille"><circle cx="540" cy="540" r="388.8"/></clipPath>
 <filter id="iB-flou" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="64.8"/></filter>
 <filter id="iB-verre" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="84.35"/><feColorMatrix type="saturate" values="1.3"/></filter>
@@ -8,7 +8,7 @@
 <mask id="iB-dehors" maskUnits="userSpaceOnUse" x="0" y="0" width="1080" height="1080"><rect width="1080" height="1080" fill="#fff"/><circle cx="540" cy="540" r="388.8" fill="#000"/></mask>
 </defs>
 <g clip-path="url(#iB-cadre)">
-<rect x="108" y="108" width="864" height="864" fill="#0E1420"/><g filter="url(#iB-flou)"><circle cx="356.4" cy="378" r="334.8" fill="#FF8A3D"/><circle cx="756" cy="734.4" r="324" fill="#3A86FF"/></g>
+<rect x="64.8" y="64.8" width="950.4" height="950.4" fill="#0E1420"/><g filter="url(#iB-flou)"><circle cx="356.4" cy="378" r="334.8" fill="#FF8A3D"/><circle cx="756" cy="734.4" r="324" fill="#3A86FF"/></g>
 <g mask="url(#iB-dehors)"><circle cx="540" cy="561.6" r="388.8" fill="#000" fill-opacity=".18" filter="url(#iB-ombre)"/></g>
 <g clip-path="url(#iB-lentille)">
 <g filter="url(#iB-verre)"><rect x="-64.8" y="-64.8" width="1209.6" height="1209.6" fill="#0E1420"/><g filter="url(#iB-flou)"><circle cx="356.4" cy="378" r="334.8" fill="#FF8A3D"/><circle cx="756" cy="734.4" r="324" fill="#3A86FF"/></g></g>
