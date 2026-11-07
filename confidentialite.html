@@ -3,11 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Version anglaise : en/privacy.html est fabriquée à partir de cette page. Après chaque changement de texte ici, la refaire avec l’outil de traduction (fichiers du projet Agence UIO : agenceuio/design/outils/traduction/LISEZMOI.md). -->
 <title>Politique de confidentialité, Agence UIO</title>
 <meta name="description" content="Comment Agence UIO recueille, utilise et protège vos renseignements personnels, conformément à la Loi 25 du Québec.">
 <meta name="theme-color" content="#FFFFFF">
 <script>try{if(localStorage.getItem('uio-theme')==='sombre'){document.documentElement.setAttribute('data-theme','sombre');document.querySelector('meta[name="theme-color"]').setAttribute('content','#0D1524');}}catch(e){}</script>
 <link rel="canonical" href="https://agenceuio.ca/confidentialite.html">
+<link rel="alternate" hreflang="fr-CA" href="https://agenceuio.ca/confidentialite.html">
+<link rel="alternate" hreflang="en-CA" href="https://agenceuio.ca/en/privacy.html">
+<link rel="alternate" hreflang="x-default" href="https://agenceuio.ca/confidentialite.html">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="fr_CA">
 <meta property="og:site_name" content="Agence UIO">
@@ -142,6 +146,10 @@ html[data-theme="sombre"] .theme:hover { background: rgba(255, 255, 255, .08); }
 html[data-theme="sombre"] .theme__lune { opacity: 0; transform: rotate(90deg) scale(.5); }
 html[data-theme="sombre"] .theme__soleil { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) { .theme svg { transition: none; } }
+/* FR / EN : le lien vers la même page dans l'autre langue (en/ pour l'anglais), à côté de la lune */
+.langue { display: inline-grid; place-items: center; min-width: 44px; height: 44px; flex: none; padding: 0 6px; border-radius: 999px; color: var(--encre); font-size: .8125rem; font-weight: 700; letter-spacing: .06em; text-decoration: none; transition: background-color .2s; }
+.langue:hover { background: rgba(14, 26, 43, .06); }
+html[data-theme="sombre"] .langue:hover { background: rgba(255, 255, 255, .08); }
 
 /* Sur téléphone, le bouton prend la place du numéro, qui reste dans la section 2 de la politique */
 @media (max-width: 459px) { .nav__tel { display: none; } }
@@ -166,6 +174,7 @@ html[data-theme="sombre"] .logo__icone { border-radius: 22%; box-shadow: 0 0 0 1
       <span class="logo__mot" aria-hidden="true"><svg viewBox="0 0 183 99" fill="currentColor"><use href="#i-mot" width="183" height="99"/></svg><small>Agence Gatineau</small></span>
     </a>
     <div class="nav__actions">
+      <a class="langue" href="en/privacy.html" hreflang="en" lang="en" aria-label="English version" title="English version">EN</a>
       <button class="theme" id="theme" type="button" aria-pressed="false" aria-label="Mode sombre" title="Mode sombre" hidden><svg class="theme__lune" aria-hidden="true"><use href="#i-lune"/></svg><svg class="theme__soleil" aria-hidden="true"><use href="#i-soleil"/></svg></button>
       <a class="nav__tel" href="tel:+18734558990" aria-label="Appeler Agence UIO au 873 455-8990"><span class="tel">873 455-8990</span></a>
       <a class="retour" href="./">Retour à l’accueil</a>

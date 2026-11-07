@@ -1,0 +1,1908 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Page fabriquée à partir de ../index.html par l’outil de traduction (agenceuio/design/outils/traduction/LISEZMOI.md) : ne pas la modifier à la main. -->
+<title>Agence UIO · AI answering agent for the trades, Gatineau-Ottawa</title>
+<meta name="description" content="An AI answering agent takes your calls 24/7, in French and English, books appointments and texts you a summary. From $199 a month, no contract. Gatineau and Ottawa.">
+<link rel="canonical" href="https://agenceuio.ca/en/">
+<link rel="alternate" hreflang="fr-CA" href="https://agenceuio.ca/">
+<link rel="alternate" hreflang="en-CA" href="https://agenceuio.ca/en/">
+<link rel="alternate" hreflang="x-default" href="https://agenceuio.ca/">
+<meta name="theme-color" content="#FFFFFF">
+<script>try{if(localStorage.getItem('uio-theme')==='sombre'){document.documentElement.setAttribute('data-theme','sombre');document.querySelector('meta[name="theme-color"]').setAttribute('content','#0D1524');}}catch(e){}</script>
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_CA">
+<meta property="og:locale:alternate" content="fr_CA">
+<meta property="og:site_name" content="Agence UIO">
+<meta property="og:title" content="Every call answered, even on the job site">
+<meta property="og:description" content="An AI answering agent 24/7, in French and English, for contractors in Gatineau and Ottawa. From $199 a month, no contract.">
+<meta property="og:url" content="https://agenceuio.ca/en/">
+<meta property="og:image" content="https://agenceuio.ca/assets/og-image-en.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Agence UIO: every call answered, even on the job site">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="../assets/logo/uio-icone.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="preload" href="../assets/fonts/hanken-grotesk.woff2" as="font" type="font/woff2" crossorigin>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"LocalBusiness","@id":"https://agenceuio.ca/#agence","name":"Agence UIO","url":"https://agenceuio.ca/","logo":"https://agenceuio.ca/assets/apple-touch-icon.png","image":"https://agenceuio.ca/assets/og-image.jpg","telephone":"+1-873-455-8990","email":"info@agenceuio.ca","priceRange":"$69-$399 a month","areaServed":[{"@type":"City","name":"Gatineau"},{"@type":"City","name":"Ottawa"}],"address":{"@type":"PostalAddress","addressLocality":"Gatineau","addressRegion":"QC","addressCountry":"CA"},"sameAs":["https://www.instagram.com/agence.uio/"]}
+</script>
+<style>
+/* Police hébergée sur le site : aucune requête vers Google. */
+/*FONTES*/
+@font-face { font-family: "Hanken Grotesk"; src: url("../assets/fonts/hanken-grotesk.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+
+:root {
+  --blanc: #FFFFFF;
+  --gris: #F5F5F7;         /* bandes et tuiles : le gris clair d'Apple */
+  --encre: #0E1A2B;        /* marine du logo : tout le texte */
+  --texte-2: #5B6472;      /* texte secondaire : 6:1 sur blanc, 5,5:1 sur gris */
+  --trait: #E3E5E8;        /* filets fins */
+  --trait-gris: #DCDFE3;   /* filets sur les bandes grises */
+  --contour: #868D98;      /* contour des champs au repos : 3,3:1 sur blanc */
+  --repos: #CDD1D7;        /* piste des curseurs, barres passées du graphique : décoratif */
+  --eteint: #AEB4BD;       /* point « Appel terminé » */
+  /* Une teinte par module : la scène prend la teinte, l'interface blanche flotte dessus */
+  --voix-teinte: #FFF1E9;  --voix-fonce: #B93D0B;   /* répondeur : orange du logo */
+  --texto: #1E9E5A;  --texto-teinte: #E8F6EE;  --texto-fonce: #166B3D;
+  --centre: #2F6FEB; --centre-teinte: #EBF1FE; --centre-fonce: #1D4FB8;
+  --site: #F2A900;   --site-teinte: #FFF5D9;   --site-fonce: #7A5200;
+  --urgence: #B42318; --urgence-teinte: #FDECEA; --urgence-vif: #F97066;
+  /* Bandes de contraste : le marine du logo pris comme fond (texte secondaire à 9,6:1) */
+  --nuit: #0E1A2B; --nuit-texte: #B7C1CF; --nuit-trait: rgba(255, 255, 255, .14);
+  --ombre-flotte: 0 1px 2px rgba(14, 26, 43, .06), 0 12px 28px -10px rgba(14, 26, 43, .18), 0 32px 72px -28px rgba(14, 26, 43, .24);
+  --ombre-douce: 0 1px 2px rgba(14, 26, 43, .06), 0 6px 16px -8px rgba(14, 26, 43, .22);
+  --lampe: #FF6A2B;        /* orange du logo : l'action (boutons, curseurs), le direct (point, onde) et la couleur du répondeur */
+  --lampe-survol: #FF7E47;
+  --selection: #FFE1D3;
+  --anneau: var(--encre);  /* anneau de focus */
+  --police: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --m: clamp(20px, 4vw, 56px);
+  --largeur: clamp(1180px, 86vw, 1520px);  /* la page : 1180 px, puis un peu plus large sur un grand écran */
+  --r-tuile: 28px;
+  --r-carte: 20px;
+  --r-champ: 12px;
+  --sortie: cubic-bezier(.16, 1, .3, 1);
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 88px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--blanc); color: var(--encre); font: 400 1.0625rem/1.6 var(--police); letter-spacing: -.006em; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 60; background: var(--blanc); }
+h1, h2, h3, p, ul, ol, dl, dd, figure, blockquote, table { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; }
+::selection { background: var(--selection); color: var(--encre); }
+:focus-visible { outline: 3px solid var(--anneau); outline-offset: 3px; }
+.cache { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.skip { position: absolute; left: 16px; top: -80px; z-index: 100; padding: 12px 18px; background: var(--encre); color: #fff; border-radius: 999px; font-weight: 600; text-decoration: none; }
+.skip:focus { top: calc(12px + env(safe-area-inset-top, 0px)); }
+.wrap { width: 100%; max-width: var(--largeur); margin-inline: auto; padding-left: max(var(--m), env(safe-area-inset-left, 0px)); padding-right: max(var(--m), env(safe-area-inset-right, 0px)); }
+
+/* Titres : une seule famille, serrée en grand, comme une page de produit */
+h1, h2 { font-weight: 700; letter-spacing: -.034em; text-wrap: balance; }
+h1 { font-size: clamp(2.6rem, min(6.1vw, 10.5vh), 4.75rem); line-height: 1.02; letter-spacing: -.04em; }
+h2 { font-size: clamp(2.1rem, 4.4vw, 3.5rem); line-height: 1.06; }
+h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: -.018em; text-wrap: balance; }
+.lead { font-size: clamp(1.125rem, 1.45vw, 1.3125rem); line-height: 1.5; color: var(--texte-2); letter-spacing: -.012em; text-wrap: pretty; }
+.petit { font-size: .875rem; line-height: 1.5; color: var(--texte-2); }
+.tel { white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* Boutons en pilule : orange pour l'action, contour marine pour le reste */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 0 26px; border: 0; border-radius: 999px; background: var(--lampe); color: var(--encre); font: 650 1.0625rem/1.1 var(--police); letter-spacing: -.01em; text-align: center; text-decoration: none; cursor: pointer; transition: background-color .2s, color .2s, box-shadow .2s, transform .15s var(--sortie); }
+.btn:hover { background: var(--lampe-survol); }
+.btn:active { transform: scale(.97); }
+.btn--petit { min-height: 40px; padding: 0 16px; font-size: .9375rem; white-space: nowrap; }
+.btn--contour { background: transparent; box-shadow: inset 0 0 0 1.5px var(--encre); }
+.btn--contour:hover { background: var(--encre); color: #fff; }
+.lien { display: inline-flex; align-items: center; min-height: 44px; color: var(--encre); font-weight: 600; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.lien:hover { text-decoration-thickness: 2px; }
+
+/* Logo : l'icône seule, le mot glisse au survol */
+.logo { display: inline-flex; align-items: center; min-height: 48px; color: var(--encre); text-decoration: none; }
+.logo__icone { width: 38px; height: 38px; flex: none; transition: transform .4s var(--sortie); }
+.logo__icone .onde { opacity: .3; transition: opacity .3s; }
+.logo__mot { display: grid; gap: 4px; overflow: hidden; max-width: 0; opacity: 0; transform: translateX(-8px); white-space: nowrap; transition: max-width .5s var(--sortie), opacity .3s, transform .5s var(--sortie), margin .5s var(--sortie); }
+.logo__mot svg { width: 44px; height: 24px; }
+.logo__mot small { font-size: .62rem; font-weight: 600; line-height: 1; letter-spacing: .12em; text-transform: uppercase; color: var(--texte-2); }
+.logo:hover .logo__mot, .logo:focus-visible .logo__mot, .logo.ouvert .logo__mot { max-width: 170px; opacity: 1; transform: none; margin-left: 10px; }
+.logo:hover .onde, .logo:focus-visible .onde, .logo.ouvert .onde { opacity: 1; }
+@media (hover: hover) { .logo:hover .logo__icone { transform: rotate(-5deg); } }
+
+@media (max-width: 430px) { .nav .logo__mot { display: none; } }
+
+/* En-tête : blanc translucide, comme une barre de navigation de produit */
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; background: rgba(255, 255, 255, .86); -webkit-backdrop-filter: saturate(180%) blur(18px); backdrop-filter: saturate(180%) blur(18px); border-bottom: 1px solid rgba(14, 26, 43, .08); }
+.nav__rangee { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; }
+.nav__liens { display: none; gap: 30px; }
+.nav__liens a { color: var(--encre); font-size: .9375rem; font-weight: 500; text-decoration: none; opacity: .8; transition: opacity .2s; }
+.nav__liens a:hover { opacity: 1; }
+.nav__actions { display: flex; align-items: center; gap: 6px; }
+.nav__tel { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 999px; color: var(--encre); font-size: .9375rem; font-weight: 600; text-decoration: none; transition: background-color .2s; }
+.nav__tel:hover { background: var(--gris); }
+.nav { transition: box-shadow .3s; }
+.nav.defile { box-shadow: 0 10px 30px -20px rgba(14, 26, 43, .35); }
+@media (min-width: 960px) { .nav__liens { display: flex; } }
+@media (max-width: 639px) { .js .nav__actions { display: none; } }
+@media (max-width: 359px) { .nav__tel { display: none; } }
+
+/* ============ Premier écran : le titre, et l'appel qui se déroule ============ */
+.hero { padding-block: clamp(32px, 5vw, 72px) clamp(64px, 8vw, 120px); }
+.hero__grille { display: grid; gap: 40px; align-items: start; }
+.hero__texte { display: grid; gap: 22px; justify-items: start; }
+.hero__texte .lead { max-width: 31em; }
+/* Les faits en bref, sous le bouton : prix, sans contrat, installé par nous */
+.faits { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: .9375rem; font-weight: 600; }
+.faits li { display: inline-flex; align-items: center; gap: 8px; }
+.faits li::before { content: ""; width: 6px; height: 6px; flex: none; border-radius: 50%; background: var(--lampe); }
+/* Le résumé par texto : ce que l'entrepreneur reçoit à la fin de l'appel (grand écran, où la place est libre) */
+.resume { display: none; }
+@media (min-width: 960px) {
+  .resume { display: grid; gap: 10px; width: min(100%, 440px); margin-top: 14px; transition: opacity .6s var(--sortie), transform .6s var(--sortie); }
+  .js .resume.attente { opacity: 0; transform: translateY(14px); }
+}
+.resume__carte { display: grid; gap: 6px; padding: 14px 18px 16px; border-radius: var(--r-carte); background: var(--blanc); box-shadow: var(--ombre-flotte); }
+.resume__tete { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; font-size: .875rem; }
+.resume__tete svg { width: 26px; height: 26px; border-radius: 7px; }
+.resume__tete b { font-weight: 650; }
+.resume__quand { color: var(--texte-2); font-size: .8125rem; }
+.resume__texte { font-size: .9375rem; line-height: 1.5; }
+.resume figcaption { padding-inline: 4px; }
+.hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 24px; margin-top: 6px; }
+@media (min-width: 960px) { .hero__grille { grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); gap: 64px; } .hero__texte { padding-top: clamp(8px, 2vw, 32px); } }
+
+.scene { display: grid; gap: 12px; }
+.scene__fond { position: relative; isolation: isolate; overflow: hidden; container-type: inline-size; padding: clamp(16px, 2.8vw, 36px); border-radius: var(--r-tuile);
+  background: radial-gradient(75% 60% at 92% 4%, rgba(255, 122, 61, .32), rgba(255, 122, 61, 0) 70%), radial-gradient(65% 55% at 4% 100%, rgba(255, 186, 110, .3), rgba(255, 186, 110, 0) 70%), linear-gradient(165deg, #FFF6F0, #FFEADD); }
+.scene__fond::after { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(45% 40% at 50% 42%, rgba(255, 106, 43, .26), rgba(255, 106, 43, 0) 72%); opacity: 0; transition: opacity .8s var(--sortie); }
+.scene__fond.vive::after { opacity: 1; animation: lueur 2.6s ease-in-out infinite alternate; }
+@keyframes lueur { from { transform: scale(.9); } to { transform: scale(1.12); } }
+.appel { position: relative; display: flex; flex-direction: column; gap: 16px; max-width: 460px; margin-inline: auto; padding: clamp(18px, 2.2vw, 26px); background: var(--blanc); border-radius: var(--r-carte); box-shadow: var(--ombre-flotte); }
+.appel__tete { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--texte-2); font-size: .875rem; font-weight: 500; }
+.appel__etat { display: inline-flex; align-items: center; gap: 8px; }
+.appel__point { width: 8px; height: 8px; border-radius: 50%; background: var(--eteint); transition: background-color .3s; }
+.appel.en-cours .appel__point { background: var(--lampe); animation: pouls 1.6s var(--sortie) infinite; }
+@keyframes pouls { from { box-shadow: 0 0 0 0 rgba(255, 106, 43, .55); } to { box-shadow: 0 0 0 9px rgba(255, 106, 43, 0); } }
+.appel__duree { font-variant-numeric: tabular-nums; }
+.appel__qui { display: grid; gap: 2px; }
+.appel__qui b { font-size: 1.5rem; font-weight: 650; line-height: 1.2; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.appel__qui span { color: var(--texte-2); font-size: .9375rem; }
+.voix { display: flex; align-items: center; gap: 3px; height: 30px; }
+.voix i { flex: 1 1 0; max-width: 4px; height: var(--h); border-radius: 2px; background: var(--lampe); }
+.appel.en-cours .voix i { animation: voix .8s ease-in-out infinite alternate; animation-delay: calc(var(--i) * -63ms); }
+@keyframes voix { from { transform: scaleY(.3); } to { transform: scaleY(1); } }
+.transcription { display: grid; gap: 10px; }
+.transcription li, .appel__suite li { transition: opacity .5s var(--sortie), transform .5s var(--sortie); }
+.transcription li { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: 4px 12px; align-items: baseline; }
+/* Ce qu'il dit vient de votre script : la source sous la réplique */
+.transcription .selon { grid-column: 2; display: inline-flex; align-items: center; gap: 6px; color: var(--voix-fonce); font-size: .75rem; font-weight: 650; letter-spacing: .01em; }
+.transcription .selon::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--lampe); }
+.transcription .qui { color: var(--texte-2); font-size: .8125rem; font-weight: 600; }
+.transcription q { font-size: 1rem; line-height: 1.45; quotes: "\201C" "\201D"; }
+.appel__suite { display: grid; gap: 12px; margin-top: auto; padding-top: 16px; border-top: 1px solid var(--trait); }
+.appel__suite li { display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: 12px; align-items: start; }
+.appel__suite li > div { display: grid; gap: 1px; }
+.puce { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; }
+.puce svg { width: 16px; height: 16px; }
+.puce path { stroke-dasharray: 15; stroke-dashoffset: 0; transition: stroke-dashoffset .45s var(--sortie) .2s; }
+.js .appel.joue li:not(.on) .puce path { stroke-dashoffset: 15; }
+.puce--centre { background: var(--centre-teinte); color: var(--centre-fonce); }
+.puce--texto { background: var(--texto-teinte); color: var(--texto-fonce); }
+.puce--urgence { background: var(--urgence-teinte); color: var(--urgence); }
+.appel__suite b { font-size: .9375rem; font-weight: 650; }
+.appel__suite span { color: var(--texte-2); font-size: .875rem; }
+.js .appel.joue li:not(.on) { opacity: 0; transform: translateY(6px); }
+.scene__legende { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 16px; padding-inline: 6px; }
+.essai-chat { justify-self: start; }
+.rejouer { min-height: 44px; padding: 0; border: 0; background: none; color: var(--encre); font: 600 .875rem/1 var(--police); text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+/* Le métier de la démonstration : quatre pastilles sur la scène, deux par rangée quand la place manque */
+.metiers { display: none; }
+.js .metiers { display: grid; grid-template-columns: repeat(4, auto); justify-content: center; gap: 6px; margin-bottom: clamp(14px, 2vw, 22px); }
+.metiers button { min-height: 44px; padding: 0 14px; border: 0; border-radius: 999px; background: rgba(255, 255, 255, .8); box-shadow: inset 0 0 0 1px rgba(14, 26, 43, .1); color: var(--encre); font: 600 .875rem/1 var(--police); letter-spacing: -.01em; white-space: nowrap; cursor: pointer; transition: background-color .2s, color .2s, box-shadow .2s; }
+.metiers button:hover { background: var(--blanc); }
+.metiers button[aria-pressed="true"] { background: var(--encre); color: #fff; box-shadow: var(--ombre-douce); }
+@container (max-width: 399px) { .js .metiers { grid-template-columns: 1fr 1fr; justify-content: stretch; } }
+
+/* ============ Sections ============ */
+.section { padding-block: clamp(72px, 9vw, 128px); }
+.gris { background: var(--gris); }
+.tete { display: grid; gap: 18px; max-width: 780px; margin-bottom: clamp(40px, 5vw, 64px); }
+.tete .lead { max-width: 36em; }
+.tete--centre { margin-inline: auto; text-align: center; justify-items: center; }
+
+/* Bandes de nuit : le marine du logo, une lueur orange, le texte en blanc */
+.nuit { position: relative; isolation: isolate; overflow: hidden; background: var(--nuit); color: #FFFFFF; --anneau: #FFFFFF; }
+.nuit .lead, .nuit .petit { color: var(--nuit-texte); }
+.nuit::before { content: ""; position: absolute; z-index: -1; right: -12%; bottom: -55%; width: min(900px, 90vw); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 106, 43, .2), rgba(255, 106, 43, 0)); pointer-events: none; }
+
+/* Le problème : deux chiffres, une source */
+.silence { display: grid; gap: clamp(40px, 5vw, 72px); }
+.silence h2 { max-width: 19ch; }
+.silence__chiffres { display: grid; gap: 32px; }
+.silence__chiffres li { display: grid; align-content: start; gap: 14px; padding-top: 28px; border-top: 1px solid var(--nuit-trait); color: var(--nuit-texte); font-size: clamp(1.0625rem, 1.3vw, 1.25rem); line-height: 1.45; }
+.silence__chiffres b { color: #FFFFFF; font-size: clamp(4.25rem, 10vw, 8rem); font-weight: 700; line-height: .9; letter-spacing: -.055em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.silence__chiffres .moins { font-size: .3em; font-weight: 650; letter-spacing: -.01em; }
+.silence > .petit { margin-top: calc(-1 * clamp(16px, 2.5vw, 36px)); }
+@media (min-width: 760px) {
+  .silence__chiffres { grid-template-columns: 1fr 1fr; gap: 0; }
+  .silence__chiffres li { padding-right: clamp(24px, 4vw, 64px); }
+  .silence__chiffres li + li { padding-left: clamp(24px, 4vw, 64px); border-left: 1px solid var(--nuit-trait); }
+  .silence__chiffres li { max-width: none; }
+}
+/* À côté du titre : deux appels manqués et une boîte vocale vide (grand écran, où la place est libre) */
+.manques { display: none; }
+@media (min-width: 960px) {
+  .silence { grid-template-columns: minmax(0, 1fr) minmax(0, 360px); column-gap: 64px; }
+  .silence__chiffres, .silence > .petit { grid-column: 1 / -1; }
+  .manques { display: grid; gap: 10px; align-self: center; }
+}
+.manques ul { display: grid; gap: 8px; }
+.manques li { display: grid; grid-template-columns: 10px minmax(0, 1fr); align-items: center; gap: 2px 14px; padding: 14px 18px; border-radius: 16px; background: rgba(255, 255, 255, .06); box-shadow: inset 0 0 0 1px var(--nuit-trait); }
+.manques li::before { content: ""; grid-row: span 2; width: 10px; height: 10px; border-radius: 50%; background: var(--urgence-vif); }
+.manques li.vide::before { background: var(--nuit-texte); }
+.manques b { font-size: .9375rem; font-weight: 650; line-height: 1.3; }
+.manques span { color: var(--nuit-texte); font-size: .875rem; line-height: 1.35; font-variant-numeric: tabular-nums; }
+.manques figcaption { padding-inline: 4px; }
+
+/* Le déroulé d'un appel : titre collant à gauche, étapes à droite */
+.deroule { display: grid; gap: 36px; }
+.deroule__tete { display: grid; gap: 18px; align-content: start; }
+.deroule__etapes { min-width: 0; }
+.etapes { counter-reset: etape; }
+.etapes li { display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); gap: 10px 18px; padding-block: clamp(26px, 3vw, 36px); border-top: 1px solid var(--trait); }
+.etapes li:last-child { border-bottom: 1px solid var(--trait); }
+.etapes li::before { counter-increment: etape; content: counter(etape); grid-row: span 3; display: grid; place-items: center; width: 2.75rem; height: 2.75rem; margin-top: -3px; border-radius: 50%; background: var(--voix-teinte); color: var(--voix-fonce); font-size: 1.125rem; font-weight: 700; font-variant-numeric: tabular-nums; transition: background-color .5s var(--sortie), color .5s var(--sortie); }
+.etapes li.vu::before { background: var(--lampe); color: var(--encre); animation: pop .55s var(--sortie); }
+@keyframes pop { 40% { transform: scale(1.14); } }
+.points { display: none; }
+@media (max-width: 639px) {
+  .etapes { display: flex; gap: 12px; margin-inline: calc(-1 * var(--m)); padding: 4px var(--m) 8px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--m); scrollbar-width: none; }
+  .etapes::-webkit-scrollbar { display: none; }
+  .etapes li { flex: 0 0 86%; align-content: start; grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 24px 22px; border: 0; border-radius: var(--r-carte); background: var(--gris); scroll-snap-align: start; }
+  .etapes li:last-child { border-bottom: 0; }
+  .etapes li::before { grid-row: auto; margin-top: 0; }
+  .etapes h3 { font-size: 1.375rem; }
+  .replique q { font-size: 1.0625rem; }
+  .js .points { display: flex; justify-content: center; gap: 8px; margin-top: 10px; }
+  .points i { width: 7px; height: 7px; border-radius: 4px; background: var(--trait); transition: width .3s var(--sortie), background-color .3s; }
+  .points i.actif { width: 22px; background: var(--lampe); }
+}
+.etapes p { color: var(--texte-2); }
+.etapes h3 { font-size: clamp(1.5rem, 2.2vw, 2rem); font-weight: 700; line-height: 1.15; letter-spacing: -.028em; }
+.replique { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: 12px; align-items: baseline; margin-top: 6px; }
+.replique .qui { color: var(--texte-2); font-size: .8125rem; font-weight: 600; }
+.replique q { color: var(--encre); font-size: 1.25rem; line-height: 1.4; letter-spacing: -.012em; quotes: "\201C" "\201D"; }
+@media (min-width: 960px) {
+  .deroule { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 80px; align-items: start; }
+  .deroule__tete { position: sticky; top: 112px; }
+}
+/* Un extrait de script sous le titre (grand écran, où la place est libre) ; il remplace la légende */
+.script { display: none; }
+@media (min-width: 960px) {
+  .script { display: grid; gap: 10px; margin-top: 10px; }
+  .deroule__tete > .petit { display: none; }
+}
+@media (min-width: 960px) and (max-height: 879px) { .deroule__tete { position: static; } }
+.script__fond { padding: clamp(14px, 1.6vw, 20px); border-radius: var(--r-tuile); background: radial-gradient(70% 60% at 100% 0%, rgba(255, 122, 61, .22), rgba(255, 122, 61, 0) 70%), linear-gradient(165deg, #FFF6F0, #FFEADD); }
+.script__carte { display: grid; padding: 16px 20px 6px; border-radius: var(--r-carte); background: var(--blanc); box-shadow: var(--ombre-flotte); }
+.script__tete { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; padding-bottom: 12px; }
+.script__tete b { font-size: 1rem; font-weight: 650; letter-spacing: -.01em; }
+.script__statut { padding: 4px 10px; border-radius: 999px; background: var(--voix-teinte); color: var(--voix-fonce); font-size: .75rem; font-weight: 650; white-space: nowrap; }
+.script dl > div { display: grid; grid-template-columns: 6.25rem minmax(0, 1fr); gap: 12px; padding-block: 9px; border-top: 1px solid var(--trait); }
+.script dt { color: var(--texte-2); font-size: .8125rem; font-weight: 600; line-height: 1.6; }
+.script dd { font-size: .9375rem; line-height: 1.45; }
+.script figcaption { padding-inline: 6px; }
+
+/* Ce qui suit l'appel : trois modules en onglets, un seul à l'écran.
+   Sans JavaScript, pas d'onglets : les trois modules l'un sous l'autre. */
+.tuile { --pad: clamp(24px, 4.2vw, 56px); padding: var(--pad); background: var(--blanc); border-radius: var(--r-tuile); }
+.tuile h3, .panneau__texte h3 { font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 700; line-height: 1.1; letter-spacing: -.03em; }
+.onglets { display: none; }
+.js .onglets { display: inline-grid; grid-auto-flow: column; gap: 4px; margin-bottom: 20px; padding: 4px; border-radius: 999px; background: rgba(14, 26, 43, .07); }
+.onglets button { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 0 20px; border: 0; border-radius: 999px; background: transparent; color: var(--encre); font: 600 1rem/1.15 var(--police); letter-spacing: -.01em; white-space: nowrap; cursor: pointer; transition: background-color .25s, box-shadow .25s; }
+.onglets button::before { content: ""; width: 8px; height: 8px; flex: none; border-radius: 50%; background: var(--c); transition: box-shadow .35s var(--sortie); }
+.onglets button:hover { background: rgba(255, 255, 255, .6); }
+.onglets button[aria-selected="true"] { background: var(--blanc); box-shadow: var(--ombre-douce); }
+.onglets button[aria-selected="true"]::before { box-shadow: 0 0 0 4px var(--ct); }
+.panneaux { display: grid; gap: 20px; }
+.panneau { display: grid; gap: 28px; padding: clamp(20px, 3.6vw, 48px); background: var(--blanc); border-radius: var(--r-tuile); }
+.panneau__texte { display: grid; gap: 16px; align-content: center; }
+.panneau__texte > p { color: var(--texte-2); }
+.panneau__texte > .offre-ligne { color: var(--encre); }
+.panneau__scene { display: grid; align-content: center; min-width: 0; padding: clamp(16px, 3.4vw, 44px); border-radius: var(--r-carte); }
+.panneau--centre .panneau__scene { background: radial-gradient(70% 60% at 92% 0%, rgba(47, 111, 235, .2), rgba(47, 111, 235, 0) 70%), var(--centre-teinte); }
+.panneau--texto .panneau__scene { background: radial-gradient(70% 60% at 92% 0%, rgba(30, 158, 90, .18), rgba(30, 158, 90, 0) 70%), var(--texto-teinte); }
+.panneau--site .panneau__scene { background: radial-gradient(70% 60% at 8% 0%, rgba(242, 169, 0, .24), rgba(242, 169, 0, 0) 70%), var(--site-teinte); }
+.inclus li { display: grid; gap: 2px; padding-block: 14px; border-top: 1px solid var(--trait); }
+.inclus li:last-child { border-bottom: 1px solid var(--trait); }
+@media (max-width: 639px) { .inclus span { display: none; } .inclus li { padding-block: 12px; } }
+.inclus b { font-weight: 650; }
+.inclus span { color: var(--texte-2); font-size: .975rem; line-height: 1.5; }
+.offre-ligne { font-weight: 600; }
+.panneau.entre { animation: entree .45s var(--sortie); }
+@media (min-width: 960px) {
+  /* La scène teintée remplit toute la hauteur du panneau : l'écran blanc flotte au centre */
+  .panneau { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 48px; align-items: stretch; }
+  /* Les trois panneaux occupent la même case : la section garde la hauteur du plus grand, rien ne saute */
+  .js .panneaux { grid-template-areas: "p"; }
+  .js .panneau { grid-area: p; }
+  .js .panneau.inactif { visibility: hidden; }
+}
+@media (max-width: 959px) { .js .panneau.inactif { display: none; } }
+@media (max-width: 759px) { .o-long { display: none; } }
+@media (max-width: 639px) {
+  .js .onglets { display: grid; grid-auto-columns: minmax(0, 1fr); width: 100%; }
+  .onglets button { gap: 8px; padding: 0 8px; font-size: .9375rem; }
+}
+
+.bord { display: grid; gap: 16px; padding: clamp(16px, 2.4vw, 28px); background: var(--blanc); border-radius: var(--r-carte); box-shadow: var(--ombre-flotte); }
+.bord__tete { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.bord__tete b { font-size: 1.125rem; font-weight: 650; letter-spacing: -.015em; }
+.bord__tete span { color: var(--texte-2); font-size: .875rem; }
+.bord__appels { display: grid; }
+.bord__appels li { display: grid; grid-template-columns: 4.2rem minmax(0, 1fr) auto; align-items: center; gap: 4px 12px; padding: 12px 8px; margin-inline: -8px; border-radius: 10px; border-top: 1px solid var(--trait); transition: opacity .5s var(--sortie), transform .6s var(--sortie); transition-delay: calc(var(--i, 0) * 240ms); }
+.bord__appels li:last-child { border-bottom: 1px solid var(--trait); }
+.js .bord.attente .bord__appels li { opacity: 0; transform: translateY(-12px); }
+.bord.vu .bord__appels li:first-child { animation: eclat 2s ease-out .7s; }
+@keyframes eclat { 0%, 35% { background-color: var(--centre-teinte); } 100% { background-color: rgba(235, 241, 254, 0); } }
+.bord__heure { color: var(--texte-2); font-size: .875rem; font-variant-numeric: tabular-nums; }
+.bord__quoi { display: grid; min-width: 0; }
+.bord__quoi b { font-size: .9375rem; font-weight: 600; line-height: 1.3; }
+.bord__quoi span { color: var(--texte-2); font-size: .8125rem; line-height: 1.35; }
+.bord__statut { padding: 4px 10px; border-radius: 999px; background: var(--gris); font-size: .75rem; font-weight: 600; white-space: nowrap; }
+.bord__statut--rdv { background: var(--texto-teinte); color: var(--texto-fonce); }
+.bord__statut--urgence { background: var(--urgence-teinte); color: var(--urgence); }
+.bord__statut--rappel { background: var(--centre-teinte); color: var(--centre-fonce); }
+
+.bord__chiffres { display: grid; grid-template-columns: 1fr 1fr; }
+.bord__chiffres div { display: grid; gap: 4px; align-content: start; padding-block: 4px; }
+.bord__chiffres div:first-child { padding-right: 16px; }
+.bord__chiffres div + div { padding-left: 16px; border-left: 1px solid var(--trait); }
+.bord__chiffres b { font-size: 1.75rem; font-weight: 700; line-height: 1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.bord__chiffres span { color: var(--texte-2); font-size: .8125rem; line-height: 1.35; }
+.barres { display: flex; align-items: flex-end; gap: 5px; height: 40px; }
+.barres i { flex: 1; height: var(--h); border-radius: 4px 4px 0 0; background: #C9D8FB; transform-origin: bottom; transition: transform .7s var(--sortie); transition-delay: calc(350ms + var(--i, 0) * 80ms); }
+.barres i:last-child { background: var(--centre); }
+.js .bord.attente .barres i { transform: scaleY(0); }
+.etoiles, .bord__chiffres .etoiles { display: inline-flex; gap: 2px; color: var(--site); }
+.etoiles svg { transition: opacity .4s, transform .4s var(--sortie); transition-delay: calc(800ms + var(--i, 0) * 90ms); }
+.js .bord.attente .etoiles svg { opacity: .2; transform: scale(.6); }
+.etoiles svg { width: 14px; height: 14px; }
+.exemple-note { color: var(--texte-2); font-size: .8125rem; }
+@media (max-width: 480px) { .bord__appels li { grid-template-columns: minmax(0, 1fr) auto; } .bord__heure { grid-column: 1 / -1; } }
+
+/* Le fil du texto et la capture du site : des écrans blancs posés sur la scène du module */
+.fil { display: grid; gap: 12px; padding: clamp(18px, 2.6vw, 30px); background: var(--blanc); border-radius: var(--r-carte); box-shadow: var(--ombre-flotte); }
+.fil li { transition: opacity .45s var(--sortie), transform .45s var(--sortie); }
+.js .fil.attente li, .js .fil.joue li:not(.montre) { opacity: 0; transform: translateY(8px); }
+.fil .bord__quoi { position: relative; }
+.fil .bord__quoi b::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 8px; border-radius: 50%; vertical-align: 1px; background: var(--c, var(--contour)); }
+.fil li[data-etat="manque"] { --c: var(--urgence); }
+.fil li[data-etat="envoye"] { --c: var(--texto); }
+.fil li[data-etat="reponse"] { --c: var(--centre); }
+.fil__ecrit { position: absolute; left: 0; top: 1.75em; display: none; gap: 4px; align-items: center; height: 1.2em; }
+.fil__ecrit i { width: 7px; height: 7px; border-radius: 50%; background: var(--texte-2); animation: ecrit 1s ease-in-out infinite; }
+.fil__ecrit i:nth-child(2) { animation-delay: .15s; } .fil__ecrit i:nth-child(3) { animation-delay: .3s; }
+@keyframes ecrit { 0%, 60%, 100% { opacity: .3; transform: none; } 30% { opacity: 1; transform: translateY(-2px); } }
+.fil li.ecrit .fil__ecrit { display: inline-flex; }
+.fil li.ecrit q { visibility: hidden; }
+.fil li { display: grid; grid-template-columns: 4.2rem minmax(0, 1fr); align-items: baseline; gap: 4px 12px; padding-block: 14px; border-top: 1px solid var(--trait); }
+.fil li:first-child { padding-top: 0; border-top: 0; }
+.fil q { color: var(--encre); font-size: 1rem; line-height: 1.45; quotes: "\201C" "\201D"; }
+.module__image { display: block; overflow: hidden; border-radius: 14px; background: var(--blanc); box-shadow: var(--ombre-flotte); }
+.module__image img { width: 100%; transition: transform .6s var(--sortie); }
+.module__image:hover img { transform: scale(1.02); }
+@media (max-width: 480px) { .fil li { grid-template-columns: minmax(0, 1fr); } }
+
+/* Calculateur : une tuile grise ; le résultat à côté des curseurs, derrière un filet */
+.calcul { display: grid; gap: 36px; padding: clamp(24px, 4.2vw, 56px); background: radial-gradient(60% 75% at 100% 100%, rgba(255, 122, 61, .16), rgba(255, 122, 61, 0) 72%), var(--gris); border-radius: var(--r-tuile); }
+.calcul__tete { display: grid; gap: 14px; max-width: 40em; }
+.calcul__corps { display: grid; gap: 28px; }
+.curseurs { display: grid; gap: 28px; align-content: center; }
+.curseur label { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; color: var(--texte-2); font-size: .975rem; font-weight: 500; }
+.curseur output { color: var(--encre); font-size: 1.5rem; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.curseur input { --p: 50%; width: 100%; height: 32px; margin: 8px 0 0; background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none; }
+.curseur input::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--lampe) var(--p), var(--repos) var(--p)); }
+.curseur input::-moz-range-track { height: 6px; border-radius: 3px; background: var(--repos); }
+.curseur input::-moz-range-progress { height: 6px; border-radius: 3px; background: var(--lampe); }
+.curseur input::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; margin-top: -10px; border: 1.5px solid var(--contour); border-radius: 50%; background: var(--blanc); box-shadow: 0 2px 6px rgba(14, 26, 43, .18); transition: transform .15s var(--sortie); }
+.curseur input:active::-webkit-slider-thumb { transform: scale(1.12); }
+.curseur input::-moz-range-thumb { width: 23px; height: 23px; border: 1.5px solid var(--contour); border-radius: 50%; background: var(--blanc); box-shadow: 0 2px 6px rgba(14, 26, 43, .18); }
+.resultat { display: grid; gap: 10px; align-content: center; padding-top: 28px; border-top: 1px solid var(--trait-gris); }
+.resultat p { color: var(--texte-2); }
+.resultat .resultat__montant { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; color: var(--encre); font-size: clamp(3rem, 6vw, 4.5rem); font-weight: 700; line-height: 1; letter-spacing: -.045em; font-variant-numeric: tabular-nums; }
+.resultat__montant .unite { font-size: 1.125rem; font-weight: 600; letter-spacing: -.01em; }
+.resultat .btn { margin-top: 8px; justify-self: start; }
+@media (min-width: 960px) { .calcul__tete { max-width: none; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: end; gap: 0; } .calcul__tete .lead { padding-left: 57px; } .calcul__corps { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 0; } .curseurs { padding-right: 56px; } .resultat { padding: 0 0 0 56px; border-top: 0; border-left: 1px solid var(--trait-gris); } }
+
+/* Forfaits : une tuile, trois colonnes séparées par des filets */
+.forfaits { display: grid; background: var(--blanc); border-radius: var(--r-tuile); }
+.forfait { display: grid; align-content: start; gap: 18px; padding: clamp(26px, 3vw, 40px); }
+.forfait + .forfait { border-top: 1px solid var(--trait); }
+.forfait__nom { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.forfait__nom h3 { font-size: 1.625rem; font-weight: 700; letter-spacing: -.025em; }
+.etiquette { padding: 4px 10px; border-radius: 999px; background: var(--lampe); color: var(--encre); font-size: .75rem; font-weight: 650; }
+.forfait__pour { color: var(--texte-2); }
+.forfait__prix { display: flex; align-items: baseline; gap: 6px; }
+.forfait__prix b { font-size: 3rem; font-weight: 700; line-height: 1; letter-spacing: -.045em; font-variant-numeric: tabular-nums; }
+.forfait__prix span { color: var(--texte-2); font-weight: 500; }
+.forfait__depart { margin-top: -8px; color: var(--texte-2); font-size: .9375rem; }
+.forfait .btn { width: 100%; }
+.forfait ul { margin-top: 4px; }
+.forfait li { position: relative; padding: 11px 0 11px 20px; border-top: 1px solid var(--trait); font-size: .975rem; line-height: 1.45; }
+/* La pastille dit de quel module vient chaque ligne : orange répondeur, vert texto, bleu centre de contrôle, ambre site */
+.forfait li::before, .modules b::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--contour)); }
+.forfait li::before { position: absolute; left: 0; top: calc(11px + .5em); }
+[data-m="voix"] { --c: var(--lampe); --ct: var(--voix-teinte); } [data-m="texto"] { --c: var(--texto); --ct: var(--texto-teinte); } [data-m="centre"] { --c: var(--centre); --ct: var(--centre-teinte); } [data-m="site"] { --c: var(--site); --ct: var(--site-teinte); }
+.forfait li.minutes { font-weight: 650; }
+/* Le forfait vedette : la seule carte foncée, avec la lueur orange du répondeur en haut */
+.forfait--vedette { position: relative; z-index: 1; border-radius: 24px; background: radial-gradient(110% 55% at 50% 0%, rgba(255, 106, 43, .15), rgba(255, 106, 43, 0) 70%), var(--nuit); color: #FFFFFF; box-shadow: var(--ombre-flotte); --anneau: #FFFFFF; }
+.forfait--vedette .forfait__pour, .forfait--vedette .forfait__prix span, .forfait--vedette .forfait__depart { color: var(--nuit-texte); }
+.forfait--vedette li { border-top-color: var(--nuit-trait); }
+.forfait__valeur { display: block; margin-top: 2px; }
+.choix-forfait { display: none; }
+@keyframes entree { from { opacity: 0; transform: translateY(10px); } }
+@media (max-width: 959px) {
+  .js .choix-forfait { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; max-width: 440px; margin: 0 auto 16px; padding: 4px; border-radius: 999px; background: rgba(14, 26, 43, .07); }
+  .choix-forfait button { min-height: 44px; padding: 0 8px; border: 0; border-radius: 999px; background: transparent; color: var(--encre); font: 600 .9375rem/1 var(--police); cursor: pointer; transition: background-color .25s, box-shadow .25s; }
+  .choix-forfait button[aria-pressed="true"] { background: var(--blanc); box-shadow: var(--ombre-douce); }
+  .js .forfait.masque { display: none; }
+  .js .forfait + .forfait { border-top: 0; }
+  .forfait.entre { animation: entree .4s var(--sortie); }
+  .js .forfait--vedette { border-radius: var(--r-tuile); }
+}
+@media (min-width: 960px) {
+  /* Les rangées (nom, phrase, prix, départ, bouton, liste) s'alignent d'une colonne à l'autre */
+  .forfaits { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(6, auto); }
+  .forfait { grid-row: span 6; grid-template-rows: subgrid; }
+  .forfait + .forfait { border-top: 0; border-left: 1px solid var(--trait); }
+  /* La carte vedette est foncée : pas de filet de chaque côté */
+  .forfait.forfait--vedette, .forfait--vedette + .forfait { border-left: 0; }
+  .forfait__pour { min-height: 3.2em; }
+}
+
+.carte { margin-top: 20px; }
+.carte > summary { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 16px; align-items: start; cursor: pointer; list-style: none; }
+.carte > summary::-webkit-details-marker { display: none; }
+.carte > summary h3, .carte__texte { grid-column: 1; }
+.carte__texte { max-width: 44em; }
+.carte__chevron { grid-column: 2; grid-row: 1 / span 2; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--gris); color: var(--encre); transition: transform .35s var(--sortie), background-color .2s; }
+.carte__chevron svg { width: 20px; height: 20px; }
+.carte > summary:hover .carte__chevron { background: var(--trait); }
+.carte[open] .carte__chevron { transform: rotate(180deg); }
+.carte__corps { display: grid; gap: 24px; margin-top: 24px; }
+.modules b::before { margin-right: 10px; vertical-align: 1px; }
+.carte__texte { color: var(--texte-2); }
+.table-defile { overflow-x: auto; }
+.modules { width: 100%; border-collapse: collapse; font-size: .975rem; }
+.modules th, .modules td { padding: 13px 0; border-top: 1px solid var(--trait); text-align: left; vertical-align: top; }
+.modules thead th { border-top: 0; padding-top: 0; color: var(--texte-2); font-size: .8125rem; font-weight: 600; }
+.modules td:not(:first-child), .modules th:not(:first-child) { width: 7.5rem; padding-left: 12px; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+@media (max-width: 560px) { .modules { font-size: .9375rem; } .modules td:not(:first-child), .modules th:not(:first-child) { width: 4.75rem; } }
+.modules td:first-child b { font-weight: 650; }
+.modules td:first-child span { display: block; padding-left: 18px; color: var(--texte-2); font-size: .875rem; }
+.extras { display: grid; gap: 8px; color: var(--texte-2); font-size: .9375rem; }
+.extras b { color: var(--encre); font-weight: 600; }
+
+/* Vous n'installez rien : quatre étapes, ce que vous avez à faire au bas de chacune */
+.tete--deux { max-width: none; }
+@media (min-width: 960px) { .tete--deux { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 64px; align-items: end; } .tete--deux .lead { max-width: none; } }
+.parcours { counter-reset: parcours; display: grid; gap: 1px; overflow: hidden; border: 1px solid var(--trait); border-radius: var(--r-tuile); background: var(--trait); }
+.parcours li { display: grid; grid-template-rows: auto auto 1fr auto; gap: 12px; padding: clamp(22px, 2.6vw, 32px); background: var(--gris); }
+.parcours li::before { counter-increment: parcours; content: counter(parcours); display: grid; place-items: center; width: 2.25rem; height: 2.25rem; margin-bottom: 4px; border-radius: 50%; background: var(--voix-teinte); color: var(--voix-fonce); font-weight: 700; font-variant-numeric: tabular-nums; transition: transform .5s var(--sortie), opacity .4s; transition-delay: calc(var(--i, 0) * 150ms); }
+.js .parcours.attente li::before { opacity: 0; transform: scale(.4); }
+.parcours h3 { font-size: 1.375rem; font-weight: 700; letter-spacing: -.022em; }
+.parcours p { color: var(--texte-2); }
+.parcours .parcours__vous { padding-top: 14px; border-top: 1px solid var(--trait-gris); color: var(--encre); font-size: .9375rem; font-weight: 600; }
+.parcours__vous span { color: var(--texte-2); font-weight: 500; }
+.parcours .parcours__ensuite { background: radial-gradient(90% 60% at 100% 0%, rgba(255, 106, 43, .15), rgba(255, 106, 43, 0) 70%), var(--nuit); color: #FFFFFF; --anneau: #FFFFFF; }
+.parcours .parcours__ensuite::before { background: var(--lampe); color: var(--encre); }
+.parcours .parcours__ensuite p { color: var(--nuit-texte); }
+.parcours .parcours__ensuite .parcours__vous { border-top-color: var(--nuit-trait); color: #FFFFFF; }
+.parcours__ensuite .parcours__vous span { color: var(--nuit-texte); }
+.parcours__total { margin-top: 16px; padding: 18px clamp(20px, 2.6vw, 32px); border-radius: var(--r-carte); background: var(--gris); font-weight: 600; }
+.parcours__total span { color: var(--texte-2); font-weight: 500; }
+@media (min-width: 640px) {
+  .parcours { grid-template-columns: 1fr 1fr; }
+  /* Chaque étape prend quatre rangées de la grille : les titres, les textes et les lignes « Vous » s'alignent */
+  @supports (grid-template-rows: subgrid) { .parcours li { grid-row: span 4; grid-template-rows: subgrid; } }
+}
+@media (min-width: 1100px) { .parcours { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 639px) {
+  .parcours { display: flex; gap: 12px; margin-inline: calc(-1 * var(--m)); padding: 4px var(--m) 8px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--m); scrollbar-width: none; border: 0; border-radius: 0; background: none; }
+  .parcours::-webkit-scrollbar { display: none; }
+  .parcours li { flex: 0 0 86%; border-radius: var(--r-carte); scroll-snap-align: start; }
+}
+
+/* La confiance : ce qu'il fait et ne fait pas, en quatre réponses */
+.confiance { display: grid; gap: 36px; padding: clamp(24px, 4.2vw, 56px); border-radius: var(--r-tuile); background: radial-gradient(55% 70% at 0% 0%, rgba(255, 106, 43, .1), rgba(255, 106, 43, 0) 70%), var(--blanc); }
+.confiance__tete { display: grid; gap: 18px; align-content: start; justify-items: start; }
+.confiance h2 { font-size: clamp(2rem, 3.4vw, 2.75rem); }
+.garanties { display: grid; }
+.garanties li { display: grid; align-content: start; gap: 8px; padding-block: 22px; border-top: 1px solid var(--trait); }
+.garanties h3 { font-size: 1.1875rem; font-weight: 650; }
+.garanties p { color: var(--texte-2); }
+@media (min-width: 760px) { .garanties { grid-template-columns: 1fr 1fr; column-gap: 40px; } }
+@media (min-width: 960px) {
+  .confiance { gap: 28px; }
+  .confiance__tete { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); grid-template-rows: auto auto; column-gap: 64px; }
+  .confiance__tete h2 { grid-row: 1 / 3; }
+  .confiance__tete .lead { align-self: end; }
+  .garanties { column-gap: 64px; }
+}
+
+/* Questions */
+.faq { display: grid; gap: 40px; }
+.faq__aside { display: grid; gap: 16px; align-content: start; }
+.faq__aside p { color: var(--texte-2); }
+.faq__moyens { display: grid; justify-items: start; }
+.questions details { border-top: 1px solid var(--trait); }
+.questions details:last-child { border-bottom: 1px solid var(--trait); }
+.questions summary { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 64px; padding-block: 16px; font-size: 1.125rem; font-weight: 600; letter-spacing: -.012em; line-height: 1.35; cursor: pointer; list-style: none; }
+.questions summary::-webkit-details-marker { display: none; }
+.questions summary svg { width: 20px; height: 20px; flex: none; color: var(--texte-2); transition: transform .3s var(--sortie); }
+.questions details[open] summary svg { transform: rotate(45deg); }
+.questions details p { max-width: 62ch; padding-bottom: 22px; color: var(--texte-2); }
+@media (min-width: 960px) { .faq { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 80px; } .faq__aside { position: sticky; top: 112px; } }
+
+/* Contact */
+.contact { display: grid; gap: 48px; }
+.contact__texte { display: grid; gap: 22px; align-content: start; }
+.equipe { color: var(--texte-2); }
+.equipe b { color: var(--encre); font-weight: 600; }
+/* Le contact sur la bande de nuit : le formulaire blanc flotte, une lueur respire derrière */
+.nuit .equipe { color: var(--nuit-texte); }
+.nuit .equipe b, .nuit .lien { color: #FFFFFF; }
+.nuit .form { color: var(--encre); --anneau: var(--encre); box-shadow: 0 2px 6px rgba(0, 0, 0, .2), 0 40px 90px -40px rgba(0, 0, 0, .65); }
+.nuit .orbe { position: absolute; z-index: -1; right: -4%; top: 10%; width: min(640px, 70vw); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 42% 40%, rgba(255, 150, 95, .5), rgba(255, 106, 43, .26) 36%, rgba(255, 106, 43, .07) 58%, rgba(255, 106, 43, 0) 70%); filter: blur(24px); pointer-events: none; animation: respire 7s ease-in-out infinite alternate; }
+@media (max-width: 959px) { .nuit .orbe { top: auto; bottom: 2%; right: -35%; width: 115vw; } }
+#contact.nuit::before { display: none; }
+@keyframes respire { from { transform: scale(.92); opacity: .75; } to { transform: scale(1.06); opacity: 1; } }
+.contact__moyens { display: flex; flex-wrap: wrap; gap: 0 24px; }
+/* Ce qu'on regarde pendant l'audit (grand écran, où la place est libre) */
+.audit { display: none; }
+@media (min-width: 960px) { .audit { display: grid; gap: 14px; margin-top: 10px; padding-top: 26px; border-top: 1px solid var(--nuit-trait); } }
+.audit p { font-weight: 650; }
+.audit ul { display: grid; gap: 10px; }
+.audit li { display: grid; grid-template-columns: 6px minmax(0, 1fr); gap: 14px; align-items: start; color: var(--nuit-texte); }
+.audit li::before { content: ""; width: 6px; height: 6px; margin-top: .65em; border-radius: 50%; background: var(--lampe); }
+.form { display: grid; gap: 18px; padding: clamp(22px, 3.4vw, 40px); background: var(--blanc); border-radius: var(--r-tuile); }
+.form h3 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.025em; }
+.form__forfait { padding: 10px 14px; background: var(--gris); border-radius: 12px; font-size: .9375rem; font-weight: 600; }
+.champs { display: grid; gap: 16px; }
+.plus > summary { display: flex; align-items: center; gap: 8px; min-height: 52px; padding: 0 16px; border-radius: var(--r-champ); background: var(--gris); font-size: .9375rem; font-weight: 600; cursor: pointer; list-style: none; }
+.plus > summary::-webkit-details-marker { display: none; }
+.plus > summary span { color: var(--texte-2); font-weight: 400; }
+.plus > summary svg { width: 18px; height: 18px; margin-left: auto; color: var(--texte-2); transition: transform .3s var(--sortie); }
+.plus[open] > summary { margin-bottom: 16px; }
+.plus[open] > summary svg { transform: rotate(45deg); }
+@media (min-width: 640px) { .plus > summary { display: none; } }
+.champ { display: grid; gap: 6px; }
+.champ label { font-size: .9375rem; font-weight: 600; }
+.champ label span { color: var(--texte-2); font-weight: 400; }
+.champ input, .champ select, .champ textarea { width: 100%; min-height: 52px; padding: 12px 14px; border: 1.5px solid var(--contour); border-radius: var(--r-champ); background: var(--blanc); color: var(--encre); font: 400 1rem/1.4 var(--police); transition: border-color .2s, box-shadow .2s; }
+.champ textarea { min-height: 108px; resize: vertical; }
+.champ input, .champ textarea { caret-color: var(--encre); }
+.champ select { -webkit-appearance: none; appearance: none; padding-right: 44px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 7.5l5 5 5-5' fill='none' stroke='%235B6472' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; background-size: 18px 18px; cursor: pointer; }
+.champ input::placeholder, .champ textarea::placeholder { color: #6B7380; }
+.champ input:hover, .champ select:hover, .champ textarea:hover { border-color: var(--texte-2); }
+.champ input:focus, .champ select:focus, .champ textarea:focus { outline: none; border-color: var(--encre); box-shadow: 0 0 0 2px var(--encre); }
+.champ input:user-invalid, .champ textarea:user-invalid { border-color: #B42318; }
+.form__mention { color: var(--texte-2); font-size: .8125rem; line-height: 1.55; }
+.form__mention a { color: var(--encre); }
+.form .btn { width: 100%; }
+.form .btn:disabled { opacity: .6; cursor: progress; }
+.form__resultat { min-height: 1.4em; font-size: .95rem; font-weight: 600; }
+.form__resultat a { color: inherit; }
+@media (min-width: 640px) { .champs { grid-template-columns: 1fr 1fr; } .champ--large { grid-column: 1 / -1; } }
+@media (min-width: 960px) { .contact { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 72px; } }
+
+/* Pied de page */
+.pied { padding-block: 48px calc(36px + env(safe-area-inset-bottom, 0px)); background: var(--gris); border-top: 1px solid var(--trait-gris); font-size: .875rem; color: var(--texte-2); }
+.pied__haut { display: grid; gap: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--trait-gris); }
+.pied__haut p { max-width: 32em; margin-top: 10px; }
+.pied h2 { margin-bottom: 8px; color: var(--encre); font-size: .875rem; font-weight: 650; letter-spacing: 0; }
+.pied ul { display: grid; }
+.pied ul a { display: inline-flex; align-items: center; min-height: 36px; color: var(--texte-2); text-decoration: none; }
+.pied ul a:hover { color: var(--encre); text-decoration: underline; }
+.pied__sources { padding-block: 20px; font-size: .8125rem; line-height: 1.6; }
+.pied__sources a { color: var(--texte-2); }
+.pied__bas { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font-size: .8125rem; }
+.barre { display: none; }
+@media (max-width: 639px) {
+  .js .barre { position: fixed; z-index: 55; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; padding: 10px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); background: rgba(255, 255, 255, .9); -webkit-backdrop-filter: saturate(180%) blur(18px); backdrop-filter: saturate(180%) blur(18px); border-top: 1px solid rgba(14, 26, 43, .08); box-shadow: 0 -12px 32px -20px rgba(14, 26, 43, .35); transform: translateY(110%); visibility: hidden; transition: transform .4s var(--sortie), visibility 0s linear .4s; }
+  .js .barre.visible { transform: none; visibility: visible; transition: transform .4s var(--sortie), visibility 0s; }
+  .barre .btn { min-height: 48px; padding: 0 18px; font-size: 1rem; }
+  /* Le champ qui reçoit le focus au clavier ne se cache pas sous la barre */
+  .js { scroll-padding-bottom: 84px; }
+}
+/* Le chatbot de l'agence, chargé depuis notre serveur : la police du site ; au cellulaire,
+   le bouton et la fenêtre montent au-dessus de la barre du bas quand elle est là */
+html #uio-btn, html #uio-box { font-family: var(--police); }
+/* Un liseré blanc garde le bouton visible sur les bandes marine ; au clavier, un anneau marine
+   entre deux liserés blancs se voit sur le blanc comme sur le marine */
+html #uio-btn { box-shadow: 0 0 0 2px #FFFFFF, 0 8px 22px -6px rgba(14, 26, 43, .45); }
+html #uio-btn:focus-visible { outline: 3px solid var(--encre); outline-offset: 3px; box-shadow: 0 0 0 3px #FFFFFF, 0 0 0 9px #FFFFFF, 0 8px 22px -6px rgba(14, 26, 43, .45); }
+html #uio-box #uio-close:focus-visible { outline-color: #FFFFFF; }
+/* Le champ et le bouton d'envoi comme ceux du formulaire du site */
+html #uio-box #uio-input { border: 1.5px solid var(--contour); border-radius: var(--r-champ); color: var(--encre); }
+html #uio-box #uio-input:focus-visible { outline: none; border-color: var(--encre); box-shadow: 0 0 0 2px var(--encre); }
+html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
+@media (max-width: 639px) {
+  html #uio-btn { right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); width: 52px; height: 52px; transition: bottom .4s var(--sortie), transform .2s; }
+  html #uio-box { right: 10px; left: 10px; width: auto; bottom: calc(78px + env(safe-area-inset-bottom, 0px)); height: min(72vh, 560px); transition: bottom .4s var(--sortie); }
+  html.avec-barre #uio-btn { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
+  html.avec-barre #uio-box { bottom: calc(142px + env(safe-area-inset-bottom, 0px)); height: min(64vh, 520px); max-height: calc(100vh - 160px - env(safe-area-inset-bottom, 0px)); }
+}
+@media (prefers-reduced-motion: reduce) { html #uio-btn, html #uio-box { transition: none; } }
+@media (min-width: 860px) { .pied__haut { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); } }
+
+/* Grand écran : des photos de gens de métier vont jusqu'au bord de l'écran, à droite du premier écran
+   (la photo suit le métier choisi), à gauche du script et à droite des étapes de l'installation.
+   Sous 1440 px, rien ne change : la photo y serait trop étroite. Ce sont des photos d'illustration : jamais nos clients ni notre équipe. */
+.photo-metier, .scene__photos { display: none; }
+.scene__photo[data-photo="plomberie"] { --photo: image-set(url("../assets/photos/plomberie-560.webp") 1x, url("../assets/photos/plomberie-1120.webp") 2x); --grande: url("../assets/photos/plomberie-1120.webp"); --pos: 100% 30%; }
+.scene__photo[data-photo="chauffage"] { --photo: image-set(url("../assets/photos/chauffage-560.webp") 1x, url("../assets/photos/chauffage-1120.webp") 2x); --grande: url("../assets/photos/chauffage-1120.webp"); --pos: 100% 30%; }
+.scene__photo[data-photo="electricite"] { --photo: image-set(url("../assets/photos/electricite-560.webp") 1x, url("../assets/photos/electricite-1120.webp") 2x); --grande: url("../assets/photos/electricite-1120.webp"); --pos: 100% 30%; }
+.scene__photo[data-photo="garage"] { --photo: image-set(url("../assets/photos/garage-560.webp") 1x, url("../assets/photos/garage-1120.webp") 2x); --grande: url("../assets/photos/garage-1120.webp"); --pos: 100% 30%; }
+.script__photo { --photo: image-set(url("../assets/photos/script-720.webp") 1x, url("../assets/photos/script-1440.webp") 2x); --grande: url("../assets/photos/script-1440.webp"); --pos: 0% 35%; }
+.parcours__photo { --photo: image-set(url("../assets/photos/atelier-420.webp") 1x, url("../assets/photos/atelier-840.webp") 2x); --grande: url("../assets/photos/atelier-840.webp"); --pos: 50% 35%; }
+@supports (overflow-x: clip) {
+  @media (min-width: 1440px) {
+    /* --saillie : de l'arête du contenu jusqu'au bord de l'écran */
+    :root { --saillie: calc((100vw - var(--largeur)) / 2 + var(--m)); }
+    .hero, #repondeur, #installation { overflow-x: clip; }
+    .photo-metier { display: block; position: absolute; top: 0; bottom: 0; background: #E6DED6 var(--pos, 50% 40%) / cover no-repeat; }
+    .photo-metier.pret { background-image: var(--photo); }
+    .photo-note { position: absolute; z-index: 1; bottom: 16px; padding: 5px 10px; border-radius: 999px; background: rgba(255, 255, 255, .86); color: var(--encre); font-size: .75rem; font-weight: 600; line-height: 1.25; letter-spacing: 0; white-space: nowrap; }
+    .scene__photos .photo-note { right: 20px; }
+    .script__photo .photo-note { left: 16px; }
+
+    /* Premier écran : la scène de l'appel s'étire jusqu'au bord droit, la photo paraît à droite de la carte */
+    .scene__fond { margin-right: calc(-1 * var(--saillie)); padding-right: calc(clamp(16px, 2.8vw, 36px) + var(--saillie)); border-radius: var(--r-tuile) 0 0 var(--r-tuile); background-size: calc(100% - var(--saillie)) 100%; background-repeat: no-repeat; }
+    .scene__fond::after { right: var(--saillie); }
+    .scene__photos { display: block; position: absolute; z-index: -2; top: 0; bottom: 0; right: 0; width: calc(var(--saillie) + 220px); }
+    .scene__photo { left: 0; right: 0; opacity: 0; transition: opacity .7s var(--sortie); -webkit-mask-image: linear-gradient(90deg, transparent, #000 200px); mask-image: linear-gradient(90deg, transparent, #000 200px); }
+    .scene__photo.actif { opacity: 1; }
+
+    /* Le script du répondeur : sa tuile s'étire jusqu'au bord gauche */
+    .script__fond { position: relative; isolation: isolate; margin-left: calc(-1 * var(--saillie)); padding-left: calc(clamp(14px, 1.6vw, 20px) + var(--saillie)); border-radius: 0 var(--r-tuile) var(--r-tuile) 0; background-size: calc(100% - var(--saillie)) 100%; background-position: 100% 0; background-repeat: no-repeat; }
+    .script__photo { z-index: -1; left: 0; width: calc(var(--saillie) + 180px); -webkit-mask-image: linear-gradient(270deg, transparent, #000 160px); mask-image: linear-gradient(270deg, transparent, #000 160px); }
+
+    /* Les étapes de l'installation : une photo à leur droite, jusqu'au bord de l'écran */
+    .parcours-cadre { position: relative; }
+    .parcours__photo { left: calc(100% + 12px); width: calc(var(--saillie) - 12px); border-radius: var(--r-tuile) 0 0 var(--r-tuile); }
+  }
+  @media (min-width: 2000px) { .photo-metier.pret { background-image: var(--grande); } }
+}
+
+/* ============ v11 : le verre liquide ============
+   Des taches de couleur coulent lentement derrière quelques surfaces de verre (la carte de l'appel, le texto,
+   les écrans des modules), une lentille glisse d'un choix à l'autre, et les bandes de nuit s'ouvrent au défilement.
+   Le verre reste rare : le reste de la page garde ses bandes blanches et grises. Hors de l'écran, tout dort. */
+@property --angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+:root {
+  --verre: rgba(255, 255, 255, .6);
+  --verre-fort: rgba(255, 255, 255, .78);
+  --verre-flou: blur(22px) saturate(180%);
+  --verre-rebord: inset 0 1px 0 rgba(255, 255, 255, .95), inset 0 -1px 0 rgba(14, 26, 43, .04);
+  --coule: cubic-bezier(.34, 1.4, .5, 1);
+}
+@media (max-width: 639px) { :root { --verre-flou: blur(14px) saturate(170%); } }
+.dort, .dort::before, .dort::after, .dort *, .dort *::before, .dort *::after { animation-play-state: paused !important; }
+
+/* L'aurore du premier écran : trois taches qui dérivent, orange, ambre, et un bleu léger pour le contraste */
+.hero { position: relative; isolation: isolate; }
+.aurore { position: absolute; z-index: -1; inset: 0; overflow: hidden; pointer-events: none; }
+.aurore i { position: absolute; width: var(--t); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(closest-side, var(--c), rgba(255, 255, 255, 0)); will-change: transform; animation: derive var(--d) ease-in-out infinite alternate; }
+.aurore i:nth-child(1) { --t: min(820px, 90vw); --c: rgba(255, 106, 43, .2); --d: 19s; left: -18%; top: -22%; }
+.aurore i:nth-child(2) { --t: min(700px, 80vw); --c: rgba(47, 111, 235, .12); --d: 23s; right: -10%; top: -8%; animation-delay: -7s; }
+.aurore i:nth-child(3) { --t: min(620px, 80vw); --c: rgba(242, 169, 0, .17); --d: 27s; left: 28%; bottom: -30%; animation-delay: -13s; }
+@keyframes derive { 0% { transform: translate3d(0, 0, 0) scale(1); } 50% { transform: translate3d(7%, 9%, 0) scale(1.1); } 100% { transform: translate3d(-6%, 4%, 0) scale(.92); } }
+
+/* La scène de l'appel : du liquide coloré bouge derrière la carte de verre */
+.scene__fond::before { content: ""; position: absolute; z-index: -1; inset: -10%; pointer-events: none; will-change: transform; animation: coule 15s ease-in-out infinite alternate;
+  background: radial-gradient(26% 30% at 28% 26%, rgba(255, 106, 43, .5), rgba(255, 106, 43, 0) 70%), radial-gradient(30% 34% at 74% 72%, rgba(255, 168, 92, .55), rgba(255, 168, 92, 0) 70%), radial-gradient(20% 24% at 76% 22%, rgba(47, 111, 235, .22), rgba(47, 111, 235, 0) 70%), radial-gradient(22% 26% at 22% 80%, rgba(242, 169, 0, .3), rgba(242, 169, 0, 0) 70%); }
+@keyframes coule { from { transform: translate3d(-4%, -3%, 0) rotate(-4deg) scale(1); } to { transform: translate3d(4%, 4%, 0) rotate(10deg) scale(1.1); } }
+
+/* Les surfaces de verre : translucides, floues derrière, un rebord de lumière en haut à gauche */
+.appel, .resume__carte, .bord, .fil { position: relative; isolation: isolate; -webkit-backdrop-filter: var(--verre-flou); backdrop-filter: var(--verre-flou); box-shadow: var(--verre-rebord), var(--ombre-flotte); }
+.appel { background: var(--verre); }
+.resume__carte, .bord, .fil { background: var(--verre-fort); }
+.appel::before, .resume__carte::before, .bord::before, .fil::before, .forfait--vedette::before, .manques li::after {
+  content: ""; position: absolute; z-index: 2; inset: 0; padding: 1.5px; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(140deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, .25) 28%, rgba(255, 255, 255, 0) 55%, rgba(255, 255, 255, .55) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+/* Le reflet suit la souris (souris seulement) : sous le texte, jamais par-dessus */
+.reflet::after { content: ""; position: absolute; z-index: -1; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .45s var(--sortie);
+  background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 0%), rgba(255, 255, 255, .95), rgba(255, 255, 255, 0) 65%); }
+.reflet:hover::after { opacity: 1; }
+.forfait--vedette.reflet::after { background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 0%), rgba(255, 140, 90, .22), rgba(255, 106, 43, 0) 65%); }
+
+/* La lentille : une goutte de verre qui glisse vers le choix, s'étire en route et reprend sa forme */
+.a-lentille { position: relative; }
+.a-lentille > button { position: relative; z-index: 1; }
+.a-lentille > button[aria-pressed="true"], .a-lentille > button[aria-selected="true"] { background: transparent; box-shadow: none; }
+.lentille { position: absolute; z-index: 0; left: 0; top: 0; width: var(--l-w, 0); height: var(--l-h, 0); border-radius: 999px; pointer-events: none; transform: translate3d(var(--l-x, 0), var(--l-y, 0), 0);
+  background: rgba(255, 255, 255, .92); box-shadow: inset 0 1px 0 #fff, inset 0 0 0 1px rgba(255, 255, 255, .7), var(--ombre-douce);
+  transition: transform .6s var(--coule), width .6s var(--coule), height .45s var(--coule); }
+.lentille.fige { transition: none; }
+.lentille.goutte { animation: goutte .6s ease-out; }
+@keyframes goutte { 30% { scale: 1.14 .8; } 62% { scale: .95 1.07; } 100% { scale: 1 1; } }
+/* Les métiers : une barre de verre sur la scène, la goutte est marine */
+.js .metiers { width: fit-content; margin-inline: auto; padding: 4px; gap: 2px; border-radius: 999px; background: rgba(255, 255, 255, .42); -webkit-backdrop-filter: var(--verre-flou); backdrop-filter: var(--verre-flou); box-shadow: var(--verre-rebord), inset 0 0 0 1px rgba(255, 255, 255, .55), 0 8px 24px -14px rgba(14, 26, 43, .35); }
+.metiers.a-lentille > button { background: transparent; box-shadow: none; transition: color .35s var(--sortie), background-color .2s; }
+.metiers.a-lentille > button:hover { background: rgba(255, 255, 255, .45); }
+.metiers.a-lentille > button[aria-pressed="true"] { color: #fff; background: transparent; }
+.metiers .lentille { background: linear-gradient(180deg, #23324A, var(--encre)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), 0 6px 16px -6px rgba(14, 26, 43, .55); }
+@container (max-width: 399px) { .js .metiers { width: 100%; border-radius: 26px; } }
+
+/* Les boutons orange : un peu de lustre, un éclat qui traverse au survol */
+.btn:not(.btn--contour) { position: relative; overflow: hidden; isolation: isolate; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), inset 0 -1px 0 rgba(150, 50, 10, .2), 0 8px 20px -10px rgba(255, 106, 43, .75); }
+.btn:not(.btn--contour)::after { content: ""; position: absolute; z-index: -1; inset: 0; pointer-events: none; background: linear-gradient(105deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, .55) 50%, rgba(255, 255, 255, 0) 70%); transform: translateX(-120%); transition: transform .9s var(--sortie); }
+@media (hover: hover) { .btn:not(.btn--contour):hover::after { transform: translateX(120%); } }
+
+/* Les bandes de nuit : une carte qui s'ouvre jusqu'aux bords en entrant, deux lueurs qui tournent */
+.js .nuit.ouvre { --bord: var(--m); clip-path: inset(0 calc(var(--r, 0) * var(--bord)) round calc(var(--r, 0) * 44px)); }
+@media (max-width: 639px) { .js .nuit.ouvre { --bord: 10px; } }
+.nuit::before { animation: lueur-nuit 18s ease-in-out infinite alternate; will-change: transform; }
+.nuit::after { content: ""; position: absolute; z-index: -1; left: -14%; top: -40%; width: min(760px, 85vw); aspect-ratio: 1; border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, rgba(47, 111, 235, .2), rgba(47, 111, 235, 0)); will-change: transform; animation: lueur-nuit 22s ease-in-out -9s infinite alternate-reverse; }
+@keyframes lueur-nuit { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(-12%, -10%, 0) scale(1.15); } }
+/* Les appels manqués : du verre sombre qui se pose un à un */
+.manques li { position: relative; background: rgba(255, 255, 255, .07); -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14); transition: opacity .8s var(--sortie), transform .9s var(--sortie), filter .8s var(--sortie); transition-delay: calc(var(--i, 0) * 160ms); }
+.manques li::after { opacity: .35; }
+.manques li:nth-child(2) { --i: 1; } .manques li:nth-child(3) { --i: 2; }
+.js .manques.attente li { opacity: 0; transform: translateX(32px); filter: blur(8px); }
+
+/* Les écrans des modules : une goutte de la couleur du module bouge sous l'écran de verre */
+.panneau__scene { position: relative; isolation: isolate; overflow: hidden; }
+.panneau__scene::before, .panneau__scene::after { content: ""; position: absolute; z-index: -1; width: 62%; aspect-ratio: 1; border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, var(--goutte), rgba(255, 255, 255, 0)); will-change: transform; animation: derive 17s ease-in-out infinite alternate; }
+.panneau__scene::before { left: -14%; bottom: -34%; }
+.panneau__scene::after { right: -12%; top: -30%; width: 48%; animation-duration: 21s; animation-delay: -8s; }
+.panneau--centre { --goutte: rgba(47, 111, 235, .34); } .panneau--texto { --goutte: rgba(30, 158, 90, .3); } .panneau--site { --goutte: rgba(242, 169, 0, .4); }
+
+/* Le forfait vedette : un filet de lumière fait le tour de la carte */
+.forfait--vedette { isolation: isolate; }
+.forfait--vedette::before { padding: 1.5px; background: conic-gradient(from var(--angle), rgba(255, 106, 43, 0) 0deg, rgba(255, 106, 43, .95) 50deg, rgba(255, 214, 186, .95) 80deg, rgba(255, 106, 43, 0) 140deg, rgba(255, 255, 255, .1) 220deg, rgba(255, 106, 43, 0) 360deg); animation: tourne 8s linear infinite; }
+@keyframes tourne { to { --angle: 360deg; } }
+
+/* La barre du haut : une pilule de verre qui flotte, et se resserre en défilant */
+.nav { padding-top: 10px; background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; border-bottom: 0; pointer-events: none; }
+.nav.defile { box-shadow: none; }
+.nav .nav__rangee { position: relative; isolation: isolate; width: calc(100% - 2 * var(--m)); max-width: calc(var(--largeur) - 2 * var(--m)); height: 60px; padding-inline: 10px 8px; border-radius: 999px; pointer-events: auto;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .8), rgba(255, 255, 255, .62)); -webkit-backdrop-filter: blur(20px) saturate(190%); backdrop-filter: blur(20px) saturate(190%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), inset 0 0 0 1px rgba(14, 26, 43, .06), 0 10px 30px -18px rgba(14, 26, 43, .35);
+  transition: max-width .7s var(--coule), box-shadow .4s var(--sortie), background-color .4s; }
+.nav .nav__rangee::before { content: ""; position: absolute; z-index: 2; inset: 0; padding: 1.5px; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(100deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, .2) 30%, rgba(255, 255, 255, 0) 60%, rgba(255, 255, 255, .8));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+.nav.defile .nav__rangee { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), inset 0 0 0 1px rgba(14, 26, 43, .07), 0 16px 40px -18px rgba(14, 26, 43, .45); }
+@media (min-width: 1100px) { .nav.defile .nav__rangee { max-width: 1040px; } }
+.nav .nav__liens a { padding: 8px 14px; margin-inline: -14px; border-radius: 999px; transition: opacity .2s, background-color .25s; }
+.nav .nav__liens a:hover { background: rgba(14, 26, 43, .06); }
+@media (max-width: 639px) { .nav { padding-top: 8px; } .nav .nav__rangee { width: calc(100% - 20px); height: 56px; padding-inline: 8px; } }
+
+@supports (overflow-x: clip) { @media (min-width: 1440px) { .scene__fond::before { right: calc(var(--saillie) - 10%); } } }
+@media (prefers-reduced-motion: reduce) { .js .nuit.ouvre { clip-path: none; } .js .manques.attente li { opacity: 1; transform: none; filter: none; } }
+
+/* Grand écran : à gauche du premier écran, les appels que l'agent a pris aujourd'hui sortent du bord,
+   en miroir de la photo à droite. Exemples fictifs ; seulement quand la marge est assez large (1640 px et plus). */
+.repondus { display: none; }
+@media (min-width: 1640px) {
+  .repondus { --marge: calc((100vw - var(--largeur)) / 2 + var(--m)); display: grid; gap: 26px; position: absolute; z-index: 0; left: 0; top: 186px; width: calc(var(--marge) - 22px); pointer-events: none;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 22px); mask-image: linear-gradient(90deg, transparent, #000 22px); }
+  .repondus li { display: grid; grid-template-columns: 8px minmax(0, 1fr); align-items: center; gap: 2px 10px; padding: 10px 12px 10px 22px; border-radius: 0 16px 16px 0;
+    background: rgba(255, 255, 255, .66); -webkit-backdrop-filter: blur(18px) saturate(180%); backdrop-filter: blur(18px) saturate(180%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), inset -1px 0 0 rgba(255, 255, 255, .8), 0 12px 28px -14px rgba(14, 26, 43, .3);
+    margin-right: var(--x, 0); animation: flotte var(--d, 7s) ease-in-out infinite alternate; animation-delay: var(--de, 0s); }
+  .repondus li::before { content: ""; grid-row: span 2; width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--lampe)); }
+  .repondus b { font-size: .75rem; font-weight: 650; line-height: 1.25; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .repondus li > * { min-width: 0; }
+  .repondus span { color: var(--texte-2); font-size: .75rem; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .repondus li:nth-child(2) { --x: 0px; --d: 7s; }
+  .repondus li:nth-child(3) { --x: 8px; --d: 8.5s; --de: -3s; }
+  .repondus li:nth-child(4) { --x: 4px; --d: 7.5s; --de: -5s; --c: var(--urgence-vif); }
+  .repondus li:nth-child(5) { --x: 6px; --d: 9s; --de: -2s; }
+  .repondus .repondus__note { display: block; margin-bottom: -10px; padding: 0 0 0 22px; line-height: 1.35; background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; animation: none; color: var(--texte-2); font-size: .75rem; font-weight: 600; }
+  .repondus .repondus__note::before { display: none; }
+  @keyframes flotte { from { translate: 0 -5px; } to { translate: 0 6px; } }
+  /* Le titre prend un peu plus de place quand l'écran est large */
+  h1 { font-size: clamp(2.6rem, min(5.2vw, 10.5vh), 5.25rem); }
+}
+
+/* Le contact : choisir son créneau avec l'assistant (au moins 24 h d'avance), quand il est chargé */
+.lien--bouton { padding: 0; border: 0; background: none; font: inherit; font-weight: 600; text-align: left; cursor: pointer; }
+.contact__vite { color: var(--nuit-texte); }
+sup { font-size: .7em; line-height: 0; vertical-align: .45em; }
+/* Le calculateur : ce que coûte le forfait, à côté de ce que les appels manqués font perdre */
+.roi { padding: 12px 16px; border-radius: 14px; background: var(--voix-teinte); color: var(--encre); font-size: .9375rem; font-weight: 600; line-height: 1.45; }
+.resultat .roi { color: var(--encre); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: .01ms !important; animation: none !important; }
+}
+
+/* ============ v12 : le mode sombre ============
+   Le visiteur le choisit avec le bouton lune de la barre du haut ; le site reste clair par défaut et le choix
+   est retenu sur l'appareil. Presque tout passe par les jetons ; les quelques fonds clairs écrits en dur sont repris ici.
+   Le texte reste marine sur l'orange, et la boîte du chatbot garde ses couleurs claires. */
+.theme { display: inline-grid; place-items: center; width: 44px; height: 44px; flex: none; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--encre); cursor: pointer; transition: background-color .2s; }
+.theme[hidden] { display: none; }
+.theme:hover { background: rgba(14, 26, 43, .06); }
+.theme svg { grid-area: 1 / 1; width: 20px; height: 20px; transition: opacity .3s var(--sortie), transform .5s var(--sortie); }
+.theme__soleil { opacity: 0; transform: rotate(-90deg) scale(.5); }
+html[data-theme="sombre"] .theme:hover { background: rgba(255, 255, 255, .08); }
+html[data-theme="sombre"] .theme__lune { opacity: 0; transform: rotate(90deg) scale(.5); }
+html[data-theme="sombre"] .theme__soleil { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .theme svg { transition: none; } }
+
+/* FR / EN : le lien vers la même page dans l'autre langue (en/ pour l'anglais), à côté de la lune */
+.langue { display: inline-grid; place-items: center; min-width: 44px; height: 44px; flex: none; padding: 0 6px; border-radius: 999px; color: var(--encre); font-size: .8125rem; font-weight: 700; letter-spacing: .06em; text-decoration: none; transition: background-color .2s; }
+.langue:hover { background: rgba(14, 26, 43, .06); }
+html[data-theme="sombre"] .langue:hover { background: rgba(255, 255, 255, .08); }
+
+/* Sur téléphone, la barre ne garde que le logo, la langue et ce bouton (l'appel et l'audit sont dans la barre du bas) */
+@media (max-width: 639px) { .js .nav__actions { display: flex; } .js .nav__actions > :not(.theme):not(.langue) { display: none; } }
+
+html[data-theme="sombre"] {
+  --blanc: #0D1524; --gris: #131D2F; --encre: #EEF2F7; --texte-2: #A9B4C5;
+  --trait: #24314A; --trait-gris: #2A3851; --contour: #6F7C92; --repos: #34435C; --eteint: #5E6B82;
+  --voix-teinte: #2A1B15; --voix-fonce: #FF9D72;
+  --texto: #2DBE73; --texto-teinte: #10281E; --texto-fonce: #72DCA5;
+  --centre: #5C8FF6; --centre-teinte: #142041; --centre-fonce: #A3BEFB;
+  --site: #F2B01E; --site-teinte: #2A220E; --site-fonce: #F6CB62;
+  --urgence: #FF8A80; --urgence-teinte: #34181A; --urgence-vif: #F97066;
+  --nuit: #17263F; --nuit-texte: #C3CCDA;
+  --ombre-flotte: 0 1px 2px rgba(0, 0, 0, .4), 0 12px 28px -10px rgba(0, 0, 0, .55), 0 32px 72px -28px rgba(0, 0, 0, .6);
+  --ombre-douce: 0 1px 2px rgba(0, 0, 0, .35), 0 6px 16px -8px rgba(0, 0, 0, .5);
+  --selection: rgba(255, 106, 43, .4);
+  --verre: rgba(23, 33, 52, .62); --verre-fort: rgba(23, 33, 52, .8);
+  --verre-rebord: inset 0 1px 0 rgba(255, 255, 255, .09), inset 0 -1px 0 rgba(0, 0, 0, .25);
+  color-scheme: dark;
+}
+/* Texte marine sur l'orange et sur les fonds qui deviennent clairs */
+html[data-theme="sombre"] .btn:not(.btn--contour), html[data-theme="sombre"] .etiquette,
+html[data-theme="sombre"] .etapes li.vu::before, html[data-theme="sombre"] .parcours .parcours__ensuite::before,
+html[data-theme="sombre"] .skip, html[data-theme="sombre"] .btn--contour:hover,
+html[data-theme="sombre"] .metiers button[aria-pressed="true"], html[data-theme="sombre"] .metiers.a-lentille > button[aria-pressed="true"] { color: #0E1A2B; }
+html[data-theme="sombre"] .nav .nav__liens a:hover, html[data-theme="sombre"] .onglets button:hover,
+html[data-theme="sombre"] .metiers.a-lentille > button:hover { background: rgba(255, 255, 255, .08); }
+/* Le verre devient fumé */
+html[data-theme="sombre"] .nav .nav__rangee { background: linear-gradient(180deg, rgba(27, 38, 60, .82), rgba(20, 30, 48, .7)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), inset 0 0 0 1px rgba(255, 255, 255, .07), 0 10px 30px -18px rgba(0, 0, 0, .7); }
+html[data-theme="sombre"] .nav.defile .nav__rangee { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), inset 0 0 0 1px rgba(255, 255, 255, .08), 0 16px 40px -18px rgba(0, 0, 0, .8); }
+html[data-theme="sombre"] .nav .nav__rangee::before { background: linear-gradient(100deg, rgba(255, 255, 255, .22), rgba(255, 255, 255, .05) 30%, rgba(255, 255, 255, 0) 60%, rgba(255, 255, 255, .16)); }
+html[data-theme="sombre"] .appel::before, html[data-theme="sombre"] .resume__carte::before,
+html[data-theme="sombre"] .bord::before, html[data-theme="sombre"] .fil::before { background: linear-gradient(140deg, rgba(255, 255, 255, .24), rgba(255, 255, 255, .06) 28%, rgba(255, 255, 255, 0) 55%, rgba(255, 255, 255, .12) 100%); }
+html[data-theme="sombre"] .reflet:not(.forfait--vedette)::after { background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 0%), rgba(255, 255, 255, .07), rgba(255, 255, 255, 0) 65%); }
+html[data-theme="sombre"] .lentille { background: rgba(255, 255, 255, .12); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .16), inset 0 0 0 1px rgba(255, 255, 255, .08), var(--ombre-douce); }
+html[data-theme="sombre"] .metiers .lentille { background: linear-gradient(180deg, #FFFFFF, #DDE4EE); box-shadow: inset 0 1px 0 #FFFFFF, 0 6px 16px -6px rgba(0, 0, 0, .6); }
+html[data-theme="sombre"] .metiers:not(.a-lentille) button { background: rgba(255, 255, 255, .06); }
+html[data-theme="sombre"] .metiers:not(.a-lentille) button[aria-pressed="true"] { background: var(--encre); }
+html.js[data-theme="sombre"] .metiers { background: rgba(255, 255, 255, .05); }
+html[data-theme="sombre"] .repondus li { background: rgba(23, 33, 52, .72); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), inset -1px 0 0 rgba(255, 255, 255, .05), 0 12px 28px -14px rgba(0, 0, 0, .6); }
+html.js[data-theme="sombre"] .barre { background: rgba(13, 21, 36, .92); }
+html[data-theme="sombre"] .photo-note { background: rgba(13, 21, 36, .86); }
+html[data-theme="sombre"] .photo-metier { background-color: #1A2232; }
+/* Les scènes orangées passent au brun chaud */
+html[data-theme="sombre"] .scene__fond { background: radial-gradient(75% 60% at 92% 4%, rgba(255, 122, 61, .24), rgba(255, 122, 61, 0) 70%), radial-gradient(65% 55% at 4% 100%, rgba(255, 186, 110, .12), rgba(255, 186, 110, 0) 70%), linear-gradient(165deg, #1E1611, #2A1B12); }
+html[data-theme="sombre"] .script__fond { background: radial-gradient(70% 60% at 100% 0%, rgba(255, 122, 61, .18), rgba(255, 122, 61, 0) 70%), linear-gradient(165deg, #1E1611, #2A1B12); }
+html[data-theme="sombre"] .barres i { background: rgba(92, 143, 246, .5); }
+/* Formulaire et curseurs */
+html[data-theme="sombre"] .champ input::placeholder, html[data-theme="sombre"] .champ textarea::placeholder { color: #8C97AA; }
+html[data-theme="sombre"] .champ input:user-invalid, html[data-theme="sombre"] .champ textarea:user-invalid { border-color: var(--urgence); }
+html[data-theme="sombre"] .curseur input::-webkit-slider-thumb { background: #EEF2F7; border-color: #EEF2F7; box-shadow: 0 2px 8px rgba(0, 0, 0, .5); }
+html[data-theme="sombre"] .curseur input::-moz-range-thumb { background: #EEF2F7; border-color: #EEF2F7; box-shadow: 0 2px 8px rgba(0, 0, 0, .5); }
+/* Le carré marine du logo : un filet le détache du fond */
+html[data-theme="sombre"] .logo__icone { border-radius: 22%; box-shadow: 0 0 0 1px rgba(255, 255, 255, .16); }
+/* La boîte du chatbot reste claire */
+html[data-theme="sombre"] #uio-box { --encre: #0E1A2B; --contour: #868D98; --texte-2: #5B6472; color-scheme: light; }
+html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 22px -6px rgba(0, 0, 0, .6); }
+</style>
+<noscript><style>.photo-metier { background-image: var(--photo); }</style></noscript>
+</head>
+<body>
+<a class="skip" href="#contenu">Skip to content</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-plus" viewBox="0 0 20 20"><path d="M10 4v12M4 10h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-etoile" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.2 1.3-6.6L2.5 9.3l6.6-.8z"/></symbol>
+  <symbol id="i-logo" viewBox="0 0 512 512"><rect width="512" height="512" rx="112.64" fill="#0E1A2B"/><path fill="#fff" transform="translate(74.96 389.12) scale(0.40960 -0.40960)" d="M243 -14Q149 -14 101.5 49.5Q54 113 54 243V528H216V264Q216 190 238.0 153.5Q260 117 305 117Q332 117 351.5 130.5Q371 144 384.5 168.5Q398 193 404.5 225.0Q411 257 411 295V528H572V214V0H444L441 163H421Q406 101 383.5 61.5Q361 22 327.0 4.0Q293 -14 243 -14Z"/></symbol><symbol id="i-lune" viewBox="0 0 20 20"><path d="M16.6 12.3A6.9 6.9 0 0 1 7.7 3.4a6.9 6.9 0 1 0 8.9 8.9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol><symbol id="i-soleil" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10" cy="10" r="3.5"/><path d="M10 1.9v1.7M10 16.4v1.7M1.9 10h1.7M16.4 10h1.7M4.3 4.3l1.2 1.2M14.5 14.5l1.2 1.2M4.3 15.7l1.2-1.2M14.5 5.5l1.2-1.2"/></g></symbol>
+  <symbol id="i-mot" viewBox="196 35 183 99"><path transform="translate(190.00 132.00) scale(0.12800 -0.12800)" d="M243 -14Q149 -14 101.5 49.5Q54 113 54 243V528H216V264Q216 190 238.0 153.5Q260 117 305 117Q332 117 351.5 130.5Q371 144 384.5 168.5Q398 193 404.5 225.0Q411 257 411 295V528H572V214V0H444L441 163H421Q406 101 383.5 61.5Q361 22 327.0 4.0Q293 -14 243 -14Z"/><path transform="translate(269.62 132.00) scale(0.12800 -0.12800)" d="M62 0V528H223V0ZM143 602Q97 602 72.5 621.5Q48 641 48 677Q48 715 72.5 734.5Q97 754 143 754Q190 754 214.5 734.5Q239 715 239 678Q239 641 214.5 621.5Q190 602 143 602Z"/><path transform="translate(304.69 132.00) scale(0.12800 -0.12800)" d="M305 -14Q225 -14 163.5 17.0Q102 48 67.0 110.0Q32 172 32 265Q32 358 67.0 419.5Q102 481 164.0 511.5Q226 542 306 542Q386 542 448.0 511.0Q510 480 545.0 418.5Q580 357 580 264Q580 169 544.0 107.0Q508 45 445.5 15.5Q383 -14 305 -14ZM310 103Q346 103 370.0 119.5Q394 136 406.0 170.0Q418 204 418 254Q418 307 405.0 343.5Q392 380 366.5 399.5Q341 419 301 419Q267 419 242.5 402.5Q218 386 206.0 352.0Q194 318 194 267Q194 185 224.5 144.0Q255 103 310 103Z"/></symbol>
+</svg>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__rangee">
+    <a class="logo" id="logo" href="./" aria-label="Agence UIO, home">
+      <svg class="logo__icone" viewBox="0 0 512 512" aria-hidden="true"><use href="#i-logo"/><path class="onde" d="M 337.92 122.88 A 61.44 61.44 0 0 1 399.36 184.32" fill="none" stroke="#FF6A2B" stroke-width="30.72" stroke-linecap="round"/><path class="onde" d="M 337.92 66.56 A 117.76 117.76 0 0 1 455.68 184.32" fill="none" stroke="#FF6A2B" stroke-width="30.72" stroke-linecap="round"/></svg>
+      <span class="logo__mot" aria-hidden="true"><svg viewBox="0 0 183 99" fill="currentColor"><use href="#i-mot" width="183" height="99"/></svg><small>Agence Gatineau</small></span>
+    </a>
+    <nav class="nav__liens" aria-label="Main navigation">
+      <a href="#repondeur">Answering agent</a> <a href="#forfaits">Plans</a> <a href="#questions">Questions</a>
+    </nav>
+    <div class="nav__actions">
+      <a class="langue" href="../" hreflang="fr" lang="fr" aria-label="Version française" title="Version française">FR</a>
+      <button class="theme" id="theme" type="button" aria-pressed="false" aria-label="Dark mode" title="Dark mode" hidden><svg class="theme__lune" aria-hidden="true"><use href="#i-lune"/></svg><svg class="theme__soleil" aria-hidden="true"><use href="#i-soleil"/></svg></button>
+      <a class="nav__tel" href="tel:+18734558990" aria-label="Call Agence UIO at 873-455-8990"><span class="tel">873-455-8990</span></a>
+      <a class="btn btn--petit" href="#contact">Free audit</a>
+    </div>
+  </div>
+</header>
+
+<main id="contenu">
+
+  <section class="hero" aria-labelledby="titre">
+    <div class="aurore" aria-hidden="true"><i></i><i></i><i></i></div>
+    <ul class="repondus" aria-hidden="true">
+      <li class="repondus__note">Calls answered<br>Fictional examples</li>
+      <li><b>6:55 a.m.</b><span>Water leak</span></li>
+      <li><b>12:30 p.m.</b><span>Heat pump</span></li>
+      <li><b>7:48 p.m.</b><span>Emergency</span></li>
+      <li><b>Sunday</b><span>Winter tires</span></li>
+    </ul>
+    <div class="wrap hero__grille">
+      <div class="hero__texte">
+        <h1 id="titre">Every call answered. Even on the job site.</h1>
+        <p class="lead">An AI answering agent takes your calls 24/7, in French and English: on the job site, in the evening and on weekends. It only puts emergencies through to you, books the appointment and texts you the summary.</p>
+        <div class="hero__actions">
+          <a class="btn" href="#contact">Request my free audit</a> <a class="lien" href="tel:+18734558990">Call&nbsp;<span class="tel">873-455-8990</span></a>
+        </div>
+        <ul class="faits">
+          <li>From $199 a month</li>
+          <li>No contract</li>
+          <li>Set up by us</li>
+        </ul>
+        <figure class="resume" id="resume" aria-label="Fictional example: the text you get after the call">
+          <div class="resume__carte">
+            <div class="resume__tete"><svg viewBox="0 0 512 512" aria-hidden="true"><use href="#i-logo"/><path d="M 337.92 122.88 A 61.44 61.44 0 0 1 399.36 184.32" fill="none" stroke="#FF6A2B" stroke-width="30.72" stroke-linecap="round"/><path d="M 337.92 66.56 A 117.76 117.76 0 0 1 455.68 184.32" fill="none" stroke="#FF6A2B" stroke-width="30.72" stroke-linecap="round"/></svg><b>Answering agent</b><span class="resume__quand">just now</span></div>
+            <p class="resume__texte" id="resume-texte">New appointment: Tuesday 9 a.m., 12 rue Laval, Gatineau. Leaking water heater. Customer: 819-555-0142.</p>
+          </div>
+          <figcaption class="petit">The text you get after every call. Fictional example.</figcaption>
+        </figure>
+      </div>
+
+      <figure class="scene">
+        <div class="scene__fond">
+          <div class="scene__photos" aria-hidden="true">
+            <span class="photo-metier scene__photo actif pret" data-photo="plomberie"></span> <span class="photo-metier scene__photo" data-photo="chauffage"></span> <span class="photo-metier scene__photo" data-photo="electricite"></span> <span class="photo-metier scene__photo" data-photo="garage"></span> <span class="photo-note">Illustrative photo</span>
+          </div>
+          <div class="metiers" id="metiers" role="group" aria-label="Choose the trade for the demo">
+            <button type="button" data-metier="plomberie" aria-pressed="true">Plumbing</button>
+            <button type="button" data-metier="chauffage" aria-pressed="false">Heating</button>
+            <button type="button" data-metier="electricite" aria-pressed="false">Electrical</button>
+            <button type="button" data-metier="garage" aria-pressed="false">Garage</button>
+          </div>
+          <div class="appel" id="appel" role="group" aria-label="Fictional demo: a call answered by the answering agent">
+            <div class="appel__tete">
+              <span class="appel__etat"><span class="appel__point" aria-hidden="true"></span><span id="a-etat">Call ended</span></span> <span class="appel__duree" id="a-duree">1:02</span>
+            </div>
+            <p class="appel__qui"><b>819-555-0142</b><span>Lavoie Plumbing · answering agent</span></p>
+            <div class="voix" aria-hidden="true"><i style="--i:0;--h:87%"></i><i style="--i:1;--h:78%"></i><i style="--i:2;--h:63%"></i><i style="--i:3;--h:78%"></i><i style="--i:4;--h:61%"></i><i style="--i:5;--h:74%"></i><i style="--i:6;--h:54%"></i><i style="--i:7;--h:81%"></i><i style="--i:8;--h:87%"></i><i style="--i:9;--h:40%"></i><i style="--i:10;--h:81%"></i><i style="--i:11;--h:73%"></i><i style="--i:12;--h:53%"></i><i style="--i:13;--h:100%"></i><i style="--i:14;--h:57%"></i><i style="--i:15;--h:72%"></i><i style="--i:16;--h:60%"></i><i style="--i:17;--h:50%"></i><i style="--i:18;--h:90%"></i><i style="--i:19;--h:57%"></i><i style="--i:20;--h:64%"></i><i style="--i:21;--h:69%"></i><i style="--i:22;--h:46%"></i><i style="--i:23;--h:94%"></i><i style="--i:24;--h:61%"></i><i style="--i:25;--h:60%"></i><i style="--i:26;--h:92%"></i><i style="--i:27;--h:59%"></i></div>
+            <ol class="transcription">
+              <li data-t="300"><span class="qui">Agent</span><q>Hi, bonjour! Lavoie Plumbing, how can I help you?</q><small class="selon">Just before, a short message says the call is recorded</small></li>
+              <li data-t="1800"><span class="qui">Caller</span><q>My water heater is leaking a bit. Can you come by this week?</q></li>
+              <li data-t="3100"><span class="qui">Agent</span><q>Yes. What’s the address?</q></li>
+              <li data-t="4300"><span class="qui">Caller</span><q>12 rue Laval, in Gatineau.</q></li>
+              <li data-t="5500"><span class="qui">Agent</span><q>That’s in our area. I can offer Tuesday at 9 a.m. or Wednesday at 1 p.m.</q><small class="selon">Based on your service area and calendar</small></li>
+              <li data-t="6700"><span class="qui">Caller</span><q>Tuesday, 9 a.m.</q></li>
+            </ol>
+            <ul class="appel__suite">
+              <li data-t="7800"><i class="puce puce--centre"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10.5l3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></i><div><b>Appointment added to the calendar</b><span>Tuesday 9 a.m. · 12 rue Laval, Gatineau</span></div></li>
+              <li data-t="8400"><i class="puce puce--texto"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10.5l3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></i><div><b>Summary sent by text</b><span>To you and the customer</span></div></li>
+            </ul>
+          </div>
+        </div>
+        <figcaption class="scene__legende">
+          <span class="petit">Fictional demos: made-up businesses and numbers.</span>
+          <button class="rejouer" id="reprise" type="button">Replay the call</button>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section nuit" aria-labelledby="t-probleme">
+    <div class="wrap silence">
+      <h2 id="t-probleme">A missed call is often a job for your competitor.</h2>
+      <figure class="manques" aria-label="Fictional example: two missed calls and an empty voicemail">
+        <ul>
+          <li><b>Missed call · 7:42 a.m.</b><span>819-555-0173</span></li>
+          <li><b>Missed call · 12:15 p.m.</b><span>613-555-0128</span></li>
+          <li class="vide"><b>Voicemail</b><span>No new messages</span></li>
+        </ul>
+        <figcaption class="petit">Fictional example.</figcaption>
+      </figure>
+      <ul class="silence__chiffres" id="chiffres">
+        <li><b><span class="moins">from</span> 1 in 7</b> to more than 1 in 4 calls go unanswered, according to platform data.</li>
+        <li><b><span class="moins">under</span> <span data-compte="3">3</span>%</b> of people who reach voicemail leave a message.</li>
+      </ul>
+      <p class="petit">Sources: call platform data (vendors), including Invoca, May 2024, in the United States.</p>
+    </div>
+  </section>
+
+  <section class="section" id="repondeur" aria-labelledby="t-repondeur">
+    <div class="wrap deroule">
+      <div class="deroule__tete">
+        <h2 id="t-repondeur">It answers the way you would.</h2>
+        <p class="lead">We write its script with you, for your trade: your services, your service area, your emergencies. It follows your rules and puts the call through to you when needed.</p>
+        <p class="petit">The lines quoted are a fictional example.</p>
+        <figure class="script" aria-label="Fictional example: an excerpt from Lavoie Plumbing’s script">
+          <div class="script__fond">
+            <span class="photo-metier script__photo" aria-hidden="true"><span class="photo-note">Illustrative photo</span></span>
+            <div class="script__carte">
+              <div class="script__tete"><b>Lavoie Plumbing’s script</b><span class="script__statut">Approved by you</span></div>
+              <dl>
+                <div><dt>Greeting</dt><dd>A short message says the call is recorded, then it answers in the business’s name.</dd></div>
+                <div><dt>Emergencies</dt><dd>Water damage, gas smell: the safety instructions, then a transfer to your cell.</dd></div>
+                <div><dt>Service area</dt><dd>Gatineau, Chelsea and Cantley. Anywhere else, it says so politely.</dd></div>
+                <div><dt>Appointments</dt><dd>Monday to Friday, 8 a.m. to 4 p.m. It offers two open time slots.</dd></div>
+              </dl>
+            </div>
+          </div>
+          <figcaption class="petit">The script and the lines quoted are a fictional example.</figcaption>
+        </figure>
+      </div>
+      <div class="deroule__etapes">
+      <ol class="etapes" id="etapes">
+        <li><h3>It answers in your name</h3><p>After a short message saying the call is recorded, it answers in your business’s name and switches to French if the caller speaks French.</p><p class="replique"><span class="qui">Agent</span><q>Hi, bonjour! Lavoie Plumbing, how can I help you?</q></p></li>
+        <li><h3>It spots emergencies</h3><p>Water damage, a gas smell, no heat in winter: it gives the safety instructions and transfers the call to your cell right away.</p></li>
+        <li><h3>It takes the request and contact details</h3><p>The service, since when, the name, the number read back out loud and the address. If the address is outside your service area, it says so politely.</p></li>
+        <li><h3>It books</h3><p>It offers two open time slots in your calendar. With the Answering plan, it promises a callback before a set time instead.</p><p class="replique"><span class="qui">Agent</span><q>So: leaking water heater, at 12 rue Laval, Tuesday 9 a.m. Is that right?</q></p></li>
+        <li><h3>It sends you the summary</h3><p>A text goes to you and the customer. If the caller wants to talk to someone, or if the agent doesn’t understand twice, it transfers the call to you with a summary.</p></li>
+      </ol>
+      <div class="points" id="points" aria-hidden="true"><i class="actif"></i><i></i><i></i><i></i><i></i></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section gris" id="modules" aria-labelledby="t-suite">
+    <div class="wrap">
+      <div class="tete tete--deux">
+        <h2 id="t-suite">Everything after the call, in one place.</h2>
+        <p class="lead">Every call becomes a record, an appointment or a text. Pick a module to see it at work.</p>
+      </div>
+
+      <div class="onglets" id="onglets" aria-label="The modules">
+        <button type="button" id="o-centre" data-m="centre" aria-controls="p-centre"><span>Control<span class="o-long"> centre</span></span></button>
+        <button type="button" id="o-texto" data-m="texto" aria-controls="p-texto"><span>Text<span class="o-long"> after a missed call</span></span></button>
+        <button type="button" id="o-site" data-m="site" aria-controls="p-site"><span>Website</span></button>
+      </div>
+
+      <div class="panneaux">
+        <div class="panneau panneau--centre" id="p-centre">
+          <div class="panneau__texte">
+            <h3>The control centre</h3>
+            <p>With the Growth and Complete plans, every call becomes a record, on your cell and your computer.</p>
+            <ul class="inclus">
+              <li><b>Calls and customers</b><span>Every call with its summary, the request and the next step.</span></li>
+              <li><b>The calendar</b><span>Appointments booked by the answering agent, with reminders.</span></li>
+              <li><b>Google reviews</b><span>A review request goes out after every job.</span></li>
+              <li><b>Automatic emails</b><span>Quote follow-ups and appointment reminders.</span></li>
+              <li><b>Charts and the monthly report</b><span>Calls taken, jobs booked, reviews received.</span></li>
+            </ul>
+            <p class="offre-ligne">On its own: $149 a month. Included in Growth and Complete.</p>
+          </div>
+          <div class="panneau__scene">
+            <figure class="bord" id="bord" aria-label="Fictional example of the control centre">
+              <div class="bord__tete"><b>Today</b><span>Lavoie Plumbing</span></div>
+              <ul class="bord__appels">
+                <li style="--i:2"><span class="bord__heure">2:32 p.m.</span><span class="bord__quoi"><b>Leaking water heater</b><span>12 rue Laval · Tuesday 9 a.m.</span></span><span class="bord__statut bord__statut--rdv">Appointment</span></li>
+                <li style="--i:1"><span class="bord__heure">11:05 a.m.</span><span class="bord__quoi"><b>Gas smell</b><span>Transferred to your cell</span></span><span class="bord__statut bord__statut--urgence">Emergency</span></li>
+                <li style="--i:0"><span class="bord__heure">9:40 a.m.</span><span class="bord__quoi"><b>Quote, bathroom</b><span>Callback promised before 4 p.m.</span></span><span class="bord__statut bord__statut--rappel">Callback</span></li>
+              </ul>
+              <div class="bord__chiffres">
+                <div><b id="bord-appels">86</b><span>calls answered this month</span><span class="barres" aria-hidden="true"><i style="--h:42%;--i:0"></i><i style="--h:55%;--i:1"></i><i style="--h:51%;--i:2"></i><i style="--h:68%;--i:3"></i><i style="--h:74%;--i:4"></i><i style="--h:92%;--i:5"></i></span></div>
+                <div><b>4.8</b><span>Google rating, 37 reviews</span><span class="etoiles" aria-hidden="true"><svg style="--i:0"><use href="#i-etoile"/></svg><svg style="--i:1"><use href="#i-etoile"/></svg><svg style="--i:2"><use href="#i-etoile"/></svg><svg style="--i:3"><use href="#i-etoile"/></svg><svg style="--i:4"><use href="#i-etoile"/></svg></span></div>
+              </div>
+              <figcaption class="exemple-note">Fictional example.</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="panneau panneau--texto" id="p-texto">
+          <div class="panneau__texte">
+            <h3>The missed-call text</h3>
+            <p>If someone hangs up before speaking, they get a text in your name right away. The lead isn’t lost.</p>
+            <p>The text gives your business’s name and honours opt-out requests (STOP or ARRÊT).</p>
+            <p class="offre-ligne">Included with the answering agent. On its own: $69 a month.</p>
+          </div>
+          <div class="panneau__scene">
+            <figure class="fil" id="fil" aria-label="Fictional example of a missed-call text">
+              <ol>
+                <li data-etat="manque"><span class="bord__heure">2:32 p.m.</span><span class="bord__quoi"><b>Missed call</b><span>819-555-0142 hung up before speaking.</span></span></li>
+                <li data-etat="envoye"><span class="bord__heure">2:32 p.m.</span><span class="bord__quoi"><b>Text sent in your name</b><q>Sorry we missed your call. How can we help?</q><span class="fil__ecrit" aria-hidden="true"><i></i><i></i><i></i></span></span></li>
+                <li data-etat="reponse"><span class="bord__heure">2:39 p.m.</span><span class="bord__quoi"><b>Customer’s reply</b><q>A leak under the sink. Can you come by tomorrow?</q><span class="fil__ecrit" aria-hidden="true"><i></i><i></i><i></i></span></span></li>
+              </ol>
+              <figcaption class="exemple-note">Fictional example.</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="panneau panneau--site" id="p-site">
+          <div class="panneau__texte">
+            <h3>A website that gets you calls</h3>
+            <p>A custom bilingual website, hosted and kept up to date. As an option, an AI chatbot built for your trade: price estimator, frequently asked questions, appointment booking.</p>
+            <button class="rejouer essai-chat" id="essayer-chat" type="button" data-avec-chat data-ouvre-chat hidden>Try this page’s chatbot</button>
+            <p class="petit">Our work: Mobilo Moving, a Gatineau moving company. Bilingual website with estimates from a photo. <a class="lien-externe" href="https://themobilo.com" target="_blank" rel="noopener">themobilo.com</a></p>
+            <p class="offre-ligne">Website: $99 a month. Chatbot: $59 more.</p>
+          </div>
+          <div class="panneau__scene">
+            <a class="module__image" href="https://themobilo.com" target="_blank" rel="noopener" aria-label="See the Mobilo Moving website (new tab)"><img src="../assets/mobilo-apercu.webp" srcset="../assets/mobilo-apercu-720.webp 720w, ../assets/mobilo-apercu.webp 1440w" sizes="(min-width: 960px) 600px, 100vw" width="1440" height="900" alt="Home page of the Mobilo Moving website" loading="lazy" decoding="async"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="calcul" aria-labelledby="t-calcul">
+    <div class="wrap">
+      <div class="calcul" id="calculateur">
+        <div class="calcul__tete">
+          <h2 id="t-calcul">How much are your missed calls costing you?</h2>
+          <p class="lead">Move the sliders. The math happens in your browser; nothing is sent.</p>
+        </div>
+        <div class="calcul__corps">
+          <div class="curseurs">
+            <div class="curseur">
+              <label for="r-appels">Missed calls per week <output id="o-appels" for="r-appels">5</output></label>
+              <input type="range" id="r-appels" min="0" max="30" value="5">
+            </div>
+            <div class="curseur">
+              <label for="r-taux">Out of 10 callers, how many would become customers <output id="o-taux" for="r-taux">3 in 10</output></label>
+              <input type="range" id="r-taux" min="1" max="10" value="3">
+            </div>
+            <div class="curseur">
+              <label for="r-valeur">Average job value <output id="o-valeur" for="r-valeur">$450</output></label>
+              <input type="range" id="r-valeur" min="100" max="5000" step="50" value="450">
+            </div>
+          </div>
+          <div class="resultat">
+            <p class="resultat__montant"><span>$<span id="perte">2,920</span></span><span class="unite">a month</span></p>
+            <p>In jobs that could slip away from you, in this scenario.</p>
+            <p class="roi" id="roi">The Answering plan costs $199 a month. A single extra job of $450 a month pays for it.</p>
+            <a class="btn" href="#contact">Check it with a free audit</a>
+            <p class="petit">Math: missed calls × 4.33 weeks × share who would become customers × job value. This is possible revenue, not profit or a guaranteed result.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section gris" id="forfaits" aria-labelledby="t-forfaits">
+    <div class="wrap">
+      <div class="tete tete--centre">
+        <h2 id="t-forfaits">Three plans. No contract.</h2>
+        <p class="lead">Monthly prices in Canadian dollars, before taxes. The setup fee pays for installing and testing your script. Stop whenever you want.</p>
+        <p class="petit">Set up and supported by our team in Gatineau.</p>
+      </div>
+
+      <div class="choix-forfait" id="choix-forfait" role="group" aria-label="View a plan" aria-controls="liste-forfaits">
+        <button type="button" data-plan="Répondeur" aria-pressed="false">Answering</button>
+        <button type="button" data-plan="Croissance" aria-pressed="true">Growth</button>
+        <button type="button" data-plan="Complet" aria-pressed="false">Complete</button>
+      </div>
+      <div class="forfaits" id="liste-forfaits">
+        <div class="forfait" data-nom="Répondeur">
+          <div class="forfait__nom"><h3>Answering</h3></div>
+          <p class="forfait__pour">So you never lose another call.</p>
+          <p class="forfait__prix"><b>$199</b><span>a month</span></p>
+          <p class="forfait__depart">Setup fee: $299, credited back starting with your 4th invoice <span class="forfait__valeur">First-month money-back guarantee, setup fee included</span></p>
+          <a class="btn btn--contour" href="#contact" data-forfait="Answering">Choose the Answering plan</a>
+          <ul>
+            <li data-m="voix">AI answering agent 24/7, in French and English</li>
+            <li data-m="voix">Script written for your trade, emergencies included</li>
+            <li data-m="voix">Text summary to you and the customer after every call</li>
+            <li data-m="voix">Only emergencies are transferred to your cell</li>
+            <li data-m="texto">Automatic text if someone hangs up before speaking</li>
+            <li data-m="voix">Monthly follow-up: a report by text or email, and we listen to 10 calls to fine-tune the script</li>
+            <li class="minutes" data-m="voix">250 minutes a month, about 80 to 190 calls</li>
+          </ul>
+        </div>
+        <div class="forfait forfait--vedette" data-nom="Croissance">
+          <div class="forfait__nom"><h3>Growth</h3><span class="etiquette">Recommended</span></div>
+          <p class="forfait__pour">Appointments in your calendar, Google reviews and a monthly report.</p>
+          <p class="forfait__prix"><b>$299</b><span>a month</span></p>
+          <p class="forfait__depart">Setup fee: $399, credited back starting with your 4th invoice <span class="forfait__valeur">First-month money-back guarantee, setup fee included</span> <span class="forfait__valeur">À la carte: $348 a month</span></p>
+          <a class="btn" href="#contact" data-forfait="Growth">Choose the Growth plan</a>
+          <ul>
+            <li data-m="voix">Everything in Answering</li>
+            <li data-m="centre">Appointments booked in your calendar</li>
+            <li data-m="centre">Google review requests after every job</li>
+            <li data-m="centre">Automatic emails: quote follow-ups, appointment reminders</li>
+            <li data-m="centre">Full monthly report by text or email: calls, appointments, reviews</li>
+            <li class="minutes" data-m="voix">500 minutes a month, about 170 to 380 calls</li>
+          </ul>
+        </div>
+        <div class="forfait" data-nom="Complet">
+          <div class="forfait__nom"><h3>Complete</h3></div>
+          <p class="forfait__pour">Growth + a custom website, for $100 more a month.</p>
+          <p class="forfait__prix"><b>$399</b><span>a month</span></p>
+          <p class="forfait__depart">Setup fee: $799, website build included <span class="forfait__valeur">À la carte: $447 a month</span></p>
+          <a class="btn btn--contour" href="#contact" data-forfait="Complete">Choose the Complete plan</a>
+          <ul>
+            <li data-m="centre">Everything in Growth</li>
+            <li data-m="site">Custom bilingual website, hosted and kept up to date</li>
+            <li data-m="site">Charts of site visits and where your customers come from</li>
+            <li>Priority support</li>
+            <li class="minutes" data-m="voix">750 minutes a month, about 250 to 560 calls</li>
+          </ul>
+        </div>
+      </div>
+
+      <details class="tuile carte" id="a-la-carte" open>
+        <summary>
+          <h3>Or à la carte</h3>
+          <span class="carte__texte">Take only what you need. Several modules together cost less: we’ll do the math with you during the audit.</span>
+          <span class="carte__chevron"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 7.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </summary>
+        <div class="carte__corps">
+        <div class="table-defile">
+          <table class="modules">
+            <thead><tr><th scope="col">Module</th><th scope="col">Monthly</th><th scope="col">Setup</th></tr></thead>
+            <tbody>
+              <tr data-m="voix"><td><b>AI answering agent</b><span>Includes the missed-call text, 250 minutes</span></td><td>$199</td><td>$299</td></tr>
+              <tr data-m="texto"><td><b>Missed-call text</b></td><td>$69</td><td>$99</td></tr>
+              <tr data-m="site"><td><b>Website</b><span>Custom, bilingual, hosted</span></td><td>$99</td><td>$499</td></tr>
+              <tr data-m="centre"><td><b>Control centre</b><span>Customers, calendar, reviews, emails, report</span></td><td>$149</td><td>$199</td></tr>
+              <tr data-m="site"><td><b>AI chatbot on your website</b><span>With the website, or on your current site</span></td><td>+ $59</td><td>+ $199</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="extras">
+          <p><b>Extra minutes:</b> $0.39 a minute, and we warn you at 80% of your plan. If you often go over: a block of 250 more minutes for $99 a month, stackable. Very large volumes: custom quote. Spam and calls under 15 seconds never count toward your minutes.</p>
+          <p><b>Second number or location:</b> $49 a month. <b>Answering agent for all your calls,</b> not just the ones you miss: custom quote.</p>
+        </div>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section class="section" id="installation" aria-labelledby="t-installation">
+    <div class="wrap">
+      <div class="tete tete--deux">
+        <h2 id="t-installation">You stay on the job site. We set everything up.</h2>
+        <p class="lead">You tell us how you work. We write the script, test it with real calls, set everything up and track the results with you.</p>
+      </div>
+      <div class="parcours-cadre">
+      <ol class="parcours" id="parcours">
+        <li style="--i:0">
+          <h3>The free audit</h3>
+          <p>We look at your calls, your website and your Google Business Profile, then tell you what we’d do in your shoes.</p>
+          <p class="parcours__vous"><span>You:</span> one 15-minute call</p>
+        </li>
+        <li style="--i:1">
+          <h3>The script</h3>
+          <p>We write what it says with you: your services, your service area, your emergencies, and when it should put the call through to you.</p>
+          <p class="parcours__vous"><span>You:</span> a few answers</p>
+        </li>
+        <li style="--i:2">
+          <h3>The tests</h3>
+          <p>We call it the way your customers would: accents, job-site noise, a caller in a hurry. We only turn it on once the tests pass.</p>
+          <p class="parcours__vous"><span>You:</span> your OK</p>
+        </li>
+        <li class="parcours__ensuite" style="--i:3">
+          <h3>Going live</h3>
+          <p>We set up call forwarding with you. You get the summaries, and we fine-tune the script as needed.</p>
+          <p class="parcours__vous"><span>You:</span> read your summaries</p>
+        </li>
+      </ol>
+      <span class="photo-metier parcours__photo" aria-hidden="true"></span>
+      </div>
+      <div class="points" id="points-parcours" aria-hidden="true"><i class="actif"></i><i></i><i></i><i></i></div>
+      <p class="parcours__total">What we ask of you, in total: <span>one call, a few answers, then your OK.</span></p>
+    </div>
+  </section>
+
+  <section class="section gris" id="confiance" aria-labelledby="t-confiance">
+    <div class="wrap">
+      <div class="confiance">
+        <div class="confiance__tete">
+          <h2 id="t-confiance">You decide what it says.</h2>
+          <p class="lead">It follows the script you approved and puts the call through to you when needed. Nothing goes live without your OK.</p>
+          <a class="lien" href="privacy.html">Read our privacy policy</a>
+        </div>
+        <ul class="garanties">
+          <li><h3>It stays honest</h3><p>A short message says the call is recorded. If a caller asks whether they’re talking to a person, the agent always confirms it’s virtual.</p></li>
+          <li><h3>Emergencies go to you</h3><p>You decide what’s urgent. For water damage or a gas smell, it gives the safety instructions and transfers the call to your cell.</p></li>
+          <li><h3>A human when it counts</h3><p>If the caller wants to talk to someone, or if the agent doesn’t understand twice in a row, it puts the call through to you with a summary. If you don’t answer, it takes a message and sends you an urgent text.</p></li>
+          <li><h3>Your data and Quebec’s Law 25</h3><p>We explain what the tools require on your side, we put a privacy policy on your website, and texts honour STOP and ARRÊT.</p></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="questions" aria-labelledby="t-questions">
+    <div class="wrap faq">
+      <div class="faq__aside">
+        <h2 id="t-questions">Questions we get asked.</h2>
+        <p>Another question? We answer the same day (or first thing the next morning for requests sent in the evening).</p>
+        <div class="faq__moyens">
+          <a class="lien" href="tel:+18734558990"><span class="tel">873-455-8990</span></a>
+          <a class="lien" href="mailto:info@agenceuio.ca">info@agenceuio.ca</a>
+        </div>
+      </div>
+      <div class="questions">
+        <details><summary>Does it understand local accents, in French and English?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>It speaks French and English. Before going live, we test your script with real calls: accents, job-site noise, callers in a hurry. We only turn it on once the tests pass.</p></details>
+        <details><summary>Do I keep my number?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Yes. The calls you don’t take are forwarded to the answering agent; we set up the forwarding with you at your phone provider. It can also answer all your calls; we quote that separately.</p></details>
+        <details><summary>How many minutes are included?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>250, 500 or 750 minutes a month depending on the plan; 250 minutes is about 80 to 190 calls. Spam and calls under 15 seconds never count. We warn you at 80%. Past your included minutes, it’s $0.39 a minute, or a block of 250 more minutes for $99 a month if you often go over.</p></details>
+        <details><summary>Am I tied to a contract?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>No. It’s month to month, and you can stop whenever you want. The setup fee pays for installing and testing your script. With Answering and Growth, it comes back to you as a credit on your 4th invoice; anything above that invoice ($100 with the plan alone) carries over to the 5th. This credit is never paid out in cash: if you stop before the 5th invoice, the rest isn’t refunded. The first month is money-back guaranteed, setup fee included.</p></details>
+        <details><summary>I already have a website. Do I need to redo it?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>No. The answering agent and the control centre work with any website. The AI chatbot can also be added to most existing websites (WordPress, Wix, Shopify, Squarespace): we install it for you, without touching your design.</p></details>
+        <details><summary>Are review requests allowed by Google?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Yes, as long as there’s no filtering. All your customers get the same request, with no reward and without picking only the happy ones, as Google’s rules require.</p></details>
+        <details><summary>Do you guarantee a number of customers?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>No. The number of jobs depends on your calls, your prices and your service. We commit to installing the tools and making them work, and every call summary shows you what they do for you.</p></details>
+        <details><summary>Do you only work with plumbers?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>We specialize in trades where a missed call costs a lot: plumbing, heating and cooling, electrical, auto repair, roofing, moving. For another field, call or email us.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="section nuit" id="contact" aria-labelledby="t-contact">
+    <div class="orbe" aria-hidden="true"></div>
+    <div class="wrap contact">
+      <div class="contact__texte">
+        <h2 id="t-contact">Let’s talk about your calls.</h2>
+        <p class="lead">Leave your details for a free 15-minute audit, no commitment. We call back the same day (or first thing the next morning for requests sent in the evening).</p>
+        <p class="equipe">You talk directly to the team that sets up your agent, in Gatineau.</p>
+        <div class="contact__moyens">
+          <a class="lien" href="tel:+18734558990"><span class="tel">873-455-8990</span></a>
+          <a class="lien" href="mailto:info@agenceuio.ca">info@agenceuio.ca</a>
+        </div>
+        <p class="contact__vite" data-avec-chat hidden>Prefer to pick the time? Our assistant books your audit, day or night. <button class="lien lien--bouton" type="button" data-ouvre-chat>Pick my time slot</button></p>
+        <div class="audit">
+          <p>During the audit, we go over with you:</p>
+          <ul>
+            <li>your missed calls, and what times they come in</li>
+            <li>your Google Business Profile and your website</li>
+            <li>what we’d do in your shoes, with the plan and its price</li>
+          </ul>
+        </div>
+      </div>
+      <form class="form" id="formulaire" action="https://api.web3forms.com/submit" method="POST" accept-charset="UTF-8">
+        <h3>Your free audit</h3>
+        <p class="form__forfait" hidden></p>
+        <input type="hidden" name="access_key" value="3a843130-1db8-460f-9c07-31bdf50c4334">
+        <input type="hidden" name="subject" value="Audit gratuit (site anglais) · site agenceuio.ca/en">
+        <input type="hidden" name="langue" value="anglais">
+        <input type="hidden" name="from_name" value="Site Agence UIO">
+        <input type="hidden" name="forfait" value="">
+        <input type="hidden" name="scenario_calculateur" value="">
+        <input type="checkbox" name="botcheck" class="cache" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="champs">
+          <div class="champ"><label for="f-nom">Your name</label><input id="f-nom" name="nom" autocomplete="name" required></div>
+          <div class="champ"><label for="f-entreprise">Business</label><input id="f-entreprise" name="entreprise" autocomplete="organization" required></div>
+          <div class="champ"><label for="f-tel">Phone</label><input id="f-tel" name="telephone" type="tel" autocomplete="tel" inputmode="tel" required></div>
+          <div class="champ"><label for="f-courriel">Email <span>(optional)</span></label><input id="f-courriel" name="courriel" type="email" autocomplete="email"></div>
+        </div>
+        <details class="plus" id="plus" open>
+        <summary>Add details <span>(optional)</span><svg aria-hidden="true"><use href="#i-plus"/></svg></summary>
+        <div class="champs">
+          <div class="champ"><label for="f-metier">Your trade <span>(optional)</span></label>
+            <select id="f-metier" name="metier">
+              <option value="">Choose your trade</option>
+              <option>Plumbing</option>
+              <option>Heating and cooling</option>
+              <option>Electrical</option>
+              <option>Garage</option>
+              <option>Roofing</option>
+              <option>Moving</option>
+              <option>Landscaping</option>
+              <option>Construction and renovation</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="champ"><label for="f-moment">Best time to call <span>(optional)</span></label>
+            <select id="f-moment" name="moment_rappel">
+              <option>Anytime</option>
+              <option>Morning</option>
+              <option>Around noon</option>
+              <option>Late afternoon</option>
+              <option>Evening</option>
+            </select>
+          </div>
+          <div class="champ champ--large"><label for="f-site">Your website <span>(optional)</span></label><input id="f-site" name="site_web" inputmode="url" autocomplete="url" placeholder="e.g. lavoieplumbing.ca"></div>
+          <div class="champ champ--large"><label for="f-message">A few words about your situation <span>(optional)</span></label><textarea id="f-message" name="message" placeholder="e.g. I miss calls when I’m on a job site"></textarea></div>
+        </div>
+        </details>
+        <p class="form__mention">We use this information to call you back, prepare your audit and follow up. The form goes through Web3Forms and our emails through Google: they may be processed outside Quebec. <a href="privacy.html">Privacy policy</a></p>
+        <button class="btn" type="submit">Request my free audit</button>
+        <p class="form__resultat" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pied">
+  <div class="wrap">
+    <div class="pied__haut">
+      <div>
+        <a class="logo" href="./" aria-label="Agence UIO, home">
+          <svg class="logo__icone" viewBox="0 0 512 512" aria-hidden="true"><use href="#i-logo"/><path class="onde" d="M 337.92 122.88 A 61.44 61.44 0 0 1 399.36 184.32" fill="none" stroke="#FF6A2B" stroke-width="30.72" stroke-linecap="round"/><path class="onde" d="M 337.92 66.56 A 117.76 117.76 0 0 1 455.68 184.32" fill="none" stroke="#FF6A2B" stroke-width="30.72" stroke-linecap="round"/></svg>
+          <span class="logo__mot" aria-hidden="true"><svg viewBox="0 0 183 99" fill="currentColor"><use href="#i-mot" width="183" height="99"/></svg><small>Agence Gatineau</small></span>
+        </a>
+        <p>An AI answering agent, and everything after the call, for contractors in Gatineau and Ottawa.</p>
+      </div>
+      <div>
+        <h2>Contact us</h2>
+        <ul>
+          <li><a href="tel:+18734558990"><span class="tel">873-455-8990</span></a></li>
+          <li><a href="mailto:info@agenceuio.ca">info@agenceuio.ca</a></li>
+          <li><a href="https://www.instagram.com/agence.uio/" target="_blank" rel="noopener">Instagram</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Agence UIO</h2>
+        <ul>
+          <li><a href="privacy.html">Privacy policy</a></li>
+          <li><a href="../client.html">Client area</a></li>
+          <li><a href="#contenu">Back to top</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="pied__sources">Source for this figure: <a href="https://www.invoca.com/uk/blog/how-much-missed-sales-calls-cost-home-services-businesses" target="_blank" rel="noopener">Invoca, May 2024</a> (unanswered calls and voicemails, home services, data from its platform). Prices in Canadian dollars, before taxes.</p>
+    <div class="pied__bas"><span>© <span id="annee">2026</span> Agence UIO, Gatineau, Quebec</span><span>Made in Gatineau</span></div>
+  </div>
+</footer>
+
+<nav class="barre" id="barre" aria-label="Contact us">
+  <a class="btn btn--contour" href="tel:+18734558990" aria-label="Call 873-455-8990"><span class="tel">873-455-8990</span></a> <a class="btn" href="#contact">Free audit</a>
+</nav>
+
+<script>
+(function () {
+  var doc = document.documentElement;
+  doc.classList.add('js');
+  document.getElementById('annee').textContent = new Date().getFullYear();
+  var mq = matchMedia('(prefers-reduced-motion: reduce)');
+  var calme = mq.matches;
+  var fmt = function (n) { return n.toLocaleString('en-CA', { maximumFractionDigits: 0 }); };
+  var avecIO = 'IntersectionObserver' in window;
+  var grand = matchMedia('(min-width: 960px)'), moyen = matchMedia('(min-width: 640px)');
+  // Fait monter un nombre jusqu'à sa valeur (ralenti à la fin)
+  function compter(el, de, a, ms, fin) {
+    var t0 = null;
+    function pas(t) { if (!t0) t0 = t; var k = Math.min(1, (t - t0) / ms), e = 1 - Math.pow(1 - k, 3); el.textContent = fmt(Math.round(de + (a - de) * e)); if (k < 1) fin.id = requestAnimationFrame(pas); }
+    cancelAnimationFrame(fin.id); fin.id = requestAnimationFrame(pas);
+  }
+  // Une démonstration qui se joue une seule fois, quand elle arrive à l'écran (sinon : l'état final, tout de suite)
+  function aLecran(el, jouer, seuil) {
+    if (!el || !avecIO || calme) return;
+    el.classList.add('attente');
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (!e.isIntersecting) return; io.disconnect(); el.classList.remove('attente'); el.classList.add('vu'); if (jouer) jouer(); });
+    }, { threshold: seuil || .35 });
+    io.observe(el);
+  }
+
+  // En-tête : une ombre dès qu'on défile
+  var nav = document.getElementById('nav'), tic = false;
+  addEventListener('scroll', function () { if (tic) return; tic = true; requestAnimationFrame(function () { nav.classList.toggle('defile', scrollY > 8); tic = false; }); }, { passive: true });
+
+  // Logo : le nom s'affiche au chargement, puis se replie sur l'icône
+  var logo = document.getElementById('logo');
+  if (!calme) { logo.classList.add('ouvert'); setTimeout(function () { logo.classList.remove('ouvert'); }, 2400); }
+
+  // L'appel : au repos, la carte montre la fin (rendez-vous ajouté, résumé envoyé).
+  // Avec JavaScript, il se déroule une fois à l'arrivée ; le bouton le rejoue ou l'arrête.
+  // Les pastilles changent de métier : le même moteur, un autre script.
+  var appel = document.getElementById('appel'), lignes = appel.querySelectorAll('[data-t]');
+  var etat = document.getElementById('a-etat'), duree = document.getElementById('a-duree');
+  var bouton = document.getElementById('reprise'), fond = appel.parentNode;
+  var FIN_APPEL = 7400, FIN = 9000, SECONDES = 62, FIN_TEXTE = 'Call ended';
+  var minuteries = [], chrono = null, joue = false;
+  var METIERS = {
+    plomberie: { num: '819-555-0142', nom: 'Lavoie Plumbing', s: 62, resume: 'New appointment: Tuesday 9 a.m., 12 rue Laval, Gatineau. Leaking water heater. Customer: 819-555-0142.', lignes: [
+      ['Caller', 'My water heater is leaking a bit. Can you come by this week?'],
+      ['Agent', 'Yes. What’s the address?'],
+      ['Caller', '12 rue Laval, in Gatineau.'],
+      ['Agent', 'That’s in our area. I can offer Tuesday at 9 a.m. or Wednesday at 1 p.m.', 'Based on your service area and calendar'],
+      ['Caller', 'Tuesday, 9 a.m.']],
+      suite: [['centre', 'Appointment added to the calendar', 'Tuesday 9 a.m. · 12 rue Laval, Gatineau'], ['texto', 'Summary sent by text', 'To you and the customer']] },
+    chauffage: { num: '819-555-0187', nom: 'Gagnon Heating', s: 34, resume: 'Emergency transferred to your cell: furnace down, 15°C in the house. Customer: 819-555-0187.', fin: 'Call transferred', lignes: [
+      ['Caller', 'My furnace won’t start, and it’s 15 degrees in the house.'],
+      ['Agent', 'That’s an emergency. I’m transferring you to the technician right now, please stay on the line.', 'Emergency set out in your script'],
+      ['Caller', 'Thanks, I’ll hold.']],
+      suite: [['urgence', 'Call transferred to your cell', 'Furnace down · 15°C in the house'], ['texto', 'Summary sent by text', 'To you, with the customer’s number']] },
+    electricite: { num: '613-555-0119', nom: 'Roy Electric', s: 52, resume: 'Call back before 4 p.m.: quote for an EV charger. Customer: 613-555-0119.', lignes: [
+      ['Caller', 'I’d like a quote for an EV charger in my garage.'],
+      ['Agent', 'Happy to help. An electrician will call you back today before 4 p.m.', 'Per your script: quotes'],
+      ['Caller', 'Perfect, thanks.']],
+      suite: [['centre', 'Callback promised before 4 p.m.', 'Quote · EV charger'], ['texto', 'Summary sent by text', 'To you and the customer']] },
+    garage: { num: '613-555-0164', nom: 'Dubé Auto', s: 57, resume: 'New appointment: Thursday 8 a.m., winter tire install on a 2019 Civic, customer has the tires. French-speaking customer: 613-555-0164.', lignes: [
+      ['Caller', 'Bonjour ! Est-ce que vous posez des pneus d’hiver cette semaine ?', '', 'fr'],
+      ['Agent', 'Oui. C’est pour quelle voiture, et vous avez déjà les pneus ?', 'Switched to French', 'fr'],
+      ['Caller', 'Une Civic 2019. Les pneus sont chez moi.', '', 'fr'],
+      ['Agent', 'Parfait. J’ai jeudi à 8 h ou vendredi à 14 h.', 'Based on your calendar', 'fr'],
+      ['Caller', 'Jeudi, 8 h, ça me va.', '', 'fr']],
+      suite: [['centre', 'Appointment added to the calendar', 'Thursday 8 a.m. · Winter tires, 2019 Civic'], ['texto', 'Summary sent by text', 'To you and the customer']] }
+  };
+  var DEPARTS = [300, 1800, 3100, 4300, 5500, 6700], DEPARTS_SUITE = [7800, 8400];
+  // Le minutage suit la longueur de l'appel : la suite arrive après la dernière réplique
+  function minuter(m) { var der = DEPARTS[m.lignes.length]; DEPARTS_SUITE = [der + 1100, der + 1700]; FIN_APPEL = der + 700; FIN = der + 2300; }
+  // Le résumé par texto du premier écran arrive quand l'appel l'envoie, et suit le métier choisi
+  var resume = document.getElementById('resume'), resumeTexte = document.getElementById('resume-texte');
+  var COCHE = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10.5l3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  // Page anglaise : pas d'espaces insécables du français
+  function typo(t) { return t; }
+  function noeud(tag, cls, texte) { var e = document.createElement(tag); if (cls) e.className = cls; if (texte) e.textContent = typo(texte); return e; }
+  function remplirCarte(carte, m) {
+    carte.querySelector('.appel__qui b').textContent = m.num;
+    carte.querySelector('.appel__qui span').textContent = m.nom + ' · answering agent';
+    var ol = carte.querySelector('.transcription'), ul = carte.querySelector('.appel__suite');
+    ol.textContent = ''; ul.textContent = '';
+    [['Agent', 'Hi, bonjour! ' + m.nom + ', how can I help you?', 'Just before, a short message says the call is recorded']].concat(m.lignes).forEach(function (l, i) {
+      var li = noeud('li'), q = noeud('q', '', l[1]);
+      li.dataset.t = DEPARTS[i]; if (l[3]) q.lang = l[3];
+      li.appendChild(noeud('span', 'qui', l[0])); li.appendChild(q);
+      if (l[2]) li.appendChild(noeud('small', 'selon', l[2]));
+      ol.appendChild(li);
+    });
+    m.suite.forEach(function (x, i) {
+      var li = noeud('li'), puce = noeud('i', 'puce puce--' + x[0]), d = noeud('div');
+      li.dataset.t = DEPARTS_SUITE[i]; puce.innerHTML = COCHE;
+      d.appendChild(noeud('b', '', x[1])); d.appendChild(noeud('span', '', x[2]));
+      li.appendChild(puce); li.appendChild(d); ul.appendChild(li);
+    });
+  }
+  function remplirResume(m) { if (resumeTexte) resumeTexte.textContent = typo(m.resume); }
+  // La carte garde la hauteur du plus long des quatre appels : rien ne saute quand on change de métier
+  function egaliser() {
+    var c = appel.cloneNode(true), h = 0;
+    c.removeAttribute('id'); c.classList.remove('joue', 'en-cours'); c.setAttribute('aria-hidden', 'true');
+    c.querySelectorAll('[id]').forEach(function (n) { n.removeAttribute('id'); });
+    c.style.cssText = 'position:absolute;left:0;top:0;visibility:hidden;min-height:0;width:' + appel.getBoundingClientRect().width + 'px';
+    fond.appendChild(c);
+    Object.keys(METIERS).forEach(function (k) { remplirCarte(c, METIERS[k]); h = Math.max(h, c.getBoundingClientRect().height); });
+    fond.removeChild(c);
+    appel.style.minHeight = Math.ceil(h) + 'px';
+  }
+  function enMinutes(s) { return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); }
+  function arreter() { minuteries.forEach(clearTimeout); minuteries = []; clearInterval(chrono); }
+  function finale() {
+    arreter(); joue = false;
+    if (resume) resume.classList.remove('attente');
+    appel.classList.remove('joue', 'en-cours'); fond.classList.remove('vive');
+    lignes.forEach(function (l) { l.classList.add('on'); });
+    etat.textContent = FIN_TEXTE; duree.textContent = enMinutes(SECONDES);
+    bouton.textContent = 'Replay the call';
+  }
+  function jouer() {
+    arreter(); joue = true;
+    if (resume) resume.classList.add('attente');
+    appel.classList.add('joue', 'en-cours'); fond.classList.add('vive');
+    lignes.forEach(function (l) { l.classList.remove('on'); });
+    etat.textContent = 'On the line with the agent'; duree.textContent = '0:00';
+    bouton.textContent = 'Stop';
+    var debut = Date.now();
+    chrono = setInterval(function () {
+      var s = Math.min(SECONDES, Math.round((Date.now() - debut) / FIN_APPEL * SECONDES));
+      duree.textContent = enMinutes(s);
+    }, 200);
+    lignes.forEach(function (l) { minuteries.push(setTimeout(function () { l.classList.add('on'); }, +l.dataset.t)); });
+    minuteries.push(setTimeout(function () { if (resume) resume.classList.remove('attente'); }, DEPARTS_SUITE[1] + 250));
+    minuteries.push(setTimeout(function () { clearInterval(chrono); duree.textContent = enMinutes(SECONDES); appel.classList.remove('en-cours'); fond.classList.remove('vive'); etat.textContent = FIN_TEXTE; }, FIN_APPEL));
+    minuteries.push(setTimeout(finale, FIN));
+  }
+  bouton.addEventListener('click', function () { if (joue) finale(); else jouer(); });
+  document.addEventListener('visibilitychange', function () { if (document.hidden && joue) finale(); });
+  var metiers = document.getElementById('metiers');
+  metiers.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b || b.getAttribute('aria-pressed') === 'true') return;
+    var m = METIERS[b.dataset.metier];
+    metiers.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+    document.querySelectorAll('.scene__photo').forEach(function (p) { var oui = p.dataset.photo === b.dataset.metier; p.classList.toggle('actif', oui); if (oui) p.classList.add('pret'); });
+    arreter(); minuter(m); remplirCarte(appel, m); remplirResume(m); lignes = appel.querySelectorAll('[data-t]');
+    SECONDES = m.s; FIN_TEXTE = m.fin || 'Call ended';
+    if (calme) finale(); else jouer();
+  });
+  egaliser();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(egaliser);
+  var largeurVue = innerWidth, ticR = null;
+  addEventListener('resize', function () { clearTimeout(ticR); ticR = setTimeout(function () { if (innerWidth !== largeurVue) { largeurVue = innerWidth; egaliser(); } }, 150); });
+  if (!calme) jouer(); else finale();
+  function selonSysteme(e) { calme = e.matches; if (calme && joue) finale(); }
+  if (mq.addEventListener) mq.addEventListener('change', selonSysteme); else if (mq.addListener) mq.addListener(selonSysteme);
+
+  // Déroulé : chaque étape s'allume quand on y arrive ; au cellulaire, les étapes se glissent
+  var listeEtapes = document.getElementById('etapes'), points = document.querySelectorAll('#points i');
+  if (avecIO) {
+    var ioE = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('vu'); ioE.unobserve(e.target); } }); }, { rootMargin: '0px 0px -30% 0px', threshold: .5 });
+    listeEtapes.querySelectorAll('li').forEach(function (li) { ioE.observe(li); });
+  }
+  // Au cellulaire, une liste d'étapes se glisse ; les points suivent
+  function carrousel(liste, pts, nom) {
+    var tic = false;
+    function selon() {
+      if (moyen.matches) { liste.removeAttribute('tabindex'); liste.removeAttribute('aria-label'); }
+      else { liste.tabIndex = 0; liste.setAttribute('aria-label', nom); }
+    }
+    liste.addEventListener('scroll', function () {
+      if (tic) return; tic = true;
+      requestAnimationFrame(function () {
+        var li = liste.querySelector('li'), pasL = li.getBoundingClientRect().width + 12;
+        var i = Math.max(0, Math.min(pts.length - 1, Math.round(liste.scrollLeft / pasL)));
+        if (liste.scrollLeft + liste.clientWidth >= liste.scrollWidth - 4) i = pts.length - 1;
+        pts.forEach(function (pt, k) { pt.classList.toggle('actif', k === i); });
+        tic = false;
+      });
+    }, { passive: true });
+    selon();
+    return selon;
+  }
+  var selonEtapes = carrousel(listeEtapes, points, 'The five steps of a call, swipe to see them');
+  var selonParcours = carrousel(document.getElementById('parcours'), document.querySelectorAll('#points-parcours i'), 'The four setup steps, swipe to see them');
+  function selonLargeur() { selonEtapes(); selonParcours(); }
+
+  // Le coût du silence : les deux chiffres montent quand la bande arrive à l'écran
+  var chiffres = document.getElementById('chiffres'), comptes = chiffres.querySelectorAll('[data-compte]');
+  if (avecIO && !calme) comptes.forEach(function (n) { n.textContent = '0'; });
+  aLecran(chiffres, function () { comptes.forEach(function (n) { compter(n, 0, +n.dataset.compte, +n.dataset.compte > 9 ? 1100 : 700, {}); }); }, .6);
+
+  // Ce qui suit l'appel : trois onglets (flèches gauche et droite au clavier), un seul panneau à l'écran
+  var onglets = document.getElementById('onglets'), tabs = [].slice.call(onglets.querySelectorAll('button'));
+  var panneaux = tabs.map(function (b) { return document.getElementById(b.getAttribute('aria-controls')); });
+  onglets.setAttribute('role', 'tablist');
+  tabs.forEach(function (b, i) { b.setAttribute('role', 'tab'); panneaux[i].setAttribute('role', 'tabpanel'); panneaux[i].setAttribute('aria-labelledby', b.id); panneaux[i].tabIndex = 0; });
+  var fil = document.getElementById('fil'), filJoue = false;
+  if (!calme) fil.classList.add('attente');
+  // Texto après un appel manqué : il se joue la première fois qu'on ouvre son onglet
+  function jouerFil() {
+    if (filJoue) return; filJoue = true; fil.classList.remove('attente');
+    if (calme) return;
+    var li = fil.querySelectorAll('li');
+    fil.classList.add('joue');
+    [[150, function () { li[0].classList.add('montre'); }],
+     [850, function () { li[1].classList.add('montre', 'ecrit'); }],
+     [1850, function () { li[1].classList.remove('ecrit'); }],
+     [2650, function () { li[2].classList.add('montre', 'ecrit'); }],
+     [3650, function () { li[2].classList.remove('ecrit'); fil.classList.remove('joue'); }]
+    ].forEach(function (e) { setTimeout(e[1], e[0]); });
+  }
+  function ouvrir(i, focus, anime) {
+    tabs.forEach(function (b, k) {
+      var on = k === i;
+      b.setAttribute('aria-selected', on ? 'true' : 'false'); b.tabIndex = on ? 0 : -1;
+      panneaux[k].classList.toggle('inactif', !on); panneaux[k].inert = !on;
+      if (on && anime && !calme) { panneaux[k].classList.remove('entre'); void panneaux[k].offsetWidth; panneaux[k].classList.add('entre'); }
+    });
+    if (focus) tabs[i].focus();
+    if (panneaux[i].contains(fil)) jouerFil();
+  }
+  onglets.addEventListener('click', function (e) { var b = e.target.closest('[role=tab]'); if (b && b.getAttribute('aria-selected') !== 'true') ouvrir(tabs.indexOf(b), false, true); });
+  onglets.addEventListener('keydown', function (e) {
+    var i = tabs.indexOf(document.activeElement); if (i < 0) return;
+    var n = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
+    if (n === undefined) return;
+    e.preventDefault(); ouvrir((n + tabs.length) % tabs.length, true, true);
+  });
+  ouvrir(0, false, false);
+
+  // Centre de contrôle : les appels de la journée arrivent, le compteur monte
+  var chiffre = document.getElementById('bord-appels'), animChiffre = {};
+  aLecran(document.getElementById('bord'), function () { compter(chiffre, 0, 86, 1200, animChiffre); });
+
+  // Vous n'installez rien : les quatre étapes s'allument l'une après l'autre
+  aLecran(document.getElementById('parcours'), null, .3);
+
+  // Calculateur : un scénario, pas une mesure
+  var ra = document.getElementById('r-appels'), rt = document.getElementById('r-taux'), rv = document.getElementById('r-valeur');
+  var oa = document.getElementById('o-appels'), ot = document.getElementById('o-taux'), ov = document.getElementById('o-valeur'), perte = document.getElementById('perte'), roi = document.getElementById('roi');
+  var champScenario = document.querySelector('[name=scenario_calculateur]');
+  var affiche = null, animPerte = {};
+  function remplir(r) { r.style.setProperty('--p', ((r.value - r.min) / (r.max - r.min) * 100) + '%'); }
+  function calculer() {
+    [ra, rt, rv].forEach(remplir);
+    oa.textContent = ra.value; ot.textContent = rt.value + ' in 10'; ov.textContent = '$' + fmt(+rv.value);
+    var cible = Math.round(ra.value * 4.33 * (rt.value / 10) * rv.value / 10) * 10;
+    if (affiche === null || calme) perte.textContent = fmt(cible); else compter(perte, affiche, cible, 280, animPerte);
+    affiche = cible;
+    // Combien de contrats de plus paient le forfait Répondeur (199 $)
+    var n = Math.ceil(199 / rv.value), v = '$' + fmt(+rv.value);
+    roi.textContent = 'The Answering plan costs $199 a month. ' + (n === 1 ? 'A single extra job of ' + v + ' a month pays for it.' : n + ' extra jobs of ' + v + ' a month pay for it.');
+    return cible;
+  }
+  [ra, rt, rv].forEach(function (r) { r.addEventListener('input', function () { var c = calculer(); champScenario.value = ra.value + ' appels manqués par semaine, ' + rt.value + ' sur 10 deviendraient clients, contrat moyen de ' + rv.value + ' $ : ' + fmt(c) + ' $ par mois'; }); });
+  calculer();
+
+  // Forfaits au cellulaire : un seul à la fois, on choisit en haut (Croissance d'abord)
+  var choix = document.getElementById('choix-forfait'), plans = document.querySelectorAll('.forfait[data-nom]');
+  function montrerPlan(nom, anime) {
+    choix.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.plan === nom ? 'true' : 'false'); });
+    plans.forEach(function (pl) {
+      var on = pl.dataset.nom === nom; pl.classList.toggle('masque', !on);
+      if (on && anime && !calme) { pl.classList.remove('entre'); void pl.offsetWidth; pl.classList.add('entre'); }
+    });
+  }
+  choix.addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) montrerPlan(b.dataset.plan, true); });
+  montrerPlan('Croissance', false);
+
+  // À la carte : ouvert sur grand écran, replié au cellulaire. Détails du formulaire : repliés au cellulaire.
+  document.getElementById('a-la-carte').open = grand.matches;
+  var plus = document.getElementById('plus');
+  plus.open = moyen.matches;
+  function selonMoyen() { selonLargeur(); if (moyen.matches) plus.open = true; }
+  if (moyen.addEventListener) moyen.addEventListener('change', selonMoyen); else if (moyen.addListener) moyen.addListener(selonMoyen);
+
+  // Barre du bas : après le premier écran, cachée sur le formulaire et le pied de page
+  var barre = document.getElementById('barre');
+  if (avecIO) {
+    var vus = { hero: true, contact: false, pied: false };
+    var ioB = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { var k = e.target.dataset.barre; vus[k] = k === 'hero' ? (e.isIntersecting || e.boundingClientRect.top > 0) : e.isIntersecting; });
+      var avecBarre = !vus.hero && !vus.contact && !vus.pied;
+      barre.classList.toggle('visible', avecBarre);
+      document.documentElement.classList.toggle('avec-barre', avecBarre);
+    });
+    [[document.querySelector('.hero__actions'), 'hero'], [document.getElementById('contact'), 'contact'], [document.querySelector('.pied'), 'pied']].forEach(function (c) { c[0].dataset.barre = c[1]; ioB.observe(c[0]); });
+  }
+
+  // Bouton d'un forfait : le formulaire garde le forfait choisi
+  var champForfait = document.querySelector('[name=forfait]'), texteForfait = document.querySelector('.form__forfait');
+  document.querySelectorAll('[data-forfait]').forEach(function (a) {
+    a.addEventListener('click', function () { champForfait.value = a.dataset.forfait; texteForfait.textContent = 'Plan you’re interested in: ' + a.dataset.forfait; texteForfait.hidden = false; });
+  });
+
+  // Formulaire : sans JavaScript, il est envoyé normalement à Web3Forms (POST).
+  // Avec JavaScript, on reste sur la page. La validation est celle du navigateur.
+  var form = document.getElementById('formulaire');
+  var envoyer = form.querySelector('button[type=submit]');
+  // un champ facultatif mal rempli dans les détails repliés : on les ouvre pour le montrer
+  form.addEventListener('invalid', function (e) { if (plus.contains(e.target)) plus.open = true; }, true);
+  var resultat = form.querySelector('.form__resultat');
+  function message(texte, ok, avecCourriel) {
+    resultat.textContent = texte; resultat.style.color = ok ? '#17623F' : '#B42318';
+    if (avecCourriel) {
+      var a = document.createElement('a'); a.href = 'mailto:info@agenceuio.ca'; a.textContent = 'info@agenceuio.ca';
+      resultat.appendChild(document.createTextNode(' ')); resultat.appendChild(a); resultat.appendChild(document.createTextNode('.'));
+    }
+  }
+  var ECHEC = 'Sending didn’t work. Try again, call 873-455-8990 or email us at';
+  form.addEventListener('submit', async function (ev) {
+    ev.preventDefault();
+    if (envoyer.disabled) return;
+    if (form.dataset.apercu) { message('Preview only: on agenceuio.ca, your request would be sent.', true); return; }
+    var d = Object.fromEntries(new FormData(form));
+    d.subject = 'Audit gratuit (site anglais) · ' + (d.entreprise || 'site agenceuio.ca/en');
+    envoyer.disabled = true; envoyer.textContent = 'Sending…'; message('', true);
+    var ctrl = 'AbortController' in window ? new AbortController() : null;
+    var delai = setTimeout(function () { if (ctrl) ctrl.abort(); }, 15000);
+    try {
+      var rep = await fetch(form.action, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(d), signal: ctrl ? ctrl.signal : undefined });
+      var json = await rep.json().catch(function () { return {}; });
+      if (rep.ok && json.success) { message('Request received. We’ll call you back the same day (or first thing the next morning for requests sent in the evening).', true); form.reset(); champForfait.value = ''; champScenario.value = ''; texteForfait.hidden = true; }
+      else message(ECHEC, false, true);
+    } catch (e) {
+      message(ECHEC, false, true);
+    } finally { clearTimeout(delai); envoyer.disabled = false; envoyer.textContent = 'Request my free audit'; }
+  });
+
+  // Le chatbot de l'agence vient de notre serveur (uio-backend). Il se charge une fois la page prête,
+  // pour ne jamais la ralentir ; s'il répond, le module Site propose de l'essayer et le contact, d'y choisir un créneau.
+  function chatPret() {
+    document.querySelectorAll('[data-avec-chat]').forEach(function (e) { e.hidden = false; });
+    document.querySelectorAll('[data-ouvre-chat]').forEach(function (b) { b.addEventListener('click', function () { window.UIOChat.open(); }); });
+  }
+  function chargerChatbot() {
+    var s = document.createElement('script');
+    s.src = 'https://uio-backend.onrender.com/chatbot.js?client=uio';
+    s.async = true;
+    s.onload = function () { if (window.UIOChat) chatPret(); };
+    document.body.appendChild(s);
+  }
+  if (document.readyState === 'complete') chargerChatbot(); else addEventListener('load', chargerChatbot);
+
+  // Les photos de métier (grand écran seulement ; ailleurs, elles ne se chargent jamais) : celle du premier
+  // écran vient avec la page, les autres quand la souris approche des métiers, celles du bas quand on en approche
+  function pret(p) { p.classList.add('pret'); }
+  function photosMetiers() { document.querySelectorAll('.scene__photo').forEach(pret); }
+  metiers.addEventListener('pointerenter', photosMetiers, { once: true });
+  metiers.addEventListener('focusin', photosMetiers, { once: true });
+  var photosBas = document.querySelectorAll('.script__photo, .parcours__photo');
+  if (avecIO) {
+    var ioP = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { pret(e.target); ioP.unobserve(e.target); } }); }, { rootMargin: '900px 0px' });
+    photosBas.forEach(function (p) { ioP.observe(p); });
+  } else photosBas.forEach(pret);
+})();
+</script>
+<script>
+/* v11 : le verre liquide. La lentille des sélecteurs, le reflet sous la souris, les bandes de nuit qui s'ouvrent,
+   et les animations qui dorment hors de l'écran. Sans JavaScript ou en mouvement réduit : tout reste à sa place. */
+(function () {
+  var calme = matchMedia('(prefers-reduced-motion: reduce)');
+  var avecIO = 'IntersectionObserver' in window;
+
+  function lentille(groupe, attr, cls) {
+    if (!groupe) return;
+    var l = document.createElement('span');
+    l.className = 'lentille fige'; l.setAttribute('aria-hidden', 'true');
+    groupe.insertBefore(l, groupe.firstChild);
+    groupe.classList.add('a-lentille');
+    var actif = null;
+    function placer(anime) {
+      var b = groupe.querySelector('button[' + attr + '="true"]');
+      if (!b || !b.offsetWidth) return;
+      if (!anime) l.classList.add('fige');
+      l.style.setProperty('--l-x', b.offsetLeft + 'px'); l.style.setProperty('--l-y', b.offsetTop + 'px');
+      l.style.setProperty('--l-w', b.offsetWidth + 'px'); l.style.setProperty('--l-h', b.offsetHeight + 'px');
+      if (anime && actif && b !== actif && !calme.matches) { l.classList.remove('goutte'); void l.offsetWidth; l.classList.add('goutte'); }
+      actif = b;
+      if (!anime) requestAnimationFrame(function () { requestAnimationFrame(function () { l.classList.remove('fige'); }); });
+    }
+    placer(false);
+    new MutationObserver(function () { placer(true); }).observe(groupe, { subtree: true, attributes: true, attributeFilter: [attr] });
+    if ('ResizeObserver' in window) new ResizeObserver(function () { placer(false); }).observe(groupe);
+    else addEventListener('resize', function () { placer(false); });
+  }
+  lentille(document.getElementById('metiers'), 'aria-pressed');
+  lentille(document.getElementById('onglets'), 'aria-selected');
+  lentille(document.getElementById('choix-forfait'), 'aria-pressed');
+
+  // Le reflet : seulement avec une souris
+  if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    document.querySelectorAll('.appel, .resume__carte, .bord, .fil, .forfait--vedette').forEach(function (c) {
+      c.classList.add('reflet');
+      c.addEventListener('pointermove', function (e) {
+        var r = c.getBoundingClientRect();
+        c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px');
+      }, { passive: true });
+    });
+  }
+
+  // Les appels manqués se posent quand la bande arrive
+  var manques = document.querySelector('.manques');
+  if (manques && avecIO && !calme.matches) {
+    manques.classList.add('attente');
+    var ioM = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { ioM.disconnect(); manques.classList.remove('attente'); } }, { threshold: .4 });
+    ioM.observe(manques);
+  }
+
+  // Les bandes de nuit s'ouvrent jusqu'aux bords pendant qu'elles entrent dans l'écran
+  var bandes = [].slice.call(document.querySelectorAll('.nuit')), tic = false;
+  function ouvrir() {
+    tic = false;
+    var vh = innerHeight;
+    bandes.forEach(function (b) {
+      var r = b.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > vh) return;
+      var p = Math.min(1, Math.max(0, (vh - r.top) / (vh * .55)));
+      b.style.setProperty('--r', (1 - p).toFixed(3));
+    });
+  }
+  function selonCalme() {
+    bandes.forEach(function (b) { b.classList.toggle('ouvre', !calme.matches); });
+    if (!calme.matches) ouvrir();
+  }
+  selonCalme();
+  addEventListener('scroll', function () { if (!tic && !calme.matches) { tic = true; requestAnimationFrame(ouvrir); } }, { passive: true });
+  if (calme.addEventListener) calme.addEventListener('change', selonCalme);
+
+  // Hors de l'écran, les animations continues dorment (batterie du cellulaire)
+  if (avecIO) {
+    var ioD = new IntersectionObserver(function (es) { es.forEach(function (e) { e.target.classList.toggle('dort', !e.isIntersecting); }); }, { rootMargin: '120px 0px' });
+    document.querySelectorAll('.hero, .nuit, #modules, #forfaits').forEach(function (s) { ioD.observe(s); });
+  }
+})();
+</script>
+<script>
+/* v12 : le mode sombre. Le bouton de la barre du haut bascule le thème ; le choix est retenu sur cet appareil. */
+(function () {
+  var b = document.getElementById('theme'); if (!b) return;
+  var html = document.documentElement, meta = document.querySelector('meta[name="theme-color"]');
+  function sombre() { return html.getAttribute('data-theme') === 'sombre'; }
+  function montrer() { var s = sombre(); b.setAttribute('aria-pressed', s ? 'true' : 'false'); if (meta) meta.setAttribute('content', s ? '#0D1524' : '#FFFFFF'); }
+  function basculer() {
+    if (sombre()) html.removeAttribute('data-theme'); else html.setAttribute('data-theme', 'sombre');
+    try { localStorage.setItem('uio-theme', sombre() ? 'sombre' : 'clair'); } catch (e) {}
+    montrer();
+  }
+  b.addEventListener('click', function () {
+    if (document.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches) document.startViewTransition(basculer);
+    else basculer();
+  });
+  b.hidden = false; montrer();
+})();
+</script>
+</body>
+</html>
