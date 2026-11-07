@@ -24,10 +24,10 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Agence UIO: every call answered, even on the job site">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" type="image/svg+xml" href="../assets/logo/uio-icone.svg?v=2">
-<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png?v=2">
-<link rel="icon" type="image/png" sizes="192x192" href="../assets/favicon-192.png?v=2">
-<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png?v=2">
+<link rel="icon" type="image/svg+xml" href="../assets/logo/uio-icone.svg?v=3">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png?v=3">
+<link rel="icon" type="image/png" sizes="192x192" href="../assets/favicon-192.png?v=3">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png?v=3">
 <link rel="preload" href="../assets/fonts/hanken-grotesk.woff2" as="font" type="font/woff2" crossorigin>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"LocalBusiness","@id":"https://agenceuio.ca/#agence","name":"Agence UIO","url":"https://agenceuio.ca/","logo":"https://agenceuio.ca/assets/apple-touch-icon.png","image":"https://agenceuio.ca/assets/og-image.jpg","telephone":"+1-873-455-8990","email":"info@agenceuio.ca","priceRange":"$69-$399 a month","areaServed":[{"@type":"City","name":"Gatineau"},{"@type":"City","name":"Ottawa"}],"address":{"@type":"PostalAddress","addressLocality":"Gatineau","addressRegion":"QC","addressCountry":"CA"},"sameAs":["https://www.instagram.com/agence.uio/"]}
@@ -109,8 +109,8 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 /* Logo : l'icône seule, le mot glisse au survol */
 .logo { display: inline-flex; align-items: center; min-height: 48px; color: var(--encre); text-decoration: none; }
 .logo__icone { width: 40px; height: 40px; flex: none; transition: transform .4s var(--sortie); }
-/* Le logo (verre dépoli, choisi le 2026-11-07) : la version claire, et la sombre en mode sombre. Fichiers sources : dossier logo du projet. */
-.icone-uio { display: block; border-radius: 22%; background: url("../assets/logo/uio-icone-clair.png") center / 100% 100% no-repeat; box-shadow: 0 0 0 1px rgba(14, 26, 43, .06); }
+/* Le logo (verre dépoli, choisi le 2026-11-07), coupé en rond : la version claire, et la sombre en mode sombre. Fichiers sources : dossier logo du projet. */
+.icone-uio { display: block; border-radius: 50%; background: url("../assets/logo/uio-icone-clair.png") center / 100% 100% no-repeat; box-shadow: 0 0 0 1px rgba(14, 26, 43, .06); }
 .logo__mot { display: grid; gap: 4px; overflow: hidden; max-width: 0; opacity: 0; transform: translateX(-8px); white-space: nowrap; transition: max-width .5s var(--sortie), opacity .3s, transform .5s var(--sortie), margin .5s var(--sortie); }
 .logo__mot svg { width: 44px; height: 24px; }
 .logo__mot small { font-size: .62rem; font-weight: 600; line-height: 1; letter-spacing: .12em; text-transform: uppercase; color: var(--texte-2); }
