@@ -24,9 +24,10 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Agence UIO: every call answered, even on the job site">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" type="image/svg+xml" href="../assets/logo/uio-icone.svg">
-<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
-<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="../assets/logo/uio-icone.svg?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="../assets/favicon-192.png?v=2">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png?v=2">
 <link rel="preload" href="../assets/fonts/hanken-grotesk.woff2" as="font" type="font/woff2" crossorigin>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"LocalBusiness","@id":"https://agenceuio.ca/#agence","name":"Agence UIO","url":"https://agenceuio.ca/","logo":"https://agenceuio.ca/assets/apple-touch-icon.png","image":"https://agenceuio.ca/assets/og-image.jpg","telephone":"+1-873-455-8990","email":"info@agenceuio.ca","priceRange":"$69-$399 a month","areaServed":[{"@type":"City","name":"Gatineau"},{"@type":"City","name":"Ottawa"}],"address":{"@type":"PostalAddress","addressLocality":"Gatineau","addressRegion":"QC","addressCountry":"CA"},"sameAs":["https://www.instagram.com/agence.uio/"]}
@@ -107,13 +108,13 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 
 /* Logo : l'icône seule, le mot glisse au survol */
 .logo { display: inline-flex; align-items: center; min-height: 48px; color: var(--encre); text-decoration: none; }
-.logo__icone { width: 38px; height: 38px; flex: none; transition: transform .4s var(--sortie); }
-.logo__icone .onde { opacity: .3; transition: opacity .3s; }
+.logo__icone { width: 40px; height: 40px; flex: none; transition: transform .4s var(--sortie); }
+/* Le logo (verre dépoli, choisi le 2026-11-07) : la version claire, et la sombre en mode sombre. Fichiers sources : dossier logo du projet. */
+.icone-uio { display: block; border-radius: 22%; background: url("../assets/logo/uio-icone-clair.png") center / 100% 100% no-repeat; box-shadow: 0 0 0 1px rgba(14, 26, 43, .06); }
 .logo__mot { display: grid; gap: 4px; overflow: hidden; max-width: 0; opacity: 0; transform: translateX(-8px); white-space: nowrap; transition: max-width .5s var(--sortie), opacity .3s, transform .5s var(--sortie), margin .5s var(--sortie); }
 .logo__mot svg { width: 44px; height: 24px; }
 .logo__mot small { font-size: .62rem; font-weight: 600; line-height: 1; letter-spacing: .12em; text-transform: uppercase; color: var(--texte-2); }
 .logo:hover .logo__mot, .logo:focus-visible .logo__mot, .logo.ouvert .logo__mot { max-width: 170px; opacity: 1; transform: none; margin-left: 10px; }
-.logo:hover .onde, .logo:focus-visible .onde, .logo.ouvert .onde { opacity: 1; }
 @media (hover: hover) { .logo:hover .logo__icone { transform: rotate(-5deg); } }
 
 @media (max-width: 430px) { .nav .logo__mot { display: none; } }
@@ -150,7 +151,7 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 }
 .resume__carte { display: grid; gap: 6px; padding: 14px 18px 16px; border-radius: var(--r-carte); background: var(--blanc); box-shadow: var(--ombre-flotte); }
 .resume__tete { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; font-size: .875rem; }
-.resume__tete svg { width: 26px; height: 26px; border-radius: 7px; }
+.resume__tete .icone-uio { width: 26px; height: 26px; }
 .resume__tete b { font-weight: 650; }
 .resume__quand { color: var(--texte-2); font-size: .8125rem; }
 .resume__texte { font-size: .9375rem; line-height: 1.5; }
@@ -899,8 +900,8 @@ html[data-theme="sombre"] .champ input::placeholder, html[data-theme="sombre"] .
 html[data-theme="sombre"] .champ input:user-invalid, html[data-theme="sombre"] .champ textarea:user-invalid { border-color: var(--urgence); }
 html[data-theme="sombre"] .curseur input::-webkit-slider-thumb { background: #EEF2F7; border-color: #EEF2F7; box-shadow: 0 2px 8px rgba(0, 0, 0, .5); }
 html[data-theme="sombre"] .curseur input::-moz-range-thumb { background: #EEF2F7; border-color: #EEF2F7; box-shadow: 0 2px 8px rgba(0, 0, 0, .5); }
-/* Le carré marine du logo : un filet le détache du fond */
-html[data-theme="sombre"] .logo__icone { border-radius: 22%; box-shadow: 0 0 0 1px rgba(255, 255, 255, .16); }
+/* Le logo sombre en mode sombre, avec un filet qui le détache du fond */
+html[data-theme="sombre"] .icone-uio { background-image: url("../assets/logo/uio-icone-sombre.png"); box-shadow: 0 0 0 1px rgba(255, 255, 255, .16); }
 /* La boîte du chatbot reste claire */
 html[data-theme="sombre"] #uio-box { --encre: #0E1A2B; --contour: #868D98; --texte-2: #5B6472; color-scheme: light; }
 html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 22px -6px rgba(0, 0, 0, .6); }
@@ -912,15 +913,15 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-plus" viewBox="0 0 20 20"><path d="M10 4v12M4 10h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
   <symbol id="i-etoile" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.2 1.3-6.6L2.5 9.3l6.6-.8z"/></symbol>
-  <symbol id="i-logo" viewBox="0 0 512 512"><rect width="512" height="512" rx="112.64" fill="#0E1A2B"/><path fill="#fff" transform="translate(74.96 389.12) scale(0.40960 -0.40960)" d="M243 -14Q149 -14 101.5 49.5Q54 113 54 243V528H216V264Q216 190 238.0 153.5Q260 117 305 117Q332 117 351.5 130.5Q371 144 384.5 168.5Q398 193 404.5 225.0Q411 257 411 295V528H572V214V0H444L441 163H421Q406 101 383.5 61.5Q361 22 327.0 4.0Q293 -14 243 -14Z"/></symbol><symbol id="i-lune" viewBox="0 0 20 20"><path d="M16.6 12.3A6.9 6.9 0 0 1 7.7 3.4a6.9 6.9 0 1 0 8.9 8.9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol><symbol id="i-soleil" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10" cy="10" r="3.5"/><path d="M10 1.9v1.7M10 16.4v1.7M1.9 10h1.7M16.4 10h1.7M4.3 4.3l1.2 1.2M14.5 14.5l1.2 1.2M4.3 15.7l1.2-1.2M14.5 5.5l1.2-1.2"/></g></symbol>
-  <symbol id="i-mot" viewBox="196 35 183 99"><path transform="translate(190.00 132.00) scale(0.12800 -0.12800)" d="M243 -14Q149 -14 101.5 49.5Q54 113 54 243V528H216V264Q216 190 238.0 153.5Q260 117 305 117Q332 117 351.5 130.5Q371 144 384.5 168.5Q398 193 404.5 225.0Q411 257 411 295V528H572V214V0H444L441 163H421Q406 101 383.5 61.5Q361 22 327.0 4.0Q293 -14 243 -14Z"/><path transform="translate(269.62 132.00) scale(0.12800 -0.12800)" d="M62 0V528H223V0ZM143 602Q97 602 72.5 621.5Q48 641 48 677Q48 715 72.5 734.5Q97 754 143 754Q190 754 214.5 734.5Q239 715 239 678Q239 641 214.5 621.5Q190 602 143 602Z"/><path transform="translate(304.69 132.00) scale(0.12800 -0.12800)" d="M305 -14Q225 -14 163.5 17.0Q102 48 67.0 110.0Q32 172 32 265Q32 358 67.0 419.5Q102 481 164.0 511.5Q226 542 306 542Q386 542 448.0 511.0Q510 480 545.0 418.5Q580 357 580 264Q580 169 544.0 107.0Q508 45 445.5 15.5Q383 -14 305 -14ZM310 103Q346 103 370.0 119.5Q394 136 406.0 170.0Q418 204 418 254Q418 307 405.0 343.5Q392 380 366.5 399.5Q341 419 301 419Q267 419 242.5 402.5Q218 386 206.0 352.0Q194 318 194 267Q194 185 224.5 144.0Q255 103 310 103Z"/></symbol>
+  <symbol id="i-lune" viewBox="0 0 20 20"><path d="M16.6 12.3A6.9 6.9 0 0 1 7.7 3.4a6.9 6.9 0 1 0 8.9 8.9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol><symbol id="i-soleil" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10" cy="10" r="3.5"/><path d="M10 1.9v1.7M10 16.4v1.7M1.9 10h1.7M16.4 10h1.7M4.3 4.3l1.2 1.2M14.5 14.5l1.2 1.2M4.3 15.7l1.2-1.2M14.5 5.5l1.2-1.2"/></g></symbol>
+  <symbol id="i-mot" viewBox="50 -720 1317 727"><path d="M509 0H376L366 -55Q341 -27 307.5 -10Q274 7 234 7Q178 7 137 -18Q96 -43 73 -91.5Q50 -140 50 -208V-500H196V-226Q196 -176 216.5 -150Q237 -124 279 -124Q319 -124 341 -151Q363 -178 363 -228V-500H509ZM619 -500H765V0H619ZM692 -551Q651 -551 625.5 -575.5Q600 -600 600 -635Q600 -671 625.5 -695.5Q651 -720 692 -720Q732 -720 757.5 -695.5Q783 -671 783 -635Q783 -600 757.5 -575.5Q732 -551 692 -551ZM1106 7Q1033 7 975 -24Q917 -55 884.5 -113Q852 -171 852 -250Q852 -329 885.5 -386.5Q919 -444 977.5 -475.5Q1036 -507 1108 -507Q1182 -507 1240.5 -475.5Q1299 -444 1333 -386.5Q1367 -329 1367 -251Q1367 -171 1332.5 -113Q1298 -55 1238.5 -24Q1179 7 1106 7ZM1106 -125Q1132 -125 1156 -139Q1180 -153 1195 -180.5Q1210 -208 1210 -250Q1210 -292 1195 -319.5Q1180 -347 1157 -361Q1134 -375 1108 -375Q1080 -375 1058 -361Q1036 -347 1022.5 -319.5Q1009 -292 1009 -250Q1009 -208 1022 -180.5Q1035 -153 1057 -139Q1079 -125 1106 -125Z"/></symbol>
 </svg>
 
 <header class="nav" id="nav">
   <div class="wrap nav__rangee">
     <a class="logo" id="logo" href="./" aria-label="Agence UIO, home">
-      <svg class="logo__icone" viewBox="0 0 512 512" aria-hidden="true"><use href="#i-logo"/><path class="onde" d="M 337.92 122.88 A 61.44 61.44 0 0 1 399.36 184.32" fill="none" stroke="#FF6A2B" stroke-width="30.72" stroke-linecap="round"/><path class="onde" d="M 337.92 66.56 A 117.76 117.76 0 0 1 455.68 184.32" fill="none" stroke="#FF6A2B" stroke-width="30.72" stroke-linecap="round"/></svg>
-      <span class="logo__mot" aria-hidden="true"><svg viewBox="0 0 183 99" fill="currentColor"><use href="#i-mot" width="183" height="99"/></svg><small>Agence Gatineau</small></span>
+      <span class="logo__icone icone-uio" aria-hidden="true"></span>
+      <span class="logo__mot" aria-hidden="true"><svg viewBox="0 0 1317 727" fill="currentColor"><use href="#i-mot" width="1317" height="727"/></svg><small>Agence</small></span>
     </a>
     <nav class="nav__liens" aria-label="Main navigation">
       <a href="#repondeur">Answering agent</a> <a href="#forfaits">Plans</a> <a href="#questions">Questions</a>
@@ -959,7 +960,7 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
         </ul>
         <figure class="resume" id="resume" aria-label="Fictional example: the text you get after the call">
           <div class="resume__carte">
-            <div class="resume__tete"><svg viewBox="0 0 512 512" aria-hidden="true"><use href="#i-logo"/><path d="M 337.92 122.88 A 61.44 61.44 0 0 1 399.36 184.32" fill="none" stroke="#FF6A2B" stroke-width="30.72" stroke-linecap="round"/><path d="M 337.92 66.56 A 117.76 117.76 0 0 1 455.68 184.32" fill="none" stroke="#FF6A2B" stroke-width="30.72" stroke-linecap="round"/></svg><b>Answering agent</b><span class="resume__quand">just now</span></div>
+            <div class="resume__tete"><span class="icone-uio" aria-hidden="true"></span><b>Answering agent</b><span class="resume__quand">just now</span></div>
             <p class="resume__texte" id="resume-texte">New appointment: Tuesday 9 a.m., 12 rue Laval, Gatineau. Leaking water heater. Customer: 819-555-0142.</p>
           </div>
           <figcaption class="petit">The text you get after every call. Fictional example.</figcaption>
@@ -1419,8 +1420,8 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
     <div class="pied__haut">
       <div>
         <a class="logo" href="./" aria-label="Agence UIO, home">
-          <svg class="logo__icone" viewBox="0 0 512 512" aria-hidden="true"><use href="#i-logo"/><path class="onde" d="M 337.92 122.88 A 61.44 61.44 0 0 1 399.36 184.32" fill="none" stroke="#FF6A2B" stroke-width="30.72" stroke-linecap="round"/><path class="onde" d="M 337.92 66.56 A 117.76 117.76 0 0 1 455.68 184.32" fill="none" stroke="#FF6A2B" stroke-width="30.72" stroke-linecap="round"/></svg>
-          <span class="logo__mot" aria-hidden="true"><svg viewBox="0 0 183 99" fill="currentColor"><use href="#i-mot" width="183" height="99"/></svg><small>Agence Gatineau</small></span>
+          <span class="logo__icone icone-uio" aria-hidden="true"></span>
+          <span class="logo__mot" aria-hidden="true"><svg viewBox="0 0 1317 727" fill="currentColor"><use href="#i-mot" width="1317" height="727"/></svg><small>Agence</small></span>
         </a>
         <p>An AI answering agent, and everything after the call, for contractors in Gatineau and Ottawa.</p>
       </div>
