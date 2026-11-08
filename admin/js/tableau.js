@@ -1,7 +1,8 @@
 // Tableau de bord : appels de l'agent répondeur, demandes, audits, serveur, site, offre.
 import { $, $$, el, sv, icone, vider, nombre, pluriel, insecable, heure, jourLong, majuscule, date, relatif,
-  duree, dureeHM, compteARebours, lienTel, lienCourriel, urlSure, toast, lire, ecrire, heureLocale, FUSEAU } from './outils.js';
+  duree, compteARebours, lienTel, lienCourriel, urlSure, toast, lire, ecrire, heureLocale, FUSEAU } from './outils.js';
 import { E, BACKEND, DEPOT, SITE, TITRE } from './etat.js';
+import { dureeHM } from './formes.js';
 import { api, sessionActuelle } from './api.js';
 import { htmlInerte } from './confiance.js';
 import { montrer } from './navigation.js';
@@ -252,7 +253,11 @@ export function rendreBonjour() {
   const etat = etatServeur(), p = dernierPing();
   if (etat === 'ok' || etat === 'lent') morceaux.push('Le serveur répond en ', b(p.ms >= 1000 ? `${nombre(p.ms / 1000, 1)} s` : `${p.ms} ms`), '.');
   else if (etat === 'panne') morceaux.push(b('Le serveur ne répond pas'), ' : il dort peut-être.');
+  // Redessinée toutes les 15 s : le bouton qui avait le focus le retrouve
+  const avant = document.activeElement && document.activeElement.closest ? document.activeElement.closest('#bonjour-phrase button') : null;
+  const quoi = avant ? avant.textContent : '';
   if (morceaux.length) vider($('#bonjour-phrase'), morceaux);
+  if (quoi) { const b = $$('#bonjour-phrase button').find(x => x.textContent === quoi); if (b) b.focus({ preventScroll: true }); }
 }
 
 export function rendreDirect() {

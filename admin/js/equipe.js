@@ -3,13 +3,13 @@
 // récaps, jamais comptées deux fois), les documents importants, et les clés pour brancher
 // son Claude. Le serveur garde tout dans la feuille du portail ; l'app montre et envoie.
 // Chaque ajout porte une clé tirée au hasard : envoyé deux fois, il n'est ajouté qu'une fois.
-import { $, $$, icone, vider, pluriel, majuscule, date, relatif, heure, ymd, toast, copier, dureeHM, FUSEAU } from './outils.js';
+import { $, $$, icone, vider, pluriel, majuscule, date, relatif, heure, ymd, toast, copier, urlSure, FUSEAU } from './outils.js';
 import { E, BACKEND } from './etat.js';
 import { api, sessionActuelle } from './api.js';
 import { ouvrirPanneau, fermerPanneau } from './panneau.js';
 import { depliant } from './ui.js';
 import { prenom, rendreBonjour } from './tableau.js';
-import { fr, el, Invalide, nouvelleCle, badge, rangee, confirmations, champTexte, champDate, pilules, formulaireEnLigne,
+import { fr, el, Invalide, nouvelleCle, dureeHM, badge, rangee, confirmations, champTexte, champDate, pilules, formulaireEnLigne,
   panneauFormulaire as panneauBase } from './formes.js';
 
 const ui = { construit: false, charge: null, confirmer: '', filtre: 'moi', plusTaches: false, recapsMontres: 6,
@@ -160,6 +160,7 @@ function construire() {
 }
 
 export function rendreEquipe() {
+  if (!$('#vue-equipe')) return;                 // une page d'une version plus ancienne (mise à jour en cours)
   construire();
   garderFocus(() => { rendreTete(); rendreChrono(); rendreTaches(); rendreHeures(); rendreRecaps(); rendreDocuments(); rendreClaude(); });
 }
@@ -457,7 +458,7 @@ function redessinerRecap(id) {
 }
 
 function lienPuce(u) {
-  return el('a', { class: 'puce puce--lien', href: u, target: '_blank', rel: 'noopener noreferrer' }, icone('i-sortie'), el('span', null, hote(u)));
+  return el('a', { class: 'puce puce--lien', href: urlSure(u), target: '_blank', rel: 'noopener noreferrer' }, icone('i-sortie'), el('span', null, hote(u)));
 }
 
 function carteRecap(r) {
@@ -719,7 +720,7 @@ function rendreDocuments() {
       el('button', { class: 'btn btn--petit', type: 'button', onclick: () => ouvrirDocument() }, 'Ajouter un lien')));
   }
   vider(boite, el('ul', { class: 'documents' }, docs.map(d => el('li', { class: 'document' },
-    el('a', { class: 'document__lien', href: d.lien, target: '_blank', rel: 'noopener noreferrer' },
+    el('a', { class: 'document__lien', href: urlSure(d.lien), target: '_blank', rel: 'noopener noreferrer' },
       el('span', { class: 'document__icone', 'aria-hidden': 'true' }, icone('i-document')),
       el('span', { class: 'document__texte' }, el('b', null, d.titre), el('span', null, d.note || hote(d.lien)))),
     el('button', { class: 'mini', type: 'button', 'aria-label': `Modifier « ${d.titre} »`, title: 'Modifier', 'data-focus': `doc-${d.id}`,

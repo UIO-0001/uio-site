@@ -61,12 +61,6 @@ export function duree(sec) {
   return m ? `${m} min ${String(s).padStart(2, '0')} s` : `${s} s`;
 }
 // 2 h 30, 45 min : une durée de travail (les espaces ne se coupent jamais)
-export function dureeHM(minutes) {
-  const m = Math.max(0, Math.round(minutes || 0));
-  if (m < 60) return `${m}\u00a0min`;
-  const h = Math.floor(m / 60), r = m % 60;
-  return r ? `${h}\u00a0h\u00a0${String(r).padStart(2, '0')}` : `${h}\u00a0h`;
-}
 export function compteARebours(d, m = new Date()) {
   let s = Math.max(0, Math.round((d - m) / 1000));
   const j = Math.floor(s / 86400); s -= j * 86400;

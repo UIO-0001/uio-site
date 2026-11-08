@@ -79,7 +79,7 @@ export function chargerArgent({ frais = false, auto = false } = {}) {
   const s = sessionActuelle();
   if (E.argent) $$('#vue-argent .carte').forEach(c => c.classList.add('lit'));
   ui.charge = api('/portal/admin/argent' + (frais ? '?frais=1' : ''), { delai: 80000 })
-    .then(d => { if (sessionActuelle() === s) { E.argent = d; E.argentErreur = ''; E.argentLu = Date.now(); } })
+    .then(d => { if (sessionActuelle() === s) { E.argent = d; E.argentErreur = ''; E.argentLu = Date.now(); clesEnAttente.clear(); } })
     .catch(e => { if (e.statut !== 401 && sessionActuelle() === s) E.argentErreur = e.statut === 404 ? 'pas-encore' : e.message; })
     .finally(() => {
       ui.charge = null;
@@ -104,8 +104,20 @@ async function ecrire(chemin, corps) {
   return r;
 }
 
+// Une action confirmée garde sa clé d'un essai à l'autre (réponse perdue, délai dépassé, 2e « Oui ») :
+// le serveur ne la note qu'une fois. La clé est oubliée quand l'action a réussi, ou quand l'argent est
+// relu du serveur (une action identique plus tard est alors vraiment nouvelle).
+const clesEnAttente = new Map();
+async function ecrireUneFois(action, prefixe, chemin, corps) {
+  if (!clesEnAttente.has(action)) clesEnAttente.set(action, nouvelleCle(prefixe));
+  const r = await ecrire(chemin, { ...corps, cle: clesEnAttente.get(action) });
+  clesEnAttente.delete(action);
+  return r;
+}
+
 export function viderArgent() {
   E.argent = null; E.argentErreur = ''; E.argentLu = 0;
+  clesEnAttente.clear();
   Object.assign(ui, { confirmer: '', solde: '', plusPaiements: false, plusDepenses: false, virements: false });
   if (ui.construit) rendreArgent();
 }
@@ -158,6 +170,7 @@ function construire() {
 }
 
 export function rendreArgent() {
+  if (!$('#vue-argent')) return;                 // une page d'une version plus ancienne (mise à jour en cours)
   construire();
   rendreTete(); rendreMois(); rendreEncaisser(); rendreAbonnements(); rendreMinutes();
   rendreCredits(); rendreDepenses(); rendrePartage(); rendrePaiements();
@@ -341,7 +354,7 @@ function carteAbonnement(ab) {
   }
   if (encours && ab.garantie.possible) suite.push(' · garantie jusqu’au ', leJour(ab.garantie.jusqua));
   if (!encours && ab.fin) suite.push(`Plus de facture depuis le ${leJour(ab.fin)}`);
-  return el('button', { class: `abonnement${encours ? '' : ' abonnement--fini'}`, type: 'button', onclick: () => ouvrirAbonnement(ab.id) },
+  return el('button', { class: `abonnement${encours ? '' : ' abonnement--fini'}`, type: 'button', 'data-focus': `ab-${ab.id}`, onclick: () => ouvrirAbonnement(ab.id) },
     el('span', { class: 'abonnement__haut' }, el('span', { class: 'abonnement__nom' }, ab.nom || 'Client'),
       el('span', { class: 'abonnement__prix' }, argent(ab.total_mensuel), el('small', null, ' par mois'))),
     el('span', { class: 'abonnement__meta' },
@@ -404,10 +417,12 @@ function ligneMinutes(c) {
 
 // Les minutes au-delà du forfait : à ajouter à la prochaine facture (0,39 $ la minute)
 function blocEnPlus(c, ab) {
-  const f = ab && ab.factures.find(x => x.numero === c.facture_suivante);
+  const n = c.facture_suivante;
+  const f = ab && ab.factures.find(x => x.numero === n);
   const deja = f && f.ajouts.find(x => /^minutes en plus/i.test(x.quoi));
   const quoi = `Minutes en plus : ${c.minutes_en_plus} min (cycle du ${leJour(c.cycle_debut)} au ${leJour(c.cycle_fin)})`;
-  const ajouter = () => ecrire('ajout', { abonnement: c.abonnement, facture: f.numero, montant: c.a_facturer, quoi, cle: nouvelleCle('aj') });
+  const ajouter = () => ecrireUneFois(`plus:${c.abonnement}:${n}:${c.a_facturer}`, 'aj', 'ajout',
+    { abonnement: c.abonnement, facture: n, montant: c.a_facturer, quoi });
   let action = null;
   if (f && deja && Math.abs(deja.montant - c.a_facturer) < 0.005) action = el('span', { class: 'note' }, `Déjà sur la facture ${f.numero}.`);
   else if (f && deja) {
@@ -419,6 +434,10 @@ function blocEnPlus(c, ab) {
   } else if (f) {
     action = confirmer(`plus:${c.abonnement}:${f.numero}`, `Ajouter à la facture ${f.numero}`, `Ajouter ${argent(c.a_facturer)} à la facture ${f.numero} ?`,
       async () => { await ajouter(); toast(`Ajouté à la facture ${f.numero}.`); }, { danger: false });
+  } else if (ab && ab.fin) {
+    // Le dernier cycle d'un abonnement qui se termine : une facture de plus, avec ces minutes seulement
+    action = confirmer(`plus:${c.abonnement}:${n}`, `Facturer après la fin (n° ${n})`, `Facturer ${argent(c.a_facturer)} sur une dernière facture, sans mois ?`,
+      async () => { await ajouter(); toast(`Facture ${n} créée avec les minutes en plus.`); }, { danger: false });
   }
   return el('div', { class: 'info info--action' },
     el('span', null, `${pluriel(c.minutes_en_plus, 'minute', 'minutes')} en plus : `, el('b', null, `${argent(c.a_facturer)} à facturer`),
@@ -544,7 +563,7 @@ function ligneDepense(d) {
   const R = E.argent.regles, auj = aujourdhui();
   const quand = d.frequence === 'unique' ? `le ${leJour(d.debut)}` : (d.debut > auj ? `à partir du ${leJour(d.debut)}` : `depuis le ${leJour(d.debut)}`);
   const fin = d.fin ? (d.active ? `s’arrête le ${leJour(d.fin)}` : `arrêtée le ${leJour(d.fin)}`) : '';
-  return el('li', null, el('button', { class: 'depense', type: 'button', onclick: () => ouvrirDepense(d.id) },
+  return el('li', null, el('button', { class: 'depense', type: 'button', 'data-focus': `de-${d.id}`, onclick: () => ouvrirDepense(d.id) },
     el('span', { class: 'ligne' },
       el('span', { class: 'ligne__titre' }, d.quoi),
       d.frequence !== 'unique' ? badge(R.frequences[d.frequence], 'neutre') : null,
@@ -567,7 +586,7 @@ function rendrePartage() {
     blocs.push(el('div', { class: 'rangees' }, sugg.map(s => rangee({ lettre: initiale(s.de), titre: `${majuscule(nomDe(s.de))} envoie ${argent(s.montant)} à ${nomDe(s.a)}`,
       meta: ['Par virement Interac, par exemple. Touche « C’est fait » une fois l’argent envoyé.'],
       action: confirmer(`vir:${s.de}:${s.a}:${s.montant}`, 'C’est fait', `${majuscule(nomDe(s.de))} a envoyé ${argent(s.montant)} ?`, async () => {
-        await ecrire('virement', { de: s.de, a: s.a, montant: s.montant, date: aujourdhui(), note: 'Partage 50/50', cle: nouvelleCle('vi') });
+        await ecrireUneFois(`vir:${s.de}:${s.a}:${s.montant}`, 'vi', 'virement', { de: s.de, a: s.a, montant: s.montant, date: aujourdhui(), note: 'Partage 50/50' });
         toast('Virement noté.');
       }, { danger: false }) }))));
   } else blocs.push(grand('0 $', 'à envoyer', 'Vous êtes à parts égales : rien à équilibrer.'));
@@ -941,7 +960,8 @@ function ligneFacture(etat, ab, f) {
   const a = E.argent, R = a.regles;
   const redessiner = () => etat.rafraichir(true);
   const pays = (a.paiements || []).filter(p => f.paiements.includes(p.id));
-  const details = [[`Mois${f.forfait !== ab.forfait ? ` (${R.forfaits[f.forfait].nom})` : ''}`, argent(f.mensuel)]];
+  const details = f.de_fin ? [['Aucun mois : l’abonnement est terminé', argent(0)]]
+    : [[`Mois${f.forfait !== ab.forfait ? ` (${R.forfaits[f.forfait].nom})` : ''}`, argent(f.mensuel)]];
   if (f.depart) details.push(['Frais de départ', argent(f.depart)]);
   f.ajouts.forEach(x => details.push([x.quoi, argent(x.montant), ab.etat === 'rembourse' ? null
     : confirmer(`aj-retirer:${x.id}`, 'Retirer', 'Retirer cette ligne ?', async () => { await ecrire('ajout', { abonnement: ab.id, id: x.id, retirer: true }); toast('Ligne retirée.'); },
@@ -1058,7 +1078,10 @@ function formulaireFin(etat, ab) {
     const fin = d.input.value;
     let n = 0;
     while (fin && n < 1200 && ajouterMois(ab.debut, n) < fin) n++;
-    info.textContent = !fin ? '' : n ? fr(`Dernière facture : la n° ${n}, du ${leJour(ajouterMois(ab.debut, n - 1))}.`) : 'Aucune facture.';
+    const suite = n ? ab.factures.find(x => x.numero === n + 1) : null;
+    const enPlus = suite ? suite.ajouts.reduce((t, x) => t + x.montant, 0) : 0;
+    info.textContent = (!fin ? '' : n ? fr(`Dernière facture : la n° ${n}, du ${leJour(ajouterMois(ab.debut, n - 1))}.`) : 'Aucune facture.')
+      + (fin && enPlus > 0 ? fr(` La facture ${n + 1} reste, avec ses lignes en plus seulement (${argent(enPlus)}).`) : '');
   };
   d.input.addEventListener('input', maj);
   maj();

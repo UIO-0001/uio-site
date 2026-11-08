@@ -40,8 +40,10 @@ export function rangee({ icon, lettre, titre, badges = [], meta = [], action = n
 // etat.confirmer garde la confirmation ouverte ; redessiner refait l'écran qui la montre.
 export function confirmations(etat, redessinerParDefaut) {
   return function confirmer(cle, libelle, question, faire, { danger = true, classe = 'btn btn--contour btn--petit', redessiner = redessinerParDefaut } = {}) {
+    // Après « Non », ou un « Oui » réussi : le focus revient au bouton de départ (redessiné)
+    const revenir = () => { const b = document.querySelector(`[data-focus="${CSS.escape(`conf-${cle}`)}"]`); if (b) b.focus(); };
     if (etat.confirmer !== cle) {
-      return el('button', { class: classe, type: 'button', onclick: () => {
+      return el('button', { class: classe, type: 'button', 'data-focus': `conf-${cle}`, onclick: () => {
         etat.confirmer = cle; redessiner();
         const oui = document.querySelector(`[data-confirmer="${CSS.escape(cle)}"]`);
         if (oui) oui.focus();
@@ -52,13 +54,21 @@ export function confirmations(etat, redessinerParDefaut) {
       const liberer = occuper(oui, '…');
       try { await faire(); }
       catch (e) { liberer(); if (e.statut !== 401) toast(e.message || 'Ça n’a pas marché. Réessaie.', true); return; }
-      if (etat.confirmer === cle) { etat.confirmer = ''; redessiner(); }
+      if (etat.confirmer === cle) { etat.confirmer = ''; redessiner(); revenir(); }
     });
     return el('span', { class: 'confirmer', role: 'group', 'aria-label': question },
       el('span', { class: 'confirmer__question' }, question),
       el('span', { class: 'confirmer__boutons' },
-        el('button', { class: 'btn btn--discret btn--petit', type: 'button', onclick: () => { etat.confirmer = ''; redessiner(); } }, 'Non'), oui));
+        el('button', { class: 'btn btn--discret btn--petit', type: 'button', onclick: () => { etat.confirmer = ''; redessiner(); revenir(); } }, 'Non'), oui));
   };
+}
+
+// Une durée en minutes : « 45 min », « 2 h 05 »
+export function dureeHM(minutes) {
+  const m = Math.max(0, Math.round(minutes || 0));
+  if (m < 60) return `${m}\u00a0min`;
+  const h = Math.floor(m / 60), r = m % 60;
+  return r ? `${h}\u00a0h\u00a0${String(r).padStart(2, '0')}` : `${h}\u00a0h`;
 }
 
 // ─── Champs ────────────────────────────────────────────────────────────────
