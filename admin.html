@@ -1025,7 +1025,7 @@ function rendreBonjour() {
   if (!E.cle) return;
   const m = new Date();
   $('#bonjour-titre').textContent = salutation(m)(E.prenom);
-  $('#bonjour-date').textContent = `${majuscule(jourLong(m))} · ${heure(m)} à Gatineau`;
+  $('#bonjour-date').textContent = `${majuscule(jourLong(m))} · ${heure(m)}`;
 
   const b = t => el('b', null, t);
   const morceaux = [];
