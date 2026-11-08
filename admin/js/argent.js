@@ -4,17 +4,14 @@
 // Le serveur fait tous les calculs, avec les règles de l'offre ; l'app montre et envoie.
 // Chaque ajout porte une clé tirée au hasard : touché deux fois, ou renvoyé après une
 // coupure de réseau, il n'est jamais compté deux fois.
-import { $, $$, el as elBrut, sv, icone, vider, nombre, pluriel, majuscule, date, relatif, heure, ymd, toast } from './outils.js';
+import { $, $$, sv, icone, vider, nombre, pluriel, majuscule, date, relatif, heure, ymd, toast } from './outils.js';
 import { E } from './etat.js';
 import { api, sessionActuelle } from './api.js';
 import { montrer } from './navigation.js';
-import { ouvrirPanneau, fermerPanneau } from './panneau.js';
-import { occuper } from './ui.js';
+import { fermerPanneau } from './panneau.js';
 import { prenom, rendreBonjour } from './tableau.js';
-
-// La typographie française : pas de « : » ni de « ? » seul au début d'une ligne
-const fr = t => (typeof t === 'string' ? t.replace(/ ([:;!?»])/g, '\u00a0$1').replace(/« /g, '«\u00a0') : t);
-const el = (tag, attrs, ...enfants) => elBrut(tag, attrs, ...enfants.flat(Infinity).map(fr));
+import { fr, el, Invalide, nouvelleCle, badge, grand, rangee, confirmations, champTexte, champDate, pilules, liste, bascule,
+  formulaireEnLigne, panneauFormulaire as panneauBase } from './formes.js';
 
 const ui = { construit: false, charge: null, confirmer: '', solde: '', plusPaiements: false, plusDepenses: false, virements: false };
 const LIENS = { retell: 'https://dashboard.retellai.com/', twilio: 'https://console.twilio.com/',
@@ -72,11 +69,6 @@ const nomDe = id => {
 const initiale = id => majuscule(nomDe(id).replace(/^l’/, '')).charAt(0) || '?';
 const optionsPersonnes = () => ((E.argent && E.argent.personnes) || [])
   .map(p => [p.identifiant, p.identifiant === 'agence' ? 'L’agence' : prenom(p.nom) || p.identifiant]);
-const nouvelleCle = prefixe => {
-  const v = new Uint8Array(8);
-  crypto.getRandomValues(v);
-  return `${prefixe}_${[...v].map(b => b.toString(16).padStart(2, '0')).join('')}`;
-};
 
 // ─── Lecture et écriture ───────────────────────────────────────────────────
 export function chargerArgent({ frais = false, auto = false } = {}) {
@@ -131,18 +123,6 @@ export function viderArgent() {
 }
 
 // ─── Petits morceaux d'écran ───────────────────────────────────────────────
-const badge = (texte, genre = '') => el('span', { class: `badge${genre ? ` badge--${genre}` : ''}` }, texte);
-const grand = (texte, libelle, ...phrase) => el('div', { class: 'gros' },
-  el('p', { class: 'gros__ligne' }, el('b', null, texte), libelle ? el('span', null, libelle) : null),
-  phrase.length ? el('p', null, phrase.map(m => Array.isArray(m) ? el('b', null, m[0]) : m)) : null);
-function rangee({ icon, lettre, titre, badges = [], meta = [], action = null }) {
-  return el('div', { class: 'rangee' },
-    el('span', { class: 'rangee__icone', 'aria-hidden': 'true' }, lettre ? el('b', null, lettre) : icone(icon)),
-    el('span', { class: 'rangee__texte' },
-      el('span', { class: 'rangee__titre' }, titre, ...badges.filter(Boolean)),
-      ...meta.filter(Boolean).map(m => el('span', { class: 'rangee__meta' }, m))),
-    action ? el('span', { class: 'rangee__action' }, action) : el('span'));
-}
 function attente(boite) {
   if (E.argent) return false;
   vider(boite, el('p', { class: 'vide' }, E.argentErreur === 'pas-encore'
@@ -161,27 +141,7 @@ function badgeFacture(f) {
 }
 
 // Confirmer sur place (aucune fenêtre du navigateur) : « Annuler ce paiement ? Non · Oui »
-function confirmer(cle, libelle, question, faire, { danger = true, classe = 'btn btn--contour btn--petit', redessiner = rendreArgent } = {}) {
-  const revenir = () => { const b = document.querySelector(`[data-focus="${CSS.escape(`conf-${cle}`)}"]`); if (b) b.focus(); };
-  if (ui.confirmer !== cle) {
-    return el('button', { class: classe, type: 'button', 'data-focus': `conf-${cle}`, onclick: () => {
-      ui.confirmer = cle; redessiner();
-      const oui = document.querySelector(`[data-confirmer="${CSS.escape(cle)}"]`);
-      if (oui) oui.focus();
-    } }, libelle);
-  }
-  const oui = el('button', { class: `btn btn--petit${danger ? ' btn--danger' : ''}`, type: 'button', 'data-confirmer': cle }, 'Oui');
-  oui.addEventListener('click', async () => {
-    const liberer = occuper(oui, '…');
-    try { await faire(); }
-    catch (e) { liberer(); if (e.statut !== 401) toast(e.message || 'Ça n’a pas marché. Réessaie.', true); return; }
-    if (ui.confirmer === cle) { ui.confirmer = ''; redessiner(); revenir(); }
-  });
-  return el('span', { class: 'confirmer', role: 'group', 'aria-label': question },
-    el('span', { class: 'confirmer__question' }, question),
-    el('span', { class: 'confirmer__boutons' },
-      el('button', { class: 'btn btn--discret btn--petit', type: 'button', onclick: () => { ui.confirmer = ''; redessiner(); revenir(); } }, 'Non'), oui));
-}
+const confirmer = confirmations(ui, rendreArgent);
 
 // ─── La page ───────────────────────────────────────────────────────────────
 function construire() {
@@ -678,20 +638,6 @@ function rendrePaiements() {
 }
 
 // ─── Morceaux de formulaire ────────────────────────────────────────────────
-class Invalide extends Error { constructor(message, champ) { super(message); this.champ = champ; } }
-let compteur = 0;
-const idNeuf = p => `${p}-${++compteur}`;
-
-function champTexte(etiquette, attrs = {}, aide = '', facultatif = '') {
-  const id = idNeuf('ar');
-  const { multiligne, ...reste } = attrs;
-  const input = multiligne ? el('textarea', { ...reste, id }) : el('input', { type: 'text', ...reste, id });
-  const aideEl = aide ? el('p', { class: 'champ__aide', id: `${id}-aide` }, aide) : null;
-  if (aideEl) input.setAttribute('aria-describedby', aideEl.id);
-  const etiquetteEl = el('label', { for: id }, etiquette);
-  const boite = el('div', { class: 'champ' }, el('span', { class: 'champ__etiquette' }, etiquetteEl, facultatif ? el('span', { class: 'facultatif' }, ` (${facultatif})`) : null), input, aideEl);
-  return { boite, input, aide: aideEl, etiquette: etiquetteEl };
-}
 const saisie = v => { const n = Number(v) || 0; return Math.round(n * 100) % 100 ? n.toFixed(2).replace('.', ',') : String(Math.round(n)); };
 function lireMontant(texte) {
   const t = String(texte || '').replace(/[\s  $]/g, '').replace(',', '.');
@@ -709,89 +655,10 @@ function champMontant(etiquette, valeur, { aide = '', devise = '$', facultatif =
   c.lire = () => lireMontant(c.input.value);
   return c;
 }
-const champDate = (etiquette, valeur, { min, max, aide = '', facultatif = '' } = {}) =>
-  champTexte(etiquette, { type: 'date', value: valeur || null, min, max }, aide, facultatif);
 const entierDe = t => (/^\d{1,6}$/.test(String(t).trim()) ? Number(t) : NaN);
 
-function pilules(legende, options, valeur, surChange = () => {}, { aide = '', petit = false } = {}) {
-  const nom = idNeuf('pi');
-  const boite = el('fieldset', { class: `choix${petit ? ' choix--petit' : ''}` }, el('legend', null, legende),
-    el('div', { class: 'choix__liste' }, options.map(([v, t]) => el('label', null,
-      el('input', { type: 'radio', name: nom, value: v, checked: v === valeur, onchange: () => surChange(v) }), el('span', null, t)))),
-    aide ? el('p', { class: 'champ__aide' }, aide) : null);
-  return { boite, lire: () => { const x = boite.querySelector('input:checked'); return x ? x.value : ''; }, premier: () => boite.querySelector('input'),
-    choisir: x => { const i = [...boite.querySelectorAll('input')].find(n => n.value === x); if (i) i.checked = true; } };
-}
-function liste(etiquette, options, valeur, aide = '') {
-  const id = idNeuf('li');
-  const input = el('select', { id }, options.map(([v, t]) => el('option', { value: v, selected: v === valeur }, t)));
-  return { boite: el('div', { class: 'champ' }, el('label', { for: id }, etiquette), el('div', { class: 'selecteur' }, input), aide ? el('p', { class: 'champ__aide' }, aide) : null), input };
-}
-function bascule(titre, detail, coche, surChange = () => {}) {
-  const input = el('input', { type: 'checkbox', role: 'switch', checked: coche, onchange: e => surChange(e.target.checked) });
-  return { boite: el('label', { class: 'interrupteur' }, el('span', null, el('b', null, titre), detail ? el('span', null, detail) : null), input), input };
-}
-
-// Un formulaire dans une carte ou dans le panneau (solde, paiement d'une facture…)
-function formulaireEnLigne({ elements, bouton, envoyer, annuler, danger = false }) {
-  const erreur = el('p', { class: 'erreur', role: 'alert' });
-  const ok = el('button', { class: `btn btn--petit${danger ? ' btn--danger' : ''}`, type: 'submit' }, bouton);
-  const form = el('form', { class: 'formulaire formulaire--encadre', novalidate: true }, elements, erreur,
-    el('div', { class: 'formulaire__pied' }, el('button', { class: 'btn btn--discret btn--petit', type: 'button', onclick: annuler }, 'Annuler'), ok));
-  form.addEventListener('submit', async ev => {
-    ev.preventDefault();
-    if (ok.disabled) return;
-    erreur.textContent = '';
-    const liberer = occuper(ok, 'Enregistrement…');
-    try { await envoyer(); }
-    catch (e) {
-      liberer();
-      if (e.statut === 401) return;
-      erreur.textContent = fr(e.message);
-      if (e.champ) e.champ.focus();
-    }
-  });
-  return form;
-}
-
-// Un formulaire dans le panneau qui glisse de la droite : Annuler, Enregistrer (⌘S), Échap.
-// edition : on change une chose qui existe déjà. « Enregistrer » reste gris tant que rien
-// n'a changé, et une pastille dit qu'il y a des changements pas encore enregistrés.
-function panneauFormulaire({ titre, sousTitre = '', avant = [], corps, apres = [], bouton, chemin, preparer, reussite, modifie, focus, rafraichir, edition = false }) {
-  const id = idNeuf('form');
-  const erreur = el('p', { class: 'erreur', role: 'alert' });
-  const form = el('form', { class: 'formulaire', id, novalidate: true }, corps, erreur);
-  const ok = el('button', { class: 'btn', type: 'submit', form: id, disabled: edition }, bouton);
-  const marque = edition ? el('span', { class: 'modif', hidden: true }, 'Changements non enregistrés') : null;
-  const etat = { modifie: () => !etat.fini && modifie(), focus, rafraichir };
-  if (edition) etat.majPied = () => { const m = etat.modifie(); marque.hidden = !m; if (!etat.envoi) ok.disabled = !m; };
-  const envoyer = async () => {
-    if (etat.envoi || (edition && !etat.modifie())) return;
-    erreur.textContent = '';
-    let demande;
-    try { demande = preparer(); }
-    catch (e) { erreur.textContent = fr(e.message); if (e.champ) e.champ.focus(); return; }
-    etat.envoi = true;
-    const liberer = occuper(ok, 'Enregistrement…');
-    try {
-      const r = await ecrire(chemin, demande);
-      etat.fini = true;
-      fermerPanneau(true);
-      toast(typeof reussite === 'function' ? reussite(r) : reussite);
-    } catch (e) {
-      liberer();
-      etat.envoi = false;
-      if (etat.majPied) etat.majPied();
-      if (e.statut !== 401) erreur.textContent = fr(e.message);
-    }
-  };
-  form.addEventListener('submit', ev => { ev.preventDefault(); envoyer(); });
-  if (edition) for (const type of ['input', 'change']) form.addEventListener(type, () => etat.majPied());
-  etat.enregistrer = envoyer;
-  ouvrirPanneau(etat, titre, sousTitre, [...avant, form, ...apres],
-    [marque, el('button', { class: `btn btn--discret${marque ? '' : ' ml-auto'}`, type: 'button', onclick: () => fermerPanneau() }, edition ? 'Fermer' : 'Annuler'), ok]);
-  return etat;
-}
+// Le panneau qui glisse de la droite : chaque envoi passe par ecrire() (l'argent recalculé revient)
+const panneauFormulaire = o => panneauBase({ ...o, ecrire });
 
 function pret() {
   if (E.argent) return true;

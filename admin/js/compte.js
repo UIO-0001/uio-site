@@ -54,7 +54,7 @@ function construire() {
     el('div', { class: 'carte__tete' }, el('h2', { id: `t-${id}` }, titreCarte), ...tete),
     el('div', { class: 'carte__corps', id: `compte-${id}` }));
   const filtres = el('fieldset', { class: 'choix choix--petit' }, el('legend', { class: 'sr' }, 'Montrer'),
-    el('div', { class: 'choix__liste' }, [['tout', 'Tout'], ['connexions', 'Connexions'], ['clients', 'Clients'], ['argent', 'Argent'], ['comptes', 'Comptes']].map(([v, t]) =>
+    el('div', { class: 'choix__liste' }, [['tout', 'Tout'], ['connexions', 'Connexions'], ['clients', 'Clients'], ['argent', 'Argent'], ['equipe', 'Équipe'], ['comptes', 'Comptes']].map(([v, t]) =>
       el('label', null, el('input', { type: 'radio', name: 'filtre-journal', value: v, checked: E.filtreJournal === v,
         onchange: () => { E.filtreJournal = v; rendreJournal(); } }), el('span', null, t)))));
   vider($('#vue-compte'),
@@ -62,7 +62,7 @@ function construire() {
     el('div', { class: 'grille' },
       carte('carte--securite l7', 'securite', 'Connexion et sécurité'),
       carte('carte--appareils l5', 'appareils', 'Appareils'),
-      carte('carte--equipe l5', 'equipe', 'Équipe'),
+      carte('carte--equipe l5', 'equipe', 'Associés'),
       carte('carte--appli l7', 'appli', 'L’application'),
       carte('carte--journal pleine-largeur', 'journal', 'Journal', filtres)));
   biometrieDispo().then(v => { ui.bio = v; rendreSecurite(); });
@@ -396,7 +396,26 @@ const ACTIONS = {
   'argent.depense.retiree': ['Dépense retirée', 'argent'],
   'argent.virement.ajoute': ['Virement noté', 'argent'],
   'argent.virement.annule': ['Virement annulé', 'argent'],
-  'argent.solde.note': ['Solde de crédit noté', 'argent']
+  'argent.solde.note': ['Solde de crédit noté', 'argent'],
+  'equipe.tache.ajoutee': ['Tâche ajoutée', 'equipe'],
+  'equipe.tache.modifiee': ['Tâche changée', 'equipe'],
+  'equipe.tache.commencee': ['Tâche commencée', 'equipe'],
+  'equipe.tache.faite': ['Tâche faite', 'equipe'],
+  'equipe.tache.rouverte': ['Tâche remise à faire', 'equipe'],
+  'equipe.tache.annulee': ['Tâche annulée', 'equipe'],
+  'equipe.recap.ajoute': ['Récap publié', 'equipe'],
+  'equipe.recap.retire': ['Récap retiré', 'equipe'],
+  'equipe.note': ['Note ajoutée', 'equipe'],
+  'equipe.chrono.debut': ['Chrono démarré', 'equipe'],
+  'equipe.chrono.fin': ['Chrono arrêté', 'equipe'],
+  'equipe.heures.ajoutees': ['Session ajoutée aux heures', 'equipe'],
+  'equipe.heures.corrigees': ['Heures corrigées', 'equipe'],
+  'equipe.heures.retirees': ['Session retirée des heures', 'equipe'],
+  'equipe.document.ajoute': ['Document ajouté', 'equipe'],
+  'equipe.document.modifie': ['Document changé', 'equipe'],
+  'equipe.document.retire': ['Document retiré', 'equipe'],
+  'equipe.cle.creee': ['Clé pour Claude créée', 'comptes'],
+  'equipe.cle.retiree': ['Clé pour Claude retirée', 'comptes']
 };
 
 function rendreJournal() {
@@ -422,7 +441,7 @@ function rendreJournal() {
     const qui = noms.get(l.qui) || l.qui;
     const cible = l.action && l.action.startsWith('client.') ? clients.get(l.cible) || l.cible
       : (l.cible && l.cible !== l.qui ? noms.get(l.cible) || l.cible : '');
-    const detail = String(l.action || '').startsWith('argent.') ? detailJoli(l.detail) : l.detail;
+    const detail = /^(argent|equipe)\./.test(String(l.action || '')) ? detailJoli(l.detail) : l.detail;
     const meta = [qui && qui !== '?' ? qui : '', detail, l.appareil && !String(l.detail || '').includes(l.appareil) ? l.appareil : '', l.ip ? `réseau ${l.ip}` : ''].filter(Boolean).join(' · ');
     items.push(el('li', { class: rate ? 'rate' : null },
       el('time', { datetime: l.quand }, d ? heure(d) : ''),
@@ -434,6 +453,6 @@ function rendreJournal() {
   if (!ui.plus && E.journal.length >= 200) {
     blocs.push(el('button', { class: 'btn btn--contour btn--petit debut', type: 'button', onclick: () => { ui.plus = true; chargerJournal(); } }, 'Voir plus ancien'));
   }
-  blocs.push(el('p', { class: 'note' }, 'Chaque connexion et chaque changement (clients, argent, comptes) est écrit ici avec l’appareil et le réseau. Les 3 000 dernières lignes sont gardées.'));
+  blocs.push(el('p', { class: 'note' }, 'Chaque connexion et chaque changement (clients, argent, équipe, comptes) est écrit ici avec l’appareil et le réseau. Les 3 000 dernières lignes sont gardées.'));
   vider(boite, blocs);
 }

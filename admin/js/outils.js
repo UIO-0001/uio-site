@@ -60,6 +60,7 @@ export function duree(sec) {
   const m = Math.floor(sec / 60), s = sec % 60;
   return m ? `${m} min ${String(s).padStart(2, '0')} s` : `${s} s`;
 }
+// 2 h 30, 45 min : une durée de travail (les espaces ne se coupent jamais)
 export function compteARebours(d, m = new Date()) {
   let s = Math.max(0, Math.round((d - m) / 1000));
   const j = Math.floor(s / 86400); s -= j * 86400;

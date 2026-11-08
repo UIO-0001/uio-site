@@ -11,6 +11,7 @@ import { chargerClients, rendreClients, rendrePortail, ouvrirNouveau } from './c
 import { fermerPanneau } from './panneau.js';
 import { chargerCompte, chargerJournal, rendreCompte, viderCompte } from './compte.js';
 import { chargerArgent, rendreArgent, viderArgent } from './argent.js';
+import { chargerEquipe, rendreEquipe, viderEquipe, rendreChrono } from './equipe.js';
 import { preparerConnexion, demarrerConnexion } from './connexion.js';
 import { installer, quandInstallChange } from './installer.js';
 
@@ -30,6 +31,8 @@ function entrer() {
   planifier();
   // L'argent se lit un peu après l'entrée : le tableau de bord peut alors signaler une facture en retard ou un crédit bas
   E.minuteries.push(setTimeout(() => { if (sessionActuelle() && !E.argent) chargerArgent(); }, 1500));
+  // L'équipe aussi : « 2 tâches pour toi » et le chrono qui tourne, dès le tableau de bord
+  E.minuteries.push(setTimeout(() => { if (sessionActuelle() && !E.equipe) chargerEquipe(); }, 2500));
   majBandeauInstaller();
   document.title = TITRE;
 }
@@ -63,6 +66,7 @@ function remettreAZero() {
   $('#recherche').value = '';
   viderCompte();
   viderArgent();
+  viderEquipe();
 }
 
 function verifierExpiration() {
@@ -71,12 +75,13 @@ function verifierExpiration() {
 }
 
 // ─── Chargements et minuteries ─────────────────────────────────────────────
-function rendreTout() { rendreTableau(); rendreSite(); rendreOffre(); rendreClients(); rendrePortail(); rendrePouls(); rendreArgent(); rendreCompte(); }
+function rendreTout() { rendreTableau(); rendreSite(); rendreOffre(); rendreClients(); rendrePortail(); rendrePouls(); rendreArgent(); rendreEquipe(); rendreCompte(); }
 
 function chargerTout(frais = false) {
   const travaux = [chargerTableau(frais), chargerClients(), ping(), chargerGithub(frais), chargerOffre()];
   if (frais && E.vue === 'compte') travaux.push(chargerCompte(), chargerJournal());   // sinon : en ouvrant l'onglet
   if (E.vue === 'argent' || E.argent) travaux.push(chargerArgent({ frais }));
+  if (E.vue === 'equipe' || E.equipe) travaux.push(chargerEquipe({ frais }));
   return Promise.allSettled(travaux);
 }
 
@@ -91,9 +96,10 @@ function planifier() {
   boucle(() => ping(), DELAIS.ping);
   boucle(() => chargerGithub(), DELAIS.github);
   boucle(() => chargerOffre(), DELAIS.offre);
-  boucle(() => { rendreBonjour(); rendreDirect(); rendreAudits(); verifierExpiration(); verifierMaj(); }, DELAIS.horloge);
+  boucle(() => { rendreBonjour(); rendreDirect(); rendreAudits(); rendreChrono(); verifierExpiration(); verifierMaj(); }, DELAIS.horloge);
   boucle(() => { if (E.vue === 'compte') { chargerCompte(); chargerJournal(); } }, DELAIS.compte);
   boucle(() => { if (E.vue === 'argent') chargerArgent({ auto: true }); }, DELAIS.argent || 120e3);   // jamais pendant qu'on écrit
+  boucle(() => { if (E.vue === 'equipe') chargerEquipe({ auto: true }); }, DELAIS.equipe || 60e3);
 }
 function arreter() { E.minuteries.forEach(clearInterval); E.minuteries = []; }
 
@@ -108,6 +114,7 @@ async function actualiser() {
 quandVue('tableau', () => rendrePouls());
 quandVue('compte', () => { rendreCompte(); chargerCompte(); chargerJournal(); });
 quandVue('argent', () => { rendreArgent(); if (!E.argent || Date.now() - E.argentLu > 60e3) chargerArgent(); });
+quandVue('equipe', () => { rendreEquipe(); if (!E.equipe || Date.now() - E.equipeLu > 30e3) chargerEquipe(); });
 
 // ─── Arrière-plan : verrou après 15 minutes ────────────────────────────────
 function revenir() {
@@ -174,7 +181,7 @@ document.addEventListener('keydown', e => {
   else if (k === 'r' || k === 'R') { e.preventDefault(); actualiser(); }
   else if (k === 't' || k === 'T') basculerTheme();
   else if (k === 'l' || k === 'L') { e.preventDefault(); verrouiller(); }
-  else if (['1', '2', '3', '4'].includes(k)) montrer(VUES[Number(k) - 1]);
+  else if (['1', '2', '3', '4', '5'].includes(k)) montrer(VUES[Number(k) - 1]);
   else if (k === '?') ouvrirAide();
 });
 
