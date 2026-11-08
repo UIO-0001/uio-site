@@ -1,8 +1,10 @@
 // Le service worker de l'admin : l'app s'ouvre même sans réseau (jusqu'à l'écran de connexion)
 // et se met à jour toute seule. Il ne garde QUE les fichiers de l'app : jamais les réponses du
 // serveur (clients, appels, comptes), ni GitHub, ni la page d'accueil du site.
-// Réseau d'abord (toujours la dernière version en ligne), copie gardée si le réseau manque.
-// Changer VERSION à chaque mise en ligne de l'admin : l'app propose alors « Mettre à jour ».
+// Tous les fichiers viennent de la copie de CETTE version, prise d'un bloc à l'installation : jamais
+// un mélange d'ancien et de neuf (un module neuf avec un ancien empêcherait l'app de démarrer).
+// Le réseau seulement pour un fichier qui manque. Changer VERSION à chaque mise en ligne de l'admin :
+// la nouvelle version s'installe à côté et l'app propose « Mettre à jour ».
 const VERSION = 'admin-2026-11-08-2';
 const BASE = new URL('./', self.location.href).pathname;           // /admin/
 const COQUILLE = [
@@ -37,25 +39,14 @@ self.addEventListener('fetch', e => {
   if (u.origin !== self.location.origin) return;                   // serveur, GitHub : toujours le réseau
   const page = r.mode === 'navigate' && u.pathname.startsWith(BASE);
   if (!page && !GARDES.has(u.pathname)) return;                     // la page d'accueil et le reste du site : le réseau
-  e.respondWith(reseauPuisCopie(page ? BASE : u.pathname, u.href, e, page));
+  e.respondWith(depuisLaVersion(page ? BASE : u.pathname, r, page));
 });
 
-async function reseauPuisCopie(cle, adresse, e, page) {
+async function depuisLaVersion(cle, requete, page) {
   const cache = await caches.open(VERSION);
-  const reseau = fetch(adresse, { cache: 'no-cache', credentials: 'same-origin', redirect: 'follow' }).then(async reponse => {
-    // Une page ne peut pas être servie comme « redirigée » : on en refait une réponse simple
-    if (page && reponse.redirected) reponse = new Response(await reponse.blob(), { status: reponse.status, headers: reponse.headers });
-    if (reponse.ok && reponse.type !== 'opaque') cache.put(cle, reponse.clone());
-    return reponse;
-  });
-  e.waitUntil(reseau.catch(() => {}));
-  // Réseau lent (plus de 4 secondes) ou absent : la copie gardée, si elle existe
-  const lent = new Promise(resoudre => setTimeout(resoudre, 4000, null));
-  try {
-    const reponse = await Promise.race([reseau, lent]);
-    if (reponse && reponse.ok) return reponse;
-  } catch (err) { /* hors ligne */ }
   const copie = await cache.match(cle, { ignoreSearch: true });
-  if (copie) return copie;
-  return reseau;
+  if (!copie) return fetch(requete);
+  // Une page ne peut pas être servie comme « redirigée » : on en refait une réponse simple
+  if (page && copie.redirected) return new Response(await copie.blob(), { status: copie.status, statusText: copie.statusText, headers: copie.headers });
+  return copie;
 }

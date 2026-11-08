@@ -93,7 +93,7 @@ function planifier() {
   boucle(() => chargerOffre(), DELAIS.offre);
   boucle(() => { rendreBonjour(); rendreDirect(); rendreAudits(); verifierExpiration(); verifierMaj(); }, DELAIS.horloge);
   boucle(() => { if (E.vue === 'compte') { chargerCompte(); chargerJournal(); } }, DELAIS.compte);
-  boucle(() => { if (E.vue === 'argent') chargerArgent({ auto: true }); }, DELAIS.argent);   // jamais pendant qu'on écrit
+  boucle(() => { if (E.vue === 'argent') chargerArgent({ auto: true }); }, DELAIS.argent || 120e3);   // jamais pendant qu'on écrit
 }
 function arreter() { E.minuteries.forEach(clearInterval); E.minuteries = []; }
 
