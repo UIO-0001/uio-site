@@ -1,269 +1,937 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr-CA">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portail Client — Agence UIO</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Espace client · Agence UIO</title>
 <meta name="robots" content="noindex, nofollow">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="description" content="L’espace client d’Agence UIO : l’avancement de votre projet, étape par étape.">
+<meta name="theme-color" content="#F4F5F8">
+<script>try{if(localStorage.getItem('uio-theme')==='sombre'){document.documentElement.setAttribute('data-theme','sombre');document.querySelector('meta[name="theme-color"]').setAttribute('content','#0E1420');}}catch(e){}</script>
+<link rel="icon" type="image/svg+xml" href="assets/logo/uio-icone.svg?v=3">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png?v=3">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=3">
+<link rel="preload" href="assets/fonts/hanken-grotesk.woff2" as="font" type="font/woff2" crossorigin>
+<!--
+  Espace client d'Agence UIO. Même style que le site et l'admin : Hanken Grotesk, les couleurs
+  du logo, la barre en verre, le mode sombre partagé (uio-theme).
+  Les données viennent de uio-backend (POST /portal/login), la même route qu'avant : rien ne
+  change côté serveur. La page relit le projet toute seule (toutes les 10 minutes et au retour
+  sur l'onglet) avec les identifiants gardés en mémoire seulement : ils ne sont écrits nulle
+  part, et fermer ou recharger l'onglet déconnecte. Chaque lecture compte dans la limite de
+  10 connexions par 10 minutes du serveur : la page reste loin en dessous.
+  Sur l'appareil, on garde seulement une empreinte du projet (pourcentage et empreintes des
+  étapes faites, jamais leur texte) pour dire « depuis votre dernière visite ».
+  Tout texte venu du serveur est inséré avec textContent, jamais innerHTML.
+-->
 <style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#0a0e1a;--card:#111827;--border:#1e2d40;
-  --purple:#7c5cfc;--purple2:#9b7ffe;
-  --green:#22c55e;--yellow:#f59e0b;
-  --text:#e2e8f0;--muted:#64748b;--white:#fff;
+@font-face { font-family: "Hanken Grotesk"; src: url("assets/fonts/hanken-grotesk.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+
+:root {
+  --page: #F4F5F8;  --carte: #FFFFFF;  --carte-2: #F6F7F9;
+  --encre: #1F2937; --texte-2: #5B6472; --texte-3: #6B7380;
+  --trait: #E3E5E8; --trait-fort: #D3D7DD; --contour: #868D98;
+  --lampe: #FF8A3D; --lampe-survol: #FF9D5C;
+  --lampe-trait: #E2691A;   /* l'orange du logo, un cran plus foncé pour les barres : 3,3:1 sur blanc */
+  --voix-teinte: #FFF1E6;  --voix-fonce: #A84A0E;
+  --centre: #3A86FF; --centre-teinte: #EAF2FF; --centre-fonce: #1F5BC4;
+  --texto: #1E9E5A;  --texto-teinte: #E8F6EE; --texto-fonce: #166B3D;
+  --site: #F2A900;   --site-teinte: #FFF5D9;  --site-fonce: #7A5200;
+  --urgence: #B42318; --urgence-teinte: #FDECEA;
+  --nuit: #1F2937; --nuit-texte: #B7C1CF;
+  --verre-haut: rgba(255, 255, 255, .82); --verre-bas: rgba(255, 255, 255, .66);
+  --verre-rebord: inset 0 1px 0 rgba(255, 255, 255, .95), inset 0 0 0 1px rgba(31, 41, 55, .06);
+  --survol: rgba(31, 41, 55, .06);
+  --ombre-flotte: 0 1px 2px rgba(31, 41, 55, .06), 0 12px 28px -10px rgba(31, 41, 55, .18), 0 32px 72px -28px rgba(31, 41, 55, .24);
+  --ombre-douce: 0 1px 2px rgba(31, 41, 55, .06), 0 6px 16px -8px rgba(31, 41, 55, .22);
+  --police: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --r-carte: 22px; --r-champ: 12px;
+  --sortie: cubic-bezier(.16, 1, .3, 1);
+  --coule: cubic-bezier(.34, 1.4, .5, 1);
+  color-scheme: light;
 }
-html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif}
-body{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1rem}
+html[data-theme="sombre"] {
+  --page: #0E1420;  --carte: #151C2C;  --carte-2: #1A2234;
+  --encre: #EEF2F7; --texte-2: #A9B4C5; --texte-3: #8E9AAD;
+  --trait: #24314A; --trait-fort: #2F3D58; --contour: #6F7C92;
+  --lampe-trait: #FF8A3D;
+  --voix-teinte: #2A1B15;  --voix-fonce: #FFAB70;
+  --centre: #5B9BFF; --centre-teinte: #13223F; --centre-fonce: #A6C8FF;
+  --texto: #2DBE73;  --texto-teinte: #10281E; --texto-fonce: #72DCA5;
+  --site: #F2B01E;   --site-teinte: #2A220E;  --site-fonce: #F6CB62;
+  --urgence: #FF8A80; --urgence-teinte: #34181A;
+  --nuit: #182033; --nuit-texte: #C3CCDA;
+  --verre-haut: rgba(27, 38, 60, .82); --verre-bas: rgba(20, 30, 48, .7);
+  --verre-rebord: inset 0 1px 0 rgba(255, 255, 255, .1), inset 0 0 0 1px rgba(255, 255, 255, .07);
+  --survol: rgba(255, 255, 255, .08);
+  --ombre-flotte: 0 1px 2px rgba(0, 0, 0, .4), 0 12px 28px -10px rgba(0, 0, 0, .55), 0 32px 72px -28px rgba(0, 0, 0, .6);
+  --ombre-douce: 0 1px 2px rgba(0, 0, 0, .35), 0 6px 16px -8px rgba(0, 0, 0, .5);
+  color-scheme: dark;
+}
 
-/* ── LOGIN ── */
-#login-screen{width:100%;max-width:400px}
-.uio-logo{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--purple);margin-bottom:2rem;text-align:center}
-.login-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:2.5rem 2rem}
-.login-title{font-size:1.5rem;font-weight:700;margin-bottom:.4rem;color:var(--white)}
-.login-sub{font-size:.82rem;color:var(--muted);margin-bottom:2rem}
-.field{margin-bottom:1.2rem}
-.field label{display:block;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;font-family:'DM Mono',monospace}
-.field input{width:100%;background:#0d1525;border:1px solid var(--border);border-radius:8px;padding:.75rem 1rem;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s}
-.field input:focus{border-color:var(--purple)}
-.btn-login{width:100%;background:var(--purple);color:#fff;border:none;border-radius:8px;padding:.85rem;font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:background .2s;margin-top:.5rem}
-.btn-login:hover{background:var(--purple2)}
-.login-error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:6px;padding:.7rem 1rem;font-size:.82rem;color:#f87171;margin-top:1rem;display:none}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { position: relative; margin: 0; min-height: 100vh; background: var(--page); color: var(--encre); font: 400 1rem/1.5 var(--police); letter-spacing: -.006em; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; overflow-x: hidden; }
+h1, h2, h3, p, ul, ol { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+a { color: inherit; }
+button, input { font: inherit; color: inherit; letter-spacing: inherit; }
+:focus-visible { outline: 2px solid var(--encre); outline-offset: 2px; }
+::selection { background: #FFE2CC; color: #1F2937; }
+[hidden] { display: none !important; }
+.sr { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+.tel { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.insecable { white-space: nowrap; }
 
-/* ── DASHBOARD ── */
-#dashboard{width:100%;max-width:720px;display:none}
-.dash-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
-.dash-logo{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:3px;text-transform:uppercase;color:var(--purple)}
-.btn-logout{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:.4rem .9rem;font-size:.75rem;font-family:'DM Mono',monospace;letter-spacing:1px;cursor:pointer;transition:all .2s}
-.btn-logout:hover{border-color:var(--muted);color:var(--text)}
+/* La lueur du haut : comme le logo, l'orange à gauche, le bleu à droite */
+.aurore { position: absolute; z-index: -1; inset: 0 0 auto; height: 640px; overflow: hidden; pointer-events: none; }
+.aurore i { position: absolute; width: var(--t); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(closest-side, var(--c), rgba(255, 255, 255, 0)); }
+.aurore i:nth-child(1) { --t: min(820px, 92vw); --c: rgba(255, 138, 61, .2); left: -16%; top: -42%; }
+.aurore i:nth-child(2) { --t: min(760px, 86vw); --c: rgba(58, 134, 255, .15); right: -14%; top: -50%; }
+html[data-theme="sombre"] .aurore i:nth-child(1) { --c: rgba(255, 138, 61, .13); }
+html[data-theme="sombre"] .aurore i:nth-child(2) { --c: rgba(58, 134, 255, .13); }
 
-.project-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:2rem;margin-bottom:1.5rem}
-.project-name{font-size:1.4rem;font-weight:700;color:var(--white);margin-bottom:.3rem}
-.project-sub{font-size:.8rem;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:1px;margin-bottom:1.5rem}
+/* Boutons : l'orange du site pour l'action, le reste discret */
+.btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 22px; border: 0; border-radius: 999px; background: var(--lampe); color: #1F2937; font-weight: 650; font-size: 1rem; line-height: 1.1; text-decoration: none; white-space: nowrap; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), inset 0 -1px 0 rgba(160, 72, 18, .2), 0 8px 20px -10px rgba(255, 138, 61, .75); transition: background-color .2s, transform .15s, opacity .2s; }
+.btn:hover { background: var(--lampe-survol); }
+.btn:active { transform: scale(.97); }
+.btn:disabled { opacity: .55; cursor: progress; transform: none; }
+.btn svg { width: 16px; height: 16px; flex: none; }
+.btn--petit { min-height: 44px; padding: 0 18px; font-size: .9375rem; }
+.btn--discret { background: transparent; color: var(--texte-2); box-shadow: none; }
+.btn--discret:hover { background: var(--survol); color: var(--encre); }
+.btn--plein { width: 100%; }
+.rond { display: inline-grid; place-items: center; width: 40px; height: 40px; flex: none; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--encre); cursor: pointer; transition: background-color .2s; }
+.rond:hover { background: var(--survol); }
+.rond svg { width: 20px; height: 20px; }
+.rond.tourne svg { animation: tourne .8s linear infinite; }
+@keyframes tourne { to { transform: rotate(360deg); } }
+.theme .theme__soleil, html[data-theme="sombre"] .theme .theme__lune { display: none; }
+html[data-theme="sombre"] .theme .theme__soleil { display: block; }
 
-/* Demo link */
-.demo-link{display:inline-flex;align-items:center;gap:.5rem;background:#0d1525;border:1px solid var(--border);border-radius:8px;padding:.6rem 1rem;font-size:.82rem;color:var(--purple2);text-decoration:none;margin-bottom:1.5rem;transition:border-color .2s}
-.demo-link:hover{border-color:var(--purple)}
-.demo-link svg{flex-shrink:0}
+/* Logo : l'icône ronde du site (claire, ou sombre en mode sombre) */
+.icone-uio { display: block; flex: none; width: 40px; height: 40px; border-radius: 50%; background: url("assets/logo/uio-icone-clair.png") center / 100% 100% no-repeat; box-shadow: 0 0 0 1px rgba(31, 41, 55, .06); }
+html[data-theme="sombre"] .icone-uio { background-image: url("assets/logo/uio-icone-sombre.png"); box-shadow: 0 0 0 1px rgba(255, 255, 255, .08); }
+.mot { display: grid; gap: 3px; color: var(--encre); }
+.mot svg { width: 44px; height: 24px; }
+.mot small { font-size: .62rem; font-weight: 600; line-height: 1; letter-spacing: .12em; text-transform: uppercase; color: var(--texte-2); }
 
-/* Progress */
-.progress-section{margin-bottom:1.8rem}
-.progress-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem}
-.progress-text{font-size:.78rem;font-family:'DM Mono',monospace;letter-spacing:1px;color:var(--muted);text-transform:uppercase}
-.progress-pct{font-size:1.1rem;font-weight:700;color:var(--purple2)}
-.progress-bar-bg{background:#0d1525;border-radius:999px;height:10px;overflow:hidden;border:1px solid var(--border)}
-.progress-bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--purple),var(--purple2));transition:width 1s cubic-bezier(.16,1,.3,1)}
+/* Champs */
+.champ { display: grid; gap: 6px; }
+.champ > label { font-size: .9375rem; font-weight: 600; }
+.champ input { width: 100%; min-height: 48px; padding: 11px 14px; border: 1.5px solid var(--contour); border-radius: var(--r-champ); background: var(--carte); color: var(--encre); font-size: 1rem; line-height: 1.4; transition: border-color .15s, box-shadow .15s; }
+.champ input:hover { border-color: var(--texte-2); }
+.champ input:focus { outline: none; border-color: var(--encre); box-shadow: 0 0 0 2px var(--encre); }
+.champ__aide { font-size: .875rem; color: var(--texte-2); }
+.champ__mdp { position: relative; }
+.champ__mdp input { padding-right: 52px; }
+.champ__mdp .rond { position: absolute; top: 4px; right: 4px; color: var(--texte-2); }
+.champ__mdp .rond:hover { color: var(--encre); }
+.voir .voir__cache, .voir[aria-pressed="true"] .voir__oeil { display: none; }
+.voir[aria-pressed="true"] .voir__cache { display: block; }
+.erreur { font-size: .9375rem; font-weight: 600; color: var(--urgence); }
+.lien { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 10px; margin: -6px -10px; border-radius: 999px; color: var(--texte-2); font-size: .9375rem; font-weight: 600; text-decoration: none; white-space: nowrap; background: none; border: 0; cursor: pointer; }
+.lien:hover { color: var(--encre); background: var(--survol); }
+.lien svg { width: 16px; height: 16px; flex: none; }
 
-/* Checklist */
-.checklist-title{font-size:.72rem;font-family:'DM Mono',monospace;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:1rem}
-.checklist{display:flex;flex-direction:column;gap:.5rem}
-.check-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .9rem;background:#0d1525;border-radius:8px;border:1px solid var(--border)}
-.check-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.75rem}
-.check-icon.done{background:rgba(34,197,94,.15);color:var(--green)}
-.check-icon.todo{background:rgba(100,116,139,.1);color:var(--muted)}
-.check-label{font-size:.85rem;font-weight:500}
-.check-label.done{color:var(--text)}
-.check-label.todo{color:var(--muted)}
+/* ── Connexion ─────────────────────────────────────────────────────────── */
+.connexion { min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: 24px max(16px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.connexion__carte { width: min(420px, 100%); display: grid; gap: 22px; padding: 34px 30px 28px; border-radius: 30px; background: linear-gradient(180deg, var(--verre-haut), var(--verre-bas)); -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%); box-shadow: var(--verre-rebord), var(--ombre-flotte); }
+@media (max-width: 379px) { .connexion__carte { padding: 28px 20px 24px; border-radius: 26px; } }
+.connexion__logo { display: flex; align-items: center; gap: 12px; }
+.connexion__logo .icone-uio { width: 48px; height: 48px; }
+.connexion h1 { font-size: 1.875rem; line-height: 1.1; font-weight: 700; letter-spacing: -.03em; }
+.connexion h1 + p { margin-top: 6px; color: var(--texte-2); }
+.connexion__action { display: grid; gap: 10px; }
+.connexion__action .erreur:empty { margin-top: -10px; }
+.connexion__reveil { font-size: .9375rem; line-height: 1.45; color: var(--texte-2); }
+.connexion__aide { padding-top: 18px; border-top: 1px solid var(--trait); font-size: .9375rem; line-height: 1.5; color: var(--texte-2); }
+.connexion__aide a { color: var(--encre); font-weight: 600; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.connexion__retour { justify-self: start; margin-top: -8px; }
 
-/* Notes */
-.notes-card{background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:1.5rem;margin-top:1.5rem}
-.notes-title{font-size:.72rem;font-family:'DM Mono',monospace;letter-spacing:2px;text-transform:uppercase;color:var(--yellow);margin-bottom:.75rem}
-.notes-text{font-size:.85rem;color:var(--text);line-height:1.7;white-space:pre-wrap}
+/* ── Barre du haut : la pilule de verre du site ────────────────────────── */
+.nav { position: sticky; top: 0; z-index: 40; padding: 10px max(12px, env(safe-area-inset-right, 0px)) 0 max(12px, env(safe-area-inset-left, 0px)); pointer-events: none; }
+.nav__pilule { pointer-events: auto; display: flex; align-items: center; gap: 8px; max-width: 1120px; height: 60px; margin: 0 auto; padding: 0 8px 0 10px; border-radius: 999px; background: linear-gradient(180deg, var(--verre-haut), var(--verre-bas)); -webkit-backdrop-filter: blur(20px) saturate(190%); backdrop-filter: blur(20px) saturate(190%); box-shadow: var(--verre-rebord), 0 10px 30px -18px rgba(31, 41, 55, .35); }
+.nav__logo { display: flex; align-items: center; min-height: 44px; border-radius: 50%; }
+.nav__nom { margin-right: auto; font-weight: 650; font-size: .9375rem; white-space: nowrap; }
+.nav__droite { display: flex; align-items: center; gap: 2px; }
+.direct { display: inline-flex; align-items: center; gap: 8px; padding: 0 8px 0 6px; font-size: .875rem; color: var(--texte-2); white-space: nowrap; }
+.direct__point { width: 8px; height: 8px; flex: none; border-radius: 50%; background: var(--texte-3); }
+.direct[data-etat="ok"] .direct__point { background: var(--texto); animation: battement 2.4s ease-out infinite; }
+.direct[data-etat="hors-ligne"] .direct__point, .direct[data-etat="pause"] .direct__point { background: var(--site); }
+@keyframes battement { 0% { box-shadow: 0 0 0 0 rgba(30, 158, 90, .45); } 70%, 100% { box-shadow: 0 0 0 7px rgba(30, 158, 90, 0); } }
+.nav__quitter { min-height: 40px; padding: 0 12px; }
+.nav__quitter svg { display: none; width: 20px; height: 20px; }
+@media (max-width: 719px) {
+  .nav { padding: 8px max(8px, env(safe-area-inset-right, 0px)) 0 max(8px, env(safe-area-inset-left, 0px)); }
+  .nav__pilule { height: 56px; padding: 0 4px 0 8px; gap: 4px; }
+  .direct span { display: none; }
+  .direct { padding: 0 6px; }
+  .nav__quitter { width: 40px; padding: 0; }
+  .nav__quitter svg { display: block; }
+  .nav__quitter span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
+@media (max-width: 379px) { .direct { display: none; } .nav__logo .icone-uio { width: 36px; height: 36px; } .nav__nom { font-size: .875rem; } }
+
+/* ── Contenu ───────────────────────────────────────────────────────────── */
+.contenu { max-width: 1120px; margin: 0 auto; padding: 32px max(16px, env(safe-area-inset-right, 0px)) 56px max(16px, env(safe-area-inset-left, 0px)); }
+@media (min-width: 720px) { .nav { padding-top: 12px; padding-inline: max(24px, env(safe-area-inset-left, 0px)) max(24px, env(safe-area-inset-right, 0px)); } .contenu { padding: 56px max(24px, env(safe-area-inset-right, 0px)) 72px max(24px, env(safe-area-inset-left, 0px)); } }
+
+/* Le projet : le nom, une phrase qui dit où on en est, et l'anneau d'avancement */
+.projet { display: grid; gap: 28px; align-items: center; }
+@media (min-width: 860px) { .projet { grid-template-columns: minmax(0, 1fr) 320px; gap: 48px; } }
+.projet__texte { display: grid; gap: 14px; justify-items: start; min-width: 0; }
+.projet__bonjour { font-size: 1.0625rem; font-weight: 600; color: var(--texte-2); }
+.projet h1 { max-width: 100%; font-size: clamp(2.375rem, 1.6rem + 3.2vw, 4.25rem); line-height: 1.02; font-weight: 700; letter-spacing: -.045em; overflow-wrap: anywhere; text-wrap: balance; }
+.projet h1:focus { outline: none; }
+.projet__phrase { max-width: 42ch; font-size: clamp(1.125rem, 1.02rem + .5vw, 1.375rem); line-height: 1.45; color: var(--texte-2); text-wrap: pretty; }
+.projet__phrase b { color: var(--encre); font-weight: 650; }
+.projet__maj { display: flex; align-items: center; gap: 8px; font-size: .9375rem; color: var(--texte-2); }
+.depuis { display: flex; align-items: flex-start; gap: 10px; max-width: 54ch; padding: 12px 16px; border-radius: 16px; background: var(--voix-teinte); color: var(--voix-fonce); font-size: .9375rem; font-weight: 600; line-height: 1.45; animation: monte .6s var(--sortie) both; }
+.depuis__point { width: 8px; height: 8px; margin-top: .5em; flex: none; border-radius: 50%; background: var(--lampe-trait); }
+@keyframes monte { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.carte-anneau { display: grid; justify-items: center; gap: 14px; padding: 28px 24px 24px; border-radius: 30px; background: linear-gradient(180deg, var(--verre-haut), var(--verre-bas)); -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%); box-shadow: var(--verre-rebord), var(--ombre-flotte); }
+.anneau { position: relative; width: clamp(180px, 52vw, 232px); max-width: 100%; aspect-ratio: 1; }
+.anneau > svg { display: block; width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
+.anneau__piste { fill: none; stroke: var(--trait); stroke-width: 14; }
+.anneau__plein { fill: none; stroke: url(#g-anneau); stroke-width: 14; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; opacity: 0; transition: stroke-dashoffset 1.2s var(--sortie), opacity .3s; }
+.anneau.fini .anneau__plein { stroke: var(--texto); }
+.anneau__centre { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 8px; text-align: center; }
+.anneau__pct { font-size: clamp(3rem, 2.5rem + 2vw, 3.75rem); line-height: .9; font-weight: 700; letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
+.anneau__pct small { font-size: .42em; font-weight: 650; letter-spacing: -.01em; }
+.anneau__sous { display: inline-flex; align-items: center; gap: 6px; font-size: .9375rem; font-weight: 600; color: var(--texte-2); }
+.anneau__sous svg { width: 16px; height: 16px; }
+.anneau.fini .anneau__sous { color: var(--texto-fonce); }
+.anneau__etapes { font-size: .9375rem; font-weight: 600; color: var(--texte-2); text-align: center; }
+/* La petite fête quand le projet est terminé */
+.fete { position: absolute; inset: 0; pointer-events: none; }
+.fete i { position: absolute; left: 50%; top: 50%; width: 9px; height: 9px; margin: -4.5px; border-radius: 50%; background: var(--c); opacity: 0; animation: fete 1.4s var(--sortie) var(--r) forwards; }
+@keyframes fete { 0% { opacity: 1; transform: rotate(var(--a)) translateY(-60px) scale(.4); } 75% { opacity: 1; } 100% { opacity: 0; transform: rotate(var(--a)) translateY(calc(-1 * var(--d))) scale(1); } }
+
+/* ── Les cartes ────────────────────────────────────────────────────────── */
+.grille { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; margin-top: 36px; }
+.grille > * { min-width: 0; }
+.pile { display: contents; }
+.carte--mot { order: -1; }
+@media (min-width: 1000px) {
+  .grille { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 20px; align-items: start; margin-top: 48px; }
+  .pile { display: grid; gap: 20px; }
+  .carte--mot { order: 0; }
+}
+.carte { position: relative; display: flex; flex-direction: column; gap: 18px; padding: 22px; border-radius: var(--r-carte); background: var(--carte); border: 1px solid var(--trait); }
+@media (min-width: 760px) { .carte { padding: 24px 26px 26px; } }
+.carte__tete { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; min-height: 30px; }
+.carte__tete h2 { display: flex; align-items: center; gap: 10px; margin-right: auto; font-size: 1.125rem; line-height: 1.25; font-weight: 650; letter-spacing: -.015em; }
+.carte__tete h2::before { content: ""; width: 10px; height: 10px; flex: none; border-radius: 50%; background: var(--teinte, var(--texte-3)); }
+.carte--etapes { --teinte: var(--lampe); }
+.carte--mot { --teinte: var(--centre); }
+.carte--demo { --teinte: var(--site); }
+.carte--contact { --teinte: var(--texto); }
+.carte__texte { font-size: .9375rem; line-height: 1.5; color: var(--texte-2); }
+.etat { display: inline-flex; align-items: center; gap: 8px; min-height: 30px; padding: 0 12px; border-radius: 999px; background: var(--carte-2); color: var(--texte-2); font-size: .875rem; font-weight: 650; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.etat--ok { background: var(--texto-teinte); color: var(--texto-fonce); }
+.pastille-neuf { display: inline-flex; align-items: center; min-height: 22px; padding: 0 9px; border-radius: 999px; background: var(--voix-teinte); color: var(--voix-fonce); font-size: .75rem; font-weight: 700; letter-spacing: .01em; vertical-align: 1px; animation: neuf 1.2s var(--coule) both; }
+@keyframes neuf { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: none; } }
+.vide { padding: 16px 18px; border-radius: 14px; background: var(--carte-2); color: var(--texte-2); font-size: .9375rem; line-height: 1.45; }
+
+/* Les étapes : une ligne de temps, la prochaine étape bien en vue */
+.etapes { display: grid; }
+.etape { position: relative; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 0 14px; padding-bottom: 20px; border-radius: 14px; }
+.etape:last-child { padding-bottom: 0; }
+.etape::before { content: ""; position: absolute; left: 16px; top: 38px; bottom: 4px; width: 2px; border-radius: 2px; background: var(--trait); }
+.etape:last-child::before { display: none; }
+.etape--faite::before { background: var(--texto); }
+.etape:focus { outline: none; }
+.etape:focus-visible { outline: 2px solid var(--encre); outline-offset: 4px; }
+.etape__point { position: relative; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--carte); box-shadow: inset 0 0 0 2px var(--trait-fort); color: var(--texte-2); font-size: .875rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.etape__point svg { width: 18px; height: 18px; }
+.etape--faite .etape__point { background: var(--texto); box-shadow: none; color: #FFFFFF; }
+html[data-theme="sombre"] .etape--faite .etape__point { color: #0E1420; }
+.etape--encours .etape__point { background: var(--lampe); box-shadow: 0 6px 16px -6px rgba(255, 138, 61, .8); color: #1F2937; }
+.etape--encours .etape__point::after { content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 2px solid var(--lampe); opacity: 0; animation: appel 2.6s var(--sortie) infinite; }
+@keyframes appel { 0% { opacity: .7; transform: scale(.75); } 100% { opacity: 0; transform: scale(1.3); } }
+.etape__texte { display: grid; gap: 2px; min-width: 0; padding-top: 6px; }
+.etape--encours .etape__texte { margin-top: -4px; padding: 10px 14px 12px; border-radius: 14px; background: var(--voix-teinte); }
+.etape__titre { font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }
+.etape--avenir .etape__titre { color: var(--texte-2); font-weight: 500; }
+.etape__etat { font-size: .875rem; font-weight: 650; color: var(--texto-fonce); }
+.etape--encours .etape__etat { color: var(--voix-fonce); }
+.etape--repli .etape__texte { justify-items: start; padding-top: 3px; }
+.etape--repli .lien { min-height: 30px; margin: 0 -10px; padding-block: 4px; white-space: normal; text-align: left; line-height: 1.35; }
+
+/* Le mot de l'équipe : une bulle à côté du logo */
+.mot-equipe { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 14px; align-items: start; }
+.mot-equipe .icone-uio { width: 44px; height: 44px; }
+.mot-equipe__corps { display: grid; gap: 8px; min-width: 0; padding: 12px 16px 14px; border-radius: 4px 18px 18px 18px; background: var(--carte-2); }
+.mot-equipe__texte { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.55; }
+.mot-equipe__signature { font-size: .875rem; color: var(--texte-2); }
+
+/* La démo, dans une petite fenêtre de navigateur */
+.fenetre { overflow: hidden; border-radius: 16px; border: 1px solid var(--trait); background: var(--carte-2); }
+.fenetre__barre { display: flex; align-items: center; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--trait); background: var(--carte); }
+.fenetre__barre i { width: 10px; height: 10px; flex: none; border-radius: 50%; background: var(--trait-fort); }
+.fenetre__barre i:nth-child(1) { background: #FF8A3D; }
+.fenetre__barre i:nth-child(2) { background: #F2A900; }
+.fenetre__barre i:nth-child(3) { background: #2DBE73; }
+.fenetre__adresse { flex: 1; min-width: 0; margin-left: 6px; padding: 4px 12px; border-radius: 999px; background: var(--carte-2); color: var(--texte-2); font-size: .8125rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fenetre__corps { display: grid; justify-items: start; gap: 14px; padding: 18px; }
+.fenetre__corps p { font-size: .9375rem; line-height: 1.5; color: var(--texte-2); }
+
+/* Nous joindre */
+.contact { display: grid; gap: 2px; margin: -6px -12px -10px; }
+.contact__ligne { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 60px; padding: 8px 12px; border: 0; border-radius: 14px; background: none; color: var(--encre); font: inherit; text-align: left; text-decoration: none; cursor: pointer; }
+.contact__ligne:hover { background: var(--survol); }
+.contact__icone { display: grid; place-items: center; width: 42px; height: 42px; flex: none; border-radius: 13px; background: var(--texto-teinte); color: var(--texto-fonce); }
+.contact__icone svg { width: 20px; height: 20px; }
+.contact__texte { display: grid; gap: 1px; min-width: 0; }
+.contact__texte b { font-weight: 650; }
+.contact__texte span { font-size: .875rem; color: var(--texte-2); overflow-wrap: anywhere; }
+
+/* Pied de page */
+.pied { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 20px; max-width: 1120px; margin: 0 auto; padding: 8px max(16px, env(safe-area-inset-right, 0px)) calc(28px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); font-size: .875rem; color: var(--texte-2); }
+@media (min-width: 720px) { .pied { padding-inline: max(24px, env(safe-area-inset-left, 0px)) max(24px, env(safe-area-inset-right, 0px)); } }
+.pied__liens { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.pied a { color: var(--texte-2); text-decoration: none; }
+.pied a:hover { color: var(--encre); text-decoration: underline; }
+
+/* Le petit message en bas, au-dessus de la bulle du chatbot s'il y en a une */
+.toast { position: fixed; z-index: 80; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); max-width: calc(100% - 32px); padding: 12px 18px; border-radius: 22px; background: #1F2937; color: #FFFFFF; font-size: .9375rem; font-weight: 600; line-height: 1.35; text-align: center; box-shadow: var(--ombre-flotte); opacity: 0; visibility: hidden; transform: translate(-50%, 16px); transition: opacity .25s, transform .4s var(--sortie), visibility 0s linear .4s; pointer-events: none; }
+.toast.vu { opacity: 1; visibility: visible; transform: translate(-50%, 0); transition-delay: 0s; }
+.toast--erreur { background: #B42318; }
+html[data-theme="sombre"] .toast:not(.toast--erreur) { background: #EEF2F7; color: #1F2937; }
+@media (max-width: 719px) { .avec-chatbot .toast { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .etape--encours .etape__point::after { display: none; }
+}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-mot" viewBox="50 -720 1317 727"><path d="M509 0H376L366 -55Q341 -27 307.5 -10Q274 7 234 7Q178 7 137 -18Q96 -43 73 -91.5Q50 -140 50 -208V-500H196V-226Q196 -176 216.5 -150Q237 -124 279 -124Q319 -124 341 -151Q363 -178 363 -228V-500H509ZM619 -500H765V0H619ZM692 -551Q651 -551 625.5 -575.5Q600 -600 600 -635Q600 -671 625.5 -695.5Q651 -720 692 -720Q732 -720 757.5 -695.5Q783 -671 783 -635Q783 -600 757.5 -575.5Q732 -551 692 -551ZM1106 7Q1033 7 975 -24Q917 -55 884.5 -113Q852 -171 852 -250Q852 -329 885.5 -386.5Q919 -444 977.5 -475.5Q1036 -507 1108 -507Q1182 -507 1240.5 -475.5Q1299 -444 1333 -386.5Q1367 -329 1367 -251Q1367 -171 1332.5 -113Q1298 -55 1238.5 -24Q1179 7 1106 7ZM1106 -125Q1132 -125 1156 -139Q1180 -153 1195 -180.5Q1210 -208 1210 -250Q1210 -292 1195 -319.5Q1180 -347 1157 -361Q1134 -375 1108 -375Q1080 -375 1058 -361Q1036 -347 1022.5 -319.5Q1009 -292 1009 -250Q1009 -208 1022 -180.5Q1035 -153 1057 -139Q1079 -125 1106 -125Z"/></symbol>
+  <symbol id="i-lune" viewBox="0 0 20 20"><path d="M16.6 12.3A6.9 6.9 0 0 1 7.7 3.4a6.9 6.9 0 1 0 8.9 8.9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-soleil" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10" cy="10" r="3.5"/><path d="M10 1.9v1.7M10 16.4v1.7M1.9 10h1.7M16.4 10h1.7M4.3 4.3l1.2 1.2M14.5 14.5l1.2 1.2M4.3 15.7l1.2-1.2M14.5 5.5l1.2-1.2"/></g></symbol>
+  <symbol id="i-actualiser" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16.2 8.5A6.5 6.5 0 1 0 15 13.6"/><path d="M16.5 3.6v4.9h-4.9"/></g></symbol>
+  <symbol id="i-coche" viewBox="0 0 20 20"><path d="M5 10.4l3.3 3.3L15.2 6.6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-oeil" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1.9 10S4.9 4.6 10 4.6s8.1 5.4 8.1 5.4-3 5.4-8.1 5.4S1.9 10 1.9 10z"/><circle cx="10" cy="10" r="2.6"/></g></symbol>
+  <symbol id="i-oeil-barre" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1.9 10S4.9 4.6 10 4.6s8.1 5.4 8.1 5.4-3 5.4-8.1 5.4S1.9 10 1.9 10z"/><circle cx="10" cy="10" r="2.6"/><path d="M3.2 3.2l13.6 13.6"/></g></symbol>
+  <symbol id="i-tel" viewBox="0 0 20 20"><path d="M6.7 2.9l1.9 3c.3.5.2 1.1-.2 1.5L7.2 8.6a10.4 10.4 0 0 0 4.2 4.2l1.2-1.2c.4-.4 1-.5 1.5-.2l3 1.9c.5.3.7 1 .4 1.5l-.9 1.5c-.4.7-1.2 1.1-2 1C7.7 16.5 3.5 12.3 2.7 5.4c-.1-.8.3-1.6 1-2l1.5-.9c.5-.3 1.2-.1 1.5.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+  <symbol id="i-courriel" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="2.5" y="4.5" width="15" height="11" rx="2.2"/><path d="M3.2 5.6L10 10.8l6.8-5.2" stroke-linecap="round"/></g></symbol>
+  <symbol id="i-bulle" viewBox="0 0 20 20"><path d="M4.6 3.8h10.8a2.6 2.6 0 0 1 2.6 2.6v6a2.6 2.6 0 0 1-2.6 2.6H9.2L5.4 18v-3h-.8A2.6 2.6 0 0 1 2 12.4v-6a2.6 2.6 0 0 1 2.6-2.6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-sortie" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4H5.5A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16h9a1.5 1.5 0 0 0 1.5-1.5V12"/><path d="M11 4h5v5M16 4l-7 7"/></g></symbol>
+  <symbol id="i-quitter" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 3.5H5.5A1.5 1.5 0 0 0 4 5v10a1.5 1.5 0 0 0 1.5 1.5h3"/><path d="M12.5 6.5L16 10l-3.5 3.5M16 10H8"/></g></symbol>
+  <symbol id="i-retour" viewBox="0 0 20 20"><path d="M12 4.5L6.5 10l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+<div class="aurore" aria-hidden="true"><i></i><i></i></div>
 
-<!-- ── LOGIN ── -->
-<div id="login-screen">
-  <div class="uio-logo">Agence UIO — Portail Client</div>
-  <div class="login-card">
-    <div class="login-title">Connexion</div>
-    <div class="login-sub">Accédez à la progression de votre projet.</div>
-    <div class="field">
-      <label>Nom d'utilisateur</label>
-      <input type="text" id="username" placeholder="ex. : votre-entreprise" autocomplete="username">
+<!-- ── Connexion ──────────────────────────────────────────────────────── -->
+<main class="connexion" id="connexion">
+  <form class="connexion__carte" id="form-connexion" novalidate>
+    <div class="connexion__logo">
+      <span class="icone-uio" aria-hidden="true"></span>
+      <span class="mot" aria-hidden="true"><svg viewBox="0 0 1317 727" fill="currentColor"><use href="#i-mot" width="1317" height="727"/></svg><small>Agence</small></span>
     </div>
-    <div class="field">
-      <label>Mot de passe</label>
-      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+    <div>
+      <h1>Espace client</h1>
+      <p>Suivez l’avancement de votre projet, étape par étape.</p>
     </div>
-    <button class="btn-login" onclick="login()">Se connecter →</button>
-    <div class="login-error" id="login-error"></div>
-  </div>
-</div>
-
-<!-- ── DASHBOARD ── -->
-<div id="dashboard">
-  <div class="dash-header">
-    <div class="dash-logo">Agence UIO — Portail Client</div>
-    <button class="btn-logout" onclick="logout()">Déconnexion</button>
-  </div>
-
-  <div class="project-card">
-    <div class="project-name" id="d-project-name">—</div>
-    <div class="project-sub">PROJET EN COURS</div>
-
-    <a href="#" id="d-demo-link" class="demo-link" target="_blank" rel="noopener">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-      Voir la démo en cours
-    </a>
-
-    <div class="progress-section">
-      <div class="progress-label">
-        <span class="progress-text">Avancement</span>
-        <span class="progress-pct" id="d-progress-pct">0%</span>
-      </div>
-      <div class="progress-bar-bg">
-        <div class="progress-bar-fill" id="d-progress-bar" style="width:0%"></div>
+    <div class="champ">
+      <label for="identifiant">Nom d’utilisateur</label>
+      <input id="identifiant" type="text" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required aria-describedby="aide-identifiant">
+      <span class="champ__aide" id="aide-identifiant">Celui qu’on vous a envoyé, par exemple&nbsp;: <span class="insecable">votre-entreprise</span>.</span>
+    </div>
+    <div class="champ">
+      <label for="mdp">Mot de passe</label>
+      <div class="champ__mdp">
+        <input id="mdp" type="password" autocomplete="current-password" required>
+        <button class="rond voir" type="button" id="voir-mdp" aria-pressed="false" aria-label="Afficher le mot de passe" title="Afficher le mot de passe"><svg class="voir__oeil" aria-hidden="true"><use href="#i-oeil"/></svg><svg class="voir__cache" aria-hidden="true"><use href="#i-oeil-barre"/></svg></button>
       </div>
     </div>
+    <div class="connexion__action">
+      <button class="btn btn--plein" type="submit" id="bouton-entrer">Se connecter</button>
+      <p class="connexion__reveil" id="connexion-reveil" hidden>Le serveur se réveille. La première connexion peut prendre jusqu’à 30&nbsp;secondes.</p>
+      <p class="erreur" id="connexion-erreur" role="alert"></p>
+    </div>
+    <p class="connexion__aide">Mot de passe oublié&nbsp;? Appelez-nous au <a class="tel" href="tel:+18734558990">873 455-8990</a> ou écrivez à <a href="mailto:info@agenceuio.ca">info@agenceuio.ca</a>&nbsp;: on vous en crée un nouveau.</p>
+    <a class="lien connexion__retour" href="./"><svg aria-hidden="true"><use href="#i-retour"/></svg>Retour au site</a>
+  </form>
+</main>
 
-    <div class="checklist-title">Checklist du projet</div>
-    <div class="checklist" id="d-checklist"></div>
-  </div>
+<!-- ── L'espace client ────────────────────────────────────────────────── -->
+<div id="appli" hidden>
+  <header class="nav">
+    <div class="nav__pilule">
+      <a class="nav__logo" href="./" aria-label="Le site d’Agence UIO"><span class="icone-uio" aria-hidden="true"></span></a>
+      <span class="nav__nom">Espace client</span>
+      <div class="nav__droite">
+        <span class="direct" id="direct" data-etat="ok"><i class="direct__point" aria-hidden="true"></i><span id="direct-texte">À jour</span></span>
+        <button class="rond" type="button" id="actualiser" aria-label="Mettre à jour maintenant" title="Mettre à jour maintenant"><svg aria-hidden="true"><use href="#i-actualiser"/></svg></button>
+        <button class="rond theme" type="button" id="theme" aria-pressed="false" aria-label="Mode sombre" title="Mode sombre"><svg class="theme__lune" aria-hidden="true"><use href="#i-lune"/></svg><svg class="theme__soleil" aria-hidden="true"><use href="#i-soleil"/></svg></button>
+        <button class="btn btn--discret nav__quitter" type="button" id="quitter" title="Se déconnecter"><svg aria-hidden="true"><use href="#i-quitter"/></svg><span>Se déconnecter</span></button>
+      </div>
+    </div>
+  </header>
 
-  <div class="notes-card" id="d-notes-card" style="display:none">
-    <div class="notes-title">📌 Note de l'équipe</div>
-    <div class="notes-text" id="d-notes"></div>
-  </div>
+  <main class="contenu" id="contenu">
+    <section class="projet" aria-labelledby="projet-nom">
+      <div class="projet__texte">
+        <p class="projet__bonjour" id="projet-bonjour">Bonjour&nbsp;! Voici où en est votre projet.</p>
+        <h1 id="projet-nom" tabindex="-1">Votre projet</h1>
+        <p class="projet__phrase" id="projet-phrase"></p>
+        <p class="depuis" id="depuis" hidden></p>
+        <p class="projet__maj" id="projet-maj"></p>
+      </div>
+      <div class="carte-anneau">
+        <div class="anneau" id="anneau" role="progressbar" aria-label="Avancement du projet" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <svg viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+            <defs><linearGradient id="g-anneau" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EE7322"/><stop offset="1" stop-color="#FFA466"/></linearGradient></defs>
+            <circle class="anneau__piste" cx="100" cy="100" r="86"/>
+            <circle class="anneau__plein" id="anneau-plein" cx="100" cy="100" r="86" pathLength="100"/>
+          </svg>
+          <div class="anneau__centre" aria-hidden="true">
+            <p class="anneau__pct"><span id="anneau-nombre">0</span><small>&nbsp;%</small></p>
+            <p class="anneau__sous" id="anneau-sous">avancement</p>
+          </div>
+          <div class="fete" id="fete" aria-hidden="true"></div>
+        </div>
+        <p class="anneau__etapes" id="anneau-etapes"></p>
+      </div>
+    </section>
+
+    <div class="grille">
+      <article class="carte carte--etapes" aria-labelledby="t-etapes">
+        <div class="carte__tete"><h2 id="t-etapes">Les étapes de votre projet</h2><span class="etat" id="etapes-compte" hidden></span></div>
+        <ol class="etapes" id="etapes"></ol>
+      </article>
+
+      <div class="pile">
+        <article class="carte carte--mot" id="carte-mot" aria-labelledby="t-mot" hidden>
+          <div class="carte__tete"><h2 id="t-mot">Le mot de l’équipe</h2><span class="pastille-neuf" id="mot-neuf" hidden>Nouveau</span></div>
+          <div class="mot-equipe">
+            <span class="icone-uio" aria-hidden="true"></span>
+            <div class="mot-equipe__corps">
+              <p class="mot-equipe__texte" id="mot-texte"></p>
+              <p class="mot-equipe__signature">L’équipe d’Agence UIO</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="carte carte--demo" id="carte-demo" aria-labelledby="t-demo" hidden>
+          <div class="carte__tete"><h2 id="t-demo">Votre démo</h2><span class="pastille-neuf" id="demo-neuf" hidden>Nouveau</span></div>
+          <div class="fenetre">
+            <div class="fenetre__barre" aria-hidden="true"><i></i><i></i><i></i><span class="fenetre__adresse" id="demo-adresse"></span></div>
+            <div class="fenetre__corps">
+              <p>Voyez votre projet tel qu’il est aujourd’hui. La démo change à mesure qu’on avance.</p>
+              <a class="btn btn--petit" id="demo-lien" href="./" target="_blank" rel="noopener">Ouvrir la démo<svg aria-hidden="true"><use href="#i-sortie"/></svg></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="carte carte--contact" aria-labelledby="t-contact">
+          <div class="carte__tete"><h2 id="t-contact">Une question&nbsp;?</h2></div>
+          <p class="carte__texte">On vous répond le jour même (ou dès le lendemain matin pour les demandes envoyées en soirée).</p>
+          <ul class="contact">
+            <li><a class="contact__ligne" href="tel:+18734558990"><span class="contact__icone" aria-hidden="true"><svg><use href="#i-tel"/></svg></span><span class="contact__texte"><b>Appeler</b><span class="tel">873 455-8990</span></span></a></li>
+            <li><a class="contact__ligne" id="contact-courriel" href="mailto:info@agenceuio.ca"><span class="contact__icone" aria-hidden="true"><svg><use href="#i-courriel"/></svg></span><span class="contact__texte"><b>Écrire un courriel</b><span>info@agenceuio.ca</span></span></a></li>
+            <li id="contact-chatbot" hidden><button class="contact__ligne" type="button" id="ouvrir-chatbot"><span class="contact__icone" aria-hidden="true"><svg><use href="#i-bulle"/></svg></span><span class="contact__texte"><b>Poser une question à l’assistant</b><span>Il répond tout de suite, jour et nuit.</span></span></button></li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </main>
+
+  <footer class="pied">
+    <p>Agence UIO</p>
+    <p class="pied__liens"><a href="./">Le site</a><a href="confidentialite.html">Confidentialité</a></p>
+  </footer>
 </div>
+
+<div class="toast" id="toast" aria-hidden="true"></div>
+<div class="sr" id="annonce" role="status" aria-live="polite"></div>
 
 <script>
+(() => {
+'use strict';
+
 const BACKEND = 'https://uio-backend.onrender.com';
-let adminPass = null;
+const FUSEAU = 'America/Toronto';
+const COURRIEL = 'info@agenceuio.ca';
+// Relectures : toutes les 10 minutes, au retour sur l'onglet (au plus toutes les 2 minutes),
+// et avec le bouton (au plus une fois par minute). Chaque lecture passe par /portal/login, qui
+// compte dans la limite de 10 connexions par 10 minutes et par adresse : on reste loin en dessous.
+const DELAIS = { auto: 10 * 60e3, retour: 2 * 60e3, manuel: 60e3, horloge: 30e3, lent: 4000, max: 60e3 };
+const TITRE = document.title;
+const MOUVEMENT_REDUIT = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
 
-async function login() {
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value.trim();
-  const errEl    = document.getElementById('login-error');
-  errEl.style.display = 'none';
+// ─── État ─────────────────────────────────────────────────────────────────
+// Les identifiants restent dans cette variable, en mémoire : jamais dans le stockage du navigateur.
+const E = {
+  nom: '', mdp: '', projet: null, maj: 0, etat: 'ok', lecture: false, minuterie: 0, horloge: 0,
+  neufs: new Set(), noteNeuve: false, demoNeuve: false, nonVus: 0, titre: TITRE,
+  widget: null, idWidget: '', anim: 0, ouvertFaites: false, signatureEtapes: ''
+};
 
-  if (!username || !password) {
-    errEl.textContent = 'Veuillez remplir tous les champs.';
-    errEl.style.display = 'block';
-    return;
+// ─── Petits outils ────────────────────────────────────────────────────────
+const $ = (s, r = document) => r.querySelector(s);
+const lire = (stock, cle) => { try { return window[stock].getItem(cle); } catch (e) { return null; } };
+const ecrire = (stock, cle, v) => { try { v == null ? window[stock].removeItem(cle) : window[stock].setItem(cle, v); } catch (e) {} };
+// Typographie française : espace insécable avant « ? ! : ; » et dans « 14 h 00 », « 15 % », « 3 min »
+const insecable = t => String(t).replace(/ ([?!:;»])/g, ' $1').replace(/« /g, '« ')
+  .replace(/(\d)[  ](\$|%|h\b|min\b|s\b)/g, '$1 $2').replace(/\b(h) (\d)/g, '$1 $2');
+
+// Construit un élément sans jamais passer par innerHTML : le texte reste du texte.
+function el(tag, attrs, ...enfants) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v == null || v === false) continue;
+    if (k === 'class') n.className = v;
+    else if (k.startsWith('on') && typeof v === 'function') n.addEventListener(k.slice(2), v);
+    else n.setAttribute(k, v === true ? '' : v);
   }
+  for (const e of enfants.flat()) if (e != null && e !== false) n.append(e.nodeType ? e : insecable(e));
+  return n;
+}
+function icone(id) {
+  const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  s.setAttribute('aria-hidden', 'true');
+  const u = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+  u.setAttribute('href', '#' + id);
+  s.append(u);
+  return s;
+}
+const vider = (n, ...enfants) => n.replaceChildren(...enfants.flat().filter(Boolean));
+const ecrireTexte = (n, t) => { n.textContent = insecable(t); };
+const reduit = () => MOUVEMENT_REDUIT.matches;
+const pluriel = (n, un, plus) => `${n} ${n > 1 ? plus : un}`;
 
+const heure = d => insecable(d.toLocaleTimeString('fr-CA', { timeZone: FUSEAU, hour: 'numeric', minute: '2-digit' }).replace(/\s/g, ' '));
+const jourSemaine = d => d.toLocaleDateString('fr-CA', { timeZone: FUSEAU, weekday: 'long' });
+const ymd = d => d.toLocaleDateString('en-CA', { timeZone: FUSEAU });
+const heureLocale = d => Number(d.toLocaleString('en-CA', { timeZone: FUSEAU, hour: 'numeric', hourCycle: 'h23' }));
+function relatif(d, m = new Date()) {
+  const s = Math.round((m - d) / 1000);
+  if (s < 45) return 'à l’instant';
+  if (s < 3600) return `il y a ${Math.max(1, Math.round(s / 60))} min`;
+  if (ymd(d) === ymd(m)) return `aujourd’hui à ${heure(d)}`;
+  return `le ${d.toLocaleDateString('fr-CA', { timeZone: FUSEAU, day: 'numeric', month: 'long' })} à ${heure(d)}`;
+}
+const urlSure = u => { try { const x = new URL(u); return /^https?:$/.test(x.protocol) ? x.href : null; } catch (e) { return null; } };
+const adresse = u => { try { const x = new URL(u); return (x.host + x.pathname).replace(/\/$/, '').replace(/^www\./, ''); } catch (e) { return ''; } };
+// Empreinte courte d'un texte (FNV-1a) : on compare sans garder le texte sur l'appareil.
+const hache = s => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); } return (h >>> 0).toString(36); };
+const listeFr = m => m.length < 2 ? m.join('') : `${m.slice(0, -1).join(', ')} et ${m[m.length - 1]}`;
+
+let minuterieToast = 0;
+function toast(msg, erreur = false) {
+  const t = $('#toast');
+  ecrireTexte(t, msg);
+  ecrireTexte($('#annonce'), msg);   // lu par les lecteurs d'écran, même quand le message disparaît
+  t.classList.toggle('toast--erreur', erreur);
+  t.classList.add('vu');
+  clearTimeout(minuterieToast);
+  minuterieToast = setTimeout(() => t.classList.remove('vu'), erreur ? 6000 : 4200);
+}
+
+// ─── Serveur ──────────────────────────────────────────────────────────────
+class ErreurConnexion extends Error { constructor(msg, code) { super(msg); this.code = code; } }
+
+async function lireCompte(nom, mdp, surLent) {
+  const ctrl = new AbortController();
+  const fin = setTimeout(() => ctrl.abort(), DELAIS.max);
+  const lent = surLent ? setTimeout(surLent, DELAIS.lent) : 0;
   try {
-    const res  = await fetch(BACKEND + '/portal/login', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({username, password})
+    const r = await fetch(BACKEND + '/portal/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: nom, password: mdp }), signal: ctrl.signal
     });
-    const data = await res.json();
+    const data = await r.json().catch(() => ({}));
+    if (r.status === 429) throw new ErreurConnexion(data.error || 'Trop d’essais. Réessayez dans 10 minutes.', 429);
+    if (r.status === 401) throw new ErreurConnexion('Nom d’utilisateur ou mot de passe invalide.', 401);
+    if (r.status === 400) throw new ErreurConnexion('Entrez votre nom d’utilisateur et votre mot de passe.', 400);
+    if (!r.ok || !data.success || !data.client) throw new ErreurConnexion('Le serveur n’a pas pu lire votre projet. Réessayez dans un instant.', r.status || 500);
+    return data.client;
+  } catch (e) {
+    if (e instanceof ErreurConnexion) throw e;
+    throw new ErreurConnexion(e.name === 'AbortError'
+      ? 'Le serveur met trop de temps à répondre. Réessayez dans une minute.'
+      : 'Impossible de joindre le serveur. Vérifiez votre connexion Internet, puis réessayez.', 0);
+  } finally { clearTimeout(fin); clearTimeout(lent); }
+}
 
-    if (!data.success) {
-      errEl.textContent = data.error || 'Identifiants invalides.';
-      errEl.style.display = 'block';
+// Le projet tel que le serveur l'envoie, nettoyé une fois pour toutes
+function normaliser(c) {
+  const liste = Array.isArray(c.checklist) ? c.checklist : [];
+  return {
+    id: String(c.client_id || ''),
+    nom: String(c.project_name || '').trim() || 'Votre projet',
+    demo: urlSure(String(c.demo_url || '').trim()),
+    pct: Math.max(0, Math.min(100, parseInt(c.progress, 10) || 0)),
+    etapes: liste.filter(e => e && String(e.label || '').trim())
+      .map(e => ({ label: String(e.label).trim(), done: e.done === true || e.done === 1 || e.done === 'true' })),
+    note: String(c.notes || '').trim(),
+    chatbot: !!(c.features && c.features.chatbot)
+  };
+}
+const fini = p => p.pct >= 100;
+const faites = p => p.etapes.filter(e => e.done).length;
+
+// ─── Ce qui a changé (depuis la dernière visite, ou pendant qu'on regarde) ─
+const empreinte = p => ({ t: Date.now(), p: p.pct, f: p.etapes.filter(e => e.done).map(e => hache(e.label)), n: p.note ? hache(p.note) : '', d: p.demo ? hache(p.demo) : '' });
+const cleVisite = id => 'uio-client-visite:' + id;
+function lireVisite(id) { try { return JSON.parse(lire('localStorage', cleVisite(id)) || 'null'); } catch (e) { return null; } }
+const ecrireVisite = p => { if (p.id) ecrire('localStorage', cleVisite(p.id), JSON.stringify(empreinte(p))); };
+function changements(avant, p) {
+  if (!avant || !Array.isArray(avant.f)) return null;
+  const vues = new Set(avant.f);
+  return {
+    t: avant.t,
+    faites: p.etapes.filter(e => e.done && !vues.has(hache(e.label))),
+    pct: p.pct > (Number(avant.p) || 0) ? p.pct : 0,
+    note: !!p.note && hache(p.note) !== avant.n,
+    demo: !!p.demo && hache(p.demo) !== avant.d
+  };
+}
+function morceaux(c) {
+  const m = [];
+  if (c.faites.length === 1) m.push(`une étape terminée (« ${c.faites[0].label} »)`);
+  else if (c.faites.length > 1) m.push(`${c.faites.length} étapes terminées`);
+  if (c.pct >= 100) m.push('votre projet est terminé');
+  else if (c.pct) m.push(`le projet est passé à ${c.pct} %`);
+  if (c.note) m.push('un nouveau mot de l’équipe');
+  if (c.demo) m.push('votre démo est prête');
+  return m;
+}
+function quandVisite(t) {
+  const d = new Date(t), m = new Date();
+  if (ymd(d) === ymd(m)) return 'Depuis votre dernière visite';
+  if (ymd(d) === ymd(new Date(m - 864e5))) return 'Depuis votre visite d’hier';
+  if (m - d < 6 * 864e5) return `Depuis votre visite de ${jourSemaine(d)}`;
+  const jour = Number(d.toLocaleDateString('en-CA', { timeZone: FUSEAU, day: 'numeric' }));
+  return `Depuis votre visite du ${jour === 1 ? '1er' : jour} ${d.toLocaleDateString('fr-CA', { timeZone: FUSEAU, month: 'long' })}`;
+}
+function retenirNeufs(c) {
+  if (!c) return;
+  for (const e of c.faites) E.neufs.add(hache(e.label));
+  if (c.note) E.noteNeuve = true;
+  if (c.demo) E.demoNeuve = true;
+}
+
+// ─── Affichage ────────────────────────────────────────────────────────────
+function rendreEntete(p) {
+  const soir = heureLocale(new Date()) >= 18 || heureLocale(new Date()) < 5;
+  ecrireTexte($('#projet-bonjour'), `${soir ? 'Bonsoir' : 'Bonjour'} ! Voici où en est votre projet.`);
+  ecrireTexte($('#projet-nom'), p.nom);
+  const n = p.etapes.length, f = faites(p), suivante = p.etapes.find(e => !e.done);
+  const point = s => /[.!?…]$/.test(s) ? '' : '.';
+  let morceauxPhrase;
+  if (fini(p)) morceauxPhrase = ['Votre projet est terminé. ', ['Merci de votre confiance !']];
+  else if (n && f === n) morceauxPhrase = [['Toutes les étapes sont faites.'], ' On s’occupe des derniers détails.'];
+  else if (suivante && f === 0) morceauxPhrase = ['On commence ! Première étape : ', [suivante.label], point(suivante.label)];
+  else if (suivante) morceauxPhrase = [[`${f} étape${f > 1 ? 's' : ''} sur ${n}`], ` ${f > 1 ? 'sont faites' : 'est faite'}. Prochaine étape : `, [suivante.label], point(suivante.label)];
+  else if (p.pct > 0) morceauxPhrase = ['Votre projet est avancé à ', [`${p.pct} %`], '.'];
+  else morceauxPhrase = ['On prépare les étapes de votre projet. Elles apparaîtront ici très bientôt.'];
+  vider($('#projet-phrase'), morceauxPhrase.map(m => Array.isArray(m) ? el('b', null, m[0]) : insecable(m)));
+  E.titre = `${p.nom} · Espace client`;
+  if (!E.nonVus) document.title = E.titre;
+}
+
+function rendreAnneau(p, depuis) {
+  const a = $('#anneau'), plein = $('#anneau-plein'), f = fini(p);
+  a.classList.toggle('fini', f);
+  a.setAttribute('aria-valuenow', String(p.pct));
+  a.setAttribute('aria-valuetext', f ? 'Terminé, 100 %' : `${p.pct} %`);
+  // Deux images plus tard, pour que l'anneau se remplisse sous les yeux
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    plein.style.opacity = p.pct > 0 ? '1' : '0';
+    plein.style.strokeDashoffset = String(100 - p.pct);
+  }));
+  compter($('#anneau-nombre'), depuis, p.pct);
+  const sous = $('#anneau-sous');
+  if (f) vider(sous, icone('i-coche'), 'Terminé'); else vider(sous, 'avancement');
+  const n = p.etapes.length, nf = faites(p);
+  ecrireTexte($('#anneau-etapes'), n ? `${nf} étape${nf > 1 ? 's' : ''} sur ${n} ${nf > 1 ? 'faites' : 'faite'}` : '');
+}
+function compter(n, de, a) {
+  cancelAnimationFrame(E.anim);
+  if (reduit() || de === a) { n.textContent = String(a); return; }
+  const t0 = performance.now(), duree = 1100;
+  const pas = t => {
+    const x = Math.min(1, (t - t0) / duree), e = 1 - Math.pow(1 - x, 3);
+    n.textContent = String(Math.round(de + (a - de) * e));
+    if (x < 1) E.anim = requestAnimationFrame(pas);
+  };
+  E.anim = requestAnimationFrame(pas);
+}
+function feter() {
+  if (reduit()) return;
+  const f = $('#fete'), couleurs = ['#FF8A3D', '#3A86FF', '#2DBE73', '#F2A900'];
+  vider(f, Array.from({ length: 20 }, (_, i) => el('i', { style: `--a:${i * 18 + Math.random() * 8}deg;--d:${118 + Math.random() * 46}px;--c:${couleurs[i % 4]};--r:${(Math.random() * .25).toFixed(2)}s` })));
+  setTimeout(() => vider(f), 2000);
+}
+
+function rendreEtapes(p) {
+  const ol = $('#etapes'), n = p.etapes.length, nf = faites(p);
+  const compte = $('#etapes-compte');
+  compte.hidden = !n;
+  ecrireTexte(compte, `${nf} sur ${n}`);
+  compte.className = 'etat' + (n && nf === n ? ' etat--ok' : '');
+  if (!n) { vider(ol, el('li', { class: 'vide' }, 'Les étapes de votre projet apparaîtront ici dès qu’on les aura préparées.')); return; }
+  const courante = fini(p) ? -1 : p.etapes.findIndex(e => !e.done);
+  // Une longue suite d'étapes faites au début se replie : la prochaine étape reste en vue.
+  // On garde toujours la dernière étape faite, et les étapes nouvelles, visibles.
+  let tete = 0;
+  while (tete < n && p.etapes[tete].done) tete++;
+  let pli = tete - 1;
+  const neuve = p.etapes.findIndex((e, i) => i < tete && E.neufs.has(hache(e.label)));
+  if (neuve >= 0) pli = Math.min(pli, neuve);
+  const replier = pli >= 4 && !E.ouvertFaites;
+  const lignes = [];
+  p.etapes.forEach((e, i) => {
+    if (replier && i < pli) {
+      if (i === 0) lignes.push(el('li', { class: 'etape etape--faite etape--repli' },
+        el('span', { class: 'etape__point', 'aria-hidden': 'true' }, icone('i-coche')),
+        el('div', { class: 'etape__texte' }, el('button', { class: 'lien', type: 'button', 'aria-expanded': 'false', onclick: deplier },
+          `Voir les ${pli} premières étapes, déjà faites`))));
       return;
     }
-
-    renderDashboard(data.client);
-  } catch(e) {
-    errEl.textContent = 'Erreur de connexion. Réessayez.';
-    errEl.style.display = 'block';
-  }
-}
-
-function renderDashboard(client) {
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('dashboard').style.display    = 'block';
-
-  document.getElementById('d-project-name').textContent = client.project_name || 'Mon projet';
-
-  // Chatbot IA — affiché seulement si activé par l'admin pour ce client
-  if (client.features && client.features.chatbot && client.client_id) {
-    // Efface toute conversation sauvegardee AVANT de charger le widget, pour
-    // garantir une conversation neuve a chaque connexion reussie — plus fiable
-    // que de compter uniquement sur le bouton Deconnexion (contournable en
-    // rafraichissant la page ou en fermant/rouvrant l'onglet sans s'y cliquer).
-    try { sessionStorage.removeItem('uio_chat_' + client.client_id); } catch(e) {}
-    loadChatbotWidget(client.client_id);
-  }
-
-  const demoLink = document.getElementById('d-demo-link');
-  if (client.demo_url) {
-    demoLink.href = client.demo_url;
-  } else {
-    demoLink.style.display = 'none';
-  }
-
-  const pct = parseInt(client.progress) || 0;
-  document.getElementById('d-progress-pct').textContent = pct + '%';
-  setTimeout(() => {
-    document.getElementById('d-progress-bar').style.width = pct + '%';
-  }, 100);
-
-  const cl = document.getElementById('d-checklist');
-  cl.innerHTML = '';
-  (client.checklist || []).forEach(item => {
-    const div = document.createElement('div');
-    div.className = 'check-item';
-    div.innerHTML = `
-      <div class="check-icon ${item.done ? 'done' : 'todo'}">${item.done ? '✓' : '○'}</div>
-      <div class="check-label ${item.done ? 'done' : 'todo'}">${item.label}</div>
-    `;
-    cl.appendChild(div);
+    lignes.push(ligneEtape(e, i, i === courante));
   });
-
-  if (client.notes) {
-    document.getElementById('d-notes').textContent = client.notes;
-    document.getElementById('d-notes-card').style.display = 'block';
-  }
+  vider(ol, lignes);
+}
+function deplier() {
+  E.ouvertFaites = true;
+  rendreEtapes(E.projet);
+  E.signatureEtapes = JSON.stringify([E.projet.etapes, fini(E.projet), [...E.neufs], E.ouvertFaites]);
+  const premiere = $('#etapes li');
+  if (premiere) { premiere.setAttribute('tabindex', '-1'); premiere.focus(); }
+}
+function ligneEtape(e, i, courante) {
+  const etat = e.done ? 'faite' : courante ? 'encours' : 'avenir';
+  const neuf = e.done && E.neufs.has(hache(e.label));
+  return el('li', { class: `etape etape--${etat}` },
+    el('span', { class: 'etape__point', 'aria-hidden': 'true' }, e.done ? icone('i-coche') : String(i + 1)),
+    el('div', { class: 'etape__texte' },
+      el('p', { class: 'etape__titre' },
+        el('span', { class: 'sr' }, `Étape ${i + 1}, ${e.done ? 'faite' : courante ? 'la prochaine' : 'à venir'} : `),
+        e.label, neuf && ' ', neuf && el('span', { class: 'pastille-neuf' }, 'Nouveau')),
+      e.done ? el('p', { class: 'etape__etat', 'aria-hidden': 'true' }, 'Fait')
+        : courante ? el('p', { class: 'etape__etat', 'aria-hidden': 'true' }, 'Prochaine étape') : null));
 }
 
-let chatbotScriptEl = null;
-let currentClientId = null;
-
-function loadChatbotWidget(clientId) {
-  currentClientId = clientId;
-  // Évite de charger le widget deux fois si déjà présent
-  if (chatbotScriptEl) return;
-
-  var s = document.createElement('script');
-  s.src = BACKEND + '/chatbot.js?client=' + encodeURIComponent(clientId);
-  document.body.appendChild(s);
-  chatbotScriptEl = s;
+function rendreCotes(p) {
+  $('#carte-mot').hidden = !p.note;
+  $('#mot-texte').textContent = p.note;
+  $('#mot-neuf').hidden = !E.noteNeuve;
+  $('#carte-demo').hidden = !p.demo;
+  if (p.demo) { $('#demo-lien').href = p.demo; $('#demo-adresse').textContent = adresse(p.demo); }
+  $('#demo-neuf').hidden = !E.demoNeuve;
+  $('#contact-chatbot').hidden = !p.chatbot;
+  $('#contact-courriel').href = `mailto:${COURRIEL}?subject=${encodeURIComponent('Mon projet : ' + p.nom)}`;
 }
 
-function removeChatbotWidget() {
-  if (chatbotScriptEl) {
-    chatbotScriptEl.remove();
-    chatbotScriptEl = null;
-  }
-  // Retire les éléments injectés par chatbot.js (bouton + fenêtre de chat)
-  var btn = document.getElementById('uio-btn');
-  var box = document.getElementById('uio-box');
-  if (btn) btn.remove();
-  if (box) box.remove();
+function montrerDepuis(c) {
+  const b = $('#depuis'), m = c ? morceaux(c) : [];
+  b.hidden = !m.length;
+  if (m.length) vider(b, el('span', { class: 'depuis__point', 'aria-hidden': 'true' }), el('span', null, `${quandVisite(c.t)} : ${listeFr(m)}.`));
 }
 
-function logout() {
-  document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('dashboard').style.display    = 'none';
-  document.getElementById('username').value  = '';
-  document.getElementById('password').value  = '';
-  document.getElementById('login-error').style.display = 'none';
-  removeChatbotWidget();
-
-  // Efface la conversation sauvegardee pour ce client — sinon elle reapparait
-  // telle quelle a la prochaine connexion, meme pour un autre utilisateur du
-  // meme compte (le widget stocke son historique en sessionStorage, qui
-  // persiste tant que l'onglet reste ouvert, meme apres deconnexion).
-  if (currentClientId) {
-    try { sessionStorage.removeItem('uio_chat_' + currentClientId); } catch(e) {}
-  }
-  currentClientId = null;
+function rendre(p, avant) {
+  rendreEntete(p);
+  rendreAnneau(p, avant ? avant.pct : 0);
+  // La liste n'est refaite que si elle change : le lecteur d'écran ne perd pas sa place.
+  const signature = JSON.stringify([p.etapes, fini(p), [...E.neufs], E.ouvertFaites]);
+  if (signature !== E.signatureEtapes) { rendreEtapes(p); E.signatureEtapes = signature; }
+  rendreCotes(p);
+  majHorloge();
 }
 
-// Login avec Enter
-document.getElementById('password').addEventListener('keydown', e => {
-  if (e.key === 'Enter') login();
+// L'état de la mise à jour : dans la barre, et en toutes lettres sous la phrase
+function etat(e) {
+  E.etat = e;
+  $('#direct').dataset.etat = e;
+  ecrireTexte($('#direct-texte'), { ok: 'À jour', lecture: 'Mise à jour…', 'hors-ligne': 'Hors ligne', pause: 'En pause' }[e]);
+  $('#actualiser').classList.toggle('tourne', e === 'lecture');
+  majHorloge();
+}
+function majHorloge() {
+  if (!E.projet) return;
+  const t = $('#projet-maj');
+  if (E.etat === 'lecture') ecrireTexte(t, 'Mise à jour…');
+  else if (E.etat === 'hors-ligne') ecrireTexte(t, `Le serveur ne répond pas pour le moment : ce que vous voyez date de ${heure(new Date(E.maj))}. On réessaie tout seul.`);
+  else if (E.etat === 'pause') ecrireTexte(t, 'Beaucoup de connexions d’un coup : la mise à jour reprend dans quelques minutes.');
+  else ecrireTexte(t, `Mis à jour ${relatif(new Date(E.maj))}. La page se met à jour toute seule.`);
+}
+
+// ─── Le chatbot, si l'agence l'a activé pour ce client ────────────────────
+function chargerChatbot(id) {
+  if (E.widget || !id) return;
+  // Conversation neuve à chaque connexion (le widget garde l'historique dans l'onglet)
+  try { sessionStorage.removeItem('uio_chat_' + id); } catch (e) {}
+  const s = document.createElement('script');
+  s.src = BACKEND + '/chatbot.js?client=' + encodeURIComponent(id);
+  s.async = true;
+  document.body.append(s);
+  E.widget = s; E.idWidget = id;
+  document.body.classList.add('avec-chatbot');
+}
+function retirerChatbot() {
+  if (E.widget) E.widget.remove();
+  for (const id of ['uio-btn', 'uio-box']) { const n = document.getElementById(id); if (n) n.remove(); }
+  if (E.idWidget) { try { sessionStorage.removeItem('uio_chat_' + E.idWidget); } catch (e) {} }
+  E.widget = null; E.idWidget = '';
+  try { delete window.UIOChat; } catch (e) { window.UIOChat = undefined; }
+  document.body.classList.remove('avec-chatbot');
+}
+function ouvrirChatbot() {
+  if (window.UIOChat && typeof window.UIOChat.open === 'function') window.UIOChat.open();
+  else toast('L’assistant se charge. Réessayez dans un instant.');
+}
+
+// ─── Connexion, mise à jour, déconnexion ──────────────────────────────────
+async function connecter(ev) {
+  ev.preventDefault();
+  const nom = $('#identifiant').value.trim(), mdp = $('#mdp').value.trim();
+  const erreur = $('#connexion-erreur'), bouton = $('#bouton-entrer'), reveil = $('#connexion-reveil');
+  erreur.textContent = '';
+  if (!nom) { erreur.textContent = 'Entrez votre nom d’utilisateur.'; $('#identifiant').focus(); return; }
+  if (!mdp) { erreur.textContent = 'Entrez votre mot de passe.'; $('#mdp').focus(); return; }
+  bouton.disabled = true; bouton.textContent = 'Connexion…';
+  try {
+    const client = await lireCompte(nom, mdp, () => { bouton.textContent = 'Le serveur se réveille…'; reveil.hidden = false; });
+    E.nom = nom; E.mdp = mdp;
+    $('#mdp').value = '';
+    entrer(client);
+  } catch (e) {
+    ecrireTexte(erreur, e.message);
+    if (e.code === 401) $('#mdp').select();
+  } finally { bouton.disabled = false; bouton.textContent = 'Se connecter'; reveil.hidden = true; }
+}
+
+function entrer(client) {
+  const p = normaliser(client);
+  const c = changements(lireVisite(p.id), p);
+  E.neufs = new Set(); E.noteNeuve = E.demoNeuve = false; E.signatureEtapes = ''; E.ouvertFaites = false;
+  retenirNeufs(c);
+  E.projet = p; E.maj = Date.now(); E.etat = 'ok';
+  $('#connexion').hidden = true;
+  $('#appli').hidden = false;
+  window.scrollTo(0, 0);
+  rendre(p, null);
+  etat('ok');
+  montrerDepuis(c);
+  ecrireVisite(p);
+  if (p.chatbot) chargerChatbot(p.id);
+  if (c && c.pct >= 100) setTimeout(feter, 700);
+  clearInterval(E.horloge);
+  E.horloge = setInterval(majHorloge, DELAIS.horloge);
+  planifier();
+  $('#projet-nom').focus({ preventScroll: true });
+}
+
+async function actualiser(manuel = false) {
+  if (!E.projet || E.lecture) return;
+  if (manuel && E.etat === 'ok' && Date.now() - E.maj < DELAIS.manuel) { toast('C’est déjà à jour.'); return; }
+  E.lecture = true;
+  etat('lecture');
+  try {
+    const client = await lireCompte(E.nom, E.mdp);
+    if (!E.projet) return;   // déconnecté pendant la lecture
+    const avant = E.projet, p = normaliser(client);
+    const c = changements(empreinte(avant), p);
+    retenirNeufs(c);
+    E.projet = p; E.maj = Date.now();
+    rendre(p, avant);
+    etat('ok');
+    ecrireVisite(p);
+    if (p.chatbot) chargerChatbot(p.id); else retirerChatbot();
+    const annonce = annoncer(c, avant, p);
+    if (manuel && !annonce) toast('C’est à jour : rien de nouveau.');
+  } catch (e) {
+    if (e.code === 401) { quitter('Votre mot de passe a changé. Connectez-vous avec le nouveau.', true); return; }
+    etat(e.code === 429 ? 'pause' : 'hors-ligne');
+    if (manuel) toast(e.message, true);
+  } finally { E.lecture = false; planifier(); }
+}
+function annoncer(c, avant, p) {
+  if (!c) return false;
+  let msg = '';
+  if (!fini(avant) && fini(p)) msg = 'Votre projet est terminé !';
+  else if (c.faites.length === 1) msg = `Étape terminée : ${c.faites[0].label}`;
+  else if (c.faites.length > 1) msg = `${c.faites.length} étapes viennent d’être terminées`;
+  else if (c.pct) msg = `Votre projet est maintenant à ${c.pct} %`;
+  else if (c.note) msg = 'Nouveau mot de l’équipe';
+  else if (c.demo) msg = 'Votre démo est prête';
+  if (!msg) return false;
+  toast(msg);
+  if (document.hidden) { E.nonVus++; document.title = `(${E.nonVus}) ${E.titre}`; }
+  if (!fini(avant) && fini(p)) feter();
+  return true;
+}
+function planifier() {
+  clearTimeout(E.minuterie);
+  if (E.projet) E.minuterie = setTimeout(() => actualiser(), DELAIS.auto);
+}
+
+function quitter(message = '', garderNom = false) {
+  clearTimeout(E.minuterie); clearInterval(E.horloge); cancelAnimationFrame(E.anim);
+  retirerChatbot();
+  E.nom = E.mdp = ''; E.projet = null; E.lecture = false; E.nonVus = 0;
+  E.neufs = new Set(); E.noteNeuve = E.demoNeuve = false; E.ouvertFaites = false; E.signatureEtapes = '';
+  E.titre = TITRE; document.title = TITRE;
+  $('#appli').hidden = true;
+  $('#connexion').hidden = false;
+  $('#mdp').value = '';
+  if (!garderNom) $('#identifiant').value = '';
+  $('#voir-mdp').setAttribute('aria-pressed', 'false');
+  $('#mdp').type = 'password';
+  $('#anneau-plein').style.strokeDashoffset = '100';
+  $('#anneau-plein').style.opacity = '0';
+  $('#toast').classList.remove('vu');
+  ecrireTexte($('#connexion-erreur'), message);
+  window.scrollTo(0, 0);
+  ($('#identifiant').value ? $('#mdp') : $('#identifiant')).focus();
+}
+
+// ─── Thème (le même choix que sur le site) ────────────────────────────────
+function basculerTheme() {
+  const sombre = document.documentElement.getAttribute('data-theme') !== 'sombre';
+  if (sombre) document.documentElement.setAttribute('data-theme', 'sombre'); else document.documentElement.removeAttribute('data-theme');
+  ecrire('localStorage', 'uio-theme', sombre ? 'sombre' : 'clair');
+  majTheme();
+}
+function majTheme() {
+  const sombre = document.documentElement.getAttribute('data-theme') === 'sombre';
+  const b = $('#theme');
+  b.setAttribute('aria-pressed', String(sombre));
+  b.setAttribute('aria-label', sombre ? 'Mode clair' : 'Mode sombre');
+  b.title = sombre ? 'Mode clair' : 'Mode sombre';
+  const meta = $('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', sombre ? '#0E1420' : '#F4F5F8');
+}
+
+// ─── Branchements ─────────────────────────────────────────────────────────
+$('#form-connexion').addEventListener('submit', connecter);
+$('#voir-mdp').addEventListener('click', () => {
+  const b = $('#voir-mdp'), voir = b.getAttribute('aria-pressed') !== 'true';
+  b.setAttribute('aria-pressed', String(voir));
+  b.setAttribute('aria-label', voir ? 'Cacher le mot de passe' : 'Afficher le mot de passe');
+  b.title = b.getAttribute('aria-label');
+  $('#mdp').type = voir ? 'text' : 'password';
+  $('#mdp').focus();
 });
-document.getElementById('username').addEventListener('keydown', e => {
-  if (e.key === 'Enter') login();
+$('#actualiser').addEventListener('click', () => actualiser(true));
+$('#theme').addEventListener('click', basculerTheme);
+$('#quitter').addEventListener('click', () => quitter());
+$('#ouvrir-chatbot').addEventListener('click', ouvrirChatbot);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) return;
+  if (E.nonVus) { E.nonVus = 0; document.title = E.titre; }
+  if (E.projet && Date.now() - E.maj > DELAIS.retour) actualiser();
 });
+majTheme();
+})();
 </script>
 </body>
 </html>
