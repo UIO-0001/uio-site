@@ -1,0 +1,25 @@
+{
+  "id": "/admin/",
+  "name": "Agence UIO · Admin",
+  "short_name": "UIO Admin",
+  "description": "Le tableau de bord de l’agence : appels, demandes, clients et comptes, en direct.",
+  "lang": "fr-CA",
+  "dir": "ltr",
+  "start_url": "/admin/",
+  "scope": "/admin/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#F4F5F8",
+  "theme_color": "#F4F5F8",
+  "categories": ["business", "productivity"],
+  "prefer_related_applications": false,
+  "icons": [
+    { "src": "icones/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icones/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icones/icone-masquable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Clients", "short_name": "Clients", "url": "/admin/#clients", "icons": [{ "src": "icones/icone-192.png", "sizes": "192x192", "type": "image/png" }] },
+    { "name": "Mon compte", "short_name": "Compte", "url": "/admin/#compte", "icons": [{ "src": "icones/icone-192.png", "sizes": "192x192", "type": "image/png" }] }
+  ]
+}
