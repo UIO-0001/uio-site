@@ -19,7 +19,12 @@ export function ouvrirPanneau(etat, titre, sousTitre, corps, pied) {
   $('#appli').inert = true;
   document.body.classList.add('avec-panneau');
   requestAnimationFrame(() => { p.classList.add('ouvert'); v.classList.add('ouvert'); });
-  setTimeout(() => (etat.focus ? etat.focus() : $('#panneau-titre')).focus(), 60);
+  // Le focus va au premier champ (ou au titre) : seulement si ce panneau est encore là et ce champ aussi
+  setTimeout(() => { if (E.panneau === etat) mettreFocus(etat); }, 60);
+}
+function mettreFocus(etat) {
+  const cible = (etat.focus && etat.focus()) || $('#panneau-titre');
+  if (cible) cible.focus();
 }
 export function fermerPanneau(force = false) {
   const etat = E.panneau;
@@ -51,7 +56,7 @@ function demanderAbandon(etat) {
     delete pied.dataset.abandon;
     vider(pied, avant);
     if (etat.majPied) etat.majPied();
-    (etat.focus ? etat.focus() : $('#panneau-titre')).focus();
+    mettreFocus(etat);
   };
   const jeter = el('button', { class: 'btn btn--danger', type: 'button', onclick: () => { delete pied.dataset.abandon; fermerPanneau(true); } }, 'Fermer sans enregistrer');
   vider(pied, el('span', { class: 'modif', role: 'alert' }, 'Les changements ne sont pas enregistrés.'),

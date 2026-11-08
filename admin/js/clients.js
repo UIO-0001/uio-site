@@ -40,7 +40,9 @@ export function rendrePortail() {
 
 export function rendreClients() {
   const boite = $('#clients-liste');
-  $('#clients-compte').textContent = E.clientsLus ? String(E.clients.length) : '';
+  const n = E.clientsLus ? String(E.clients.length) : '';
+  if (E.sousClients !== 'prospects') $('#clients-compte').textContent = n;   // sinon : le nombre de prospects
+  if ($('#n-clients')) $('#n-clients').textContent = n;
   if (!E.clientsLus) return vider(boite, el('p', { class: 'vide' }, E.clientsErreur || 'Lecture en cours…'));
   const q = normal(E.recherche);
   const liste = E.clients.filter(c => !q || normal(`${c.project_name} ${c.client_id} ${c.username}`).includes(q));
@@ -247,7 +249,10 @@ const MODELES = [
   { nom: 'Site web', etapes: ['Structure du site', 'Design et couleurs', 'Contenu et textes', 'Photos et médias', 'SEO optimisé', 'Chatbot IA intégré', 'Tests mobile', 'Domaine connecté', 'Livraison finale'], serveur: true }
 ];
 
-export function ouvrirNouveau() {
+// options : { projet, quandCree } quand un prospect signé devient client (le nom est déjà écrit,
+// et le prospect garde le lien vers son espace client). Appelé par un bouton : options est l'événement.
+export function ouvrirNouveau(options) {
+  const { projet: nomDuProjet = '', quandCree = null } = options && !(options instanceof Event) ? options : {};
   if (E.vue !== 'clients') montrer('clients');
   const donnees = { project_name: '', client_id: '', username: '', password: motDePasse(), demo_url: '' };
   let idTouche = false, userTouche = false;
@@ -287,6 +292,7 @@ export function ouvrirNouveau() {
   iUser.addEventListener('input', () => { userTouche = true; donnees.username = iUser.value.trim(); });
   iMdp.addEventListener('input', () => { donnees.password = iMdp.value.trim(); });
   iDemo.addEventListener('input', () => { donnees.demo_url = iDemo.value.trim(); });
+  if (nomDuProjet) { iProjet.value = String(nomDuProjet).slice(0, 100); iProjet.dispatchEvent(new Event('input')); }
   const envoyer = async () => {
     erreur.textContent = '';
     if (!donnees.project_name || !donnees.client_id || !donnees.username) { erreur.textContent = 'Il faut le nom du projet, l’ID et le nom d’utilisateur.'; return; }
@@ -297,6 +303,7 @@ export function ouvrirNouveau() {
     try {
       await api('/portal/admin/add_client', { methode: 'POST', corps: donnees });
       etat.cree = true;
+      if (quandCree) quandCree(donnees.client_id);
       let suite = `Il commence à 0 % avec les étapes du forfait ${modele.nom}. Ouvre-le dans la liste pour les ajuster.`;
       if (!modele.serveur) {
         try { await api('/portal/admin/update', { methode: 'POST', corps: { client_id: donnees.client_id, checklist: modele.etapes.map(label => ({ label, done: false })) } }); }

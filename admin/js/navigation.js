@@ -5,7 +5,7 @@ import { E } from './etat.js';
 export const VUES = ['tableau', 'clients', 'argent', 'equipe', 'compte'];
 const crochets = {};
 export const quandVue = (vue, fn) => { (crochets[vue] = crochets[vue] || []).push(fn); };
-export const vueDuLien = () => { const h = location.hash.slice(1); return VUES.includes(h) ? h : 'tableau'; };
+export const vueDuLien = () => { const h = location.hash.slice(1); return h === 'prospects' ? 'clients' : VUES.includes(h) ? h : 'tableau'; };   // #prospects : Clients → Prospects
 
 export function placerLentille() {
   const actif = $('.onglets [aria-selected="true"]'), l = $('.onglets .lentille');

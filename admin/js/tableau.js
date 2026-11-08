@@ -2,7 +2,7 @@
 import { $, $$, el, sv, icone, vider, nombre, pluriel, insecable, heure, jourLong, majuscule, date, relatif,
   duree, compteARebours, lienTel, lienCourriel, urlSure, toast, lire, ecrire, heureLocale, FUSEAU } from './outils.js';
 import { E, BACKEND, DEPOT, SITE, TITRE } from './etat.js';
-import { dureeHM } from './formes.js';
+import { dureeHM, confirmations } from './formes.js';
 import { api, sessionActuelle } from './api.js';
 import { htmlInerte } from './confiance.js';
 import { montrer } from './navigation.js';
@@ -215,6 +215,14 @@ function morceauxEquipe(b) {
   return m;
 }
 
+// Les prospects dont la relance tombe aujourd'hui ou est passée (onglet Clients → Prospects)
+function morceauxProspects(b) {
+  const n = E.prospects ? E.prospects.a_relancer || 0 : 0;
+  if (!n) return [];
+  return [b(pluriel(n, 'prospect', 'prospects')), ' à relancer (',
+    el('button', { class: 'lien-texte', type: 'button', onclick: () => document.dispatchEvent(new CustomEvent('uio:prospects', { detail: { filtre: 'relancer' } })) }, 'voir les prospects'), '). '];
+}
+
 export function rendreBonjour() {
   const s = sessionActuelle();
   if (!s) return;
@@ -237,6 +245,7 @@ export function rendreBonjour() {
     }
   }
   morceaux.push(...morceauxEquipe(b));
+  morceaux.push(...morceauxProspects(b));
   const faits = [];
   if (appels && appels.disponible) faits.push([b(pluriel(appels.aujourdhui, 'appel', 'appels')), ' aujourd’hui']);
   if (demandes && demandes.disponible) faits.push([b(pluriel(demandes.semaine, 'demande', 'demandes')), ' du chatbot cette semaine']);
@@ -450,6 +459,23 @@ function barresParJour(jours) {
   return boite;
 }
 
+// Retirer une demande (un essai, un doublon) : elle quitte le tableau de bord mais reste dans
+// la feuille, et « Demandes retirées » permet de la remettre.
+const uiDemandes = { confirmer: '', retirees: false };
+const confirmerDemande = confirmations(uiDemandes, () => rendreDemandes());
+const moiId = () => ((sessionActuelle() || {}).admin || {}).identifiant || '';
+function nomDe(id) {
+  if (!id) return '';
+  if (id === moiId()) return 'toi';
+  const gens = (E.prospects && E.prospects.personnes) || (E.equipe && E.equipe.personnes) || [];
+  return prenom((gens.find(g => g.identifiant === id) || {}).nom) || id;
+}
+async function changerDemande(chemin, corps, message) {
+  await api(`/portal/admin/demande/${chemin}`, { methode: 'POST', corps, delai: 45000 });
+  toast(message);
+  await chargerTableau(true);
+}
+
 function rendreDemandes() {
   const boite = $('#demandes');
   const manque = indisponible('demandes', 'Les demandes du chatbot');
@@ -470,10 +496,30 @@ function rendreDemandes() {
         quand && el('time', { class: 'ligne__quand', datetime: d.date, title: `${jourLong(quand)} à ${heure(quand)}` }, relatif(quand))),
       d.resume ? el('p', { class: 'resume' }, d.resume) : null,
       d.moment_rappel ? el('p', { class: 'ligne__meta' }, `Rappel souhaité : ${d.moment_rappel}`) : null,
-      (tel || courriel) && el('div', { class: 'actions' },
+      (tel || courriel || d.id) && el('div', { class: 'actions' },
         tel && el('a', { class: 'puce tel', href: tel }, `Appeler ${d.telephone}`),
-        courriel && el('a', { class: 'puce', href: courriel }, 'Écrire')));
+        courriel && el('a', { class: 'puce', href: courriel }, 'Écrire'),
+        // Un serveur plus ancien n'envoie pas d'identifiant : ni suivi, ni retrait
+        d.id && el('button', { class: 'puce', type: 'button', onclick: () => document.dispatchEvent(new CustomEvent('uio:prospect-depuis-demande', { detail: d })) }, 'Suivre comme prospect'),
+        d.id && el('span', { class: 'ml-auto' }, confirmerDemande(`retirer:${d.id}`, 'Retirer', `Retirer la demande de ${d.nom || 'ce visiteur'} ?`,
+          () => changerDemande('retirer', { id: d.id, nom: d.nom || '', date: d.date || '' }, `La demande de ${d.nom || 'ce visiteur'} est retirée.`),
+          { classe: 'lien lien--petit' }))));
   })));
+  const retirees = Array.isArray(s.retirees) ? s.retirees : [];
+  if (retirees.length) {
+    blocs.push(el('details', { class: 'depliant', open: uiDemandes.retirees, ontoggle: e => { uiDemandes.retirees = e.target.open; } },
+      el('summary', null, `Demandes retirées (${retirees.length})`),
+      el('ul', { class: 'liste' }, retirees.map(r => {
+        const quand = date(r.date), le = date(r.retire_le);
+        return el('li', null, el('div', { class: 'ligne' },
+          el('span', { class: 'ligne__titre' }, r.nom || 'Sans nom'),
+          el('span', { class: 'ligne__meta' }, [quand ? `du ${quand.toLocaleDateString('fr-CA', { timeZone: FUSEAU, day: 'numeric', month: 'long' })}` : '',
+            le ? `retirée ${/^\d/.test(relatif(le)) ? 'le ' : ''}${relatif(le)}${r.retire_par ? ` par ${nomDe(r.retire_par)}` : ''}` : ''].filter(Boolean).join(' · ')),
+          el('span', { class: 'ml-auto' }, confirmerDemande(`remettre:${r.id}`, 'Remettre', `Remettre la demande de ${r.nom || 'ce visiteur'} ?`,
+            () => changerDemande('remettre', { id: r.id }, `La demande de ${r.nom || 'ce visiteur'} est de retour.`),
+            { danger: false, classe: 'lien lien--petit' }))));
+      }))));
+  }
   vider(boite, blocs);
 }
 

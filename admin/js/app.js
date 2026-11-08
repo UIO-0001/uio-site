@@ -12,6 +12,7 @@ import { fermerPanneau } from './panneau.js';
 import { chargerCompte, chargerJournal, rendreCompte, viderCompte } from './compte.js';
 import { chargerArgent, rendreArgent, viderArgent } from './argent.js';
 import { chargerEquipe, rendreEquipe, viderEquipe, rendreChrono } from './equipe.js';
+import { chargerProspects, viderProspects, rendreProspects, choisirSousVue, reprendreSousVue, sousVue, ouvrirNouveauProspect } from './prospects.js';
 import { preparerConnexion, demarrerConnexion } from './connexion.js';
 import { installer, quandInstallChange } from './installer.js';
 
@@ -25,6 +26,8 @@ function entrer() {
   remettreAZero();
   $('#connexion').hidden = true;
   $('#appli').hidden = false;
+  // Clients ou Prospects : celui d'avant (même onglet du navigateur), ou #prospects (raccourci de l'app)
+  if (location.hash === '#prospects') choisirSousVue('prospects'); else reprendreSousVue();
   montrer(vueDuLien());
   rendreTout();
   chargerTout();
@@ -33,6 +36,8 @@ function entrer() {
   E.minuteries.push(setTimeout(() => { if (sessionActuelle() && !E.argent) chargerArgent(); }, 1500));
   // L'équipe aussi : « 2 tâches pour toi » et le chrono qui tourne, dès le tableau de bord
   E.minuteries.push(setTimeout(() => { if (sessionActuelle() && !E.equipe) chargerEquipe(); }, 2500));
+  // Les prospects : « 3 prospects à relancer » sur le tableau de bord
+  E.minuteries.push(setTimeout(() => { if (sessionActuelle() && !E.prospects) chargerProspects(); }, 3500));
   majBandeauInstaller();
   document.title = TITRE;
 }
@@ -67,6 +72,7 @@ function remettreAZero() {
   viderCompte();
   viderArgent();
   viderEquipe();
+  viderProspects();
 }
 
 function verifierExpiration() {
@@ -75,13 +81,14 @@ function verifierExpiration() {
 }
 
 // ─── Chargements et minuteries ─────────────────────────────────────────────
-function rendreTout() { rendreTableau(); rendreSite(); rendreOffre(); rendreClients(); rendrePortail(); rendrePouls(); rendreArgent(); rendreEquipe(); rendreCompte(); }
+function rendreTout() { rendreTableau(); rendreSite(); rendreOffre(); rendreClients(); rendreProspects(); rendrePortail(); rendrePouls(); rendreArgent(); rendreEquipe(); rendreCompte(); }
 
 function chargerTout(frais = false) {
   const travaux = [chargerTableau(frais), chargerClients(), ping(), chargerGithub(frais), chargerOffre()];
   if (frais && E.vue === 'compte') travaux.push(chargerCompte(), chargerJournal());   // sinon : en ouvrant l'onglet
   if (E.vue === 'argent' || E.argent) travaux.push(chargerArgent({ frais }));
   if (E.vue === 'equipe' || E.equipe) travaux.push(chargerEquipe({ frais }));
+  if ((E.vue === 'clients' && sousVue() === 'prospects') || E.prospects) travaux.push(chargerProspects({ frais }));
   return Promise.allSettled(travaux);
 }
 
@@ -100,6 +107,11 @@ function planifier() {
   boucle(() => { if (E.vue === 'compte') { chargerCompte(); chargerJournal(); } }, DELAIS.compte);
   boucle(() => { if (E.vue === 'argent') chargerArgent({ auto: true }); }, DELAIS.argent || 120e3);   // jamais pendant qu'on écrit
   boucle(() => { if (E.vue === 'equipe') chargerEquipe({ auto: true }); }, DELAIS.equipe || 60e3);
+  // Les prospects : relus souvent quand on les regarde, sinon toutes les 15 min (relances du tableau de bord)
+  boucle(() => {
+    if (E.prospectsErreur === 'pas-encore') return;                  // un serveur plus ancien : rien à relire
+    if ((E.vue === 'clients' && sousVue() === 'prospects') || Date.now() - (E.prospectsLu || 0) > 15 * 60e3) chargerProspects({ auto: true });
+  }, DELAIS.prospects || 90e3);
 }
 function arreter() { E.minuteries.forEach(clearInterval); E.minuteries = []; }
 
@@ -115,6 +127,7 @@ quandVue('tableau', () => rendrePouls());
 quandVue('compte', () => { rendreCompte(); chargerCompte(); chargerJournal(); });
 quandVue('argent', () => { rendreArgent(); if (!E.argent || Date.now() - E.argentLu > 60e3) chargerArgent(); });
 quandVue('equipe', () => { rendreEquipe(); if (!E.equipe || Date.now() - E.equipeLu > 30e3) chargerEquipe(); });
+quandVue('clients', () => { if (sousVue() === 'prospects' && (!E.prospects || Date.now() - (E.prospectsLu || 0) > 30e3)) chargerProspects(); });
 
 // ─── Arrière-plan : verrou après 15 minutes ────────────────────────────────
 function revenir() {
@@ -177,7 +190,7 @@ document.addEventListener('keydown', e => {
   if (e.target.closest('input, textarea, select, [contenteditable]') || e.metaKey || e.ctrlKey || e.altKey || E.panneau || !$('#aide').hidden) return;
   const k = e.key;
   if (k === '/') { e.preventDefault(); montrer('clients'); $('#recherche').focus(); }
-  else if (k === 'n' || k === 'N') { e.preventDefault(); montrer('clients'); ouvrirNouveau(); }
+  else if (k === 'n' || k === 'N') { e.preventDefault(); montrer('clients'); nouveau(); }
   else if (k === 'r' || k === 'R') { e.preventDefault(); actualiser(); }
   else if (k === 't' || k === 'T') basculerTheme();
   else if (k === 'l' || k === 'L') { e.preventDefault(); verrouiller(); }
@@ -247,9 +260,20 @@ $('#aide-fermer').addEventListener('click', fermerAide);
 $('#aide').addEventListener('click', e => { if (e.target === $('#aide')) fermerAide(); });
 $('#voile').addEventListener('click', () => fermerPanneau());
 $('#panneau-fermer').addEventListener('click', () => fermerPanneau());
-$('#nouveau-client').addEventListener('click', ouvrirNouveau);
-$('#recherche').addEventListener('input', e => { E.recherche = e.target.value; rendreClients(); });
-$('#recherche').addEventListener('keydown', e => { if (e.key === 'Enter') { const premier = $('#clients-liste .client'); if (premier) premier.click(); } });
+// Clients ou Prospects : le bouton « Nouveau », la recherche et Entrée suivent ce qui est affiché
+const nouveau = () => (sousVue() === 'prospects' ? ouvrirNouveauProspect() : ouvrirNouveau());
+$('#nouveau-client').addEventListener('click', () => nouveau());
+$('#voir-clients').addEventListener('click', () => choisirSousVue('clients'));
+$('#voir-prospects').addEventListener('click', () => choisirSousVue('prospects'));
+$('#recherche').addEventListener('input', e => {
+  if (sousVue() === 'prospects') { E.rechercheProspects = e.target.value; rendreProspects(); }
+  else { E.recherche = e.target.value; rendreClients(); }
+});
+$('#recherche').addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const premier = $(sousVue() === 'prospects' ? '#prospects .prospect__corps' : '#clients-liste .client');
+  if (premier) premier.click();
+});
 document.addEventListener('uio:reveil', () => { if (sessionActuelle()) chargerClients(); });
 window.addEventListener('resize', () => { placerLentille(); if (sessionActuelle() && E.vue === 'tableau') rendrePouls(); });
 window.addEventListener('beforeunload', e => { if (E.panneau && E.panneau.modifie && E.panneau.modifie()) { e.preventDefault(); e.returnValue = ''; } });
