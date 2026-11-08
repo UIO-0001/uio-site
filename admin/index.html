@@ -197,7 +197,7 @@
     <!-- Clients -->
     <section id="vue-clients" role="tabpanel" aria-labelledby="onglet-clients" hidden>
       <div class="clients__tete">
-        <h1>Clients<small id="clients-compte"></small></h1>
+        <h1><span id="clients-titre">Clients</span><small id="clients-compte"></small></h1>
         <div class="recherche">
           <label class="sr" for="recherche">Chercher un client</label>
           <input id="recherche" type="search" placeholder="Chercher un client" autocomplete="off">
@@ -205,7 +205,13 @@
         </div>
         <button class="btn btn--petit" type="button" id="nouveau-client">Nouveau client</button>
       </div>
+      <!-- Les clients (leur espace client) ou les prospects (ceux qu'on aimerait comme clients) -->
+      <div class="filtres sous-vues" role="group" aria-label="Montrer">
+        <button class="filtre" type="button" id="voir-clients" aria-pressed="true">Clients <span class="filtre__n" id="n-clients"></span></button>
+        <button class="filtre" type="button" id="voir-prospects" aria-pressed="false">Prospects <span class="filtre__n" id="n-prospects"></span></button>
+      </div>
       <div class="clients__liste" id="clients-liste"></div>
+      <div class="prospects" id="prospects" hidden></div>
     </section>
 
     <!-- Argent : abonnements, factures, dépenses, partage, minutes et crédits -->
@@ -236,8 +242,8 @@
     <h2 id="aide-titre">Raccourcis clavier</h2>
     <dl>
       <dt><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd><kbd>5</kbd></dt><dd>Tableau de bord, Clients, Argent, Équipe, Compte</dd>
-      <dt><kbd>/</kbd></dt><dd>Chercher un client</dd>
-      <dt><kbd>N</kbd></dt><dd>Nouveau client</dd>
+      <dt><kbd>/</kbd></dt><dd>Chercher un client ou un prospect</dd>
+      <dt><kbd>N</kbd></dt><dd>Nouveau client, ou nouveau prospect dans Prospects</dd>
       <dt><kbd>R</kbd></dt><dd>Actualiser tout</dd>
       <dt><kbd>T</kbd></dt><dd>Mode sombre ou clair</dd>
       <dt><kbd>L</kbd></dt><dd>Verrouiller l’admin</dd>
