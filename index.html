@@ -700,11 +700,13 @@ html #uio-box #uio-send { border-radius: var(--r-champ); font-weight: 600; }
 
 /* L'aurore du premier écran : comme le logo, l'orange en haut à gauche, le bleu en bas à droite, et une pêche entre les deux */
 .hero { position: relative; isolation: isolate; }
-.aurore { position: absolute; z-index: -1; inset: 0; overflow: hidden; pointer-events: none; }
+/* Elle monte aussi derrière la barre du haut (--monte), sinon sa lueur s'arrêtait net sous la barre.
+   Les taches gardent la même place : chaque position compense --monte. */
+.aurore { --monte: 100px; position: absolute; z-index: -1; inset: calc(-1 * var(--monte)) 0 0; overflow: hidden; pointer-events: none; }
 .aurore i { position: absolute; width: var(--t); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(closest-side, var(--c), rgba(255, 255, 255, 0)); will-change: transform; animation: derive var(--d) ease-in-out infinite alternate; }
-.aurore i:nth-child(1) { --t: min(820px, 90vw); --c: rgba(255, 138, 61, .2); --d: 19s; left: -18%; top: -22%; }
-.aurore i:nth-child(2) { --t: min(760px, 84vw); --c: rgba(58, 134, 255, .2); --d: 23s; left: 14%; bottom: -36%; animation-delay: -7s; }
-.aurore i:nth-child(3) { --t: min(620px, 80vw); --c: rgba(255, 183, 125, .2); --d: 27s; left: 34%; top: -26%; animation-delay: -13s; }
+.aurore i:nth-child(1) { --t: min(820px, 90vw); --c: rgba(255, 138, 61, .2); --d: 19s; left: -18%; top: calc(-22% + 1.22 * var(--monte)); }
+.aurore i:nth-child(2) { --t: min(760px, 84vw); --c: rgba(58, 134, 255, .2); --d: 23s; left: 14%; bottom: calc(-36% + .36 * var(--monte)); animation-delay: -7s; }
+.aurore i:nth-child(3) { --t: min(620px, 80vw); --c: rgba(255, 183, 125, .2); --d: 27s; left: 34%; top: calc(-26% + 1.26 * var(--monte)); animation-delay: -13s; }
 @keyframes derive { 0% { transform: translate3d(0, 0, 0) scale(1); } 50% { transform: translate3d(7%, 9%, 0) scale(1.1); } 100% { transform: translate3d(-6%, 4%, 0) scale(.92); } }
 
 /* La scène de l'appel : du liquide coloré bouge derrière la carte de verre */
