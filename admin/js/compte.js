@@ -1,5 +1,5 @@
-// Compte : Face ID et clés d'accès, mot de passe, appareils, équipe (inviter quelqu'un),
-// l'application installée et le journal de tout ce qui change.
+// Compte : Face ID et clés d'accès, mot de passe, appareils, notifications sur le téléphone,
+// équipe (inviter quelqu'un), l'application installée et le journal de tout ce qui change.
 import { $, el, icone, vider, date, relatif, heure, jourLong, majuscule, ymd, pluriel, toast, copier, biometrie } from './outils.js';
 import { E } from './etat.js';
 import { api, ErreurApi, sessionActuelle, retenirSession } from './api.js';
@@ -10,6 +10,7 @@ import { cleIci, retenirCleIci, oublierCleIci } from './connexion.js';
 import { prenom } from './tableau.js';
 import { detailJoli } from './argent.js';
 import { champ, identifiantCache, champMotDePasse, champCode, occuper, erreurZone } from './ui.js';
+import { chargerNotifications, rendreNotifications, viderNotifications } from './notifications.js';
 
 const IDENTIFIANT_RE = /^[a-z][a-z0-9._-]{1,29}$/;
 const ui = {
@@ -19,6 +20,7 @@ const ui = {
 
 // ─── Chargement ────────────────────────────────────────────────────────────
 export async function chargerCompte() {
+  chargerNotifications();                               // sa propre carte : elle ne retarde jamais le reste
   try {
     E.moi = await api('/portal/admin/moi');
     E.moiErreur = '';
@@ -43,6 +45,7 @@ export async function chargerJournal() {
 export function viderCompte() {
   Object.assign(ui, { confirmer: '', formMdp: null, formInvitation: null, lien: null, options: null, plus: false });
   E.moi = null; E.moiErreur = ''; E.journal = null; E.journalErreur = '';
+  viderNotifications();
   if (ui.construit) rendreCompte();
 }
 
@@ -62,6 +65,7 @@ function construire() {
     el('div', { class: 'grille' },
       carte('carte--securite l7', 'securite', 'Connexion et sécurité'),
       carte('carte--appareils l5', 'appareils', 'Appareils'),
+      carte('carte--notifications pleine-largeur', 'notifications', 'Notifications'),
       carte('carte--equipe l5', 'equipe', 'Associés'),
       carte('carte--appli l7', 'appli', 'L’application'),
       carte('carte--journal pleine-largeur', 'journal', 'Journal', filtres)));
@@ -71,7 +75,7 @@ function construire() {
 
 export function rendreCompte() {
   construire();
-  rendreTete(); rendreSecurite(); rendreAppareils(); rendreEquipe(); rendreAppli(); rendreJournal();
+  rendreTete(); rendreSecurite(); rendreAppareils(); rendreNotifications(); rendreEquipe(); rendreAppli(); rendreJournal();
 }
 
 function attente(boite) {
@@ -376,6 +380,11 @@ const ACTIONS = {
   'compte.invitation_annulee': ['Invitation annulée', 'comptes'],
   'cle.ajoutee': ['Clé d’accès ajoutée', 'comptes'],
   'cle.retiree': ['Clé d’accès retirée', 'comptes'],
+  'notifications.appareil_ajoute': ['Notifications activées', 'comptes'],
+  'notifications.reactivees': ['Notifications réactivées', 'comptes'],
+  'notifications.reprises': ['Notifications reprises', 'comptes'],
+  'notifications.sortes': ['Choix des notifications changé', 'comptes'],
+  'notifications.appareil_retire': ['Notifications coupées', 'comptes'],
   'depannage': ['Compte remis à zéro (dépannage)', 'comptes', true],
   'depannage.refuse': ['Dépannage refusé', 'comptes', true],
   'client.modifie': ['Client modifié', 'clients'],
