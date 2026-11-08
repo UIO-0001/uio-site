@@ -16,6 +16,7 @@ import { chargerProspects, viderProspects, rendreProspects, choisirSousVue, repr
 import { preparerConnexion, demarrerConnexion } from './connexion.js';
 import { installer, quandInstallChange } from './installer.js';
 import { ouvrirRecherche, viderRecherche, rechercheOuverte } from './recherche.js';
+import { reprendreNotifications, brancherNotifications } from './notifications.js';
 
 const CACHE_DEPUIS = 'uio-admin-cache-depuis';     // l'heure où l'admin est passé en arrière-plan
 const INSTALLER_NON = 'uio-admin-installer-non';
@@ -39,6 +40,8 @@ function entrer() {
   E.minuteries.push(setTimeout(() => { if (sessionActuelle() && !E.equipe) chargerEquipe(); }, 2500));
   // Les prospects : « 3 prospects à relancer » sur le tableau de bord
   E.minuteries.push(setTimeout(() => { if (sessionActuelle() && !E.prospects) chargerProspects(); }, 3500));
+  // Les notifications : redire au serveur l'abonnement de cet appareil (il reprend après une reconnexion)
+  E.minuteries.push(setTimeout(() => { if (sessionActuelle()) reprendreNotifications(); }, 4500));
   majBandeauInstaller();
   document.title = TITRE;
 }
@@ -294,6 +297,13 @@ function demarrer() {
   chargerPings();
   preparerConnexion(entrer);
   quandSessionPerdue(message => verrouiller(message, { serveur: false }));
+  // Une notification touchée : l'onglet qu'elle concerne (après l'écran de connexion si l'admin est verrouillé)
+  brancherNotifications(lien => {
+    if (history.replaceState) history.replaceState(null, '', lien);
+    if (!sessionActuelle() || $('#appli').hidden) return;
+    if (lien === '#prospects') choisirSousVue('prospects');
+    montrer(vueDuLien());
+  });
   const s = relireSession();
   const depuis = Number(lire('sessionStorage', CACHE_DEPUIS) || 0);
   if (s && depuis && Date.now() - depuis >= VERROU_APRES) verrouAuto();

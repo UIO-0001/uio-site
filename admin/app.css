@@ -1058,3 +1058,22 @@ html.avec-recherche { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* ── Compte : notifications sur le téléphone ─────────────────────────────── */
+.carte--notifications { --teinte: var(--lampe); }
+.notif { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; }
+.notif__ici, .notif__cote, .notif__cote > section { display: grid; align-content: start; gap: 12px; min-width: 0; }
+.notif__cote { gap: 24px; }
+.notif__sortes { display: grid; gap: 8px; }
+.notif__sortes .interrupteur input:disabled { opacity: .6; cursor: progress; }
+.notif__derniers { display: grid; }
+.notif__derniers li { display: grid; grid-template-columns: 30px minmax(0, 1fr); align-items: start; gap: 12px; padding: 10px 0; border-top: 1px solid var(--trait); }
+.notif__derniers li:first-child { padding-top: 0; border-top: 0; }
+.notif__puce { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 10px; background: var(--voix-teinte); color: var(--voix-fonce); }
+.notif__puce svg { width: 16px; height: 16px; }
+.notif__avis { display: grid; gap: 1px; min-width: 0; font-size: .875rem; font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; }
+.notif__avis time { font-size: .75rem; font-weight: 500; color: var(--texte-3); }
+@media (min-width: 900px) {
+  .notif { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 32px; }
+  .notif__cote { padding-left: 32px; border-left: 1px solid var(--trait); }
+}

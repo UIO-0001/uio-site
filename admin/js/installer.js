@@ -26,7 +26,7 @@ export function blocInstaller() {
       el('span', { class: 'rangee__texte' }, el('span', { class: 'rangee__titre' }, 'Installée sur cet appareil'),
         el('span', { class: 'rangee__meta' }, 'L’admin s’ouvre depuis l’icône « UIO Admin », en plein écran.')))];
   }
-  const blocs = [el('p', { class: 'ecran__texte' }, 'Une icône sur l’écran d’accueil, l’admin en plein écran, et Face ID ou l’empreinte pour entrer.')];
+  const blocs = [el('p', { class: 'ecran__texte' }, 'Une icône sur l’écran d’accueil, l’admin en plein écran, Face ID ou l’empreinte pour entrer, et les notifications (sur iPhone, seulement dans l’app installée).')];
   if (invite) {
     blocs.push(el('button', { class: 'btn debut', type: 'button', onclick: async () => { await installer(); } },
       icone('i-plus-carre'), 'Installer l’application'));

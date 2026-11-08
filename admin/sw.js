@@ -1,18 +1,18 @@
-// Le service worker de l'admin : l'app s'ouvre même sans réseau (jusqu'à l'écran de connexion)
-// et se met à jour toute seule. Il ne garde QUE les fichiers de l'app : jamais les réponses du
+// Le service worker de l'admin : l'app s'ouvre même sans réseau (jusqu'à l'écran de connexion),
+// se met à jour toute seule, et montre les notifications (onglet Compte → Notifications). Il ne garde QUE les fichiers de l'app : jamais les réponses du
 // serveur (clients, appels, comptes), ni GitHub, ni la page d'accueil du site.
 // Tous les fichiers viennent de la copie de CETTE version, prise d'un bloc à l'installation : jamais
 // un mélange d'ancien et de neuf (un module neuf avec un ancien empêcherait l'app de démarrer).
 // Le réseau seulement pour un fichier qui manque. Changer VERSION à chaque mise en ligne de l'admin :
 // la nouvelle version s'installe à côté et l'app propose « Mettre à jour ».
-const VERSION = 'admin-2026-11-08-9';
+const VERSION = 'admin-2026-11-08-10';
 const BASE = new URL('./', self.location.href).pathname;           // /admin/
 const COQUILLE = [
   './', 'app.css', 'theme.js', 'manifest.webmanifest',
   'js/app.js', 'js/api.js', 'js/appareil.js', 'js/argent.js', 'js/cles.js', 'js/clients.js', 'js/compte.js', 'js/confiance.js',
-  'js/connexion.js', 'js/equipe.js', 'js/etat.js', 'js/formes.js', 'js/installer.js', 'js/navigation.js', 'js/outils.js', 'js/panneau.js', 'js/prospects.js', 'js/rapport.js', 'js/recherche.js',
+  'js/connexion.js', 'js/equipe.js', 'js/etat.js', 'js/formes.js', 'js/installer.js', 'js/navigation.js', 'js/notifications.js', 'js/outils.js', 'js/panneau.js', 'js/prospects.js', 'js/rapport.js', 'js/recherche.js',
   'js/qr.js', 'js/tableau.js', 'js/ui.js', 'js/vendor/qrcode.mjs',
-  'icones/icone-192.png', 'icones/apple-touch-icon.png', 'icones/icone-admin.svg', 'icones/icone-admin-32.png', 'icones/icone-admin-192.png',
+  'icones/icone-192.png', 'icones/apple-touch-icon.png', 'icones/icone-admin.svg', 'icones/icone-admin-32.png', 'icones/icone-admin-192.png', 'icones/badge-96.png',
   '../assets/fonts/hanken-grotesk.woff2'
 ].map(chemin => new URL(chemin, self.location.href).pathname);
 const GARDES = new Set(COQUILLE);
@@ -49,3 +49,38 @@ async function depuisLaVersion(cle, requete, page) {
   if (page && copie.redirected) return new Response(await copie.blob(), { status: copie.status, statusText: copie.statusText, headers: copie.headers });
   return copie;
 }
+
+// ─── Les notifications ─────────────────────────────────────────────────────
+// Le serveur chiffre chaque avis pour cet appareil ; le navigateur le déchiffre avant de le donner ici.
+// Toujours montrer l'avis (sur iPhone, un avis jamais montré fait couper les notifications).
+const LIEN_RE = /^#[a-z]{2,20}$/;
+const ICONE = new URL('icones/icone-admin-192.png', self.location.href).href;
+const BADGE = new URL('icones/badge-96.png', self.location.href).href;
+
+self.addEventListener('push', e => {
+  let avis = {};
+  try { avis = (e.data && e.data.json()) || {}; } catch (err) { avis = {}; }
+  const tag = String(avis.tag || 'uio').slice(0, 60);
+  e.waitUntil(self.registration.showNotification(String(avis.titre || 'Admin UIO').slice(0, 90), {
+    body: String(avis.corps || '').slice(0, 400), tag, renotify: true, icon: ICONE, badge: BADGE,
+    timestamp: Number(avis.quand) || Date.now(), requireInteraction: !!avis.urgent,
+    data: { lien: LIEN_RE.test(avis.url || '') ? avis.url : '#tableau' }
+  }));
+});
+
+// Touchée : l'admin déjà ouvert passe à l'onglet de l'avis ; sinon, l'admin s'ouvre sur cet onglet
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const d = e.notification.data || {};
+  const lien = LIEN_RE.test(d.lien || '') ? d.lien : '#tableau';
+  e.waitUntil((async () => {
+    const fenetres = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    const admin = fenetres.find(f => new URL(f.url).pathname.startsWith(BASE));
+    if (admin) {
+      try { await admin.focus(); } catch (err) { /* le navigateur garde la main */ }
+      admin.postMessage({ type: 'uio-aller', lien });
+      return;
+    }
+    if (self.clients.openWindow) await self.clients.openWindow(BASE + lien);
+  })());
+});
