@@ -5,6 +5,7 @@ import { api } from './api.js';
 import { gros, rendreBonjour } from './tableau.js';
 import { montrer } from './navigation.js';
 import { ouvrirPanneau, fermerPanneau } from './panneau.js';
+import { blocRapport } from './rapport.js';
 
 export async function chargerClients(auto = false) {
   if (auto && E.panneau && E.panneau.modifie()) return;   // ne jamais écraser une modification en cours
@@ -73,8 +74,10 @@ export function ouvrirClient(id) {
     checklist: (Array.isArray(c.checklist) ? c.checklist : []).filter(e => e && e.label).map(e => ({ label: String(e.label), done: !!e.done })),
     features: Object.fromEntries(E.fonctionnalites.map(f => [f.key, !!(c.features && c.features[f.key])]))
   };
-  const initial = JSON.stringify(donnees);
-  const etat = { type: 'client', id: c.client_id, donnees, modifie: () => JSON.stringify(donnees) !== initial };
+  // Le rapport du mois : ses avis et le mot de l'équipe s'enregistrent avec le reste (même bouton)
+  const rapport = blocRapport(c, () => etat.majPied && etat.majPied());
+  const etat = { type: 'client', id: c.client_id, donnees, initial: JSON.stringify(donnees), rapport };
+  etat.modifie = () => JSON.stringify(donnees) !== etat.initial || rapport.modifie();
 
   const marque = el('span', { class: 'modif', hidden: true }, 'Changements non enregistrés');
   const enregistrer = el('button', { class: 'btn', type: 'button', disabled: true, onclick: () => enregistrerClient(etat) }, 'Enregistrer');
@@ -120,6 +123,7 @@ export function ouvrirClient(id) {
     el('div', { class: 'bloc' }, el('h3', null, 'Étapes'), el('p', null, 'Coche ce qui est fait. Glisse une étape, ou utilise les flèches, pour changer l’ordre.'), etapes,
       el('div', { class: 'ajout' }, nouvelle, el('button', { class: 'btn btn--contour btn--petit', type: 'button', onclick: ajouterEtape }, 'Ajouter'))),
     el('div', { class: 'champ' }, el('label', { for: 'p-note' }, 'Note pour le client'), note, compte),
+    rapport.boite,
     fonctions.length ? el('div', { class: 'bloc' }, el('h3', null, 'Fonctionnalités'), fonctions) : null,
     blocMotDePasse(c)
   ];
@@ -170,18 +174,30 @@ function editeurEtapes(liste, redessiner, change) {
 async function enregistrerClient(etat) {
   if (!etat.modifie() || etat.envoi) return;
   const d = etat.donnees;
+  // Le rapport d'abord vérifié : rien ne part si un de ses champs est à corriger
+  let demandeRapport = null;
+  try { demandeRapport = etat.rapport && etat.rapport.modifie() ? etat.rapport.preparer() : null; }
+  catch (e) { etat.rapport.montrerErreur(e); return; }
   d.checklist = d.checklist.map(e => ({ label: e.label.trim(), done: !!e.done })).filter(e => e.label);
+  const projetChange = JSON.stringify(d) !== etat.initial;
   etat.envoi = true; etat.boutonEnregistrer.textContent = 'Enregistrement…'; etat.majPied();
   try {
-    await api('/portal/admin/update', { methode: 'POST', corps: { client_id: etat.id, ...d } });
-    const c = E.clients.find(x => String(x.client_id) === String(etat.id));
-    if (c) Object.assign(c, JSON.parse(JSON.stringify(d)));
-    toast('Enregistré. Le client le voit dès maintenant.');
+    if (projetChange) {
+      await api('/portal/admin/update', { methode: 'POST', corps: { client_id: etat.id, ...d } });
+      const c = E.clients.find(x => String(x.client_id) === String(etat.id));
+      if (c) Object.assign(c, JSON.parse(JSON.stringify(d)));
+      etat.initial = JSON.stringify(d);   // si le rapport échoue ensuite, le projet reste enregistré
+    }
+    if (demandeRapport) {
+      try { await etat.rapport.envoyer(demandeRapport); }
+      catch (e) { if (e.statut !== 401) etat.rapport.montrerErreur(e); throw Object.assign(e, { montre: true }); }
+    }
+    toast(demandeRapport && !projetChange ? 'Rapport enregistré. Le client le voit dès maintenant.' : 'Enregistré. Le client le voit dès maintenant.');
     etat.envoi = false;
     fermerPanneau(true);
     rendreClients(); rendrePortail();
   } catch (e) {
-    if (e.statut !== 401) toast(e.message, true);
+    if (e.statut !== 401 && !e.montre) toast(e.message, true);
     etat.envoi = false; etat.boutonEnregistrer.textContent = 'Enregistrer'; etat.majPied && etat.majPied();
   }
 }
