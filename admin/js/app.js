@@ -15,6 +15,7 @@ import { chargerEquipe, rendreEquipe, viderEquipe, rendreChrono } from './equipe
 import { chargerProspects, viderProspects, rendreProspects, choisirSousVue, reprendreSousVue, sousVue, ouvrirNouveauProspect } from './prospects.js';
 import { preparerConnexion, demarrerConnexion } from './connexion.js';
 import { installer, quandInstallChange } from './installer.js';
+import { ouvrirRecherche, viderRecherche, rechercheOuverte } from './recherche.js';
 
 const CACHE_DEPUIS = 'uio-admin-cache-depuis';     // l'heure où l'admin est passé en arrière-plan
 const INSTALLER_NON = 'uio-admin-installer-non';
@@ -69,6 +70,7 @@ function remettreAZero() {
   Object.assign(E, { tableau: null, tableauErreur: '', majTableau: 0, clients: [], fonctionnalites: [], clientsErreur: '',
     clientsLus: false, recherche: '', neufs: new Map(), nonVus: 0 });
   $('#recherche').value = '';
+  viderRecherche();                                     // la recherche partout oublie tout, elle aussi
   viderCompte();
   viderArgent();
   viderEquipe();
@@ -180,6 +182,11 @@ function fermerAide() {
 document.addEventListener('keydown', e => {
   if (!sessionActuelle() || $('#appli').hidden) return;
   if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's' && E.panneau) { e.preventDefault(); if (E.panneau.enregistrer) E.panneau.enregistrer(); return; }
+  // ⌘K (Ctrl+K) : chercher partout, même depuis un champ ; jamais par-dessus un panneau ouvert
+  if ((e.metaKey || e.ctrlKey) && !e.altKey && !e.shiftKey && e.key.toLowerCase() === 'k') {
+    if (!E.panneau && $('#aide').hidden) { e.preventDefault(); ouvrirRecherche(); }
+    return;
+  }
   if (e.key === 'Escape') {
     if (!$('#aide').hidden) fermerAide();
     else if (E.panneau && $('#panneau-pied').dataset.abandon) E.panneau.reprendre();
@@ -187,9 +194,9 @@ document.addEventListener('keydown', e => {
     return;
   }
   if (!$('#aide').hidden && e.key === 'Tab') { e.preventDefault(); $('#aide-fermer').focus(); return; }
-  if (e.target.closest('input, textarea, select, [contenteditable]') || e.metaKey || e.ctrlKey || e.altKey || E.panneau || !$('#aide').hidden) return;
+  if (e.target.closest('input, textarea, select, [contenteditable]') || e.metaKey || e.ctrlKey || e.altKey || E.panneau || !$('#aide').hidden || rechercheOuverte()) return;
   const k = e.key;
-  if (k === '/') { e.preventDefault(); montrer('clients'); $('#recherche').focus(); }
+  if (k === '/') { e.preventDefault(); ouvrirRecherche(); }
   else if (k === 'n' || k === 'N') { e.preventDefault(); montrer('clients'); nouveau(); }
   else if (k === 'r' || k === 'R') { e.preventDefault(); actualiser(); }
   else if (k === 't' || k === 'T') basculerTheme();
@@ -254,6 +261,7 @@ $$('[data-vers]').forEach(b => b.addEventListener('click', () => montrer(b.datas
 $$('[data-actualiser]').forEach(b => b.addEventListener('click', actualiser));
 $$('[data-aide]').forEach(b => b.addEventListener('click', ouvrirAide));
 $('#actualiser').addEventListener('click', actualiser);
+if ($('#chercher-ouvrir')) $('#chercher-ouvrir').addEventListener('click', () => ouvrirRecherche());
 $('#theme').addEventListener('click', basculerTheme);
 $('#verrouiller').addEventListener('click', () => verrouiller());
 $('#aide-fermer').addEventListener('click', fermerAide);

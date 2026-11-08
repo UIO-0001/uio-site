@@ -81,6 +81,7 @@
   <symbol id="i-note" viewBox="0 0 20 20"><path d="M4.8 3.8h10.4a1.8 1.8 0 0 1 1.8 1.8v6.6a1.8 1.8 0 0 1-1.8 1.8H9.6l-3.8 2.8v-2.8h-1A1.8 1.8 0 0 1 3 12.2V5.6a1.8 1.8 0 0 1 1.8-1.8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
   <symbol id="i-sourire" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10" cy="10" r="7.2"/><path d="M7.1 11.7c.7 1.1 1.7 1.7 2.9 1.7s2.2-.6 2.9-1.7M7.7 7.9v.3M12.3 7.9v.3"/></g></symbol>
   <symbol id="i-crayon" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.3 3.5l3.2 3.2-9 9-3.9.7.7-3.9z"/><path d="M11.5 5.3l3.2 3.2"/></g></symbol>
+  <symbol id="i-chercher" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="8.8" cy="8.8" r="5.6"/><path d="M13 13l4.3 4.3"/></g></symbol>
   <symbol id="i-cle" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6.8" cy="13.2" r="3.4"/><path d="M9.2 10.8l7.3-7.3M14.2 5.8l2 2M12.2 7.8l1.6 1.6"/></g></symbol>
 </svg>
 <div class="aurore" aria-hidden="true"><i></i><i></i></div>
@@ -116,6 +117,7 @@
       </div>
       <div class="nav__droite">
         <span class="direct" id="direct" data-etat="attente" role="status"><i class="direct__point" aria-hidden="true"></i><span id="direct-texte">Lecture…</span></span>
+        <button class="rond" type="button" id="chercher-ouvrir" aria-label="Chercher partout (/)" title="Chercher partout (/ ou ⌘K)" aria-keyshortcuts="/ Meta+K Control+K"><svg aria-hidden="true"><use href="#i-chercher"/></svg></button>
         <button class="rond nav__actualiser" type="button" id="actualiser" aria-label="Actualiser (R)" title="Actualiser (R)"><svg aria-hidden="true"><use href="#i-actualiser"/></svg></button>
         <button class="rond theme" type="button" id="theme" aria-pressed="false" aria-label="Mode sombre (T)" title="Mode sombre (T)"><svg class="theme__lune" aria-hidden="true"><use href="#i-lune"/></svg><svg class="theme__soleil" aria-hidden="true"><use href="#i-soleil"/></svg></button>
         <button class="rond" type="button" id="verrouiller" aria-label="Verrouiller (L)" title="Verrouiller (L)"><svg aria-hidden="true"><use href="#i-verrou"/></svg></button>
@@ -201,7 +203,6 @@
         <div class="recherche">
           <label class="sr" for="recherche">Chercher un client</label>
           <input id="recherche" type="search" placeholder="Chercher un client" autocomplete="off">
-          <kbd aria-hidden="true">/</kbd>
         </div>
         <button class="btn btn--petit" type="button" id="nouveau-client">Nouveau client</button>
       </div>
@@ -242,7 +243,7 @@
     <h2 id="aide-titre">Raccourcis clavier</h2>
     <dl>
       <dt><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd><kbd>5</kbd></dt><dd>Tableau de bord, Clients, Argent, Équipe, Compte</dd>
-      <dt><kbd>/</kbd></dt><dd>Chercher un client ou un prospect</dd>
+      <dt><kbd>/</kbd><kbd>⌘</kbd><kbd>K</kbd></dt><dd>Chercher partout : clients, prospects, tâches, récaps, documents, argent (Ctrl+K sur Windows)</dd>
       <dt><kbd>N</kbd></dt><dd>Nouveau client, ou nouveau prospect dans Prospects</dd>
       <dt><kbd>R</kbd></dt><dd>Actualiser tout</dd>
       <dt><kbd>T</kbd></dt><dd>Mode sombre ou clair</dd>
@@ -251,6 +252,21 @@
       <dt><kbd>Échap</kbd></dt><dd>Fermer</dd>
     </dl>
     <button class="btn btn--contour btn--petit" type="button" id="aide-fermer">Fermer</button>
+  </div>
+</div>
+
+<!-- Chercher partout (la loupe, « / » ou ⌘K) : seulement ce que l'admin a déjà lu, rien n'est envoyé -->
+<div class="chercher" id="chercher" hidden>
+  <div class="chercher__carte" role="dialog" aria-modal="true" aria-labelledby="chercher-titre">
+    <h2 class="sr" id="chercher-titre">Chercher partout</h2>
+    <div class="chercher__champ">
+      <svg aria-hidden="true"><use href="#i-chercher"/></svg>
+      <input id="chercher-champ" type="search" role="combobox" aria-expanded="false" aria-controls="chercher-resultats" aria-autocomplete="list" aria-labelledby="chercher-titre" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="go" maxlength="80" placeholder="Client, prospect, tâche, dépense…">
+      <button class="rond" type="button" id="chercher-fermer" aria-label="Fermer (Échap)"><svg aria-hidden="true"><use href="#i-fermer"/></svg></button>
+    </div>
+    <div class="chercher__resultats" id="chercher-resultats" role="listbox" aria-label="Résultats" hidden></div>
+    <div class="chercher__message" id="chercher-message" hidden></div>
+    <p class="chercher__pied" aria-hidden="true"><span><kbd>↑</kbd><kbd>↓</kbd> choisir</span><span><kbd>Entrée</kbd> ouvrir</span><span><kbd>Échap</kbd> fermer</span></p>
   </div>
 </div>
 
