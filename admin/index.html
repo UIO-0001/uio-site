@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr-CA">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://uio-backend.onrender.com https://api.github.com; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; require-trusted-types-for 'script'; trusted-types uio">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Admin · Agence UIO</title>
+<meta name="uio-backend" content="https://uio-backend.onrender.com">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#F4F5F8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="UIO Admin">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="../assets/logo/uio-icone.svg?v=3">
+<link rel="icon" type="image/png" sizes="192x192" href="icones/icone-192.png">
+<link rel="apple-touch-icon" href="icones/apple-touch-icon.png">
+<!-- Écrans de démarrage de l'app sur iPhone (un par taille d'écran) -->
+<link rel="apple-touch-startup-image" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="icones/demarrage-1320x2868.png">
+<link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="icones/demarrage-1290x2796.png">
+<link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="icones/demarrage-1284x2778.png">
+<link rel="apple-touch-startup-image" media="(device-width: 420px) and (device-height: 912px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="icones/demarrage-1260x2736.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="icones/demarrage-1242x2688.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="icones/demarrage-828x1792.png">
+<link rel="apple-touch-startup-image" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="icones/demarrage-1206x2622.png">
+<link rel="apple-touch-startup-image" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="icones/demarrage-1179x2556.png">
+<link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="icones/demarrage-1170x2532.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="icones/demarrage-1125x2436.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="icones/demarrage-750x1334.png">
+<link rel="preload" href="../assets/fonts/hanken-grotesk.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="app.css">
+<script src="theme.js"></script>
+<script type="module" src="js/app.js"></script>
+<!--
+  Admin d'Agence UIO : une application installable (iPhone, Android, ordinateur).
+  Sécurité : chaque associé a son compte (mot de passe + code de vérification, puis
+  Face ID ou l'empreinte), sessions de 12 h, verrouillage après 15 minutes en arrière-plan.
+  Aucun script dans la page (règles de sécurité CSP + Trusted Types ci-dessus) ; tout
+  texte venu du serveur est inséré avec textContent, jamais comme du HTML.
+  Le dépôt est public : rien de secret ici, et aucun nom des associés (ils viennent du
+  serveur après la connexion).
+-->
+</head>
+<body>
+<svg class="sprite" width="0" height="0" aria-hidden="true" focusable="false">
+  <symbol id="i-mot" viewBox="50 -720 1317 727"><path d="M509 0H376L366 -55Q341 -27 307.5 -10Q274 7 234 7Q178 7 137 -18Q96 -43 73 -91.5Q50 -140 50 -208V-500H196V-226Q196 -176 216.5 -150Q237 -124 279 -124Q319 -124 341 -151Q363 -178 363 -228V-500H509ZM619 -500H765V0H619ZM692 -551Q651 -551 625.5 -575.5Q600 -600 600 -635Q600 -671 625.5 -695.5Q651 -720 692 -720Q732 -720 757.5 -695.5Q783 -671 783 -635Q783 -600 757.5 -575.5Q732 -551 692 -551ZM1106 7Q1033 7 975 -24Q917 -55 884.5 -113Q852 -171 852 -250Q852 -329 885.5 -386.5Q919 -444 977.5 -475.5Q1036 -507 1108 -507Q1182 -507 1240.5 -475.5Q1299 -444 1333 -386.5Q1367 -329 1367 -251Q1367 -171 1332.5 -113Q1298 -55 1238.5 -24Q1179 7 1106 7ZM1106 -125Q1132 -125 1156 -139Q1180 -153 1195 -180.5Q1210 -208 1210 -250Q1210 -292 1195 -319.5Q1180 -347 1157 -361Q1134 -375 1108 -375Q1080 -375 1058 -361Q1036 -347 1022.5 -319.5Q1009 -292 1009 -250Q1009 -208 1022 -180.5Q1035 -153 1057 -139Q1079 -125 1106 -125Z"/></symbol>
+  <symbol id="i-lune" viewBox="0 0 20 20"><path d="M16.6 12.3A6.9 6.9 0 0 1 7.7 3.4a6.9 6.9 0 1 0 8.9 8.9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-soleil" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10" cy="10" r="3.5"/><path d="M10 1.9v1.7M10 16.4v1.7M1.9 10h1.7M16.4 10h1.7M4.3 4.3l1.2 1.2M14.5 14.5l1.2 1.2M4.3 15.7l1.2-1.2M14.5 5.5l1.2-1.2"/></g></symbol>
+  <symbol id="i-actualiser" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16.2 8.5A6.5 6.5 0 1 0 15 13.6"/><path d="M16.5 3.6v4.9h-4.9"/></g></symbol>
+  <symbol id="i-fermer" viewBox="0 0 20 20"><path d="M5 5l10 10M15 5L5 15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-haut" viewBox="0 0 20 20"><path d="M5 12.5l5-5 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-bas" viewBox="0 0 20 20"><path d="M5 7.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-poignee" viewBox="0 0 14 14"><g fill="currentColor"><circle cx="4.5" cy="3" r="1.3"/><circle cx="9.5" cy="3" r="1.3"/><circle cx="4.5" cy="7" r="1.3"/><circle cx="9.5" cy="7" r="1.3"/><circle cx="4.5" cy="11" r="1.3"/><circle cx="9.5" cy="11" r="1.3"/></g></symbol>
+  <symbol id="i-sortie" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4H5.5A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16h9a1.5 1.5 0 0 0 1.5-1.5V12"/><path d="M11 4h5v5M16 4l-7 7"/></g></symbol>
+  <symbol id="i-tableau" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="3" width="6" height="7.5" rx="1.8"/><rect x="11" y="3" width="6" height="4.5" rx="1.8"/><rect x="3" y="12.5" width="6" height="4.5" rx="1.8"/><rect x="11" y="9.5" width="6" height="7.5" rx="1.8"/></g></symbol>
+  <symbol id="i-clients" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="7.5" cy="7" r="2.9"/><path d="M2.4 16.6c.6-2.8 2.6-4.4 5.1-4.4s4.5 1.6 5.1 4.4"/><path d="M13.2 4.4a2.6 2.6 0 0 1 0 5.2M14.4 12.4c1.7.3 2.9 1.7 3.3 4.2"/></g></symbol>
+  <symbol id="i-compte" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.6l6 2.3v4.6c0 3.8-2.5 6.6-6 7.9-3.5-1.3-6-4.1-6-7.9V4.9z"/><path d="M7.4 10l1.8 1.8 3.4-3.5"/></g></symbol>
+  <symbol id="i-visage" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5.2A2.2 2.2 0 0 1 5.2 3H7M13 3h1.8A2.2 2.2 0 0 1 17 5.2V7M17 13v1.8a2.2 2.2 0 0 1-2.2 2.2H13M7 17H5.2A2.2 2.2 0 0 1 3 14.8V13"/><path d="M7.5 7.6v1.2M12.5 7.6v1.2M10 7.6v3.6h-.9M7.6 13.1c1.4 1.1 3.4 1.1 4.8 0"/></g></symbol>
+  <symbol id="i-empreinte" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4.6 6.2A6.6 6.6 0 0 1 16.4 8.6"/><path d="M3.6 10.4c0-.9.1-1.7.4-2.5M16.6 11.6c0 1.1-.1 2.1-.3 3"/><path d="M6.6 16.4c.6-1.4.9-3.1.9-5.2a2.5 2.5 0 0 1 5 0c0 2.3-.3 4.2-1 5.9"/><path d="M10 11.2c0 2.4-.5 4.6-1.4 6.3M13.9 14.8c.2-1.1.3-2.3.3-3.6a4.2 4.2 0 0 0-7.6-2.4"/></g></symbol>
+  <symbol id="i-verrou" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="8.8" width="12" height="8.7" rx="2.2"/><path d="M6.8 8.8V6.6a3.2 3.2 0 0 1 6.4 0v2.2"/></g></symbol>
+  <symbol id="i-copier" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M13 4.6V4.5A1.5 1.5 0 0 0 11.5 3h-7A1.5 1.5 0 0 0 3 4.5v7A1.5 1.5 0 0 0 4.5 13h.1"/></g></symbol>
+  <symbol id="i-partager" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.8v9.4M6.7 6L10 2.8 13.3 6"/><path d="M6.6 8.8H5.4a1.9 1.9 0 0 0-1.9 1.9v4.9a1.9 1.9 0 0 0 1.9 1.9h9.2a1.9 1.9 0 0 0 1.9-1.9v-4.9a1.9 1.9 0 0 0-1.9-1.9h-1.2"/></g></symbol>
+  <symbol id="i-plus-carre" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="14" height="14" rx="3.6"/><path d="M10 6.6v6.8M6.6 10h6.8"/></g></symbol>
+  <symbol id="i-telephone" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="5.5" y="2.4" width="9" height="15.2" rx="2.3"/><path d="M9 14.6h2"/></g></symbol>
+  <symbol id="i-ordinateur" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.8" width="15" height="10" rx="1.8"/><path d="M7 16.6h6M10 13.8v2.8"/></g></symbol>
+  <symbol id="i-ok" viewBox="0 0 20 20"><path d="M4.5 10.4l3.6 3.6 7.4-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-oeil" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M1.9 10S4.9 4.6 10 4.6s8.1 5.4 8.1 5.4-3 5.4-8.1 5.4S1.9 10 1.9 10z"/><circle cx="10" cy="10" r="2.5"/></g></symbol>
+  <symbol id="i-oeil-barre" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.2 4.8A8 8 0 0 1 10 4.6c5.1 0 8.1 5.4 8.1 5.4a14 14 0 0 1-2.2 2.8M5.1 6.2A13.8 13.8 0 0 0 1.9 10s3 5.4 8.1 5.4a7.6 7.6 0 0 0 4.1-1.2"/><path d="M8.3 8.3a2.5 2.5 0 0 0 3.4 3.4M3 3l14 14"/></g></symbol>
+  <symbol id="i-horloge" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10" cy="10" r="7.2"/><path d="M10 6v4.3l2.8 1.8"/></g></symbol>
+  <symbol id="i-cle" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6.8" cy="13.2" r="3.4"/><path d="M9.2 10.8l7.3-7.3M14.2 5.8l2 2M12.2 7.8l1.6 1.6"/></g></symbol>
+</svg>
+<div class="aurore" aria-hidden="true"><i></i><i></i></div>
+
+<!-- ── Connexion (et toutes ses étapes) ─────────────────────────────── -->
+<main class="connexion" id="connexion">
+  <div class="connexion__carte">
+    <div class="connexion__logo">
+      <span class="icone-uio" aria-hidden="true"></span>
+      <span class="mot" aria-hidden="true"><svg viewBox="0 0 1317 727" fill="currentColor"><use href="#i-mot" width="1317" height="727"/></svg><small>Agence</small></span>
+    </div>
+    <div class="ecran" id="ecran">
+      <div class="chargement"><span class="roue" aria-hidden="true"></span><p>Ouverture de l’admin…</p></div>
+    </div>
+    <noscript><p class="erreur">L’admin a besoin de JavaScript.</p></noscript>
+  </div>
+</main>
+
+<!-- ── L'admin ───────────────────────────────────────────────────────── -->
+<div id="appli" hidden>
+  <header class="nav">
+    <div class="nav__pilule">
+      <a class="nav__logo" href="../" aria-label="Agence UIO, le site">
+        <span class="icone-uio" aria-hidden="true"></span><b>Admin</b>
+      </a>
+      <div class="onglets" role="tablist" aria-label="Sections">
+        <span class="lentille" aria-hidden="true"></span>
+        <button type="button" role="tab" id="onglet-tableau" aria-controls="vue-tableau" aria-selected="true" data-vue="tableau"><svg class="onglet__icone" aria-hidden="true"><use href="#i-tableau"/></svg><span>Tableau de bord</span></button>
+        <button type="button" role="tab" id="onglet-clients" aria-controls="vue-clients" aria-selected="false" tabindex="-1" data-vue="clients"><svg class="onglet__icone" aria-hidden="true"><use href="#i-clients"/></svg><span>Clients</span></button>
+        <button type="button" role="tab" id="onglet-compte" aria-controls="vue-compte" aria-selected="false" tabindex="-1" data-vue="compte"><svg class="onglet__icone" aria-hidden="true"><use href="#i-compte"/></svg><span>Compte</span></button>
+      </div>
+      <div class="nav__droite">
+        <span class="direct" id="direct" data-etat="attente" role="status"><i class="direct__point" aria-hidden="true"></i><span id="direct-texte">Lecture…</span></span>
+        <button class="rond nav__actualiser" type="button" id="actualiser" aria-label="Actualiser (R)" title="Actualiser (R)"><svg aria-hidden="true"><use href="#i-actualiser"/></svg></button>
+        <button class="rond theme" type="button" id="theme" aria-pressed="false" aria-label="Mode sombre (T)" title="Mode sombre (T)"><svg class="theme__lune" aria-hidden="true"><use href="#i-lune"/></svg><svg class="theme__soleil" aria-hidden="true"><use href="#i-soleil"/></svg></button>
+        <button class="rond" type="button" id="verrouiller" aria-label="Verrouiller (L)" title="Verrouiller (L)"><svg aria-hidden="true"><use href="#i-verrou"/></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="contenu" id="contenu">
+    <!-- Tableau de bord -->
+    <section id="vue-tableau" role="tabpanel" aria-labelledby="onglet-tableau">
+      <aside class="bandeau-installer" id="bandeau-installer" hidden>
+        <svg aria-hidden="true"><use href="#i-plus-carre"/></svg>
+        <p><b>Installe l’admin sur ton téléphone.</b> Une icône sur l’écran d’accueil, et Face ID ou l’empreinte pour entrer.</p>
+        <button class="btn btn--petit" type="button" id="bandeau-installer-oui">Comment ?</button>
+        <button class="rond" type="button" id="bandeau-installer-non" aria-label="Ne plus afficher"><svg aria-hidden="true"><use href="#i-fermer"/></svg></button>
+      </aside>
+      <div class="grille">
+        <div class="bonjour l7">
+          <h1 id="bonjour-titre">Bonjour.</h1>
+          <p class="bonjour__phrase" id="bonjour-phrase">On lit ce qui se passe en ce moment…</p>
+          <p class="bonjour__date" id="bonjour-date"></p>
+          <div class="bonjour__outils">
+            <button class="btn btn--contour btn--petit" type="button" data-actualiser>Actualiser</button>
+          </div>
+        </div>
+
+        <article class="carte carte--pouls l5" aria-labelledby="t-pouls">
+          <div class="carte__tete"><h2 id="t-pouls">Le pouls du serveur</h2></div>
+          <div class="carte__corps">
+            <div class="pouls__haut" id="pouls-etat"></div>
+            <div class="graphe" id="pouls-graphe"></div>
+            <p class="note" id="pouls-note"></p>
+          </div>
+        </article>
+
+        <article class="carte carte--appels l7" id="carte-appels" aria-labelledby="t-appels">
+          <div class="carte__tete"><h2 id="t-appels">Agent répondeur</h2><a class="lien" id="lien-retell" href="https://dashboard.retellai.com/" target="_blank" rel="noopener">Ouvrir Retell</a></div>
+          <div class="carte__corps" id="appels"></div>
+        </article>
+
+        <article class="carte carte--demandes l5" id="carte-demandes" aria-labelledby="t-demandes">
+          <div class="carte__tete"><h2 id="t-demandes">Demandes du chatbot</h2></div>
+          <div class="carte__corps" id="demandes"></div>
+        </article>
+
+        <article class="carte carte--audits l4 s3" id="carte-audits" aria-labelledby="t-audits">
+          <div class="carte__tete"><h2 id="t-audits">Prochains audits</h2><a class="lien" href="https://calendar.google.com/" target="_blank" rel="noopener">Agenda</a></div>
+          <div class="carte__corps" id="audits"></div>
+        </article>
+
+        <article class="carte carte--site l4 s3" id="carte-site" aria-labelledby="t-site">
+          <div class="carte__tete"><h2 id="t-site">Le site</h2><a class="lien" href="https://github.com/UIO-0001/uio-site/pulls" target="_blank" rel="noopener">GitHub</a></div>
+          <div class="carte__corps" id="site"></div>
+        </article>
+
+        <article class="carte carte--portail l4" id="carte-portail" aria-labelledby="t-portail">
+          <div class="carte__tete"><h2 id="t-portail">Espace client</h2><button class="lien" type="button" data-vers="clients">Gérer</button></div>
+          <div class="carte__corps" id="portail"></div>
+        </article>
+
+        <article class="carte carte--offre l8" id="carte-offre" aria-labelledby="t-offre">
+          <div class="carte__tete"><h2 id="t-offre">L’offre en ligne</h2><a class="lien" href="../#forfaits" target="_blank" rel="noopener">Voir sur le site</a></div>
+          <div class="carte__corps" id="offre"></div>
+        </article>
+
+        <div class="pile l4">
+          <article class="carte carte--chatbot" id="carte-chatbot" aria-labelledby="t-chatbot">
+            <div class="carte__tete"><h2 id="t-chatbot">Chatbot aujourd’hui</h2></div>
+            <div class="carte__corps" id="chatbot"></div>
+          </article>
+          <article class="carte" aria-labelledby="t-liens">
+            <div class="carte__tete"><h2 id="t-liens">Raccourcis</h2><button class="lien" type="button" data-aide>Clavier</button></div>
+            <div class="raccourcis" id="raccourcis"></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Clients -->
+    <section id="vue-clients" role="tabpanel" aria-labelledby="onglet-clients" hidden>
+      <div class="clients__tete">
+        <h1>Clients<small id="clients-compte"></small></h1>
+        <div class="recherche">
+          <label class="sr" for="recherche">Chercher un client</label>
+          <input id="recherche" type="search" placeholder="Chercher un client" autocomplete="off">
+          <kbd aria-hidden="true">/</kbd>
+        </div>
+        <button class="btn btn--petit" type="button" id="nouveau-client">Nouveau client</button>
+      </div>
+      <div class="clients__liste" id="clients-liste"></div>
+    </section>
+
+    <!-- Compte : sécurité, appareils, équipe, application, journal -->
+    <section id="vue-compte" role="tabpanel" aria-labelledby="onglet-compte" hidden></section>
+  </main>
+</div>
+
+<!-- Panneau d'un client (ou nouveau client) -->
+<div class="voile" id="voile" hidden></div>
+<div class="panneau" id="panneau" role="dialog" aria-modal="true" aria-labelledby="panneau-titre" hidden>
+  <div class="panneau__tete">
+    <div><h2 id="panneau-titre" tabindex="-1"></h2><p id="panneau-sous-titre"></p></div>
+    <button class="rond" type="button" id="panneau-fermer" aria-label="Fermer (Échap)"><svg aria-hidden="true"><use href="#i-fermer"/></svg></button>
+  </div>
+  <div class="panneau__corps" id="panneau-corps"></div>
+  <div class="panneau__pied" id="panneau-pied"></div>
+</div>
+
+<!-- Raccourcis clavier -->
+<div class="aide" id="aide" hidden>
+  <div class="aide__carte" role="dialog" aria-modal="true" aria-labelledby="aide-titre">
+    <h2 id="aide-titre">Raccourcis clavier</h2>
+    <dl>
+      <dt><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd></dt><dd>Tableau de bord, Clients, Compte</dd>
+      <dt><kbd>/</kbd></dt><dd>Chercher un client</dd>
+      <dt><kbd>N</kbd></dt><dd>Nouveau client</dd>
+      <dt><kbd>R</kbd></dt><dd>Actualiser tout</dd>
+      <dt><kbd>T</kbd></dt><dd>Mode sombre ou clair</dd>
+      <dt><kbd>L</kbd></dt><dd>Verrouiller l’admin</dd>
+      <dt><kbd>⌘</kbd><kbd>S</kbd></dt><dd>Enregistrer le client ouvert (Ctrl+S sur Windows)</dd>
+      <dt><kbd>Échap</kbd></dt><dd>Fermer</dd>
+    </dl>
+    <button class="btn btn--contour btn--petit" type="button" id="aide-fermer">Fermer</button>
+  </div>
+</div>
+
+<div class="maj" id="maj" hidden>
+  <p><b>Nouvelle version de l’admin.</b> Elle s’ouvre en une seconde.</p>
+  <button class="btn btn--petit" type="button" id="maj-oui">Mettre à jour</button>
+</div>
+<div class="toast" id="toast" aria-hidden="true"></div>
+<div class="sr" id="annonce" role="status" aria-live="polite"></div>
+</body>
+</html>
