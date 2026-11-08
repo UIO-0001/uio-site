@@ -5,7 +5,7 @@
 // un mélange d'ancien et de neuf (un module neuf avec un ancien empêcherait l'app de démarrer).
 // Le réseau seulement pour un fichier qui manque. Changer VERSION à chaque mise en ligne de l'admin :
 // la nouvelle version s'installe à côté et l'app propose « Mettre à jour ».
-const VERSION = 'admin-2026-11-08-6';
+const VERSION = 'admin-2026-11-08-7';
 const BASE = new URL('./', self.location.href).pathname;           // /admin/
 const COQUILLE = [
   './', 'app.css', 'theme.js', 'manifest.webmanifest',

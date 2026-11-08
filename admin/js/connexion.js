@@ -380,6 +380,13 @@ async function ecranInvitation(code) {
 }
 
 // ─── Ajouter le code de vérification (appli de codes) ─────────────────────
+// Android : le lien otpauth:// tout court, ou l'appareil photo, peut ouvrir une autre appli
+// (Samsung Pass sur un Samsung) qui ne garde pas le code. On vise Google Authenticator ; s'il
+// n'est pas installé, Android ouvre sa page du Play Store (et l'admin reste dans son onglet).
+const PAQUET_GA = 'com.google.android.apps.authenticator2';
+const PLAY_GA = `https://play.google.com/store/apps/details?id=${PAQUET_GA}`;
+const lienGoogleAuthenticator = otpauth => `intent://${String(otpauth).replace(/^otpauth:\/\//, '')}#Intent;scheme=otpauth;package=${PAQUET_GA};end`;
+
 function ecranAjoutCode(ins, { inscription = false } = {}) {
   const erreur = erreurZone();
   const groupes = String(ins.secret || '').replace(/(.{4})/g, '$1 ').trim();
@@ -390,9 +397,20 @@ function ecranAjoutCode(ins, { inscription = false } = {}) {
       onclick: async () => toast(await copier(ins.secret) ? 'Clé copiée.' : 'Copie impossible : sélectionne la clé à la main.', false) }, icone('i-copier'), 'Copier la clé')
   ];
   const blocQr = [el('div', { class: 'qr' }, qrSvg(ins.otpauth)),
-    el('p', { class: 'note' }, 'Scanne avec l’appareil photo de l’iPhone (le code va dans Mots de passe), ou avec Google Authenticator sur Android.')];
+    el('p', { class: 'note' }, 'Sur iPhone : l’appareil photo (le code va dans Mots de passe). Sur Android : dans Google Authenticator, « + » puis « Scanner un code QR », pas l’appareil photo (sur un Samsung, il ouvre Samsung Pass, qui ne garde pas ce code).')];
   const ajout = [];
-  if (estTelephone()) {
+  if (estTelephone() && estAndroid()) {
+    ajout.push(
+      el('ol', { class: 'etapes-installer etapes-code' },
+        el('li', null, el('div', null, el('p', null, 'Installe ', el('b', null, 'Google Authenticator'), ' (gratuit, fait par Google), si ce n’est pas déjà fait.'),
+          el('a', { class: 'btn btn--contour btn--petit', href: PLAY_GA, target: '_blank', rel: 'noopener' }, 'Ouvrir le Play Store'))),
+        el('li', null, el('div', null, el('p', null, 'Ajoute le code d’Agence UIO à Google Authenticator :'),
+          el('a', { class: 'btn btn--sombre btn--plein', href: lienGoogleAuthenticator(ins.otpauth) }, icone('i-plus-carre'), 'Ajouter à Google Authenticator'))),
+        el('li', null, el('div', null, el('p', null, 'Reviens ici et entre les 6 chiffres affichés.')))),
+      el('p', { class: 'note' }, 'Le bouton ne marche pas ? Dans Google Authenticator, touche « + », puis « Saisir une clé de configuration ». Nom : Agence UIO. Colle cette clé, type : basé sur l’heure.'),
+      blocSecret[1], blocSecret[2],
+      depliant('L’appli ne s’ouvre pas, ou le code va sur un autre appareil ?', ...blocQr));
+  } else if (estTelephone()) {
     ajout.push(el('a', { class: 'btn btn--sombre btn--plein', href: ins.otpauth }, icone('i-plus-carre'), 'Ajouter à mon appli de codes'),
       el('p', { class: 'note' }, estIOS()
         ? 'L’app Mots de passe de l’iPhone s’ouvre et garde le code. Reviens ensuite ici avec les 6 chiffres.'
