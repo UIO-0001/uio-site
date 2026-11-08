@@ -7,13 +7,14 @@ import { $, $$, icone, vider, pluriel, majuscule, date, relatif, heure, ymd, toa
 import { E, BACKEND } from './etat.js';
 import { api, sessionActuelle } from './api.js';
 import { ouvrirPanneau, fermerPanneau } from './panneau.js';
+import { montrer } from './navigation.js';
 import { depliant } from './ui.js';
 import { prenom, rendreBonjour } from './tableau.js';
 import { fr, el, Invalide, nouvelleCle, dureeHM, badge, rangee, confirmations, champTexte, champDate, pilules, formulaireEnLigne,
   panneauFormulaire as panneauBase } from './formes.js';
 
 const ui = { construit: false, charge: null, confirmer: '', filtre: 'moi', plusTaches: false, recapsMontres: 6,
-  emoji: '', note: '', chrono: false, brouillons: new Map(), clesNotes: new Map() };
+  emoji: '', note: '', chrono: false, brouillons: new Map(), clesNotes: new Map(), trouve: '', trouveJusqua: 0 };
 const TOUS = 'tous';
 const DOMAINE = new URL(BACKEND).host;
 
@@ -451,6 +452,25 @@ function rendreRecaps() {
       onclick: () => { ui.recapsMontres += 10; rendreEquipe(); } }, `Voir ${Math.min(10, liste.length - montres.length)} de plus`) : null);
 }
 
+// Depuis la recherche : l'onglet Équipe, ce récap affiché (même loin dans la liste), mis en
+// évidence un instant, et le focus sur son titre
+export function voirRecap(id) {
+  if (!pret()) return;
+  const i = E.equipe.recaps.findIndex(r => r.id === id);
+  if (i < 0) return toast('Ce récap n’existe plus.', true);
+  ui.trouve = id;
+  ui.trouveJusqua = Date.now() + 2600;
+  if (i >= ui.recapsMontres) ui.recapsMontres = i + 1;
+  montrer('equipe');
+  rendreEquipe();
+  const n = document.getElementById(`recap-${id}`);
+  if (!n) return;
+  const titre = n.querySelector('.recap__titre');
+  if (titre) titre.focus({ preventScroll: true });
+  n.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  setTimeout(() => { const x = document.getElementById(`recap-${id}`); if (x) x.classList.remove('recap--trouve'); }, 2700);
+}
+
 function redessinerRecap(id) {
   const r = E.equipe && E.equipe.recaps.find(x => x.id === id);
   const n = document.getElementById(`recap-${id}`);
@@ -466,14 +486,16 @@ function carteRecap(r) {
   const mien = r.qui === moi();
   const meta = [fin ? quand(fin) : '', r.minutes ? `${dureeHM(r.minutes)} de travail` : '', r.source === 'claude' ? 'par Claude' : r.source === 'collage' ? 'collé de Claude' : '']
     .filter(Boolean).join(' · ');
-  return el('article', { class: `recap${mien ? ' recap--mien' : ''}`, id: `recap-${r.id}`, 'aria-labelledby': `recap-t-${r.id}` },
+  const trouve = ui.trouve === r.id && Date.now() < ui.trouveJusqua;
+  return el('article', { class: `recap${mien ? ' recap--mien' : ''}${trouve ? ' recap--trouve' : ''}`, id: `recap-${r.id}`, 'aria-labelledby': `recap-t-${r.id}` },
     el('div', { class: 'recap__tete' }, avatar(r.qui, r.nom),
       el('p', { class: 'recap__qui' }, el('b', null, Qui(r.qui, r.nom)), el('span', null, meta)),
       mien ? el('div', { class: 'recap__action' }, confirmer(`retirer-${r.id}`, 'Retirer', 'Retirer ce récap ?', async () => {
         await ecrire('recap/retirer', { id: r.id });
         toast('Récap retiré : ses heures ne comptent plus.');
       }, { classe: 'lien lien--petit' })) : null),
-    el('h3', { class: 'recap__titre', id: `recap-t-${r.id}` }, r.titre),
+    // tabindex et data-focus : la recherche y met le focus, et il y reste quand l'équipe est relue
+    el('h3', { class: 'recap__titre', id: `recap-t-${r.id}`, tabindex: '-1', 'data-focus': `recap-${r.id}` }, r.titre),
     el('ul', { class: 'recap__fait', 'aria-label': 'Fait' }, r.fait.map(x => el('li', null, x))),
     r.reste.length ? el('div', { class: 'recap__reste' }, el('p', { class: 'petit-titre' }, 'Reste à faire'),
       el('ul', null, r.reste.map(x => el('li', null, x)))) : null,
