@@ -525,6 +525,8 @@ html[data-theme="sombre"] .btn--sombre:hover { background: #FFFFFF; }
 .etapes-installer { display: grid; gap: 10px; counter-reset: pas; }
 .etapes-installer li { display: grid; grid-template-columns: 28px minmax(0, 1fr); align-items: start; gap: 10px; font-size: .9375rem; line-height: 1.45; counter-increment: pas; }
 .etapes-installer li::before { content: counter(pas); display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--site-teinte); color: var(--site-fonce); font-size: .875rem; font-weight: 700; }
+.etapes-code li > div { display: grid; gap: 8px; justify-items: start; min-width: 0; }
+.etapes-code li > div .btn--plein { justify-self: stretch; }
 .etapes-installer svg { width: 18px; height: 18px; vertical-align: -3px; }
 
 .journal { display: grid; }
