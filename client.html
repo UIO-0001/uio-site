@@ -302,6 +302,81 @@ html[data-theme="sombre"] .etape--faite .etape__point { color: #0E1420; }
 html[data-theme="sombre"] .toast:not(.toast--erreur) { background: #EEF2F7; color: #1F2937; }
 @media (max-width: 719px) { .avec-chatbot .toast { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); } }
 
+/* Le rapport du mois : appels, textos et avis (seulement les services du client) */
+.rapport { --teinte: var(--lampe); margin-top: 36px; gap: 22px; }
+@media (min-width: 1000px) { .rapport { margin-top: 48px; padding: 28px 30px 30px; } }
+.rapport__tete { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.rapport__titres { display: grid; gap: 4px; min-width: 0; }
+.rapport__sur { display: flex; align-items: flex-start; gap: 10px; font-size: .9375rem; font-weight: 650; color: var(--texte-2); }
+.rapport__sur::before { content: ""; width: 10px; height: 10px; flex: none; margin-top: calc(.75em - 5px); border-radius: 50%; background: var(--teinte); }
+.rapport h2 { font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.375rem); line-height: 1.08; font-weight: 700; letter-spacing: -.035em; }
+.rapport h2::first-letter { text-transform: uppercase; }
+.rapport h2:focus { outline: none; }
+.rapport__periode { font-size: .9375rem; color: var(--texte-2); }
+.rapport__mois { display: flex; gap: 4px; flex: none; }
+.rapport__mois .rond { border: 1px solid var(--trait); }
+.rapport__mois .rond:disabled { opacity: .35; cursor: default; background: transparent; }
+.rond--suivant svg { transform: scaleX(-1); }
+.rapport__mot .mot-equipe__corps { background: var(--voix-teinte); }
+.rapport.lecture .chiffres, .rapport.lecture .graphe, .rapport.lecture .forfait { opacity: .55; transition: opacity .2s; }
+
+.chiffres { display: flex; flex-wrap: wrap; gap: 12px; }
+.chiffre { --teinte: var(--lampe-trait); flex: 1 1 260px; display: grid; align-content: start; gap: 6px; min-width: 0; padding: 16px 18px 18px; border-radius: 18px; background: var(--carte-2); }
+.chiffre__nom { display: flex; align-items: flex-start; gap: 8px; font-size: .9375rem; font-weight: 650; color: var(--texte-2); }
+.chiffre__nom::before { content: ""; width: 8px; height: 8px; flex: none; margin-top: calc(.75em - 4px); border-radius: 50%; background: var(--teinte); }
+.chiffre__valeur { font-size: clamp(2rem, 1.7rem + 1vw, 2.5rem); line-height: 1.05; font-weight: 700; letter-spacing: -.04em; font-variant-numeric: tabular-nums; color: var(--encre); }
+.chiffre__valeur small { margin-left: 4px; font-size: .5em; font-weight: 650; letter-spacing: -.01em; color: var(--texte-2); }
+.chiffre__detail { font-size: .875rem; line-height: 1.45; color: var(--texte-2); text-wrap: pretty; }
+.chiffre__detail b { color: var(--encre); font-weight: 650; }
+.chiffre--nouveaux { --teinte: var(--centre); }
+.chiffre--rappels { --teinte: var(--centre-fonce); }
+.chiffre--urgences { --teinte: var(--urgence); }
+.chiffre--textos { --teinte: var(--texto); }
+.chiffre--avis { --teinte: var(--site); }
+.chiffre--absent .chiffre__valeur { color: var(--texte-3); }
+
+/* Appels par jour : une colonne fine par jour, l'axe discret, le détail au survol */
+.graphe { display: grid; gap: 12px; margin: 0; min-width: 0; }
+.graphe__titre { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; font-size: .9375rem; color: var(--texte-2); }
+.graphe__titre b { font-weight: 650; color: var(--encre); }
+.graphe__zone { position: relative; display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 0 8px; padding-top: 18px; border-radius: 8px; }
+.graphe__zone:focus-visible { outline-offset: 6px; }
+.graphe__axe-y { position: relative; height: 132px; font-size: .75rem; color: var(--texte-3); font-variant-numeric: tabular-nums; }
+.graphe__axe-y span { position: absolute; right: 0; transform: translateY(-50%); line-height: 1; }
+.graphe__plot { position: relative; height: 132px; display: grid; grid-template-columns: repeat(var(--n, 30), minmax(0, 1fr)); align-items: end; border-bottom: 1px solid var(--trait-fort); }
+.graphe__grille { position: absolute; left: 0; right: 0; height: 0; border-top: 1px dashed var(--trait); pointer-events: none; }
+.graphe__jour { position: relative; display: flex; align-items: flex-end; justify-content: center; height: 100%; padding: 0 1px; cursor: default; }
+.graphe__barre { width: 100%; max-width: 24px; height: var(--h, 0%); min-height: 0; border-radius: 4px 4px 0 0; background: var(--lampe-trait); transform-origin: bottom; animation: pousse .7s var(--sortie) both; animation-delay: calc(var(--i, 0) * 12ms); }
+.graphe__jour--vide .graphe__barre { display: none; }
+.graphe__jour--avenir::after { content: ""; position: absolute; left: 50%; bottom: 0; width: 3px; height: 3px; border-radius: 50%; background: var(--trait-fort); transform: translate(-50%, 6px); }
+.graphe__jour.actif .graphe__barre, .graphe__jour:hover .graphe__barre { background: var(--voix-fonce); }
+html[data-theme="sombre"] .graphe__jour.actif .graphe__barre, html[data-theme="sombre"] .graphe__jour:hover .graphe__barre { background: #FFB27D; }
+.graphe__valeur { position: absolute; left: 50%; bottom: calc(var(--h, 0%) + 4px); transform: translateX(-50%); font-size: .75rem; font-weight: 650; color: var(--encre); font-variant-numeric: tabular-nums; pointer-events: none; }
+.graphe__axe-x { grid-column: 2; display: grid; grid-template-columns: repeat(var(--n, 30), minmax(0, 1fr)); height: 18px; margin-top: 6px; font-size: .75rem; color: var(--texte-3); font-variant-numeric: tabular-nums; }
+.graphe__axe-x span { justify-self: center; white-space: nowrap; }
+.bulle-graphe { position: absolute; z-index: 5; bottom: calc(100% + 8px); padding: 7px 11px; border-radius: 10px; background: var(--encre); color: var(--carte); font-size: .8125rem; font-weight: 600; line-height: 1.3; white-space: nowrap; pointer-events: none; box-shadow: var(--ombre-douce); transform: translateX(-50%); }
+@keyframes pousse { from { transform: scaleY(0); } to { transform: none; } }
+
+/* Minutes du forfait (cycle de facturation en cours) */
+.forfait { display: grid; gap: 8px; padding: 16px 18px; border-radius: 18px; border: 1px solid var(--trait); }
+.forfait__ligne { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; }
+.forfait__ligne b { font-weight: 650; }
+.forfait__chiffre { font-variant-numeric: tabular-nums; color: var(--texte-2); }
+.forfait__chiffre strong { color: var(--encre); font-weight: 700; }
+.forfait__piste { height: 8px; border-radius: 999px; background: var(--carte-2); overflow: hidden; }
+.forfait__plein { width: var(--part, 0%); height: 100%; border-radius: inherit; background: var(--lampe-trait); transition: width .8s var(--sortie); }
+.forfait--plein .forfait__plein { background: var(--voix-fonce); }
+.forfait__detail { font-size: .875rem; color: var(--texte-2); }
+.rapport__note { font-size: .8125rem; line-height: 1.5; color: var(--texte-3); text-wrap: pretty; }
+@media (max-width: 479px) {
+  .chiffres { gap: 10px; }
+  .chiffre { flex-basis: calc(50% - 5px); padding: 14px 14px 16px; }
+  .chiffre--large { flex-basis: 100%; }
+  .chiffre__nom { font-size: .875rem; }
+  .graphe__zone { grid-template-columns: 20px minmax(0, 1fr); gap: 0 6px; }
+}
+@media (max-width: 359px) { .chiffre { flex-basis: 100%; } }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .etape--encours .etape__point::after { display: none; }
@@ -400,6 +475,33 @@ html[data-theme="sombre"] .toast:not(.toast--erreur) { background: #EEF2F7; colo
       </div>
     </section>
 
+    <!-- Le rapport du mois : seulement si le client a un agent répondeur, des textos ou des avis notés -->
+    <section class="carte rapport" id="rapport" aria-labelledby="rapport-titre" aria-busy="false" hidden>
+      <div class="rapport__tete">
+        <div class="rapport__titres">
+          <p class="rapport__sur">Votre rapport du mois</p>
+          <h2 id="rapport-titre" tabindex="-1">Ce mois-ci</h2>
+          <p class="rapport__periode" id="rapport-periode"></p>
+        </div>
+        <div class="rapport__mois" role="group" aria-label="Changer de mois">
+          <button class="rond" type="button" id="mois-avant" aria-label="Mois précédent" title="Mois précédent"><svg aria-hidden="true"><use href="#i-retour"/></svg></button>
+          <button class="rond rond--suivant" type="button" id="mois-apres" aria-label="Mois suivant" title="Mois suivant"><svg aria-hidden="true"><use href="#i-retour"/></svg></button>
+        </div>
+      </div>
+      <div class="mot-equipe rapport__mot" id="rapport-mot" hidden>
+        <span class="icone-uio" aria-hidden="true"></span>
+        <div class="mot-equipe__corps"><p class="mot-equipe__texte" id="rapport-mot-texte"></p><p class="mot-equipe__signature">L’équipe d’Agence UIO</p></div>
+      </div>
+      <ul class="chiffres" id="rapport-chiffres"></ul>
+      <figure class="graphe" id="rapport-graphe" hidden>
+        <figcaption class="graphe__titre"><b>Appels par jour</b><span id="graphe-resume"></span></figcaption>
+        <div class="graphe__zone" id="graphe-zone" tabindex="0" role="group" aria-roledescription="graphique" aria-label="Appels par jour. Flèches gauche et droite pour lire chaque jour."></div>
+        <table class="sr" id="graphe-table"><caption>Appels par jour</caption><thead><tr><th scope="col">Jour</th><th scope="col">Appels</th></tr></thead><tbody></tbody></table>
+      </figure>
+      <div class="forfait" id="rapport-forfait" hidden></div>
+      <p class="rapport__note" id="rapport-note"></p>
+    </section>
+
     <div class="grille">
       <article class="carte carte--etapes" aria-labelledby="t-etapes">
         <div class="carte__tete"><h2 id="t-etapes">Les étapes de votre projet</h2><span class="etat" id="etapes-compte" hidden></span></div>
@@ -470,7 +572,9 @@ const MOUVEMENT_REDUIT = window.matchMedia ? matchMedia('(prefers-reduced-motion
 const E = {
   nom: '', mdp: '', projet: null, maj: 0, etat: 'ok', lecture: false, minuterie: 0, horloge: 0,
   neufs: new Set(), noteNeuve: false, demoNeuve: false, nonVus: 0, titre: TITRE,
-  widget: null, idWidget: '', anim: 0, ouvertFaites: false, signatureEtapes: ''
+  widget: null, idWidget: '', anim: 0, ouvertFaites: false, signatureEtapes: '',
+  // Le rapport du mois : jeton de 12 h donné par /portal/login (jamais le mot de passe), mois choisi ('' = en cours)
+  jeton: '', rapport: null, moisRapport: '', lectureRapport: false, signatureGraphe: '', jourActif: -1
 };
 
 // ─── Petits outils ────────────────────────────────────────────────────────
@@ -551,7 +655,8 @@ async function lireCompte(nom, mdp, surLent) {
     if (r.status === 401) throw new ErreurConnexion('Nom d’utilisateur ou mot de passe invalide.', 401);
     if (r.status === 400) throw new ErreurConnexion('Entrez votre nom d’utilisateur et votre mot de passe.', 400);
     if (!r.ok || !data.success || !data.client) throw new ErreurConnexion('Le serveur n’a pas pu lire votre projet. Réessayez dans un instant.', r.status || 500);
-    return data.client;
+    const jeton = data.rapport && typeof data.rapport.jeton === 'string' ? data.rapport.jeton : '';
+    return { ...data.client, _jeton: jeton };
   } catch (e) {
     if (e instanceof ErreurConnexion) throw e;
     throw new ErreurConnexion(e.name === 'AbortError'
@@ -789,6 +894,275 @@ function ouvrirChatbot() {
   else toast('L’assistant se charge. Réessayez dans un instant.');
 }
 
+// ─── Le rapport du mois (appels, textos, avis), si le serveur en donne un ──
+const nombre = n => Number(n || 0).toLocaleString('fr-CA');
+const jourDe = cle => new Date(`${cle}T12:00:00Z`);
+const jourNum = cle => { const j = Number(String(cle).slice(8, 10)); return j === 1 ? '1er' : String(j); };
+const nomMois = cle => jourDe(`${cle.slice(0, 7)}-01`).toLocaleDateString('fr-CA', { timeZone: 'UTC', month: 'long' });
+const jourMois = cle => `${jourNum(cle)} ${nomMois(cle)}`;
+const jourLong = cle => `${jourDe(cle).toLocaleDateString('fr-CA', { timeZone: 'UTC', weekday: 'long' })} ${jourMois(cle)}`;
+const appelsTxt = n => `${nombre(n)} appel${n > 1 ? 's' : ''}`;
+function dureeTxt(s) {
+  s = Math.round(Number(s) || 0);
+  if (s < 60) return `${s} s`;
+  const m = Math.floor(s / 60), r = s % 60;
+  return r ? `${m} min ${String(r).padStart(2, '0')} s` : `${m} min`;
+}
+const minutesTxt = m => `${nombre(Math.round(Number(m) || 0))} min`;
+// Morceaux de phrase : les nombres en gras (le texte reste du texte)
+const phrase = (...m) => m.flat().filter(x => x != null && x !== false && x !== '').map(x => typeof x === 'number' ? el('b', null, nombre(x)) : x);
+
+async function lireRapport(mois) {
+  const ctrl = new AbortController();
+  const fin = setTimeout(() => ctrl.abort(), DELAIS.max);
+  try {
+    const r = await fetch(BACKEND + '/portal/rapport' + (mois ? '?mois=' + encodeURIComponent(mois) : ''), {
+      headers: { Authorization: 'Bearer ' + E.jeton }, signal: ctrl.signal, cache: 'no-store'
+    });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new ErreurConnexion(data.error || 'Rapport indisponible', r.status);
+    return data;
+  } catch (e) {
+    if (e instanceof ErreurConnexion) throw e;
+    throw new ErreurConnexion('Le serveur ne répond pas pour le moment.', 0);
+  } finally { clearTimeout(fin); }
+}
+
+async function chargerRapport(mois = E.moisRapport) {
+  if (!E.jeton || !E.projet) { if (!E.rapport) $('#rapport').hidden = true; return; }
+  if (E.lectureRapport) return;
+  E.lectureRapport = true;
+  const section = $('#rapport');
+  section.classList.add('lecture');
+  section.setAttribute('aria-busy', 'true');
+  try {
+    const r = await lireRapport(mois);
+    if (!E.projet) return;                       // déconnecté pendant la lecture
+    E.rapport = r;
+    E.moisRapport = r.en_cours ? '' : r.mois;
+    rendreRapport(r);
+  } catch (e) {
+    if (e.code === 401) E.jeton = '';            // la prochaine lecture du projet en donne un neuf
+    if (!E.rapport) section.hidden = true;
+    else if (mois !== E.moisRapport) toast(e.code === 429 ? 'Beaucoup de demandes d’un coup : réessayez dans quelques minutes.' : 'Ce mois n’a pas pu être lu. Réessayez dans un instant.', true);
+  } finally {
+    E.lectureRapport = false;
+    section.classList.remove('lecture');
+    section.setAttribute('aria-busy', 'false');
+  }
+}
+
+// ‹ un mois plus vieux (+1), › un mois plus récent (-1)
+async function changerMois(sens) {
+  const r = E.rapport;
+  if (!r || E.lectureRapport) return;
+  const liste = r.mois_disponibles || [];
+  const i = liste.findIndex(m => m.mois === r.mois);
+  const cible = liste[i + sens];
+  if (!cible) return;
+  await chargerRapport(i + sens === 0 ? '' : cible.mois);
+  if (E.rapport && E.rapport.mois === cible.mois) ecrireTexte($('#annonce'), `Rapport de ${cible.titre}`);
+}
+
+function tuile(sorte, nom, valeur, detail, { unite = '', large = false, absent = false } = {}) {
+  return el('li', { class: `chiffre chiffre--${sorte}${large ? ' chiffre--large' : ''}${absent ? ' chiffre--absent' : ''}` },
+    el('span', { class: 'chiffre__nom' }, nom),
+    el('b', { class: 'chiffre__valeur' }, valeur, unite ? el('small', null, unite) : null),
+    detail && detail.length ? el('span', { class: 'chiffre__detail' }, detail) : null);
+}
+
+function rendreRapport(r) {
+  const section = $('#rapport');
+  if (!r || r.vide) { section.hidden = true; return; }
+  section.hidden = false;
+  ecrireTexte($('#rapport-titre'), r.titre);
+  const avant = (r.mois_disponibles || []).findIndex(m => m.mois === r.mois);
+  const plusVieux = (r.mois_disponibles || [])[avant + 1], plusRecent = avant > 0 ? r.mois_disponibles[avant - 1] : null;
+  const bAvant = $('#mois-avant'), bApres = $('#mois-apres');
+  bAvant.disabled = !plusVieux; bApres.disabled = !plusRecent;
+  bAvant.setAttribute('aria-label', plusVieux ? `Voir ${plusVieux.titre}` : 'Pas de mois plus ancien');
+  bApres.setAttribute('aria-label', plusRecent ? `Voir ${plusRecent.titre}` : 'Pas de mois plus récent');
+  bAvant.title = bAvant.getAttribute('aria-label'); bApres.title = bApres.getAttribute('aria-label');
+  const periode = r.du === r.au ? `Aujourd’hui, ${jourMois(r.au)}` : `Du 1er au ${jourMois(r.au)}`;
+  ecrireTexte($('#rapport-periode'), r.en_cours ? `${periode} · le mois continue` : periode);
+
+  const mot = String(r.mot || '').trim();
+  $('#rapport-mot').hidden = !mot;
+  ecrireTexte($('#rapport-mot-texte'), mot);
+
+  const a = r.appels, t = r.textos, avis = r.avis, tuiles = [];
+  if (a && a.disponible) {
+    const d = [];
+    if (a.total) {
+      d.push(...phrase('dont ', a.hors_heures, ' en dehors des heures de bureau'));
+      if (a.anglais) d.push(...phrase(', ', a.anglais, ' en anglais'));
+      d.push('.');
+    } else d.push(r.en_cours ? 'Votre agent répondeur est prêt : aucun appel compté pour l’instant.' : 'Aucun appel compté ce mois-là.');
+    if (a.mois_precedent != null) d.push(' ', ...phrase(a.mois_precedent, ` en ${nomMois(ajouterMoisCle(r.mois, -1))}.`));
+    tuiles.push(tuile('appels', 'Appels répondus', nombre(a.total), d, { large: true }));
+    tuiles.push(tuile('nouveaux', 'Nouveaux clients potentiels', nombre(a.nouveaux), ['Des gens qui ne sont pas encore vos clients.']));
+    tuiles.push(tuile('rappels', 'Rappels pris en note', nombre(a.rappels), ['Le nom, le numéro et le besoin, envoyés à votre équipe.']));
+    const garde = t && t.disponible ? t.urgences : 0;
+    if (a.urgences || garde) {
+      tuiles.push(tuile('urgences', 'Urgences', nombre(a.urgences),
+        garde ? phrase(garde, ` texto${garde > 1 ? 's' : ''} envoyé${garde > 1 ? 's' : ''} tout de suite à votre cellulaire de garde.`) : ['Repérées pendant l’appel et notées en priorité.']));
+    }
+  } else if (a) {
+    tuiles.push(tuile('appels', 'Appels répondus', '—', [a.raison || 'Les chiffres des appels reviennent dans quelques minutes.'], { large: true, absent: true }));
+  }
+  if (t && t.disponible) {
+    tuiles.push(tuile('textos', 'Textos à vos appelants', nombre(t.appelants), ['Après un appel manqué, ou pour confirmer un rappel.']));
+  } else if (t) {
+    tuiles.push(tuile('textos', 'Textos à vos appelants', '—', [t.raison || 'Les chiffres des textos reviennent dans quelques minutes.'], { absent: true }));
+  }
+  if (avis) {
+    const d = [];
+    if (avis.note != null) d.push('Note moyenne ', el('b', null, String(avis.note).replace('.', ',')), ' sur 5');
+    if (avis.total != null) d.push(d.length ? ', ' : '', ...phrase(avis.total, ' avis au total'));
+    if (d.length) d.push('.');
+    tuiles.push(tuile('avis', 'Nouveaux avis Google', avis.nouveaux != null ? nombre(avis.nouveaux) : '—', d));
+  }
+  vider($('#rapport-chiffres'), tuiles);
+
+  rendreGraphe(r);
+  rendreForfait(r.forfait);
+  const note = [];
+  if (a && a.disponible) {
+    note.push(`Comptés comme sur votre facture : les appels de moins de 15 secondes, les appels indésirables et les essais ne comptent pas. Heures de bureau : de ${r.heures_bureau || '8 h à 17 h, du lundi au vendredi'}.`);
+    if (a.pourriels) note.push(`${a.pourriels > 1 ? `${nombre(a.pourriels)} appels indésirables ont été filtrés` : 'Un appel indésirable a été filtré'} ce mois-${r.en_cours ? 'ci' : 'là'}.`);
+    if (!a.complet) note.push('Beaucoup d’appels ce mois-là : les chiffres montrés sont un minimum.');
+  }
+  ecrireTexte($('#rapport-note'), note.join(' '));
+  $('#rapport-note').hidden = !note.length;
+}
+function ajouterMoisCle(cle, n) {
+  const [an, mo] = cle.split('-').map(Number);
+  const i = an * 12 + (mo - 1) + n;
+  return `${Math.floor(i / 12)}-${String(i % 12 + 1).padStart(2, '0')}`;
+}
+
+// Une échelle ronde : 3 appels au plus → l'axe va à 4 ; 17 → 20
+function plafond(max) {
+  for (const p of [2, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30, 40, 50, 60, 80, 100, 150, 200, 250, 300, 400, 500, 1000]) if (max <= p) return p;
+  return Math.ceil(max / 500) * 500;
+}
+
+function rendreGraphe(r) {
+  const fig = $('#rapport-graphe'), a = r.appels;
+  if (!a || !a.disponible || !Array.isArray(a.par_jour) || !a.par_jour.length) { fig.hidden = true; E.signatureGraphe = ''; return; }
+  fig.hidden = false;
+  const signature = JSON.stringify([r.mois, a.par_jour]);
+  const resume = $('#graphe-resume');
+  const max = Math.max(0, ...a.par_jour.map(j => j.appels));
+  const occupe = [...a.par_jour].reverse().find(j => j.appels === max);
+  ecrireTexte(resume, max ? `Le plus occupé : ${jourLong(occupe.jour)} (${appelsTxt(max)})${a.duree_moyenne_s ? ` · durée moyenne ${dureeTxt(a.duree_moyenne_s)}` : ''}` : '');
+  if (signature === E.signatureGraphe) return;   // rien de neuf : on ne redessine pas (pas d'animation pour rien)
+  const anime = !E.signatureGraphe.startsWith(JSON.stringify([r.mois]).slice(0, -1));
+  E.signatureGraphe = signature;
+  E.jourActif = -1;
+  // Tout le mois : les jours à venir restent vides, on voit où on en est
+  const [an, mo] = r.mois.split('-').map(Number);
+  const nb = new Date(Date.UTC(an, mo, 0)).getUTCDate();
+  const valeurs = new Map(a.par_jour.map(j => [j.jour, j.appels]));
+  const jours = Array.from({ length: nb }, (_, i) => {
+    const cle = `${r.mois}-${String(i + 1).padStart(2, '0')}`;
+    return { cle, n: valeurs.has(cle) ? valeurs.get(cle) : null };
+  });
+  const haut = plafond(Math.max(1, max));
+  const marque = jours.reduce((m, j, i) => (j.n === max && max > 0 ? i : m), -1);
+  const plot = el('div', { class: 'graphe__plot' });
+  plot.style.setProperty('--n', String(nb));
+  for (const y of [haut / 2, haut]) {
+    const g = el('i', { class: 'graphe__grille', 'aria-hidden': 'true' });
+    g.style.bottom = `${(y / haut) * 100}%`;
+    plot.append(g);
+  }
+  jours.forEach((j, i) => {
+    const col = el('span', { class: `graphe__jour${j.n === null ? ' graphe__jour--avenir' : ''}${j.n === 0 ? ' graphe__jour--vide' : ''}`, 'data-i': String(i), 'aria-hidden': 'true' },
+      el('span', { class: 'graphe__barre' }));
+    col.style.setProperty('--h', `${j.n ? (j.n / haut) * 100 : 0}%`);
+    col.style.setProperty('--i', String(anime && !reduit() ? i : 0));
+    if (!anime || reduit()) col.firstChild.style.animation = 'none';
+    if (i === marque) col.append(el('span', { class: 'graphe__valeur' }, nombre(j.n)));
+    col.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') montrerJour(i); });
+    col.addEventListener('click', () => montrerJour(i));
+    plot.append(col);
+  });
+  const axeY = el('div', { class: 'graphe__axe-y', 'aria-hidden': 'true' });
+  for (const y of [0, haut / 2, haut]) {
+    if (y !== Math.round(y)) continue;
+    const s = el('span', null, nombre(y));
+    s.style.bottom = `calc(${(y / haut) * 100}% - .5em)`;
+    s.style.transform = 'none';
+    axeY.append(s);
+  }
+  const axeX = el('div', { class: 'graphe__axe-x', 'aria-hidden': 'true' });
+  axeX.style.setProperty('--n', String(nb));
+  jours.forEach((j, i) => axeX.append(el('span', null, [0, 7, 14, 21, 28].includes(i) ? String(i + 1) : '')));
+  vider($('#graphe-zone'), axeY, plot, axeX);
+  E.joursGraphe = jours;
+  vider($('#graphe-table tbody'), jours.filter(j => j.n !== null).map(j => el('tr', null, el('th', { scope: 'row' }, jourLong(j.cle)), el('td', null, nombre(j.n)))));
+}
+
+// La bulle d'un jour (survol, toucher, ou flèches du clavier) ; -1 la cache
+function montrerJour(i) {
+  const zone = $('#graphe-zone');
+  const ancienne = zone.querySelector('.bulle-graphe');
+  if (ancienne) ancienne.remove();
+  zone.querySelectorAll('.graphe__jour.actif').forEach(n => n.classList.remove('actif'));
+  E.jourActif = i;
+  const jours = E.joursGraphe || [];
+  if (i < 0 || !jours[i]) return;
+  const col = zone.querySelector(`.graphe__jour[data-i="${i}"]`);
+  if (!col) return;
+  col.classList.add('actif');
+  const j = jours[i];
+  const texte = `${majuscule(jourLong(j.cle))} · ${j.n === null ? 'à venir' : appelsTxt(j.n)}`;
+  const bulle = el('span', { class: 'bulle-graphe' }, texte);
+  zone.append(bulle);
+  const zr = zone.getBoundingClientRect(), cr = col.getBoundingClientRect();
+  const largeur = bulle.offsetWidth;
+  const centre = cr.left - zr.left + cr.width / 2;
+  bulle.style.left = `${Math.max(largeur / 2, Math.min(zr.width - largeur / 2, centre))}px`;
+  bulle.style.bottom = `${zr.bottom - cr.top + 6}px`;
+  ecrireTexte($('#annonce'), texte);
+}
+const majuscule = t => t.charAt(0).toUpperCase() + t.slice(1);
+function clavierGraphe(e) {
+  const jours = E.joursGraphe || [];
+  if (!jours.length) return;
+  const derniers = jours.map((j, i) => (j.n === null ? -1 : i)).filter(i => i >= 0);
+  if (!derniers.length) return;
+  const premier = derniers[0], dernier = derniers[derniers.length - 1];
+  let i = E.jourActif;
+  if (e.key === 'ArrowRight') i = i < 0 ? dernier : Math.min(dernier, i + 1);
+  else if (e.key === 'ArrowLeft') i = i < 0 ? dernier : Math.max(premier, i - 1);
+  else if (e.key === 'Home') i = premier;
+  else if (e.key === 'End') i = dernier;
+  else if (e.key === 'Escape') i = -1;
+  else return;
+  e.preventDefault();
+  montrerJour(i);
+}
+
+function rendreForfait(f) {
+  const boite = $('#rapport-forfait');
+  if (!f || !f.incluses) { boite.hidden = true; return; }
+  boite.hidden = false;
+  const part = Math.min(100, (f.minutes / f.incluses) * 100);
+  const reste = Math.round(f.incluses - f.minutes);
+  const plein = el('div', { class: 'forfait__plein' });
+  plein.style.setProperty('--part', `${part.toFixed(1)}%`);
+  boite.classList.toggle('forfait--plein', reste <= 0);
+  vider(boite,
+    el('div', { class: 'forfait__ligne' }, el('b', null, 'Minutes du forfait'),
+      el('span', { class: 'forfait__chiffre' }, el('strong', null, minutesTxt(f.minutes)), ` sur ${nombre(f.incluses)}`)),
+    el('div', { class: 'forfait__piste', role: 'progressbar', 'aria-label': 'Minutes du forfait utilisées', 'aria-valuemin': '0',
+      'aria-valuemax': String(f.incluses), 'aria-valuenow': String(Math.round(f.minutes)), 'aria-valuetext': `${minutesTxt(f.minutes)} sur ${nombre(f.incluses)}` }, plein),
+    el('p', { class: 'forfait__detail' }, `Cycle du ${jourMois(f.cycle_du)} au ${jourMois(f.cycle_au)} · `,
+      reste > 0 ? `il reste ${minutesTxt(reste)}` : reste === 0 ? 'forfait utilisé en entier' : `${minutesTxt(-reste)} de plus que le forfait`, '.'));
+}
+
 // ─── Connexion, mise à jour, déconnexion ──────────────────────────────────
 async function connecter(ev) {
   ev.preventDefault();
@@ -827,6 +1201,8 @@ function entrer(client) {
   clearInterval(E.horloge);
   E.horloge = setInterval(majHorloge, DELAIS.horloge);
   planifier();
+  E.jeton = client._jeton || ''; E.moisRapport = ''; E.signatureGraphe = '';
+  chargerRapport('');
   $('#projet-nom').focus({ preventScroll: true });
 }
 
@@ -846,6 +1222,8 @@ async function actualiser(manuel = false) {
     etat('ok');
     ecrireVisite(p);
     if (p.chatbot) chargerChatbot(p.id); else retirerChatbot();
+    if (client._jeton) E.jeton = client._jeton;
+    chargerRapport();
     const annonce = annoncer(c, avant, p);
     if (manuel && !annonce) toast('C’est à jour : rien de nouveau.');
   } catch (e) {
@@ -879,6 +1257,8 @@ function quitter(message = '', garderNom = false) {
   retirerChatbot();
   E.nom = E.mdp = ''; E.projet = null; E.lecture = false; E.nonVus = 0;
   E.neufs = new Set(); E.noteNeuve = E.demoNeuve = false; E.ouvertFaites = false; E.signatureEtapes = '';
+  E.jeton = ''; E.rapport = null; E.moisRapport = ''; E.signatureGraphe = ''; E.jourActif = -1;
+  $('#rapport').hidden = true;
   E.titre = TITRE; document.title = TITRE;
   $('#appli').hidden = true;
   $('#connexion').hidden = false;
@@ -925,6 +1305,12 @@ $('#actualiser').addEventListener('click', () => actualiser(true));
 $('#theme').addEventListener('click', basculerTheme);
 $('#quitter').addEventListener('click', () => quitter());
 $('#ouvrir-chatbot').addEventListener('click', ouvrirChatbot);
+$('#mois-avant').addEventListener('click', () => changerMois(1));
+$('#mois-apres').addEventListener('click', () => changerMois(-1));
+$('#graphe-zone').addEventListener('keydown', clavierGraphe);
+$('#graphe-zone').addEventListener('blur', () => montrerJour(-1));
+$('#graphe-zone').addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') montrerJour(-1); });
+document.addEventListener('click', e => { if (E.jourActif >= 0 && !e.target.closest('#graphe-zone')) montrerJour(-1); });
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) return;
   if (E.nonVus) { E.nonVus = 0; document.title = E.titre; }

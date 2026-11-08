@@ -5,12 +5,12 @@
 // un mélange d'ancien et de neuf (un module neuf avec un ancien empêcherait l'app de démarrer).
 // Le réseau seulement pour un fichier qui manque. Changer VERSION à chaque mise en ligne de l'admin :
 // la nouvelle version s'installe à côté et l'app propose « Mettre à jour ».
-const VERSION = 'admin-2026-11-08-7';
+const VERSION = 'admin-2026-11-08-8';
 const BASE = new URL('./', self.location.href).pathname;           // /admin/
 const COQUILLE = [
   './', 'app.css', 'theme.js', 'manifest.webmanifest',
   'js/app.js', 'js/api.js', 'js/appareil.js', 'js/argent.js', 'js/cles.js', 'js/clients.js', 'js/compte.js', 'js/confiance.js',
-  'js/connexion.js', 'js/equipe.js', 'js/etat.js', 'js/formes.js', 'js/installer.js', 'js/navigation.js', 'js/outils.js', 'js/panneau.js', 'js/prospects.js',
+  'js/connexion.js', 'js/equipe.js', 'js/etat.js', 'js/formes.js', 'js/installer.js', 'js/navigation.js', 'js/outils.js', 'js/panneau.js', 'js/prospects.js', 'js/rapport.js',
   'js/qr.js', 'js/tableau.js', 'js/ui.js', 'js/vendor/qrcode.mjs',
   'icones/icone-192.png', 'icones/apple-touch-icon.png', 'icones/icone-admin.svg', 'icones/icone-admin-32.png', 'icones/icone-admin-192.png',
   '../assets/fonts/hanken-grotesk.woff2'

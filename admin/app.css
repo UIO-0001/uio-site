@@ -354,6 +354,21 @@ kbd { display: inline-grid; place-items: center; min-width: 26px; height: 26px; 
 /* Une seule colonne qui ne s'élargit jamais pour un champ : rien ne dépasse à 320 px */
 .panneau__corps, .bloc, .champ, .deux { grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 560px) { .deux { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.trois { display: grid; gap: 12px 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr)); }
+
+/* Le rapport du mois d'un client (panneau du client) */
+.rapport-admin { padding-top: 4px; }
+.rapport-admin__tete { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; }
+.rapport-admin__tete h3 { font-size: 1rem; font-weight: 650; }
+.rapport-admin__mois .champ select { min-height: 40px; padding: 7px 40px 7px 12px; font-size: .9375rem; }
+.rapport-admin__mois .selecteur::after { right: 15px; }
+.rapport-admin__resume { display: grid; gap: 10px; }
+.rapport-admin__resume .chiffres { padding: 14px 16px; border-radius: 14px; background: var(--carte-2); row-gap: 14px; }
+.rapport-admin__resume .chiffres div { align-content: start; }
+.rapport-admin__saisie { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+.rapport-admin__avis { display: grid; grid-template-columns: minmax(0, 1fr); }
+.rapport-admin__avis legend { padding: 0; margin-bottom: 10px; font-size: .9375rem; font-weight: 600; }
+.rapport-admin__saisie .erreur:empty { display: none; }
 .progres { display: flex; align-items: center; gap: 14px; }
 .progres input { --p: 0%; flex: 1; min-width: 0; height: 32px; margin: 0; background: transparent; -webkit-appearance: none; appearance: none; cursor: pointer; }
 .progres input::-webkit-slider-runnable-track { height: 8px; border-radius: 999px; background: linear-gradient(to right, var(--lampe-trait) var(--p), var(--trait-fort) var(--p)); }
