@@ -477,7 +477,17 @@ function rendreDemandes() {
   vider(boite, blocs);
 }
 
+// Le bouton « Agenda » : le serveur donne le lien de l'agenda des audits dans le compte
+// Google de l'agence. Sans lien (ancien serveur), il garde l'adresse générale.
+function lienAgenda() {
+  const a = $('#carte-audits .carte__tete a.lien');
+  const s = source('rendez_vous');
+  const lien = s && typeof s.lien === 'string' && s.lien.startsWith('https://calendar.google.com/') ? s.lien : '';
+  if (a && lien && a.getAttribute('href') !== lien) a.setAttribute('href', lien);
+}
+
 export function rendreAudits() {
+  lienAgenda();
   const boite = $('#audits');
   const manque = indisponible('rendez_vous', 'Les audits réservés');
   if (manque) return vider(boite, manque);
