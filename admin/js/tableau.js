@@ -4,6 +4,7 @@ import { $, $$, el, sv, icone, vider, nombre, pluriel, insecable, heure, jourLon
 import { E, BACKEND, DEPOT, SITE, TITRE } from './etat.js';
 import { api, sessionActuelle } from './api.js';
 import { htmlInerte } from './confiance.js';
+import { montrer } from './navigation.js';
 
 // Le prénom seul (« Alex » dans « Alex Tremblay »), pour dire bonjour
 export const prenom = nom => String(nom || '').trim().split(/\s+/)[0] || '';
@@ -178,6 +179,23 @@ function indisponible(nom, quoi) {
   return null;
 }
 
+// Ce qui presse côté argent : factures en retard, crédits bas ou épuisés (sans répéter l'alerte des appels)
+function alertesArgent(alerteAppels) {
+  const a = E.argent;
+  if (!a || !a.resume) return [];
+  const c = a.credits || {}, rt = c.retell || {}, tw = c.twilio || {}, oa = c.openai || {};
+  const liste = [];
+  if (a.resume.en_retard) liste.push(pluriel(a.resume.en_retard, 'facture en retard', 'factures en retard'));
+  if (!/retell/i.test(alerteAppels)) {
+    if (rt.etat === 'epuise') liste.push('crédit Retell épuisé');
+    else if (rt.alerte) liste.push('crédit Retell bas');
+  }
+  if (tw.alerte) liste.push('crédit Twilio bas');
+  if (oa.etat === 'epuise') liste.push('crédit OpenAI épuisé, le chatbot ne répond plus');
+  else if (oa.etat === 'cle_refusee') liste.push('clé OpenAI refusée');
+  return liste;
+}
+
 export function rendreBonjour() {
   const s = sessionActuelle();
   if (!s) return;
@@ -188,7 +206,17 @@ export function rendreBonjour() {
   const b = t => el('b', null, t);
   const morceaux = [];
   const appels = source('appels'), demandes = source('demandes'), audits = source('rendez_vous');
-  if (appels && appels.disponible && appels.alerte) morceaux.push(el('b', { class: 'attention' }, 'Attention : '), appels.alerte.replace(/\.$/, '') + '. ');
+  const alerteAppels = appels && appels.disponible && appels.alerte ? appels.alerte : '';
+  const argent = alertesArgent(alerteAppels);
+  if (alerteAppels || argent.length) {
+    morceaux.push(el('b', { class: 'attention' }, 'Attention : '));
+    if (alerteAppels) morceaux.push(alerteAppels.replace(/\.$/, '') + '. ');
+    if (argent.length) {
+      const liste = argent.length > 1 ? `${argent.slice(0, -1).join(', ')} et ${argent[argent.length - 1]}` : argent[0];
+      morceaux.push(alerteAppels ? `Aussi : ${liste}` : majuscule(liste), ' (',
+        el('button', { class: 'lien-texte', type: 'button', onclick: () => montrer('argent') }, 'voir l’argent'), '). ');
+    }
+  }
   const faits = [];
   if (appels && appels.disponible) faits.push([b(pluriel(appels.aujourdhui, 'appel', 'appels')), ' aujourd’hui']);
   if (demandes && demandes.disponible) faits.push([b(pluriel(demandes.semaine, 'demande', 'demandes')), ' du chatbot cette semaine']);
@@ -205,7 +233,11 @@ export function rendreBonjour() {
   const etat = etatServeur(), p = dernierPing();
   if (etat === 'ok' || etat === 'lent') morceaux.push('Le serveur répond en ', b(p.ms >= 1000 ? `${nombre(p.ms / 1000, 1)} s` : `${p.ms} ms`), '.');
   else if (etat === 'panne') morceaux.push(b('Le serveur ne répond pas'), ' : il dort peut-être.');
+  // Redessinée toutes les 15 s : le bouton qui avait le focus le retrouve
+  const avant = document.activeElement && document.activeElement.closest ? document.activeElement.closest('#bonjour-phrase button') : null;
+  const quoi = avant ? avant.textContent : '';
   if (morceaux.length) vider($('#bonjour-phrase'), morceaux);
+  if (quoi) { const b = $$('#bonjour-phrase button').find(x => x.textContent === quoi); if (b) b.focus({ preventScroll: true }); }
 }
 
 export function rendreDirect() {

@@ -1,8 +1,8 @@
-// Les trois vues (Tableau de bord, Clients, Compte) et la lentille sous l'onglet actif.
+// Les quatre vues (Tableau de bord, Clients, Argent, Compte) et la lentille sous l'onglet actif.
 import { $, $$ } from './outils.js';
 import { E } from './etat.js';
 
-export const VUES = ['tableau', 'clients', 'compte'];
+export const VUES = ['tableau', 'clients', 'argent', 'compte'];
 const crochets = {};
 export const quandVue = (vue, fn) => { (crochets[vue] = crochets[vue] || []).push(fn); };
 export const vueDuLien = () => { const h = location.hash.slice(1); return VUES.includes(h) ? h : 'tableau'; };
@@ -16,13 +16,13 @@ export function placerLentille() {
 }
 
 export function montrer(vue, focus = false) {
-  if (!VUES.includes(vue)) vue = 'tableau';
+  if (!VUES.includes(vue) || !$('#vue-' + vue)) vue = 'tableau';   // une page plus ancienne n'a pas toutes les vues
   E.vue = vue;
   $$('.onglets [role=tab]').forEach(b => { const oui = b.dataset.vue === vue; b.setAttribute('aria-selected', String(oui)); b.tabIndex = oui ? 0 : -1; });
-  VUES.forEach(v => { $('#vue-' + v).hidden = v !== vue; });
+  VUES.forEach(v => { const s = $('#vue-' + v); if (s) s.hidden = v !== vue; });
   placerLentille();
   if (history.replaceState) history.replaceState(null, '', vue === 'tableau' ? location.pathname + location.search : '#' + vue);
   (crochets[vue] || []).forEach(fn => fn());
-  if (focus) $(`#onglet-${vue}`).focus();
+  if (focus && $(`#onglet-${vue}`)) $(`#onglet-${vue}`).focus();
   window.scrollTo({ top: 0 });
 }

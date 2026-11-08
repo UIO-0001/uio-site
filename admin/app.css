@@ -11,6 +11,7 @@
   --texto: #1E9E5A;  --texto-teinte: #E8F6EE; --texto-fonce: #166B3D;
   --site: #F2A900;   --site-teinte: #FFF5D9;  --site-fonce: #7A5200;
   --urgence: #B42318; --urgence-teinte: #FDECEA;
+  --serie-entrees: #3A86FF; --serie-sorties: #E2691A;   /* l'argent qui entre, celui qui sort (validés daltonisme) */
   --nuit: #1F2937; --nuit-texte: #B7C1CF;
   --verre-haut: rgba(255, 255, 255, .82); --verre-bas: rgba(255, 255, 255, .66);
   --verre-rebord: inset 0 1px 0 rgba(255, 255, 255, .95), inset 0 0 0 1px rgba(31, 41, 55, .06);
@@ -33,6 +34,7 @@ html[data-theme="sombre"] {
   --texto: #2DBE73;  --texto-teinte: #10281E; --texto-fonce: #72DCA5;
   --site: #F2B01E;   --site-teinte: #2A220E;  --site-fonce: #F6CB62;
   --urgence: #FF8A80; --urgence-teinte: #34181A;
+  --serie-entrees: #4A8FF5; --serie-sorties: #E2691A;
   --nuit: #182033; --nuit-texte: #C3CCDA;
   --verre-haut: rgba(27, 38, 60, .82); --verre-bas: rgba(20, 30, 48, .7);
   --verre-rebord: inset 0 1px 0 rgba(255, 255, 255, .1), inset 0 0 0 1px rgba(255, 255, 255, .07);
@@ -167,6 +169,8 @@ html[data-theme="sombre"] .onglets .lentille { background: linear-gradient(180de
 .bonjour__phrase { max-width: 40ch; font-size: clamp(1.0625rem, .98rem + .45vw, 1.3125rem); line-height: 1.45; color: var(--texte-2); }
 .bonjour__phrase b { color: var(--encre); font-weight: 650; }
 .bonjour__phrase .attention { color: var(--urgence); }
+.lien-texte { padding: 0; border: 0; background: none; color: inherit; font: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; cursor: pointer; }
+.lien-texte:hover { color: var(--encre); }
 .bonjour__date { font-size: .9375rem; color: var(--texte-3); font-variant-numeric: tabular-nums; }
 .bonjour__outils { display: none; gap: 8px; margin-top: 4px; }
 @media (max-width: 719px) { .bonjour__outils { display: flex; } }
@@ -571,6 +575,167 @@ html[data-theme="sombre"] .maj { background: #EEF2F7; color: #1F2937; }
 .choix--petit label span { min-height: 32px; padding: 0 12px; font-size: .8125rem; }
 .compte__tete p b { color: var(--encre); font-weight: 650; }
 #vue-compte .grille { margin-top: 22px; }
+
+/* ── Argent ────────────────────────────────────────────────────────────── */
+.argent__tete { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px 20px; }
+.argent__titre { display: grid; gap: 6px; flex: 1 1 340px; min-width: 0; }
+.argent__titre h1 { font-size: clamp(2rem, 1.5rem + 1.8vw, 2.75rem); line-height: 1.05; font-weight: 700; letter-spacing: -.04em; }
+.argent__titre p { max-width: 62ch; color: var(--texte-2); }
+.argent__titre p b { color: var(--encre); font-weight: 650; font-variant-numeric: tabular-nums; }
+.argent__titre .attention { color: var(--urgence); }
+.argent__maj { display: block; margin-top: 2px; font-size: .8125rem; color: var(--texte-3); font-variant-numeric: tabular-nums; }
+.argent__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+#vue-argent .grille { margin-top: 22px; }
+@media (max-width: 559px) {
+  .argent__actions { flex: 1 1 100%; gap: 6px; }
+  .argent__actions .btn { flex: 1 1 auto; gap: 4px; padding: 0 10px; font-size: .875rem; }
+  .argent__actions .btn svg { width: 16px; height: 16px; }
+}
+.carte--mois, .carte--partage { --teinte: var(--centre); }
+.carte--encaisser, .carte--minutes { --teinte: var(--lampe); }
+.carte--abonnements, .carte--paiements { --teinte: var(--texto); }
+.carte--credits { --teinte: var(--site); }
+.carte--depenses { --teinte: var(--texte-3); }
+
+/* Montants : chiffres alignés, jamais coupés */
+.montant { margin-left: auto; font-weight: 650; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.montant small { font-size: .8125rem; font-weight: 500; color: var(--texte-2); }
+.montant--grand { font-size: 1.25rem; font-weight: 700; letter-spacing: -.02em; }
+.annule .montant { color: var(--texte-3); text-decoration: line-through; }
+.annule .ligne__titre { color: var(--texte-2); }
+.badge--alerte { background: var(--urgence-teinte); color: var(--urgence); }
+.petit-titre, .bloc > .petit-titre { font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--texte-3); }
+.vide--action { display: grid; gap: 12px; justify-items: start; }
+
+/* Revenus et dépenses : deux séries côte à côte, le prévu en contour */
+.graphe--mois { margin-top: 6px; }
+.mois__groupe { transition: opacity .15s; }
+.graphe svg.survol .mois__groupe:not(.actif) { opacity: .4; }
+.mois__barre--entrees { fill: var(--serie-entrees); }
+.mois__barre--sorties { fill: var(--serie-sorties); }
+.mois__barre.prevu { fill-opacity: .14; stroke-width: 1.5; stroke-dasharray: 3 2.5; }
+.mois__barre--entrees.prevu { stroke: var(--serie-entrees); }
+.mois__barre--sorties.prevu { stroke: var(--serie-sorties); }
+.graphe .grille-l--douce { stroke-dasharray: 2 3; }
+.graphe .axe--actuel { fill: var(--encre); font-weight: 700; }
+.infobulle__ligne { display: block; }
+.legende { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .8125rem; color: var(--texte-2); }
+.legende li { display: inline-flex; align-items: center; gap: 7px; }
+.legende li::before { content: ""; width: 10px; height: 10px; flex: none; border-radius: 3px; background: var(--serie-entrees); }
+.legende .legende__sorties::before { background: var(--serie-sorties); }
+.legende .legende__prevu::before { background: transparent; border: 1.5px dashed var(--texte-3); }
+
+/* Abonnements */
+.abonnements { display: grid; gap: 10px; }
+@media (min-width: 900px) { .abonnements { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } }
+.abonnement { display: grid; gap: 8px; align-content: start; width: 100%; padding: 16px 18px; border-radius: 18px; border: 1px solid var(--trait); background: var(--carte-2); color: var(--encre); font: inherit; text-align: left; cursor: pointer; transition: border-color .2s, background-color .2s, transform .35s var(--sortie), box-shadow .35s var(--sortie); }
+.abonnement:hover { border-color: var(--trait-fort); background: var(--carte); transform: translateY(-2px); box-shadow: var(--ombre-douce); }
+.abonnement__haut { display: flex; align-items: baseline; gap: 12px; }
+.abonnement__nom { min-width: 0; margin-right: auto; font-size: 1.0625rem; font-weight: 650; overflow-wrap: anywhere; }
+.abonnement__prix { font-size: 1.25rem; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.abonnement__prix small { font-size: .8125rem; font-weight: 500; letter-spacing: 0; color: var(--texte-2); }
+.abonnement__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: .875rem; color: var(--texte-2); }
+.abonnement__suite { font-size: .875rem; line-height: 1.45; color: var(--texte-2); }
+.abonnement__suite b { color: var(--encre); font-weight: 650; font-variant-numeric: tabular-nums; }
+.abonnement--fini { background: transparent; border-style: dashed; }
+.abonnement--fini .abonnement__prix { color: var(--texte-2); }
+
+/* Minutes et profit */
+.minutes { display: grid; gap: 12px; }
+.minute { display: grid; gap: 10px; padding: 16px; border-radius: 16px; border: 1px solid var(--trait); background: var(--carte-2); }
+.jauge--epaisse { display: block; flex: none; height: 10px; }
+.jauge--rouge { background: var(--urgence-teinte); }
+.jauge--rouge i { background: var(--urgence); }
+.chiffres { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0; }
+.chiffres div { display: grid; gap: 1px; min-width: 0; }
+.chiffres dt { font-size: .75rem; font-weight: 650; letter-spacing: .04em; text-transform: uppercase; color: var(--texte-3); }
+.chiffres dd { margin: 0; font-size: 1.125rem; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.chiffres dd small { display: block; font-size: .8125rem; font-weight: 600; letter-spacing: 0; color: var(--texte-2); }
+.info--action { gap: 10px; background: var(--site-teinte); color: var(--site-fonce); }
+.info--action .confirmer { justify-content: flex-start; }
+.info--action > .btn, .info--action > .note { justify-self: start; }
+.info--action .note { color: inherit; }
+
+/* Crédits : le nom du service ouvre son site ; les rangées de l'argent s'alignent en haut */
+#vue-argent .rangee, #panneau-corps .rangee { align-items: start; }
+#vue-argent .rangee__icone, #panneau-corps .rangee__icone { margin-top: 2px; }
+.lien-service { display: inline-flex; align-items: center; gap: 5px; color: inherit; text-decoration: none; }
+.lien-service svg { width: 14px; height: 14px; color: var(--texte-3); }
+.lien-service:hover { text-decoration: underline; text-underline-offset: 3px; }
+.lien-service:hover svg { color: var(--encre); }
+/* Les crédits : les boutons passent sous le texte, qui garde toute la largeur */
+#argent-credits .rangee { grid-template-columns: auto minmax(0, 1fr); }
+#argent-credits .rangee__action { grid-column: 2; justify-content: flex-start; padding-top: 8px; }
+#argent-credits .rangee > span:empty, #argent-credits .rangee__action:empty { display: none; }
+.rangee__meta .credit__chiffre { display: block; margin: 1px 0 2px; font-size: 1.125rem; font-weight: 700; letter-spacing: -.02em; color: var(--encre); font-variant-numeric: tabular-nums; }
+
+/* Dépenses : toute la ligne s'ouvre */
+.liste > li > .depense { display: grid; gap: 4px; width: calc(100% + 24px); margin: -8px -12px; padding: 8px 12px; border: 0; border-radius: 12px; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: background-color .15s; }
+.depense:hover { background: var(--survol); }
+
+/* Champs du panneau : montants, listes, dates, cases */
+.champ__etiquette { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 4px; }
+.champ__etiquette label { font-size: .9375rem; font-weight: 600; }
+.saisie-montant { position: relative; }
+.saisie-montant::after { content: attr(data-devise); position: absolute; top: 50%; right: 14px; transform: translateY(-50%); color: var(--texte-2); font-weight: 600; pointer-events: none; }
+.champ .saisie-montant input { padding-right: 60px; font-variant-numeric: tabular-nums; }
+.selecteur { position: relative; }
+.selecteur::after { content: ""; position: absolute; top: 50%; right: 17px; width: 8px; height: 8px; margin-top: -6px; border-right: 2px solid var(--texte-2); border-bottom: 2px solid var(--texte-2); transform: rotate(45deg); pointer-events: none; }
+.champ select { width: 100%; min-height: 48px; padding: 11px 44px 11px 14px; border: 1.5px solid var(--contour); border-radius: var(--r-champ); background: var(--carte); color: var(--encre); font-size: 1rem; line-height: 1.4; -webkit-appearance: none; appearance: none; cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+.champ select:hover { border-color: var(--texte-2); }
+.champ select:focus { outline: none; border-color: var(--encre); box-shadow: 0 0 0 2px var(--encre); }
+.champ input[type=date] { display: flex; align-items: center; min-width: 0; -webkit-appearance: none; appearance: none; text-align: left; }
+.champ input[type=date]::-webkit-date-and-time-value { margin: 0; text-align: left; }
+.champ input[type=date]::-webkit-calendar-picker-indicator { opacity: .65; cursor: pointer; }
+.cases { display: grid; gap: 8px; }
+.cases legend { padding: 0; margin-bottom: 8px; font-size: .9375rem; font-weight: 600; }
+.case { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--trait); background: var(--carte-2); cursor: pointer; transition: border-color .15s, background-color .15s; }
+.case:hover { border-color: var(--trait-fort); }
+.case:has(input:checked) { border-color: var(--centre); background: var(--centre-teinte); }
+.case input { flex: none; width: 20px; height: 20px; margin: 0; accent-color: var(--centre); cursor: pointer; }
+.case > span { display: grid; gap: 1px; min-width: 0; }
+.case b { font-weight: 650; overflow-wrap: anywhere; }
+.case small { font-size: .8125rem; color: var(--texte-2); font-variant-numeric: tabular-nums; }
+
+/* Panneau d'un abonnement : l'aperçu, l'état, les factures */
+.apercu { gap: 8px; }
+.apercu ul { display: grid; gap: 4px; }
+.apercu li { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 12px; }
+.apercu li b { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.apercu small { font-size: .8125rem; }
+.apercu__note { font-size: .8125rem; }
+.panneau__intertitre, .bloc > .panneau__intertitre { padding-top: 22px; border-top: 1px solid var(--trait); font-size: 1.125rem; font-weight: 700; letter-spacing: -.015em; }
+.faits { display: grid; gap: 6px; }
+.faits li { position: relative; padding-left: 16px; font-size: .9375rem; line-height: 1.45; color: var(--texte-2); }
+.faits li::before { content: ""; position: absolute; left: 2px; top: .6em; width: 6px; height: 6px; border-radius: 50%; background: var(--trait-fort); }
+.faits li b { color: var(--encre); font-weight: 650; font-variant-numeric: tabular-nums; }
+.faits .faits__alerte { color: var(--urgence); font-weight: 600; }
+.faits .faits__alerte::before { background: var(--urgence); }
+.faits .faits__note { margin-top: 4px; padding: 10px 12px; border-radius: 12px; background: var(--carte-2); color: var(--encre); white-space: pre-wrap; overflow-wrap: anywhere; }
+.faits .faits__note::before { display: none; }
+.factures { display: grid; gap: 10px; }
+.facture { display: grid; gap: 10px; padding: 14px 16px; border-radius: 16px; border: 1px solid var(--trait); background: var(--carte); }
+.facture--a_venir { border-style: dashed; background: transparent; }
+.facture--due { box-shadow: inset 3px 0 0 var(--site); }
+.facture--en_retard { box-shadow: inset 3px 0 0 var(--urgence); }
+.facture__haut { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.facture__haut > b { font-weight: 700; }
+.facture__date { font-size: .875rem; color: var(--texte-2); font-variant-numeric: tabular-nums; }
+.facture__haut .montant { font-size: 1.0625rem; font-weight: 700; }
+.facture--remboursee .facture__haut .montant { color: var(--texte-3); text-decoration: line-through; }
+.facture__lignes { display: grid; gap: 4px; font-size: .875rem; color: var(--texte-2); }
+.facture__lignes li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; }
+.facture__quoi { min-width: 0; overflow-wrap: anywhere; }
+.facture__combien { margin-left: auto; color: var(--encre); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.facture .actions { padding-top: 0; }
+.lien--petit { min-height: 28px; padding: 0 8px; margin: -4px -8px; font-size: .8125rem; }
+.facture__lignes .confirmer__question { font-size: .8125rem; }
+
+/* Quatre onglets : « Tableau de bord » devient « Tableau » quand la place manque */
+@media (max-width: 1099px) { .onglet__suite { display: none; } }
+@media (min-width: 720px) and (max-width: 939px) { .direct span { display: none; } .direct { padding: 0 8px; } }
+@media (max-width: 719px) { .onglets button { min-width: 80px; } }
+@media (max-width: 379px) { .onglets button { min-width: 70px; padding: 6px 6px; } }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }

@@ -8,6 +8,7 @@ import { clesPossibles, biometrieDispo, preparer, creer, messageCle } from './cl
 import { blocInstaller, quandInstallChange } from './installer.js';
 import { cleIci, retenirCleIci, oublierCleIci } from './connexion.js';
 import { prenom } from './tableau.js';
+import { detailJoli } from './argent.js';
 import { champ, identifiantCache, champMotDePasse, champCode, occuper, erreurZone } from './ui.js';
 
 const IDENTIFIANT_RE = /^[a-z][a-z0-9._-]{1,29}$/;
@@ -53,7 +54,7 @@ function construire() {
     el('div', { class: 'carte__tete' }, el('h2', { id: `t-${id}` }, titreCarte), ...tete),
     el('div', { class: 'carte__corps', id: `compte-${id}` }));
   const filtres = el('fieldset', { class: 'choix choix--petit' }, el('legend', { class: 'sr' }, 'Montrer'),
-    el('div', { class: 'choix__liste' }, [['tout', 'Tout'], ['connexions', 'Connexions'], ['clients', 'Clients'], ['comptes', 'Comptes']].map(([v, t]) =>
+    el('div', { class: 'choix__liste' }, [['tout', 'Tout'], ['connexions', 'Connexions'], ['clients', 'Clients'], ['argent', 'Argent'], ['comptes', 'Comptes']].map(([v, t]) =>
       el('label', null, el('input', { type: 'radio', name: 'filtre-journal', value: v, checked: E.filtreJournal === v,
         onchange: () => { E.filtreJournal = v; rendreJournal(); } }), el('span', null, t)))));
   vider($('#vue-compte'),
@@ -379,7 +380,23 @@ const ACTIONS = {
   'depannage.refuse': ['Dépannage refusé', 'comptes', true],
   'client.modifie': ['Client modifié', 'clients'],
   'client.ajoute': ['Client ajouté', 'clients'],
-  'client.mot_de_passe': ['Nouveau mot de passe pour un client', 'clients']
+  'client.mot_de_passe': ['Nouveau mot de passe pour un client', 'clients'],
+  'argent.abonnement.ajoute': ['Abonnement ajouté', 'argent'],
+  'argent.abonnement.modifie': ['Abonnement modifié', 'argent'],
+  'argent.abonnement.termine': ['Abonnement terminé', 'argent'],
+  'argent.abonnement.repris': ['Abonnement repris', 'argent'],
+  'argent.abonnement.rembourse': ['Remboursé avec la garantie', 'argent'],
+  'argent.abonnement.supprime': ['Abonnement supprimé', 'argent'],
+  'argent.ajout.ajoute': ['Ligne ajoutée à une facture', 'argent'],
+  'argent.ajout.retire': ['Ligne retirée d’une facture', 'argent'],
+  'argent.paiement.ajoute': ['Paiement noté', 'argent'],
+  'argent.paiement.annule': ['Paiement annulé', 'argent'],
+  'argent.depense.ajoutee': ['Dépense ajoutée', 'argent'],
+  'argent.depense.modifiee': ['Dépense modifiée', 'argent'],
+  'argent.depense.retiree': ['Dépense retirée', 'argent'],
+  'argent.virement.ajoute': ['Virement noté', 'argent'],
+  'argent.virement.annule': ['Virement annulé', 'argent'],
+  'argent.solde.note': ['Solde de crédit noté', 'argent']
 };
 
 function rendreJournal() {
@@ -405,7 +422,8 @@ function rendreJournal() {
     const qui = noms.get(l.qui) || l.qui;
     const cible = l.action && l.action.startsWith('client.') ? clients.get(l.cible) || l.cible
       : (l.cible && l.cible !== l.qui ? noms.get(l.cible) || l.cible : '');
-    const meta = [qui && qui !== '?' ? qui : '', l.detail, l.appareil && !String(l.detail || '').includes(l.appareil) ? l.appareil : '', l.ip ? `réseau ${l.ip}` : ''].filter(Boolean).join(' · ');
+    const detail = String(l.action || '').startsWith('argent.') ? detailJoli(l.detail) : l.detail;
+    const meta = [qui && qui !== '?' ? qui : '', detail, l.appareil && !String(l.detail || '').includes(l.appareil) ? l.appareil : '', l.ip ? `réseau ${l.ip}` : ''].filter(Boolean).join(' · ');
     items.push(el('li', { class: rate ? 'rate' : null },
       el('time', { datetime: l.quand }, d ? heure(d) : ''),
       el('span', { class: 'journal__quoi' },
@@ -416,6 +434,6 @@ function rendreJournal() {
   if (!ui.plus && E.journal.length >= 200) {
     blocs.push(el('button', { class: 'btn btn--contour btn--petit debut', type: 'button', onclick: () => { ui.plus = true; chargerJournal(); } }, 'Voir plus ancien'));
   }
-  blocs.push(el('p', { class: 'note' }, 'Chaque connexion et chaque changement (clients, comptes) est écrit ici avec l’appareil et le réseau. Les 3 000 dernières lignes sont gardées.'));
+  blocs.push(el('p', { class: 'note' }, 'Chaque connexion et chaque changement (clients, argent, comptes) est écrit ici avec l’appareil et le réseau. Les 3 000 dernières lignes sont gardées.'));
   vider(boite, blocs);
 }

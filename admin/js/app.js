@@ -10,6 +10,7 @@ import { chargerTableau, chargerPings, ping, chargerGithub, chargerOffre, rendre
 import { chargerClients, rendreClients, rendrePortail, ouvrirNouveau } from './clients.js';
 import { fermerPanneau } from './panneau.js';
 import { chargerCompte, chargerJournal, rendreCompte, viderCompte } from './compte.js';
+import { chargerArgent, rendreArgent, viderArgent } from './argent.js';
 import { preparerConnexion, demarrerConnexion } from './connexion.js';
 import { installer, quandInstallChange } from './installer.js';
 
@@ -27,6 +28,8 @@ function entrer() {
   rendreTout();
   chargerTout();
   planifier();
+  // L'argent se lit un peu après l'entrée : le tableau de bord peut alors signaler une facture en retard ou un crédit bas
+  E.minuteries.push(setTimeout(() => { if (sessionActuelle() && !E.argent) chargerArgent(); }, 1500));
   majBandeauInstaller();
   document.title = TITRE;
 }
@@ -50,7 +53,7 @@ function verrouiller(message = '', { serveur = true, raison = '' } = {}) {
   cacheDepuis = 0;
   ecrire('sessionStorage', CACHE_DEPUIS, null);
   document.title = TITRE;
-  demarrerConnexion({ message: perdu ? `${message} Les changements du client ouvert n’étaient pas enregistrés.`.trim() : message });
+  demarrerConnexion({ message: perdu ? `${message} Les changements en cours n’étaient pas enregistrés.`.trim() : message });
 }
 const verrouAuto = () => verrouiller('L’admin s’est verrouillé après 15 minutes en arrière-plan.', { raison: 'verrou' });
 
@@ -59,6 +62,7 @@ function remettreAZero() {
     clientsLus: false, recherche: '', neufs: new Map(), nonVus: 0 });
   $('#recherche').value = '';
   viderCompte();
+  viderArgent();
 }
 
 function verifierExpiration() {
@@ -67,11 +71,12 @@ function verifierExpiration() {
 }
 
 // ─── Chargements et minuteries ─────────────────────────────────────────────
-function rendreTout() { rendreTableau(); rendreSite(); rendreOffre(); rendreClients(); rendrePortail(); rendrePouls(); rendreCompte(); }
+function rendreTout() { rendreTableau(); rendreSite(); rendreOffre(); rendreClients(); rendrePortail(); rendrePouls(); rendreArgent(); rendreCompte(); }
 
 function chargerTout(frais = false) {
   const travaux = [chargerTableau(frais), chargerClients(), ping(), chargerGithub(frais), chargerOffre()];
   if (frais && E.vue === 'compte') travaux.push(chargerCompte(), chargerJournal());   // sinon : en ouvrant l'onglet
+  if (E.vue === 'argent' || E.argent) travaux.push(chargerArgent({ frais }));
   return Promise.allSettled(travaux);
 }
 
@@ -88,6 +93,7 @@ function planifier() {
   boucle(() => chargerOffre(), DELAIS.offre);
   boucle(() => { rendreBonjour(); rendreDirect(); rendreAudits(); verifierExpiration(); verifierMaj(); }, DELAIS.horloge);
   boucle(() => { if (E.vue === 'compte') { chargerCompte(); chargerJournal(); } }, DELAIS.compte);
+  boucle(() => { if (E.vue === 'argent') chargerArgent({ auto: true }); }, DELAIS.argent || 120e3);   // jamais pendant qu'on écrit
 }
 function arreter() { E.minuteries.forEach(clearInterval); E.minuteries = []; }
 
@@ -101,6 +107,7 @@ async function actualiser() {
 
 quandVue('tableau', () => rendrePouls());
 quandVue('compte', () => { rendreCompte(); chargerCompte(); chargerJournal(); });
+quandVue('argent', () => { rendreArgent(); if (!E.argent || Date.now() - E.argentLu > 60e3) chargerArgent(); });
 
 // ─── Arrière-plan : verrou après 15 minutes ────────────────────────────────
 function revenir() {
@@ -167,7 +174,7 @@ document.addEventListener('keydown', e => {
   else if (k === 'r' || k === 'R') { e.preventDefault(); actualiser(); }
   else if (k === 't' || k === 'T') basculerTheme();
   else if (k === 'l' || k === 'L') { e.preventDefault(); verrouiller(); }
-  else if (k === '1' || k === '2' || k === '3') montrer(VUES[Number(k) - 1]);
+  else if (['1', '2', '3', '4'].includes(k)) montrer(VUES[Number(k) - 1]);
   else if (k === '?') ouvrirAide();
 });
 
@@ -214,7 +221,7 @@ function verifierMaj() {
 }
 function montrerMaj() { $('#maj').hidden = false; }
 $('#maj-oui').addEventListener('click', () => {
-  if (E.panneau && E.panneau.modifie && E.panneau.modifie()) return toast('Enregistre d’abord le client ouvert.', true);
+  if (E.panneau && E.panneau.modifie && E.panneau.modifie()) return toast('Enregistre d’abord ce qui est ouvert.', true);
   const attente = enregistrement && enregistrement.waiting;
   if (!attente) return location.reload();
   veutRecharger = true;
