@@ -1,6 +1,6 @@
 // Tableau de bord : appels de l'agent répondeur, demandes, audits, serveur, site, offre.
 import { $, $$, el, sv, icone, vider, nombre, pluriel, insecable, heure, jourLong, majuscule, date, relatif,
-  duree, compteARebours, lienTel, lienCourriel, urlSure, toast, lire, ecrire, heureLocale, FUSEAU } from './outils.js';
+  duree, dureeHM, compteARebours, lienTel, lienCourriel, urlSure, toast, lire, ecrire, heureLocale, FUSEAU } from './outils.js';
 import { E, BACKEND, DEPOT, SITE, TITRE } from './etat.js';
 import { api, sessionActuelle } from './api.js';
 import { htmlInerte } from './confiance.js';
@@ -196,6 +196,24 @@ function alertesArgent(alerteAppels) {
   return liste;
 }
 
+// L'équipe : les tâches qui attendent la personne, et son chrono s'il tourne
+function morceauxEquipe(b) {
+  const q = E.equipe;
+  if (!q || !q.taches) return [];
+  const moi = q.moi;
+  const miennes = q.taches.filter(t => (t.statut === 'a_faire' || t.statut === 'en_cours') && (t.pour === moi || t.pour === 'tous'));
+  const m = [];
+  if (miennes.length) {
+    const urgentes = miennes.filter(t => t.priorite === 'urgente').length;
+    m.push(b(pluriel(miennes.length, 'tâche', 'tâches')), ' pour toi');
+    if (urgentes) m.push(', dont ', el('b', { class: 'attention' }, pluriel(urgentes, 'urgente', 'urgentes')));
+    m.push(' (', el('button', { class: 'lien-texte', type: 'button', onclick: () => montrer('equipe') }, 'voir l’équipe'), '). ');
+  }
+  const p = ((q.heures && q.heures.personnes) || []).find(x => x.identifiant === moi);
+  if (p && p.en_cours) m.push('Ton chrono tourne depuis ', b(dureeHM((Date.now() - Date.parse(p.en_cours.debut)) / 60000)), '. ');
+  return m;
+}
+
 export function rendreBonjour() {
   const s = sessionActuelle();
   if (!s) return;
@@ -217,6 +235,7 @@ export function rendreBonjour() {
         el('button', { class: 'lien-texte', type: 'button', onclick: () => montrer('argent') }, 'voir l’argent'), '). ');
     }
   }
+  morceaux.push(...morceauxEquipe(b));
   const faits = [];
   if (appels && appels.disponible) faits.push([b(pluriel(appels.aujourdhui, 'appel', 'appels')), ' aujourd’hui']);
   if (demandes && demandes.disponible) faits.push([b(pluriel(demandes.semaine, 'demande', 'demandes')), ' du chatbot cette semaine']);

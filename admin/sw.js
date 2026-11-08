@@ -3,12 +3,12 @@
 // serveur (clients, appels, comptes), ni GitHub, ni la page d'accueil du site.
 // Réseau d'abord (toujours la dernière version en ligne), copie gardée si le réseau manque.
 // Changer VERSION à chaque mise en ligne de l'admin : l'app propose alors « Mettre à jour ».
-const VERSION = 'admin-2026-11-08-2';
+const VERSION = 'admin-2026-11-08-3';
 const BASE = new URL('./', self.location.href).pathname;           // /admin/
 const COQUILLE = [
   './', 'app.css', 'theme.js', 'manifest.webmanifest',
   'js/app.js', 'js/api.js', 'js/appareil.js', 'js/argent.js', 'js/cles.js', 'js/clients.js', 'js/compte.js', 'js/confiance.js',
-  'js/connexion.js', 'js/etat.js', 'js/installer.js', 'js/navigation.js', 'js/outils.js', 'js/panneau.js',
+  'js/connexion.js', 'js/equipe.js', 'js/etat.js', 'js/formes.js', 'js/installer.js', 'js/navigation.js', 'js/outils.js', 'js/panneau.js',
   'js/qr.js', 'js/tableau.js', 'js/ui.js', 'js/vendor/qrcode.mjs',
   'icones/icone-192.png', 'icones/apple-touch-icon.png',
   '../assets/fonts/hanken-grotesk.woff2', '../assets/logo/uio-icone-clair.png', '../assets/logo/uio-icone-sombre.png',

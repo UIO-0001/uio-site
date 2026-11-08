@@ -22,11 +22,13 @@ export function fermerPanneau(force = false) {
   if (!etat) return;
   if (!force && etat.modifie()) return demanderAbandon(etat);
   E.panneau = null;
+  if (etat.fermer) etat.fermer();
   const p = $('#panneau'), v = $('#voile');
   p.classList.remove('ouvert'); v.classList.remove('ouvert');
   $('#appli').inert = false;
   document.body.classList.remove('avec-panneau');
-  setTimeout(() => { if (!E.panneau) { p.hidden = true; v.hidden = true; } }, 450);
+  // Une fois sorti de l'écran, le panneau se vide : rien ne reste caché dans la page
+  setTimeout(() => { if (!E.panneau) { p.hidden = true; v.hidden = true; vider($('#panneau-corps')); vider($('#panneau-pied')); } }, 450);
   if (etat.retour && document.contains(etat.retour)) etat.retour.focus();
 }
 

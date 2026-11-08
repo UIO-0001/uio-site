@@ -1,8 +1,8 @@
-// Les quatre vues (Tableau de bord, Clients, Argent, Compte) et la lentille sous l'onglet actif.
+// Les cinq vues (Tableau de bord, Clients, Argent, Équipe, Compte) et la lentille sous l'onglet actif.
 import { $, $$ } from './outils.js';
 import { E } from './etat.js';
 
-export const VUES = ['tableau', 'clients', 'argent', 'compte'];
+export const VUES = ['tableau', 'clients', 'argent', 'equipe', 'compte'];
 const crochets = {};
 export const quandVue = (vue, fn) => { (crochets[vue] = crochets[vue] || []).push(fn); };
 export const vueDuLien = () => { const h = location.hash.slice(1); return VUES.includes(h) ? h : 'tableau'; };
