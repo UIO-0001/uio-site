@@ -90,9 +90,9 @@ html[data-theme="sombre"] .aurore i:nth-child(2) { --c: rgba(58, 134, 255, .13);
 .theme .theme__soleil, html[data-theme="sombre"] .theme .theme__lune { display: none; }
 html[data-theme="sombre"] .theme .theme__soleil { display: block; }
 
-/* Logo : l'icône ronde du site (claire, ou sombre en mode sombre) */
-.icone-uio { display: block; flex: none; width: 40px; height: 40px; border-radius: 50%; background: url("../assets/logo/uio-icone-clair.png") center / 100% 100% no-repeat; box-shadow: 0 0 0 1px rgba(31, 41, 55, .06); }
-html[data-theme="sombre"] .icone-uio { background-image: url("../assets/logo/uio-icone-sombre.png"); box-shadow: 0 0 0 1px rgba(255, 255, 255, .08); }
+/* Logo : l'icône ronde de l'admin, orange en clair comme en sombre (le site garde son logo clair et sombre) */
+.icone-uio { display: block; flex: none; width: 40px; height: 40px; border-radius: 50%; background: url("icones/icone-admin-192.png?v=1") center / 100% 100% no-repeat; box-shadow: 0 0 0 1px rgba(31, 41, 55, .06); }
+html[data-theme="sombre"] .icone-uio { box-shadow: 0 0 0 1px rgba(255, 255, 255, .08); }
 .mot { display: grid; gap: 3px; color: var(--encre); }
 .mot svg { width: 44px; height: 24px; }
 .mot small { font-size: .62rem; font-weight: 600; line-height: 1; letter-spacing: .12em; text-transform: uppercase; color: var(--texte-2); }
