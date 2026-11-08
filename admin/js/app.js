@@ -71,7 +71,7 @@ const verrouAuto = () => verrouiller('L’admin s’est verrouillé après 15 mi
 
 function remettreAZero() {
   Object.assign(E, { tableau: null, tableauErreur: '', majTableau: 0, clients: [], fonctionnalites: [], clientsErreur: '',
-    clientsLus: false, recherche: '', neufs: new Map(), nonVus: 0 });
+    clientsLus: false, fiches: null, fichesErreur: '', recherche: '', neufs: new Map(), nonVus: 0 });
   $('#recherche').value = '';
   viderRecherche();                                     // la recherche partout oublie tout, elle aussi
   viderCompte();

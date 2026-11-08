@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Espace client · Agence UIO</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="description" content="L’espace client d’Agence UIO : l’avancement de votre projet, étape par étape.">
+<meta name="description" content="L’espace client d’Agence UIO : votre service, votre forfait et votre rapport du mois.">
 <meta name="theme-color" content="#F4F5F8">
 <script>try{if(localStorage.getItem('uio-theme')==='sombre'){document.documentElement.setAttribute('data-theme','sombre');document.querySelector('meta[name="theme-color"]').setAttribute('content','#0E1420');}}catch(e){}</script>
 <link rel="icon" type="image/svg+xml" href="assets/logo/uio-icone.svg?v=3">
@@ -20,8 +20,12 @@
   sur l'onglet) avec les identifiants gardés en mémoire seulement : ils ne sont écrits nulle
   part, et fermer ou recharger l'onglet déconnecte. Chaque lecture compte dans la limite de
   10 connexions par 10 minutes du serveur : la page reste loin en dessous.
-  Sur l'appareil, on garde seulement une empreinte du projet (pourcentage et empreintes des
-  étapes faites, jamais leur texte) pour dire « depuis votre dernière visite ».
+  Où en est le service (mise en place, en service, terminé ; depuis quand ; son forfait) vient
+  de la fiche du client dans l'admin (« service » dans la réponse de /portal/login). Elle remplace
+  l'ancien avancement en % et ses étapes (2026-11-08) ; sans elle, l'ancien avancement donne le
+  statut (100 % = en service).
+  Sur l'appareil, on garde seulement une empreinte (le statut, et une empreinte de la note et de
+  la démo, jamais leur texte) pour dire « depuis votre dernière visite ».
   Tout texte venu du serveur est inséré avec textContent, jamais innerHTML.
 -->
 <style>
@@ -177,7 +181,7 @@ html[data-theme="sombre"] .icone-uio { background-image: url("assets/logo/uio-ic
 .contenu { max-width: 1120px; margin: 0 auto; padding: 32px max(16px, env(safe-area-inset-right, 0px)) 56px max(16px, env(safe-area-inset-left, 0px)); }
 @media (min-width: 720px) { .nav { padding-top: 12px; padding-inline: max(24px, env(safe-area-inset-left, 0px)) max(24px, env(safe-area-inset-right, 0px)); } .contenu { padding: 56px max(24px, env(safe-area-inset-right, 0px)) 72px max(24px, env(safe-area-inset-left, 0px)); } }
 
-/* Le projet : le nom, une phrase qui dit où on en est, et l'anneau d'avancement */
+/* Le client : son nom, une phrase qui dit où en est son service, et la carte du service */
 .projet { display: grid; gap: 28px; align-items: center; }
 @media (min-width: 860px) { .projet { grid-template-columns: minmax(0, 1fr) 320px; gap: 48px; } }
 .projet__texte { display: grid; gap: 14px; justify-items: start; min-width: 0; }
@@ -191,20 +195,23 @@ html[data-theme="sombre"] .icone-uio { background-image: url("assets/logo/uio-ic
 .depuis__point { width: 8px; height: 8px; margin-top: .5em; flex: none; border-radius: 50%; background: var(--lampe-trait); }
 @keyframes monte { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
-.carte-anneau { display: grid; justify-items: center; gap: 14px; padding: 28px 24px 24px; border-radius: 30px; background: linear-gradient(180deg, var(--verre-haut), var(--verre-bas)); -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%); box-shadow: var(--verre-rebord), var(--ombre-flotte); }
-.anneau { position: relative; width: clamp(180px, 52vw, 232px); max-width: 100%; aspect-ratio: 1; }
-.anneau > svg { display: block; width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
-.anneau__piste { fill: none; stroke: var(--trait); stroke-width: 14; }
-.anneau__plein { fill: none; stroke: url(#g-anneau); stroke-width: 14; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; opacity: 0; transition: stroke-dashoffset 1.2s var(--sortie), opacity .3s; }
-.anneau.fini .anneau__plein { stroke: var(--texto); }
-.anneau__centre { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 8px; text-align: center; }
-.anneau__pct { font-size: clamp(3rem, 2.5rem + 2vw, 3.75rem); line-height: .9; font-weight: 700; letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
-.anneau__pct small { font-size: .42em; font-weight: 650; letter-spacing: -.01em; }
-.anneau__sous { display: inline-flex; align-items: center; gap: 6px; font-size: .9375rem; font-weight: 600; color: var(--texte-2); }
-.anneau__sous svg { width: 16px; height: 16px; }
-.anneau.fini .anneau__sous { color: var(--texto-fonce); }
-.anneau__etapes { font-size: .9375rem; font-weight: 600; color: var(--texte-2); text-align: center; }
-/* La petite fête quand le projet est terminé */
+.carte-service { display: grid; justify-items: center; gap: 6px; padding: 30px 24px 28px; border-radius: 30px; background: linear-gradient(180deg, var(--verre-haut), var(--verre-bas)); -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%); box-shadow: var(--verre-rebord), var(--ombre-flotte); text-align: center; }
+.service__embleme { --c: var(--texto); --t: var(--texto-teinte); position: relative; display: grid; place-items: center; width: 112px; height: 112px; margin-bottom: 14px; border-radius: 50%; background: var(--t); }
+.service__embleme::before { content: ""; position: absolute; inset: 16px; border-radius: 50%; background: var(--c); box-shadow: 0 12px 26px -12px var(--c); }
+.service__embleme::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--c); opacity: 0; animation: onde 3.4s var(--sortie) infinite; }
+@keyframes onde { 0% { opacity: .5; transform: scale(.8); } 100% { opacity: 0; transform: scale(1.24); } }
+.service__embleme > svg { position: relative; width: 36px; height: 36px; color: #FFFFFF; }
+html[data-theme="sombre"] .service__embleme > svg { color: #0E1420; }
+.service--mise_en_place .service__embleme { --c: var(--lampe); --t: var(--voix-teinte); }
+.service--mise_en_place .service__embleme > svg { color: #1F2937; }
+.service--termine .service__embleme { --c: var(--texte-3); --t: var(--carte-2); }
+.service--termine .service__embleme::after { display: none; }
+.service__sur { font-size: .875rem; font-weight: 650; letter-spacing: .02em; color: var(--texte-2); }
+.service__etat { font-size: clamp(1.875rem, 1.6rem + 1vw, 2.25rem); line-height: 1.08; font-weight: 700; letter-spacing: -.035em; }
+.service__depuis { font-size: .9375rem; font-weight: 600; color: var(--texte-2); text-wrap: balance; }
+.service--en_service .service__depuis { color: var(--texto-fonce); }
+.service__forfait { display: inline-flex; align-items: center; min-height: 30px; margin-top: 10px; padding: 0 14px; border-radius: 999px; background: var(--carte-2); color: var(--encre); font-size: .875rem; font-weight: 650; }
+/* La petite fête quand le service se met en marche */
 .fete { position: absolute; inset: 0; pointer-events: none; }
 .fete i { position: absolute; left: 50%; top: 50%; width: 9px; height: 9px; margin: -4.5px; border-radius: 50%; background: var(--c); opacity: 0; animation: fete 1.4s var(--sortie) var(--r) forwards; }
 @keyframes fete { 0% { opacity: 1; transform: rotate(var(--a)) translateY(-60px) scale(.4); } 75% { opacity: 1; } 100% { opacity: 0; transform: rotate(var(--a)) translateY(calc(-1 * var(--d))) scale(1); } }
@@ -212,19 +219,13 @@ html[data-theme="sombre"] .icone-uio { background-image: url("assets/logo/uio-ic
 /* ── Les cartes ────────────────────────────────────────────────────────── */
 .grille { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; margin-top: 36px; }
 .grille > * { min-width: 0; }
-.pile { display: contents; }
-.carte--mot { order: -1; }
-@media (min-width: 1000px) {
-  .grille { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 20px; align-items: start; margin-top: 48px; }
-  .pile { display: grid; gap: 20px; }
-  .carte--mot { order: 0; }
-}
+@media (min-width: 760px) { .grille { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; margin-top: 48px; } }
+@media (min-width: 1100px) { .grille { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .carte { position: relative; display: flex; flex-direction: column; gap: 18px; padding: 22px; border-radius: var(--r-carte); background: var(--carte); border: 1px solid var(--trait); }
 @media (min-width: 760px) { .carte { padding: 24px 26px 26px; } }
 .carte__tete { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; min-height: 30px; }
 .carte__tete h2 { display: flex; align-items: center; gap: 10px; margin-right: auto; font-size: 1.125rem; line-height: 1.25; font-weight: 650; letter-spacing: -.015em; }
 .carte__tete h2::before { content: ""; width: 10px; height: 10px; flex: none; border-radius: 50%; background: var(--teinte, var(--texte-3)); }
-.carte--etapes { --teinte: var(--lampe); }
 .carte--mot { --teinte: var(--centre); }
 .carte--demo { --teinte: var(--site); }
 .carte--contact { --teinte: var(--texto); }
@@ -234,31 +235,6 @@ html[data-theme="sombre"] .icone-uio { background-image: url("assets/logo/uio-ic
 .pastille-neuf { display: inline-flex; align-items: center; min-height: 22px; padding: 0 9px; border-radius: 999px; background: var(--voix-teinte); color: var(--voix-fonce); font-size: .75rem; font-weight: 700; letter-spacing: .01em; vertical-align: 1px; animation: neuf 1.2s var(--coule) both; }
 @keyframes neuf { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: none; } }
 .vide { padding: 16px 18px; border-radius: 14px; background: var(--carte-2); color: var(--texte-2); font-size: .9375rem; line-height: 1.45; }
-
-/* Les étapes : une ligne de temps, la prochaine étape bien en vue */
-.etapes { display: grid; }
-.etape { position: relative; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 0 14px; padding-bottom: 20px; border-radius: 14px; }
-.etape:last-child { padding-bottom: 0; }
-.etape::before { content: ""; position: absolute; left: 16px; top: 38px; bottom: 4px; width: 2px; border-radius: 2px; background: var(--trait); }
-.etape:last-child::before { display: none; }
-.etape--faite::before { background: var(--texto); }
-.etape:focus { outline: none; }
-.etape:focus-visible { outline: 2px solid var(--encre); outline-offset: 4px; }
-.etape__point { position: relative; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--carte); box-shadow: inset 0 0 0 2px var(--trait-fort); color: var(--texte-2); font-size: .875rem; font-weight: 700; font-variant-numeric: tabular-nums; }
-.etape__point svg { width: 18px; height: 18px; }
-.etape--faite .etape__point { background: var(--texto); box-shadow: none; color: #FFFFFF; }
-html[data-theme="sombre"] .etape--faite .etape__point { color: #0E1420; }
-.etape--encours .etape__point { background: var(--lampe); box-shadow: 0 6px 16px -6px rgba(255, 138, 61, .8); color: #1F2937; }
-.etape--encours .etape__point::after { content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 2px solid var(--lampe); opacity: 0; animation: appel 2.6s var(--sortie) infinite; }
-@keyframes appel { 0% { opacity: .7; transform: scale(.75); } 100% { opacity: 0; transform: scale(1.3); } }
-.etape__texte { display: grid; gap: 2px; min-width: 0; padding-top: 6px; }
-.etape--encours .etape__texte { margin-top: -4px; padding: 10px 14px 12px; border-radius: 14px; background: var(--voix-teinte); }
-.etape__titre { font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }
-.etape--avenir .etape__titre { color: var(--texte-2); font-weight: 500; }
-.etape__etat { font-size: .875rem; font-weight: 650; color: var(--texto-fonce); }
-.etape--encours .etape__etat { color: var(--voix-fonce); }
-.etape--repli .etape__texte { justify-items: start; padding-top: 3px; }
-.etape--repli .lien { min-height: 30px; margin: 0 -10px; padding-block: 4px; white-space: normal; text-align: left; line-height: 1.35; }
 
 /* Le mot de l'équipe : une bulle à côté du logo */
 .mot-equipe { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 14px; align-items: start; }
@@ -379,7 +355,7 @@ html[data-theme="sombre"] .graphe__jour.actif .graphe__barre, html[data-theme="s
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-  .etape--encours .etape__point::after { display: none; }
+  .service__embleme::after { display: none; }
 }
 </style>
 </head>
@@ -389,6 +365,7 @@ html[data-theme="sombre"] .graphe__jour.actif .graphe__barre, html[data-theme="s
   <symbol id="i-lune" viewBox="0 0 20 20"><path d="M16.6 12.3A6.9 6.9 0 0 1 7.7 3.4a6.9 6.9 0 1 0 8.9 8.9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
   <symbol id="i-soleil" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10" cy="10" r="3.5"/><path d="M10 1.9v1.7M10 16.4v1.7M1.9 10h1.7M16.4 10h1.7M4.3 4.3l1.2 1.2M14.5 14.5l1.2 1.2M4.3 15.7l1.2-1.2M14.5 5.5l1.2-1.2"/></g></symbol>
   <symbol id="i-actualiser" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16.2 8.5A6.5 6.5 0 1 0 15 13.6"/><path d="M16.5 3.6v4.9h-4.9"/></g></symbol>
+  <symbol id="i-outil" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-coche" viewBox="0 0 20 20"><path d="M5 10.4l3.3 3.3L15.2 6.6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-oeil" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1.9 10S4.9 4.6 10 4.6s8.1 5.4 8.1 5.4-3 5.4-8.1 5.4S1.9 10 1.9 10z"/><circle cx="10" cy="10" r="2.6"/></g></symbol>
   <symbol id="i-oeil-barre" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1.9 10S4.9 4.6 10 4.6s8.1 5.4 8.1 5.4-3 5.4-8.1 5.4S1.9 10 1.9 10z"/><circle cx="10" cy="10" r="2.6"/><path d="M3.2 3.2l13.6 13.6"/></g></symbol>
@@ -410,7 +387,7 @@ html[data-theme="sombre"] .graphe__jour.actif .graphe__barre, html[data-theme="s
     </div>
     <div>
       <h1>Espace client</h1>
-      <p>Suivez l’avancement de votre projet, étape par étape.</p>
+      <p>Votre service, votre forfait et votre rapport du mois.</p>
     </div>
     <div class="champ">
       <label for="identifiant">Nom d’utilisateur</label>
@@ -452,26 +429,18 @@ html[data-theme="sombre"] .graphe__jour.actif .graphe__barre, html[data-theme="s
   <main class="contenu" id="contenu">
     <section class="projet" aria-labelledby="projet-nom">
       <div class="projet__texte">
-        <p class="projet__bonjour" id="projet-bonjour">Bonjour&nbsp;! Voici où en est votre projet.</p>
+        <p class="projet__bonjour" id="projet-bonjour">Bonjour&nbsp;! Voici où en est votre service.</p>
         <h1 id="projet-nom" tabindex="-1">Votre projet</h1>
         <p class="projet__phrase" id="projet-phrase"></p>
         <p class="depuis" id="depuis" hidden></p>
         <p class="projet__maj" id="projet-maj"></p>
       </div>
-      <div class="carte-anneau">
-        <div class="anneau" id="anneau" role="progressbar" aria-label="Avancement du projet" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-          <svg viewBox="0 0 200 200" aria-hidden="true" focusable="false">
-            <defs><linearGradient id="g-anneau" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EE7322"/><stop offset="1" stop-color="#FFA466"/></linearGradient></defs>
-            <circle class="anneau__piste" cx="100" cy="100" r="86"/>
-            <circle class="anneau__plein" id="anneau-plein" cx="100" cy="100" r="86" pathLength="100"/>
-          </svg>
-          <div class="anneau__centre" aria-hidden="true">
-            <p class="anneau__pct"><span id="anneau-nombre">0</span><small>&nbsp;%</small></p>
-            <p class="anneau__sous" id="anneau-sous">avancement</p>
-          </div>
-          <div class="fete" id="fete" aria-hidden="true"></div>
-        </div>
-        <p class="anneau__etapes" id="anneau-etapes"></p>
+      <div class="carte-service service--en_service" id="service">
+        <div class="service__embleme" aria-hidden="true"><svg id="service-icone"><use href="#i-coche"/></svg><div class="fete" id="fete"></div></div>
+        <p class="service__sur">Votre service</p>
+        <p class="service__etat" id="service-etat">En service</p>
+        <p class="service__depuis" id="service-depuis" hidden></p>
+        <p class="service__forfait" id="service-forfait" hidden></p>
       </div>
     </section>
 
@@ -503,44 +472,37 @@ html[data-theme="sombre"] .graphe__jour.actif .graphe__barre, html[data-theme="s
     </section>
 
     <div class="grille">
-      <article class="carte carte--etapes" aria-labelledby="t-etapes">
-        <div class="carte__tete"><h2 id="t-etapes">Les étapes de votre projet</h2><span class="etat" id="etapes-compte" hidden></span></div>
-        <ol class="etapes" id="etapes"></ol>
+      <article class="carte carte--mot" id="carte-mot" aria-labelledby="t-mot" hidden>
+        <div class="carte__tete"><h2 id="t-mot">Le mot de l’équipe</h2><span class="pastille-neuf" id="mot-neuf" hidden>Nouveau</span></div>
+        <div class="mot-equipe">
+          <span class="icone-uio" aria-hidden="true"></span>
+          <div class="mot-equipe__corps">
+            <p class="mot-equipe__texte" id="mot-texte"></p>
+            <p class="mot-equipe__signature">L’équipe d’Agence UIO</p>
+          </div>
+        </div>
       </article>
 
-      <div class="pile">
-        <article class="carte carte--mot" id="carte-mot" aria-labelledby="t-mot" hidden>
-          <div class="carte__tete"><h2 id="t-mot">Le mot de l’équipe</h2><span class="pastille-neuf" id="mot-neuf" hidden>Nouveau</span></div>
-          <div class="mot-equipe">
-            <span class="icone-uio" aria-hidden="true"></span>
-            <div class="mot-equipe__corps">
-              <p class="mot-equipe__texte" id="mot-texte"></p>
-              <p class="mot-equipe__signature">L’équipe d’Agence UIO</p>
-            </div>
+      <article class="carte carte--demo" id="carte-demo" aria-labelledby="t-demo" hidden>
+        <div class="carte__tete"><h2 id="t-demo">Votre démo</h2><span class="pastille-neuf" id="demo-neuf" hidden>Nouveau</span></div>
+        <div class="fenetre">
+          <div class="fenetre__barre" aria-hidden="true"><i></i><i></i><i></i><span class="fenetre__adresse" id="demo-adresse"></span></div>
+          <div class="fenetre__corps">
+            <p>Voyez votre projet tel qu’il est aujourd’hui. La démo change à mesure qu’on avance.</p>
+            <a class="btn btn--petit" id="demo-lien" href="./" target="_blank" rel="noopener">Ouvrir la démo<svg aria-hidden="true"><use href="#i-sortie"/></svg></a>
           </div>
-        </article>
+        </div>
+      </article>
 
-        <article class="carte carte--demo" id="carte-demo" aria-labelledby="t-demo" hidden>
-          <div class="carte__tete"><h2 id="t-demo">Votre démo</h2><span class="pastille-neuf" id="demo-neuf" hidden>Nouveau</span></div>
-          <div class="fenetre">
-            <div class="fenetre__barre" aria-hidden="true"><i></i><i></i><i></i><span class="fenetre__adresse" id="demo-adresse"></span></div>
-            <div class="fenetre__corps">
-              <p>Voyez votre projet tel qu’il est aujourd’hui. La démo change à mesure qu’on avance.</p>
-              <a class="btn btn--petit" id="demo-lien" href="./" target="_blank" rel="noopener">Ouvrir la démo<svg aria-hidden="true"><use href="#i-sortie"/></svg></a>
-            </div>
-          </div>
-        </article>
-
-        <article class="carte carte--contact" aria-labelledby="t-contact">
-          <div class="carte__tete"><h2 id="t-contact">Une question&nbsp;?</h2></div>
-          <p class="carte__texte">On vous répond le jour même (ou dès le lendemain matin pour les demandes envoyées en soirée).</p>
-          <ul class="contact">
-            <li><a class="contact__ligne" href="tel:+18738002999"><span class="contact__icone" aria-hidden="true"><svg><use href="#i-tel"/></svg></span><span class="contact__texte"><b>Appeler</b><span class="tel">873 800-2999</span></span></a></li>
-            <li><a class="contact__ligne" id="contact-courriel" href="mailto:info@agenceuio.ca"><span class="contact__icone" aria-hidden="true"><svg><use href="#i-courriel"/></svg></span><span class="contact__texte"><b>Écrire un courriel</b><span>info@agenceuio.ca</span></span></a></li>
-            <li id="contact-chatbot" hidden><button class="contact__ligne" type="button" id="ouvrir-chatbot"><span class="contact__icone" aria-hidden="true"><svg><use href="#i-bulle"/></svg></span><span class="contact__texte"><b>Poser une question à l’assistant</b><span>Il répond tout de suite, jour et nuit.</span></span></button></li>
-          </ul>
-        </article>
-      </div>
+      <article class="carte carte--contact" aria-labelledby="t-contact">
+        <div class="carte__tete"><h2 id="t-contact">Une question&nbsp;?</h2></div>
+        <p class="carte__texte">On vous répond le jour même (ou dès le lendemain matin pour les demandes envoyées en soirée).</p>
+        <ul class="contact">
+          <li><a class="contact__ligne" href="tel:+18738002999"><span class="contact__icone" aria-hidden="true"><svg><use href="#i-tel"/></svg></span><span class="contact__texte"><b>Appeler</b><span class="tel">873 800-2999</span></span></a></li>
+          <li><a class="contact__ligne" id="contact-courriel" href="mailto:info@agenceuio.ca"><span class="contact__icone" aria-hidden="true"><svg><use href="#i-courriel"/></svg></span><span class="contact__texte"><b>Écrire un courriel</b><span>info@agenceuio.ca</span></span></a></li>
+          <li id="contact-chatbot" hidden><button class="contact__ligne" type="button" id="ouvrir-chatbot"><span class="contact__icone" aria-hidden="true"><svg><use href="#i-bulle"/></svg></span><span class="contact__texte"><b>Poser une question à l’assistant</b><span>Il répond tout de suite, jour et nuit.</span></span></button></li>
+        </ul>
+      </article>
     </div>
   </main>
 
@@ -571,8 +533,8 @@ const MOUVEMENT_REDUIT = window.matchMedia ? matchMedia('(prefers-reduced-motion
 // Les identifiants restent dans cette variable, en mémoire : jamais dans le stockage du navigateur.
 const E = {
   nom: '', mdp: '', projet: null, maj: 0, etat: 'ok', lecture: false, minuterie: 0, horloge: 0,
-  neufs: new Set(), noteNeuve: false, demoNeuve: false, nonVus: 0, titre: TITRE,
-  widget: null, idWidget: '', anim: 0, ouvertFaites: false, signatureEtapes: '',
+  noteNeuve: false, demoNeuve: false, nonVus: 0, titre: TITRE,
+  widget: null, idWidget: '',
   // Le rapport du mois : jeton de 12 h donné par /portal/login (jamais le mot de passe), mois choisi ('' = en cours)
   jeton: '', rapport: null, moisRapport: '', lectureRapport: false, signatureGraphe: '', jourActif: -1
 };
@@ -665,45 +627,46 @@ async function lireCompte(nom, mdp, surLent) {
   } finally { clearTimeout(fin); clearTimeout(lent); }
 }
 
-// Le projet tel que le serveur l'envoie, nettoyé une fois pour toutes
+// Le compte tel que le serveur l'envoie, nettoyé une fois pour toutes. « service » vient de la
+// fiche du client dans l'admin ; sans elle (serveur plus ancien), l'ancien avancement donne le
+// statut : 100 % = en service.
+const STATUTS = { mise_en_place: 'Mise en place', en_service: 'En service', termine: 'Terminé' };
+const statutDuPct = pct => (Number(pct) >= 100 ? 'en_service' : 'mise_en_place');
 function normaliser(c) {
-  const liste = Array.isArray(c.checklist) ? c.checklist : [];
+  const s = c.service && typeof c.service === 'object' ? c.service : null;
+  const statut = s && STATUTS[s.statut] ? s.statut : statutDuPct(parseInt(c.progress, 10) || 0);
   return {
     id: String(c.client_id || ''),
-    nom: String(c.project_name || '').trim() || 'Votre projet',
+    nom: String(c.project_name || '').trim() || 'Votre espace',
     demo: urlSure(String(c.demo_url || '').trim()),
-    pct: Math.max(0, Math.min(100, parseInt(c.progress, 10) || 0)),
-    etapes: liste.filter(e => e && String(e.label || '').trim())
-      .map(e => ({ label: String(e.label).trim(), done: e.done === true || e.done === 1 || e.done === 'true' })),
+    statut,
+    depuis: s && /^\d{4}-\d{2}-\d{2}$/.test(String(s.depuis || '')) ? String(s.depuis) : '',
+    forfait: s ? String(s.forfait || '').trim().slice(0, 60) : '',
     note: String(c.notes || '').trim(),
     chatbot: !!(c.features && c.features.chatbot)
   };
 }
-const fini = p => p.pct >= 100;
-const faites = p => p.etapes.filter(e => e.done).length;
+const enService = p => p.statut === 'en_service';
 
 // ─── Ce qui a changé (depuis la dernière visite, ou pendant qu'on regarde) ─
-const empreinte = p => ({ t: Date.now(), p: p.pct, f: p.etapes.filter(e => e.done).map(e => hache(e.label)), n: p.note ? hache(p.note) : '', d: p.demo ? hache(p.demo) : '' });
+const empreinte = p => ({ t: Date.now(), s: p.statut, n: p.note ? hache(p.note) : '', d: p.demo ? hache(p.demo) : '' });
 const cleVisite = id => 'uio-client-visite:' + id;
 function lireVisite(id) { try { return JSON.parse(lire('localStorage', cleVisite(id)) || 'null'); } catch (e) { return null; } }
 const ecrireVisite = p => { if (p.id) ecrire('localStorage', cleVisite(p.id), JSON.stringify(empreinte(p))); };
 function changements(avant, p) {
-  if (!avant || !Array.isArray(avant.f)) return null;
-  const vues = new Set(avant.f);
+  if (!avant || !Number.isFinite(Number(avant.t))) return null;
+  // Une empreinte d'avant la fiche (2026-11-08) a le pourcentage : 100 % = en service
+  const statutAvant = STATUTS[avant.s] ? avant.s : avant.p != null ? statutDuPct(avant.p) : '';
   return {
-    t: avant.t,
-    faites: p.etapes.filter(e => e.done && !vues.has(hache(e.label))),
-    pct: p.pct > (Number(avant.p) || 0) ? p.pct : 0,
+    t: Number(avant.t),
+    enService: enService(p) && !!statutAvant && statutAvant !== 'en_service',
     note: !!p.note && hache(p.note) !== avant.n,
     demo: !!p.demo && hache(p.demo) !== avant.d
   };
 }
 function morceaux(c) {
   const m = [];
-  if (c.faites.length === 1) m.push(`une étape terminée (« ${c.faites[0].label} »)`);
-  else if (c.faites.length > 1) m.push(`${c.faites.length} étapes terminées`);
-  if (c.pct >= 100) m.push('votre projet est terminé');
-  else if (c.pct) m.push(`le projet est passé à ${c.pct} %`);
+  if (c.enService) m.push('votre service est en marche');
   if (c.note) m.push('un nouveau mot de l’équipe');
   if (c.demo) m.push('votre démo est prête');
   return m;
@@ -718,111 +681,61 @@ function quandVisite(t) {
 }
 function retenirNeufs(c) {
   if (!c) return;
-  for (const e of c.faites) E.neufs.add(hache(e.label));
   if (c.note) E.noteNeuve = true;
   if (c.demo) E.demoNeuve = true;
 }
 
 // ─── Affichage ────────────────────────────────────────────────────────────
+// « 5 octobre », ou « 5 octobre 2025 » pour une autre année
+function dateLongue(cle) {
+  const d = new Date(`${cle}T12:00:00Z`), j = Number(cle.slice(8, 10));
+  const mois = d.toLocaleDateString('fr-CA', { timeZone: 'UTC', month: 'long' });
+  const an = cle.slice(0, 4) !== ymd(new Date()).slice(0, 4) ? ` ${cle.slice(0, 4)}` : '';
+  return `${j === 1 ? '1er' : j} ${mois}${an}`;
+}
+
 function rendreEntete(p) {
   const soir = heureLocale(new Date()) >= 18 || heureLocale(new Date()) < 5;
-  ecrireTexte($('#projet-bonjour'), `${soir ? 'Bonsoir' : 'Bonjour'} ! Voici où en est votre projet.`);
+  ecrireTexte($('#projet-bonjour'), `${soir ? 'Bonsoir' : 'Bonjour'} ! Voici où en est votre service.`);
   ecrireTexte($('#projet-nom'), p.nom);
-  const n = p.etapes.length, f = faites(p), suivante = p.etapes.find(e => !e.done);
-  const point = s => /[.!?…]$/.test(s) ? '' : '.';
   let morceauxPhrase;
-  if (fini(p)) morceauxPhrase = ['Votre projet est terminé. ', ['Merci de votre confiance !']];
-  else if (n && f === n) morceauxPhrase = [['Toutes les étapes sont faites.'], ' On s’occupe des derniers détails.'];
-  else if (suivante && f === 0) morceauxPhrase = ['On commence ! Première étape : ', [suivante.label], point(suivante.label)];
-  else if (suivante) morceauxPhrase = [[`${f} étape${f > 1 ? 's' : ''} sur ${n}`], ` ${f > 1 ? 'sont faites' : 'est faite'}. Prochaine étape : `, [suivante.label], point(suivante.label)];
-  else if (p.pct > 0) morceauxPhrase = ['Votre projet est avancé à ', [`${p.pct} %`], '.'];
-  else morceauxPhrase = ['On prépare les étapes de votre projet. Elles apparaîtront ici très bientôt.'];
+  if (p.statut === 'termine') morceauxPhrase = ['Votre service est terminé. ', ['Merci de votre confiance !']];
+  else if (p.statut === 'mise_en_place') morceauxPhrase = ['On met en place votre service. ', ['On vous avertit dès qu’il est en marche.']];
+  else if (p.depuis) morceauxPhrase = ['Votre service ', ['est en marche'], ` depuis le ${dateLongue(p.depuis)}. On s’en occupe pour vous.`];
+  else morceauxPhrase = ['Votre service ', ['est en marche'], '. On s’en occupe pour vous.'];
   vider($('#projet-phrase'), morceauxPhrase.map(m => Array.isArray(m) ? el('b', null, m[0]) : insecable(m)));
   E.titre = `${p.nom} · Espace client`;
   if (!E.nonVus) document.title = E.titre;
 }
 
-function rendreAnneau(p, depuis) {
-  const a = $('#anneau'), plein = $('#anneau-plein'), f = fini(p);
-  a.classList.toggle('fini', f);
-  a.setAttribute('aria-valuenow', String(p.pct));
-  a.setAttribute('aria-valuetext', f ? 'Terminé, 100 %' : `${p.pct} %`);
-  // Deux images plus tard, pour que l'anneau se remplisse sous les yeux
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    plein.style.opacity = p.pct > 0 ? '1' : '0';
-    plein.style.strokeDashoffset = String(100 - p.pct);
-  }));
-  compter($('#anneau-nombre'), depuis, p.pct);
-  const sous = $('#anneau-sous');
-  if (f) vider(sous, icone('i-coche'), 'Terminé'); else vider(sous, 'avancement');
-  const n = p.etapes.length, nf = faites(p);
-  ecrireTexte($('#anneau-etapes'), n ? `${nf} étape${nf > 1 ? 's' : ''} sur ${n} ${nf > 1 ? 'faites' : 'faite'}` : '');
+// La carte du service : son état, depuis quand, son forfait
+function rendreService(p) {
+  const carte = $('#service');
+  carte.className = `carte-service service--${p.statut}`;
+  $('#service-icone').firstElementChild.setAttribute('href', p.statut === 'mise_en_place' ? '#i-outil' : '#i-coche');
+  ecrireTexte($('#service-etat'), STATUTS[p.statut]);
+  const depuis = $('#service-depuis');
+  const texte = p.statut === 'en_service' ? (p.depuis ? `depuis le ${dateLongue(p.depuis)}` : '')
+    : p.statut === 'mise_en_place' ? 'On le prépare pour vous' : '';
+  depuis.hidden = !texte;
+  ecrireTexte(depuis, texte);
+  const forfait = $('#service-forfait');
+  forfait.hidden = !p.forfait || p.statut === 'termine';
+  ecrireTexte(forfait, `Forfait ${p.forfait}`);
 }
-function compter(n, de, a) {
-  cancelAnimationFrame(E.anim);
-  if (reduit() || de === a) { n.textContent = String(a); return; }
-  const t0 = performance.now(), duree = 1100;
-  const pas = t => {
-    const x = Math.min(1, (t - t0) / duree), e = 1 - Math.pow(1 - x, 3);
-    n.textContent = String(Math.round(de + (a - de) * e));
-    if (x < 1) E.anim = requestAnimationFrame(pas);
-  };
-  E.anim = requestAnimationFrame(pas);
-}
+
 function feter() {
   if (reduit()) return;
   const f = $('#fete'), couleurs = ['#FF8A3D', '#3A86FF', '#2DBE73', '#F2A900'];
-  vider(f, Array.from({ length: 20 }, (_, i) => el('i', { style: `--a:${i * 18 + Math.random() * 8}deg;--d:${118 + Math.random() * 46}px;--c:${couleurs[i % 4]};--r:${(Math.random() * .25).toFixed(2)}s` })));
+  vider(f, Array.from({ length: 20 }, (_, i) => {
+    const point = el('i');
+    point.style.setProperty('--a', `${i * 18 + Math.random() * 8}deg`);
+    point.style.setProperty('--d', `${118 + Math.random() * 46}px`);
+    point.style.setProperty('--c', couleurs[i % 4]);
+    point.style.setProperty('--r', `${(Math.random() * .25).toFixed(2)}s`);
+    return point;
+  }));
   setTimeout(() => vider(f), 2000);
-}
-
-function rendreEtapes(p) {
-  const ol = $('#etapes'), n = p.etapes.length, nf = faites(p);
-  const compte = $('#etapes-compte');
-  compte.hidden = !n;
-  ecrireTexte(compte, `${nf} sur ${n}`);
-  compte.className = 'etat' + (n && nf === n ? ' etat--ok' : '');
-  if (!n) { vider(ol, el('li', { class: 'vide' }, 'Les étapes de votre projet apparaîtront ici dès qu’on les aura préparées.')); return; }
-  const courante = fini(p) ? -1 : p.etapes.findIndex(e => !e.done);
-  // Une longue suite d'étapes faites au début se replie : la prochaine étape reste en vue.
-  // On garde toujours la dernière étape faite, et les étapes nouvelles, visibles.
-  let tete = 0;
-  while (tete < n && p.etapes[tete].done) tete++;
-  let pli = tete - 1;
-  const neuve = p.etapes.findIndex((e, i) => i < tete && E.neufs.has(hache(e.label)));
-  if (neuve >= 0) pli = Math.min(pli, neuve);
-  const replier = pli >= 4 && !E.ouvertFaites;
-  const lignes = [];
-  p.etapes.forEach((e, i) => {
-    if (replier && i < pli) {
-      if (i === 0) lignes.push(el('li', { class: 'etape etape--faite etape--repli' },
-        el('span', { class: 'etape__point', 'aria-hidden': 'true' }, icone('i-coche')),
-        el('div', { class: 'etape__texte' }, el('button', { class: 'lien', type: 'button', 'aria-expanded': 'false', onclick: deplier },
-          `Voir les ${pli} premières étapes, déjà faites`))));
-      return;
-    }
-    lignes.push(ligneEtape(e, i, i === courante));
-  });
-  vider(ol, lignes);
-}
-function deplier() {
-  E.ouvertFaites = true;
-  rendreEtapes(E.projet);
-  E.signatureEtapes = JSON.stringify([E.projet.etapes, fini(E.projet), [...E.neufs], E.ouvertFaites]);
-  const premiere = $('#etapes li');
-  if (premiere) { premiere.setAttribute('tabindex', '-1'); premiere.focus(); }
-}
-function ligneEtape(e, i, courante) {
-  const etat = e.done ? 'faite' : courante ? 'encours' : 'avenir';
-  const neuf = e.done && E.neufs.has(hache(e.label));
-  return el('li', { class: `etape etape--${etat}` },
-    el('span', { class: 'etape__point', 'aria-hidden': 'true' }, e.done ? icone('i-coche') : String(i + 1)),
-    el('div', { class: 'etape__texte' },
-      el('p', { class: 'etape__titre' },
-        el('span', { class: 'sr' }, `Étape ${i + 1}, ${e.done ? 'faite' : courante ? 'la prochaine' : 'à venir'} : `),
-        e.label, neuf && ' ', neuf && el('span', { class: 'pastille-neuf' }, 'Nouveau')),
-      e.done ? el('p', { class: 'etape__etat', 'aria-hidden': 'true' }, 'Fait')
-        : courante ? el('p', { class: 'etape__etat', 'aria-hidden': 'true' }, 'Prochaine étape') : null));
 }
 
 function rendreCotes(p) {
@@ -833,7 +746,7 @@ function rendreCotes(p) {
   if (p.demo) { $('#demo-lien').href = p.demo; $('#demo-adresse').textContent = adresse(p.demo); }
   $('#demo-neuf').hidden = !E.demoNeuve;
   $('#contact-chatbot').hidden = !p.chatbot;
-  $('#contact-courriel').href = `mailto:${COURRIEL}?subject=${encodeURIComponent('Mon projet : ' + p.nom)}`;
+  $('#contact-courriel').href = `mailto:${COURRIEL}?subject=${encodeURIComponent('Mon service : ' + p.nom)}`;
 }
 
 function montrerDepuis(c) {
@@ -842,12 +755,9 @@ function montrerDepuis(c) {
   if (m.length) vider(b, el('span', { class: 'depuis__point', 'aria-hidden': 'true' }), el('span', null, `${quandVisite(c.t)} : ${listeFr(m)}.`));
 }
 
-function rendre(p, avant) {
+function rendre(p) {
   rendreEntete(p);
-  rendreAnneau(p, avant ? avant.pct : 0);
-  // La liste n'est refaite que si elle change : le lecteur d'écran ne perd pas sa place.
-  const signature = JSON.stringify([p.etapes, fini(p), [...E.neufs], E.ouvertFaites]);
-  if (signature !== E.signatureEtapes) { rendreEtapes(p); E.signatureEtapes = signature; }
+  rendreService(p);
   rendreCotes(p);
   majHorloge();
 }
@@ -1186,18 +1096,18 @@ async function connecter(ev) {
 function entrer(client) {
   const p = normaliser(client);
   const c = changements(lireVisite(p.id), p);
-  E.neufs = new Set(); E.noteNeuve = E.demoNeuve = false; E.signatureEtapes = ''; E.ouvertFaites = false;
+  E.noteNeuve = E.demoNeuve = false;
   retenirNeufs(c);
   E.projet = p; E.maj = Date.now(); E.etat = 'ok';
   $('#connexion').hidden = true;
   $('#appli').hidden = false;
   window.scrollTo(0, 0);
-  rendre(p, null);
+  rendre(p);
   etat('ok');
   montrerDepuis(c);
   ecrireVisite(p);
   if (p.chatbot) chargerChatbot(p.id);
-  if (c && c.pct >= 100) setTimeout(feter, 700);
+  if (c && c.enService) setTimeout(feter, 700);
   clearInterval(E.horloge);
   E.horloge = setInterval(majHorloge, DELAIS.horloge);
   planifier();
@@ -1218,7 +1128,7 @@ async function actualiser(manuel = false) {
     const c = changements(empreinte(avant), p);
     retenirNeufs(c);
     E.projet = p; E.maj = Date.now();
-    rendre(p, avant);
+    rendre(p);
     etat('ok');
     ecrireVisite(p);
     if (p.chatbot) chargerChatbot(p.id); else retirerChatbot();
@@ -1235,16 +1145,15 @@ async function actualiser(manuel = false) {
 function annoncer(c, avant, p) {
   if (!c) return false;
   let msg = '';
-  if (!fini(avant) && fini(p)) msg = 'Votre projet est terminé !';
-  else if (c.faites.length === 1) msg = `Étape terminée : ${c.faites[0].label}`;
-  else if (c.faites.length > 1) msg = `${c.faites.length} étapes viennent d’être terminées`;
-  else if (c.pct) msg = `Votre projet est maintenant à ${c.pct} %`;
+  const enMarche = !enService(avant) && enService(p);
+  if (enMarche) msg = 'Votre service est maintenant en marche !';
+  else if (avant.statut !== p.statut) msg = `Votre service : ${STATUTS[p.statut].toLowerCase()}`;
   else if (c.note) msg = 'Nouveau mot de l’équipe';
   else if (c.demo) msg = 'Votre démo est prête';
   if (!msg) return false;
   toast(msg);
   if (document.hidden) { E.nonVus++; document.title = `(${E.nonVus}) ${E.titre}`; }
-  if (!fini(avant) && fini(p)) feter();
+  if (enMarche) feter();
   return true;
 }
 function planifier() {
@@ -1253,10 +1162,10 @@ function planifier() {
 }
 
 function quitter(message = '', garderNom = false) {
-  clearTimeout(E.minuterie); clearInterval(E.horloge); cancelAnimationFrame(E.anim);
+  clearTimeout(E.minuterie); clearInterval(E.horloge);
   retirerChatbot();
   E.nom = E.mdp = ''; E.projet = null; E.lecture = false; E.nonVus = 0;
-  E.neufs = new Set(); E.noteNeuve = E.demoNeuve = false; E.ouvertFaites = false; E.signatureEtapes = '';
+  E.noteNeuve = E.demoNeuve = false;
   E.jeton = ''; E.rapport = null; E.moisRapport = ''; E.signatureGraphe = ''; E.jourActif = -1;
   $('#rapport').hidden = true;
   E.titre = TITRE; document.title = TITRE;
@@ -1266,8 +1175,6 @@ function quitter(message = '', garderNom = false) {
   if (!garderNom) $('#identifiant').value = '';
   $('#voir-mdp').setAttribute('aria-pressed', 'false');
   $('#mdp').type = 'password';
-  $('#anneau-plein').style.strokeDashoffset = '100';
-  $('#anneau-plein').style.opacity = '0';
   $('#toast').classList.remove('vu');
   ecrireTexte($('#connexion-erreur'), message);
   window.scrollTo(0, 0);

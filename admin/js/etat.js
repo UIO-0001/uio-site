@@ -11,7 +11,7 @@ export const TITRE = document.title;
 export const E = {
   vue: 'tableau', minuteries: [],
   tableau: null, tableauErreur: '', majTableau: 0, lecture: false,
-  clients: [], fonctionnalites: [], clientsErreur: '', clientsLus: false,
+  clients: [], fonctionnalites: [], clientsErreur: '', clientsLus: false, fiches: null, fichesErreur: '',
   github: null, githubErreur: '', githubLu: 0, offre: null, offreErreur: '',
   pings: [], reveil: 0, panneau: null, recherche: '',
   neufs: new Map(), nonVus: 0, annonce: 0,

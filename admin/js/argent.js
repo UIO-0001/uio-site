@@ -12,6 +12,7 @@ import { fermerPanneau } from './panneau.js';
 import { prenom, rendreBonjour } from './tableau.js';
 import { fr, el, Invalide, nouvelleCle, badge, grand, rangee, confirmations, champTexte, champDate, pilules, liste, bascule,
   formulaireEnLigne, panneauFormulaire as panneauBase } from './formes.js';
+import { ouvrirRappel, relireFiches } from './fiche.js';
 
 const ui = { construit: false, charge: null, confirmer: '', solde: '', plusPaiements: false, plusDepenses: false, virements: false };
 const LIENS = { retell: 'https://dashboard.retellai.com/', twilio: 'https://console.twilio.com/',
@@ -101,6 +102,7 @@ async function ecrire(chemin, corps) {
   rendreArgent();
   rendreBonjour();
   if (E.panneau && E.panneau.rafraichir) E.panneau.rafraichir();
+  if (/^(abonnement|paiement|ajout)/.test(chemin)) relireFiches();   // les factures de sa fiche suivent
   return r;
 }
 
@@ -132,7 +134,7 @@ function attente(boite) {
 
 const ETATS_FACTURE = { payee: ['Payée', ''], credit: ['Couverte par le crédit', ''], remboursee: ['Remboursée', 'neutre'],
   a_venir: ['À venir', 'neutre'], due: ['Due', 'attente'], en_retard: ['En retard', 'alerte'] };
-function badgeFacture(f) {
+export function badgeFacture(f) {
   let [texte, genre] = ETATS_FACTURE[f.etat] || [f.etat, 'neutre'];
   if (f.etat === 'a_venir') texte = f.jours === 1 ? 'Demain' : `Dans ${f.jours} j`;
   if (f.etat === 'due') texte = f.jours === 0 ? 'Due aujourd’hui' : `Due depuis ${-f.jours} j`;
@@ -142,6 +144,18 @@ function badgeFacture(f) {
 
 // Confirmer sur place (aucune fenêtre du navigateur) : « Annuler ce paiement ? Non · Oui »
 const confirmer = confirmations(ui, rendreArgent);
+
+// Le client d'un abonnement (son espace client), pour lui préparer un rappel de paiement
+function clientDe(abId) {
+  const ab = E.argent && E.argent.abonnements.find(x => x.id === abId);
+  return ab && ab.client && (E.clients || []).some(c => String(c.client_id) === String(ab.client)) ? String(ab.client) : '';
+}
+const aRelancer = f => (f.etat === 'due' || f.etat === 'en_retard') && f.reste > 0;
+const boutonRappel = (abId, f, texte = 'Rappel') => {
+  const client = aRelancer(f) ? clientDe(abId) : '';
+  return client ? el('button', { class: 'btn btn--discret btn--petit', type: 'button', title: 'Préparer un rappel de paiement pour ce client',
+    onclick: () => ouvrirRappel(client, abId, f.numero) }, icone('i-courriel'), texte) : null;
+};
 
 // ─── La page ───────────────────────────────────────────────────────────────
 function construire() {
@@ -316,7 +330,8 @@ function rendreEncaisser() {
     el('div', { class: 'ligne' },
       el('span', { class: 'ligne__meta' }, [`Facture ${f.numero} du ${leJour(f.echeance)}`, f.paye > 0 ? `${argent(f.paye)} déjà reçus` : '',
         f.depart ? 'frais de départ compris' : '', f.credit ? `${argent(f.credit)} crédités` : ''].filter(Boolean).join(' · ')),
-      el('button', { class: 'btn btn--contour btn--petit ml-auto', type: 'button', onclick: () => ouvrirPaiement({ abonnement: f.abonnement, facture: f.numero }) }, 'Marquer payée'))))));
+      el('span', { class: 'ligne__boutons ml-auto' }, boutonRappel(f.abonnement, f),
+        el('button', { class: 'btn btn--contour btn--petit', type: 'button', onclick: () => ouvrirPaiement({ abonnement: f.abonnement, facture: f.numero }) }, 'Marquer payée')))))));
   vider(boite, blocs);
 }
 
@@ -786,8 +801,10 @@ function apercuFactures(v, ab, extra) {
     regle.garantie ? el('span', { class: 'apercu__note' }, `Garantie du 1er mois : tout est remboursé, frais compris, si le client arrête avant la facture 2 (${leJour(L[1].d)}).`) : null];
 }
 
-export function ouvrirAbonnement(id = '') {
+// preset : { nom, client } pour un nouvel abonnement ouvert depuis la fiche d'un client
+export function ouvrirAbonnement(id = '', preset = {}) {
   if (!pret()) return;
+  if (typeof id !== 'string') id = '';                    // appelé par un bouton : l'événement
   const a = E.argent;
   const ab = id ? a.abonnements.find(x => x.id === id) : null;
   if (id && !ab) return toast('Cet abonnement n’existe plus.', true);
@@ -796,7 +813,7 @@ export function ouvrirAbonnement(id = '') {
   const v = ab
     ? { nom: ab.nom, client: ab.client, forfait: ab.forfait, mensuel: ab.mensuel, depart: ab.depart, minutes: ab.minutes, blocs: ab.blocs,
       credit: ab.credit_depart, debut: ab.debut, agents: [...ab.agents], notes: ab.notes || '' }
-    : { nom: '', client: '', forfait: 'repondeur', mensuel: F.repondeur.mensuel, depart: F.repondeur.depart, minutes: F.repondeur.minutes, blocs: 0,
+    : { nom: String(preset.nom || ''), client: String(preset.client || ''), forfait: 'repondeur', mensuel: F.repondeur.mensuel, depart: F.repondeur.depart, minutes: F.repondeur.minutes, blocs: 0,
       credit: F.repondeur.credit_depart, debut: auj, agents: [], notes: '' };
   const extra = { application: 'prochaine', deja: false, recu_par: a.moi };
   const initial = JSON.stringify(v);
@@ -972,12 +989,14 @@ function ligneFacture(etat, ab, f) {
       { classe: 'lien lien--petit', redessiner })]));
   const peutPayer = f.reste > 0 && f.etat !== 'remboursee';
   const peutLigne = f.etat !== 'remboursee' && ab.etat !== 'rembourse' && f.jours <= 62;
+  const rappel = boutonRappel(ab.id, f, 'Rappel de paiement');
   let bas = null;
   if (etat.ouvert === `payer:${f.numero}`) bas = formulairePaiementFacture(etat, ab, f);
   else if (etat.ouvert === `ligne:${f.numero}`) bas = formulaireLigne(etat, ab, f);
-  else if (peutPayer || peutLigne) {
+  else if (peutPayer || peutLigne || rappel) {
     bas = el('div', { class: 'actions' },
       peutPayer ? el('button', { class: 'btn btn--contour btn--petit', type: 'button', onclick: () => ouvrirDansFacture(etat, `payer:${f.numero}`) }, 'Marquer payée') : null,
+      rappel,
       peutLigne ? el('button', { class: 'btn btn--discret btn--petit', type: 'button', onclick: () => ouvrirDansFacture(etat, `ligne:${f.numero}`) }, 'Ajouter une ligne') : null);
   }
   return el('li', { class: `facture facture--${f.etat}` },

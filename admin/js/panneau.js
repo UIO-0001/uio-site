@@ -19,8 +19,12 @@ export function ouvrirPanneau(etat, titre, sousTitre, corps, pied) {
   $('#appli').inert = true;
   document.body.classList.add('avec-panneau');
   requestAnimationFrame(() => { p.classList.add('ouvert'); v.classList.add('ouvert'); });
-  // Le focus va au premier champ (ou au titre) : seulement si ce panneau est encore là et ce champ aussi
-  setTimeout(() => { if (E.panneau === etat) mettreFocus(etat); }, 60);
+  // Le focus va au premier champ (ou au titre) : seulement si ce panneau est encore là, et jamais
+  // pendant qu'on écrit déjà dans un de ses champs (une saisie rapide n'atterrit pas dans le mauvais champ)
+  setTimeout(() => {
+    const ici = document.activeElement;
+    if (E.panneau === etat && !(ici && p.contains(ici) && ici.matches('input, textarea, select'))) mettreFocus(etat);
+  }, 60);
 }
 function mettreFocus(etat) {
   const cible = (etat.focus && etat.focus()) || $('#panneau-titre');
