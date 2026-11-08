@@ -7,7 +7,7 @@
 <title>Politique de confidentialité, Agence UIO</title>
 <meta name="description" content="Comment Agence UIO recueille, utilise et protège vos renseignements personnels, conformément à la Loi 25 du Québec.">
 <meta name="theme-color" content="#FFFFFF">
-<script>try{if(localStorage.getItem('uio-theme')==='sombre'){document.documentElement.setAttribute('data-theme','sombre');document.querySelector('meta[name="theme-color"]').setAttribute('content','#0D1524');}}catch(e){}</script>
+<script>try{if(localStorage.getItem('uio-theme')==='sombre'){document.documentElement.setAttribute('data-theme','sombre');document.querySelector('meta[name="theme-color"]').setAttribute('content','#0E1420');}}catch(e){}</script>
 <link rel="canonical" href="https://agenceuio.ca/confidentialite.html">
 <link rel="alternate" hreflang="fr-CA" href="https://agenceuio.ca/confidentialite.html">
 <link rel="alternate" hreflang="en-CA" href="https://agenceuio.ca/en/privacy.html">
@@ -35,11 +35,11 @@
 
 :root {
   --blanc: #FFFFFF;
-  --gris: #F5F5F7;
-  --encre: #0E1A2B;
+  --gris: #F4F5F8;
+  --encre: #1F2937;   /* ardoise du « u » du logo (v13 : les couleurs du logo) */
   --texte-2: #5B6472;
   --trait: #E3E5E8;
-  --selection: #FFE1D3;
+  --selection: #FFE2CC;
   --anneau: var(--encre);
   --police: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
   --m: max(20px, 4vw);
@@ -69,7 +69,7 @@ strong { font-weight: 650; }
 .logo { display: inline-flex; align-items: center; min-height: 48px; color: var(--encre); text-decoration: none; }
 .logo__icone { width: 40px; height: 40px; flex: none; transition: transform .4s var(--sortie); }
 /* Le logo (verre dépoli, choisi le 2026-11-07), coupé en rond : la version claire, et la sombre en mode sombre. Fichiers sources : dossier logo du projet. */
-.icone-uio { display: block; border-radius: 50%; background: url("assets/logo/uio-icone-clair.png") center / 100% 100% no-repeat; box-shadow: 0 0 0 1px rgba(14, 26, 43, .06); }
+.icone-uio { display: block; border-radius: 50%; background: url("assets/logo/uio-icone-clair.png") center / 100% 100% no-repeat; box-shadow: 0 0 0 1px rgba(31, 41, 55, .06); }
 .logo__mot { display: grid; gap: 4px; overflow: hidden; max-width: 0; opacity: 0; transform: translateX(-8px); white-space: nowrap; transition: max-width .5s var(--sortie), opacity .3s, transform .5s var(--sortie), margin .5s var(--sortie); }
 .logo__mot svg { width: 44px; height: 24px; }
 .logo__mot small { font-size: .62rem; font-weight: 600; line-height: 1; letter-spacing: .12em; text-transform: uppercase; color: var(--texte-2); }
@@ -78,7 +78,7 @@ strong { font-weight: 650; }
 @media (max-width: 430px) { .nav .logo__mot { display: none; } }
 
 /* En-tête : blanc translucide, comme sur l'accueil */
-.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; background: rgba(255, 255, 255, .86); -webkit-backdrop-filter: saturate(180%) blur(18px); backdrop-filter: saturate(180%) blur(18px); border-bottom: 1px solid rgba(14, 26, 43, .08); }
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; background: rgba(255, 255, 255, .86); -webkit-backdrop-filter: saturate(180%) blur(18px); backdrop-filter: saturate(180%) blur(18px); border-bottom: 1px solid rgba(31, 41, 55, .08); }
 .nav__rangee { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; }
 .nav__actions { display: flex; align-items: center; gap: 6px; }
 .nav__tel { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 999px; color: var(--encre); font-size: .9375rem; font-weight: 600; text-decoration: none; transition: background-color .2s; }
@@ -140,7 +140,7 @@ h1 { max-width: 16ch; font-size: clamp(2.6rem, 6vw, 4.5rem); line-height: 1.02; 
    Même bouton et mêmes couleurs que l'accueil ; le choix fait sur l'accueil est repris ici. */
 .theme { display: inline-grid; place-items: center; width: 44px; height: 44px; flex: none; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--encre); cursor: pointer; transition: background-color .2s; }
 .theme[hidden] { display: none; }
-.theme:hover { background: rgba(14, 26, 43, .06); }
+.theme:hover { background: rgba(31, 41, 55, .06); }
 .theme svg { grid-area: 1 / 1; width: 20px; height: 20px; transition: opacity .3s var(--sortie), transform .5s var(--sortie); }
 .theme__soleil { opacity: 0; transform: rotate(-90deg) scale(.5); }
 html[data-theme="sombre"] .theme:hover { background: rgba(255, 255, 255, .08); }
@@ -154,9 +154,9 @@ html[data-theme="sombre"] .langue:hover { background: rgba(255, 255, 255, .08); 
 
 /* Sur téléphone, le bouton prend la place du numéro, qui reste dans la section 2 de la politique */
 @media (max-width: 459px) { .nav__tel { display: none; } }
-html[data-theme="sombre"] { --blanc: #0D1524; --gris: #131D2F; --encre: #EEF2F7; --texte-2: #A9B4C5; --trait: #24314A; --selection: rgba(255, 106, 43, .4); color-scheme: dark; }
-html[data-theme="sombre"] .nav { background: rgba(13, 21, 36, .86); border-bottom-color: rgba(255, 255, 255, .08); }
-html[data-theme="sombre"] .skip, html[data-theme="sombre"] .retour:hover { color: #0E1A2B; }
+html[data-theme="sombre"] { --blanc: #0E1420; --gris: #151C2C; --encre: #EEF2F7; --texte-2: #A9B4C5; --trait: #24314A; --selection: rgba(255, 138, 61, .4); color-scheme: dark; }
+html[data-theme="sombre"] .nav { background: rgba(14, 20, 32, .86); border-bottom-color: rgba(255, 255, 255, .08); }
+html[data-theme="sombre"] .skip, html[data-theme="sombre"] .retour:hover { color: #1F2937; }
 html[data-theme="sombre"] .icone-uio { background-image: url("assets/logo/uio-icone-sombre.png"); box-shadow: 0 0 0 1px rgba(255, 255, 255, .16); }
 </style>
 </head>
@@ -372,7 +372,7 @@ html[data-theme="sombre"] .icone-uio { background-image: url("assets/logo/uio-ic
   var b = document.getElementById('theme'); if (!b) return;
   var html = document.documentElement, meta = document.querySelector('meta[name="theme-color"]');
   function sombre() { return html.getAttribute('data-theme') === 'sombre'; }
-  function montrer() { var s = sombre(); b.setAttribute('aria-pressed', s ? 'true' : 'false'); if (meta) meta.setAttribute('content', s ? '#0D1524' : '#FFFFFF'); }
+  function montrer() { var s = sombre(); b.setAttribute('aria-pressed', s ? 'true' : 'false'); if (meta) meta.setAttribute('content', s ? '#0E1420' : '#FFFFFF'); }
   function basculer() {
     if (sombre()) html.removeAttribute('data-theme'); else html.setAttribute('data-theme', 'sombre');
     try { localStorage.setItem('uio-theme', sombre() ? 'sombre' : 'clair'); } catch (e) {}
