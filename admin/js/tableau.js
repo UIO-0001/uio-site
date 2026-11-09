@@ -1,11 +1,10 @@
 // Tableau de bord : appels de l'agent répondeur, demandes, audits, serveur, site, offre.
 import { $, $$, el, sv, icone, vider, nombre, pluriel, insecable, heure, jourLong, majuscule, date, relatif,
-  duree, compteARebours, lienTel, lienCourriel, urlSure, toast, lire, ecrire, heureLocale, FUSEAU } from './outils.js';
+  duree, compteARebours, lienTel, lienCourriel, urlSure, toast, lire, ecrire, heureLocale, signal, FUSEAU } from './outils.js';
 import { E, BACKEND, DEPOT, SITE, TITRE } from './etat.js';
 import { dureeHM, confirmations } from './formes.js';
 import { api, sessionActuelle } from './api.js';
 import { htmlInerte } from './confiance.js';
-import { montrer } from './navigation.js';
 
 // Le prénom seul (« Alex » dans « Alex Tremblay »), pour dire bonjour
 export const prenom = nom => String(nom || '').trim().split(/\s+/)[0] || '';
@@ -96,10 +95,10 @@ export async function reveiller() {
   if (E.reveil) return;
   E.reveil = Date.now();
   const tic = setInterval(() => rendrePouls(), 1000);
-  rendrePouls();
+  rendrePouls(); rendreBonjour();
   const ok = await ping(95000);
   const secondes = Math.round((Date.now() - E.reveil) / 1000);
-  clearInterval(tic); E.reveil = 0; rendrePouls();
+  clearInterval(tic); E.reveil = 0; rendrePouls(); rendreBonjour();
   if (ok) { toast(`Le serveur est réveillé (${secondes} s).`); chargerTableau(); document.dispatchEvent(new CustomEvent('uio:reveil')); }
   else toast('Le serveur ne répond toujours pas. Regarde Render.', true);
 }
@@ -180,48 +179,10 @@ function indisponible(nom, quoi) {
   return null;
 }
 
-// Ce qui presse côté argent : factures en retard, crédits bas ou épuisés (sans répéter l'alerte des appels)
-function alertesArgent(alerteAppels) {
-  const a = E.argent;
-  if (!a || !a.resume) return [];
-  const c = a.credits || {}, rt = c.retell || {}, tw = c.twilio || {}, oa = c.openai || {};
-  const liste = [];
-  if (a.resume.en_retard) liste.push(pluriel(a.resume.en_retard, 'facture en retard', 'factures en retard'));
-  if (!/retell/i.test(alerteAppels)) {
-    if (rt.etat === 'epuise') liste.push('crédit Retell épuisé');
-    else if (rt.alerte) liste.push('crédit Retell bas');
-  }
-  if (tw.alerte) liste.push('crédit Twilio bas');
-  if (oa.etat === 'epuise') liste.push('crédit OpenAI épuisé, le chatbot ne répond plus');
-  else if (oa.etat === 'cle_refusee') liste.push('clé OpenAI refusée');
-  return liste;
-}
-
-// L'équipe : les tâches qui attendent la personne, et son chrono s'il tourne
-function morceauxEquipe(b) {
-  const q = E.equipe;
-  if (!q || !q.taches) return [];
-  const moi = q.moi;
-  const miennes = q.taches.filter(t => (t.statut === 'a_faire' || t.statut === 'en_cours') && (t.pour === moi || t.pour === 'tous'));
-  const m = [];
-  if (miennes.length) {
-    const urgentes = miennes.filter(t => t.priorite === 'urgente').length;
-    m.push(b(pluriel(miennes.length, 'tâche', 'tâches')), ' pour toi');
-    if (urgentes) m.push(', dont ', el('b', { class: 'attention' }, pluriel(urgentes, 'urgente', 'urgentes')));
-    m.push(' (', el('button', { class: 'lien-texte', type: 'button', onclick: () => montrer('equipe') }, 'voir l’équipe'), '). ');
-  }
-  const p = ((q.heures && q.heures.personnes) || []).find(x => x.identifiant === moi);
-  if (p && p.en_cours) m.push('Ton chrono tourne depuis ', b(dureeHM((Date.now() - Date.parse(p.en_cours.debut)) / 60000)), '. ');
-  return m;
-}
-
-// Les prospects dont la relance tombe aujourd'hui ou est passée (onglet Clients → Prospects)
-function morceauxProspects(b) {
-  const n = E.prospects ? E.prospects.a_relancer || 0 : 0;
-  if (!n) return [];
-  return [b(pluriel(n, 'prospect', 'prospects')), ' à relancer (',
-    el('button', { class: 'lien-texte', type: 'button', onclick: () => document.dispatchEvent(new CustomEvent('uio:prospects', { detail: { filtre: 'relancer' } })) }, 'voir les prospects'), '). '];
-}
+// Le titre, la date et une phrase de faits. Ce qui demande une action (alertes, tâches, factures,
+// rappels, relances) est dans « À faire aujourd'hui » (afaire.js), redessiné en même temps.
+let aFaire = null;
+export const brancherAFaire = fn => { aFaire = fn; };
 
 export function rendreBonjour() {
   const s = sessionActuelle();
@@ -233,19 +194,6 @@ export function rendreBonjour() {
   const b = t => el('b', null, t);
   const morceaux = [];
   const appels = source('appels'), demandes = source('demandes'), audits = source('rendez_vous');
-  const alerteAppels = appels && appels.disponible && appels.alerte ? appels.alerte : '';
-  const argent = alertesArgent(alerteAppels);
-  if (alerteAppels || argent.length) {
-    morceaux.push(el('b', { class: 'attention' }, 'Attention : '));
-    if (alerteAppels) morceaux.push(alerteAppels.replace(/\.$/, '') + '. ');
-    if (argent.length) {
-      const liste = argent.length > 1 ? `${argent.slice(0, -1).join(', ')} et ${argent[argent.length - 1]}` : argent[0];
-      morceaux.push(alerteAppels ? `Aussi : ${liste}` : majuscule(liste), ' (',
-        el('button', { class: 'lien-texte', type: 'button', onclick: () => montrer('argent') }, 'voir l’argent'), '). ');
-    }
-  }
-  morceaux.push(...morceauxEquipe(b));
-  morceaux.push(...morceauxProspects(b));
   const faits = [];
   if (appels && appels.disponible) faits.push([b(pluriel(appels.aujourdhui, 'appel', 'appels')), ' aujourd’hui']);
   if (demandes && demandes.disponible) faits.push([b(pluriel(demandes.semaine, 'demande', 'demandes')), ' du chatbot cette semaine']);
@@ -254,19 +202,17 @@ export function rendreBonjour() {
     faits.push(p ? ['prochain audit ', b(relatif(p))] : ['aucun audit réservé']);
   }
   if (faits.length) {
-    faits.forEach((f, i) => { if (i) morceaux.push(i === faits.length - 1 ? ' et ' : ', '); morceaux.push(...f); });
+    if (typeof faits[0][0] === 'string') faits[0][0] = majuscule(faits[0][0]);
+    faits.forEach((x, i) => { if (i) morceaux.push(i === faits.length - 1 ? ' et ' : ', '); morceaux.push(...x); });
     morceaux.push('. ');
   } else if (E.clientsLus) {
     morceaux.push(b(pluriel(E.clients.length, 'client', 'clients')), ' dans l’espace client. ');
   }
-  const etat = etatServeur(), p = dernierPing();
-  if (etat === 'ok' || etat === 'lent') morceaux.push('Le serveur répond en ', b(p.ms >= 1000 ? `${nombre(p.ms / 1000, 1)} s` : `${p.ms} ms`), '.');
-  else if (etat === 'panne') morceaux.push(b('Le serveur ne répond pas'), ' : il dort peut-être.');
-  // Redessinée toutes les 15 s : le bouton qui avait le focus le retrouve
-  const avant = document.activeElement && document.activeElement.closest ? document.activeElement.closest('#bonjour-phrase button') : null;
-  const quoi = avant ? avant.textContent : '';
+  const moi = s.admin.identifiant;
+  const p = E.equipe && E.equipe.heures ? (E.equipe.heures.personnes || []).find(x => x.identifiant === moi) : null;
+  if (p && p.en_cours) morceaux.push('Ton chrono tourne depuis ', b(dureeHM((Date.now() - Date.parse(p.en_cours.debut)) / 60000)), '.');
   if (morceaux.length) vider($('#bonjour-phrase'), morceaux);
-  if (quoi) { const b = $$('#bonjour-phrase button').find(x => x.textContent === quoi); if (b) b.focus({ preventScroll: true }); }
+  if (aFaire) aFaire();
 }
 
 export function rendreDirect() {
@@ -277,11 +223,14 @@ export function rendreDirect() {
   else if (etat === 'panne') t.textContent = 'Serveur injoignable';
   else if (E.majTableau) t.textContent = `En direct · ${relatif(new Date(E.majTableau)).replace('à l’instant', 'à jour')}`;
   else t.textContent = etat === 'attente' ? 'Lecture…' : 'En direct';
+  d.setAttribute('aria-label', `${t.textContent}. Toucher pour tout relire (R)`);   // sur un téléphone, seul le point se voit
 }
 
 // Le pouls : le temps de réponse du serveur à chaque essai (toutes les 30 secondes).
 export function rendrePouls(nouveau = false) {
+  if (E.vue !== 'reglages' || E.page !== 'systeme') return;      // redessiné en ouvrant la page
   const etat = etatServeur(), p = dernierPing();
+  signal('carte-pouls', etat === 'panne' ? 'alerte' : etat === 'lent' ? 'attente' : '');
   const pastille = {
     ok: ['etat--ok', `Éveillé · ${p && p.ms} ms`],
     lent: ['etat--lent', `Lent · ${p && p.ms != null ? nombre(p.ms / 1000, 1) : ''} s`],
@@ -376,6 +325,7 @@ function rendreAppels() {
   const boite = $('#appels');
   const s = source('appels');
   if (s && s.lien_retell && urlSure(s.lien_retell)) $('#lien-retell').href = s.lien_retell;
+  signal('carte-appels', s && s.disponible && s.alerte ? 'alerte' : '');
   const manque = indisponible('appels', 'Les appels de l’agent répondeur');
   if (manque) return vider(boite, manque);
   const blocs = [];
@@ -408,11 +358,12 @@ function rendreAppels() {
 // Appels par jour du mois : une colonne par jour, la valeur au sommet de la plus haute.
 let observateurBarres = null;
 function barresParJour(jours) {
-  const boite = el('div', { class: 'graphe barres' });
+  // « graphe--jours », pas « barres » : cette classe est celle des heures (Équipe), une grille de 14 colonnes
+  const boite = el('div', { class: 'graphe graphe--jours' });
   const total = jours.reduce((s, j) => s + j.appels, 0);
-  const tableau = el('table', { class: 'sr' }, el('caption', null, 'Appels par jour ce mois-ci'),
+  const tableau = el('div', { class: 'sr' }, el('table', null, el('caption', null, 'Appels par jour ce mois-ci'),
     el('tr', null, el('th', null, 'Jour'), el('th', null, 'Appels'), el('th', null, 'Minutes')),
-    jours.map(j => el('tr', null, el('td', null, j.jour), el('td', null, String(j.appels)), el('td', null, String(j.minutes)))));
+    jours.map(j => el('tr', null, el('td', null, j.jour), el('td', null, String(j.appels)), el('td', null, String(j.minutes))))));
   let largeurDessinee = -1;
   const dessiner = () => {
     if (boite.clientWidth === largeurDessinee) return;
@@ -479,16 +430,17 @@ async function changerDemande(chemin, corps, message) {
 function rendreDemandes() {
   const boite = $('#demandes');
   const manque = indisponible('demandes', 'Les demandes du chatbot');
-  if (manque) return vider(boite, manque);
+  if (manque) { signal('carte-demandes', ''); return vider(boite, manque); }
   const s = source('demandes');
+  signal('carte-demandes', (s.dernieres || []).some(d => Date.now() - (+date(d.date) || 0) < 864e5) ? 'attente' : '');
   const blocs = [gros(s.semaine, s.semaine >= 2 ? 'demandes en 7 jours' : 'demande en 7 jours',
     [nombre(s.mois)], ' sur les 30 derniers jours, ', [nombre(s.total)], ' depuis le début.')];
-  if (!s.dernieres || !s.dernieres.length) blocs.push(el('p', { class: 'vide' }, 'Aucune demande pour l’instant. Elles arrivent ici dès qu’un visiteur laisse ses coordonnées au chatbot.'));
+  if (!s.dernieres || !s.dernieres.length) blocs.push(el('p', { class: 'vide' }, 'Aucune demande pour l’instant : elles arrivent dès qu’un visiteur laisse ses coordonnées au chatbot.'));
   else blocs.push(el('ul', { class: 'liste', 'aria-label': 'Dernières demandes' }, s.dernieres.map(d => {
     const quand = date(d.date);
     const tel = lienTel(d.telephone), courriel = lienCourriel(d.courriel);
     const details = [d.entreprise, d.besoin].filter(Boolean).join(' · ');
-    return el('li', null,
+    return el('li', { 'data-demande': d.id || null },
       el('div', { class: 'ligne' },
         el('span', { class: 'ligne__titre' }, d.nom || 'Sans nom'),
         pastilleNeuf(cleDemande(d)),
@@ -536,11 +488,12 @@ export function rendreAudits() {
   lienAgenda();
   const boite = $('#audits');
   const manque = indisponible('rendez_vous', 'Les audits réservés');
-  if (manque) return vider(boite, manque);
+  if (manque) { signal('carte-audits', ''); return vider(boite, manque); }
   const s = source('rendez_vous');
   const m = new Date();
   const prochains = (s.prochains || []).map(a => ({ ...a, d: date(a.debut) })).filter(a => a.d && a.d.getTime() > m.getTime() - 15 * 60e3);
-  if (!prochains.length) return vider(boite, el('p', { class: 'vide' }, 'Aucun audit réservé pour l’instant. Le chatbot en réserve à partir de 24 h d’avance.'));
+  signal('carte-audits', prochains.some(a => a.d.getTime() - m.getTime() < 864e5) ? 'attente' : '');
+  if (!prochains.length) return vider(boite, el('p', { class: 'vide' }, 'Aucun audit réservé. Le chatbot en réserve à 24 h d’avance au moins.'));
   vider(boite, el('ul', { class: 'liste' }, prochains.map(a => {
     const courriel = lienCourriel(a.courriel);
     const enCours = a.d <= m;
@@ -563,13 +516,14 @@ function rendreChatbot() {
   const serveur = source('serveur');
   const dem = serveur && date(serveur.demarre_a);
   const lignes = (c.aujourdhui || []);
+  signal('carte-chatbot', lignes.some(l => l.plafond && l.messages / l.plafond >= .8) ? 'attente' : '');
   const blocs = [];
   if (!lignes.length) blocs.push(el('p', { class: 'vide' }, 'Aucun message au chatbot aujourd’hui.'));
   else blocs.push(el('div', { class: 'raccourcis' }, lignes.map(l => el('div', { class: 'jauge-ligne' },
     el('span', { class: 'jauge-ligne__nom' }, l.nom),
     el('span', { class: 'jauge jauge--bleu', role: 'img', 'aria-label': `${l.messages} messages sur ${l.plafond} permis par jour` }, el('i', { style: `width:${Math.min(100, Math.max(2, 100 * l.messages / l.plafond))}%` })),
     el('b', null, nombre(l.messages))))));
-  blocs.push(el('p', { class: 'note' }, `Messages envoyés à l’IA aujourd’hui, par chatbot${dem ? `, depuis le démarrage du serveur (${relatif(dem)})` : ''}. La barre montre la part du plafond quotidien.`));
+  blocs.push(el('p', { class: 'note' }, `Messages à l’IA aujourd’hui, par chatbot${dem ? ` (depuis le démarrage du serveur, ${relatif(dem)})` : ''}, sur le plafond du jour.`));
   vider(boite, blocs);
 }
 
@@ -583,6 +537,7 @@ export function rendreSite() {
     let classe = 'etat--ok', texte = 'En ligne';
     if (run.status !== 'completed') { classe = 'etat--lent'; texte = 'Publication en cours'; }
     else if (run.conclusion !== 'success') { classe = 'etat--panne'; texte = 'Publication ratée'; }
+    signal('carte-site', classe === 'etat--panne' ? 'alerte' : classe === 'etat--lent' ? 'attente' : '');
     blocs.push(el('div', { class: 'pouls__haut' }, el('span', { class: 'etat ' + classe }, texte),
       quand && el('span', { class: 'ligne__meta' }, `publié ${relatif(quand)}`)));
   }
@@ -620,7 +575,7 @@ export function rendreOffre() {
     el('thead', null, el('tr', null, el('th', { scope: 'col' }, 'À la carte'), el('th', { scope: 'col' }, 'Par mois'), el('th', { scope: 'col' }, 'Départ'))),
     el('tbody', null, o.modules.map(m => el('tr', null, el('td', null, m.nom), el('td', null, m.mois), el('td', null, m.depart))))));
   o.extras.forEach(t => blocs.push(el('p', { class: 'note note--fort' }, t)));
-  blocs.push(el('p', { class: 'note' }, `Lu sur agenceuio.ca ${relatif(new Date(o.lu))}. Quand le site change, cette carte suit toute seule.`));
+  blocs.push(el('p', { class: 'note' }, `Lue sur agenceuio.ca ${relatif(new Date(o.lu))} : elle suit le site toute seule.`));
   vider(boite, blocs);
 }
 
@@ -635,6 +590,6 @@ function rendreRaccourcis() {
     ['Web3Forms', 'Le formulaire du site', 'https://app.web3forms.com/'],
     ['Espace client', 'Ce que voient les clients', SITE + 'client.html']
   ];
-  vider($('#raccourcis'), liens.map(([nom, quoi, href]) => el('a', { class: 'raccourci', href, target: '_blank', rel: 'noopener' },
-    el('b', null, nom), el('span', null, quoi), icone('i-sortie'))));
+  vider($('#raccourcis'), liens.map(([nom, quoi, href]) => el('a', { class: 'raccourci-lien', href, target: '_blank', rel: 'noopener', title: quoi },
+    nom, el('span', { class: 'sr' }, ` : ${quoi}`), icone('i-sortie'))));
 }

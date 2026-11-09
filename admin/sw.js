@@ -1,15 +1,16 @@
-// Le service worker de l'admin : l'app s'ouvre même sans réseau (jusqu'à l'écran de connexion),
-// se met à jour toute seule, et montre les notifications (onglet Compte → Notifications). Il ne garde QUE les fichiers de l'app : jamais les réponses du
+// Le service worker du CRM : l'app s'ouvre même sans réseau (jusqu'à l'écran de connexion),
+// se met à jour toute seule, et montre les notifications (Réglages → Notifications). Il ne garde QUE les fichiers de l'app : jamais les réponses du
 // serveur (clients, appels, comptes), ni GitHub, ni la page d'accueil du site.
 // Tous les fichiers viennent de la copie de CETTE version, prise d'un bloc à l'installation : jamais
 // un mélange d'ancien et de neuf (un module neuf avec un ancien empêcherait l'app de démarrer).
-// Le réseau seulement pour un fichier qui manque. Changer VERSION à chaque mise en ligne de l'admin :
+// Le réseau seulement pour un fichier qui manque. Changer VERSION à chaque mise en ligne du CRM
+// (toujours « admin-… » : le ménage des anciennes versions cherche ce début) :
 // la nouvelle version s'installe à côté et l'app propose « Mettre à jour ».
-const VERSION = 'admin-2026-11-08-11';
+const VERSION = 'admin-2026-11-09-1';
 const BASE = new URL('./', self.location.href).pathname;           // /admin/
 const COQUILLE = [
   './', 'app.css', 'theme.js', 'manifest.webmanifest',
-  'js/app.js', 'js/api.js', 'js/appareil.js', 'js/argent.js', 'js/cles.js', 'js/clients.js', 'js/compte.js', 'js/confiance.js',
+  'js/afaire.js', 'js/app.js', 'js/api.js', 'js/appareil.js', 'js/argent.js', 'js/cles.js', 'js/clients.js', 'js/compte.js', 'js/confiance.js',
   'js/connexion.js', 'js/equipe.js', 'js/etat.js', 'js/fiche.js', 'js/formes.js', 'js/installer.js', 'js/navigation.js', 'js/notifications.js', 'js/outils.js', 'js/panneau.js', 'js/prospects.js', 'js/rapport.js', 'js/recherche.js',
   'js/qr.js', 'js/tableau.js', 'js/ui.js', 'js/vendor/qrcode.mjs',
   'icones/icone-192.png', 'icones/apple-touch-icon.png', 'icones/icone-admin.svg', 'icones/icone-admin-32.png', 'icones/icone-admin-192.png', 'icones/badge-96.png',
@@ -61,7 +62,7 @@ self.addEventListener('push', e => {
   let avis = {};
   try { avis = (e.data && e.data.json()) || {}; } catch (err) { avis = {}; }
   const tag = String(avis.tag || 'uio').slice(0, 60);
-  e.waitUntil(self.registration.showNotification(String(avis.titre || 'Admin UIO').slice(0, 90), {
+  e.waitUntil(self.registration.showNotification(String(avis.titre || 'UIO CRM').slice(0, 90), {
     body: String(avis.corps || '').slice(0, 400), tag, renotify: true, icon: ICONE, badge: BADGE,
     timestamp: Number(avis.quand) || Date.now(), requireInteraction: !!avis.urgent,
     data: { lien: LIEN_RE.test(avis.url || '') ? avis.url : '#tableau' }

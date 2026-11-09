@@ -4,7 +4,7 @@
 // Le serveur fait tous les calculs, avec les règles de l'offre ; l'app montre et envoie.
 // Chaque ajout porte une clé tirée au hasard : touché deux fois, ou renvoyé après une
 // coupure de réseau, il n'est jamais compté deux fois.
-import { $, $$, sv, icone, vider, nombre, pluriel, majuscule, date, relatif, heure, ymd, toast } from './outils.js';
+import { $, $$, sv, icone, vider, nombre, pluriel, majuscule, premier, date, relatif, heure, ymd, toast, signal } from './outils.js';
 import { E } from './etat.js';
 import { api, sessionActuelle } from './api.js';
 import { montrer } from './navigation.js';
@@ -42,7 +42,7 @@ export function leJour(iso, { long = false } = {}) {
   if (isNaN(d)) return '';
   const o = { timeZone: 'UTC', day: 'numeric', month: long ? 'long' : 'short' };
   if (String(iso).slice(0, 4) !== aujourdhui().slice(0, 4)) o.year = 'numeric';
-  return d.toLocaleDateString('fr-CA', o);
+  return premier(d.toLocaleDateString('fr-CA', o));
 }
 const nomDuMois = (m, long = false) => majuscule(jourIso(`${m}-15`).toLocaleDateString('fr-CA',
   { timeZone: 'UTC', month: long ? 'long' : 'short', ...(long ? { year: 'numeric' } : {}) }));
@@ -169,16 +169,14 @@ function construire() {
     el('div', { class: 'argent__tete' },
       el('div', { class: 'argent__titre' }, el('h1', null, 'Argent'), el('p', { id: 'argent-phrase' }, 'Lecture des comptes…')),
       el('div', { class: 'argent__actions' },
-        el('button', { class: 'btn btn--petit', type: 'button', onclick: () => ouvrirAbonnement() }, icone('i-plus'), 'Abonnement'),
-        el('button', { class: 'btn btn--contour btn--petit', type: 'button', onclick: () => ouvrirDepense() }, icone('i-plus'), 'Dépense'),
-        el('button', { class: 'btn btn--contour btn--petit', type: 'button', onclick: () => ouvrirPaiement({ autre: true }) }, icone('i-plus'), 'Revenu'))),
+        el('button', { class: 'btn btn--contour btn--petit', type: 'button', onclick: () => ouvrirDepense() }, icone('i-plus'), 'Dépense'))),
     el('div', { class: 'grille' },
       carte('carte--mois l7', 'mois', 'Revenus et dépenses'),
       carte('carte--encaisser l5', 'encaisser', 'À encaisser'),
-      carte('carte--abonnements pleine-largeur', 'abonnements', 'Abonnements', lien('Nouvel abonnement', () => ouvrirAbonnement())),
+      carte('carte--abonnements pleine-largeur', 'abonnements', 'Abonnements', lien('Ajouter', () => ouvrirAbonnement())),
       carte('carte--minutes l7', 'minutes', 'Minutes et profit', el('a', { class: 'lien', href: LIENS.retell, target: '_blank', rel: 'noopener' }, 'Retell')),
       carte('carte--credits l5', 'credits', 'Crédits'),
-      carte('carte--depenses l7', 'depenses', 'Dépenses', lien('Ajouter', () => ouvrirDepense())),
+      carte('carte--depenses l7', 'depenses', 'Dépenses'),
       carte('carte--partage l5', 'partage', 'Partage 50/50', lien('Virement', () => ouvrirVirement())),
       carte('carte--paiements pleine-largeur', 'paiements', 'Paiements reçus', lien('Autre revenu', () => ouvrirPaiement({ autre: true })))));
 }
@@ -244,10 +242,11 @@ function graphiqueMois(mois) {
   const entree = m => (m.futur ? m.prevu : m.recu);
   const passes = mois.filter(m => !m.futur), futurs = mois.filter(m => m.futur);
   const resume = `Revenus et dépenses sur ${mois.length} mois : ${argent(somme(passes, 'recu'))} reçus et ${argent(somme(passes, 'depenses'))} de dépenses jusqu’à ce mois-ci, ${argent(somme(futurs, 'prevu'))} prévus les mois suivants.`;
-  const tableau = el('table', { class: 'sr' }, el('caption', null, 'Revenus et dépenses par mois'),
+  // La table est dans une boîte .sr : seule, elle garde sa largeur et élargirait la page sur un petit écran
+  const tableau = el('div', { class: 'sr' }, el('table', null, el('caption', null, 'Revenus et dépenses par mois'),
     el('tr', null, ['Mois', 'Prévu', 'Reçu', 'Dépenses'].map(t => el('th', null, t))),
     mois.map(m => el('tr', null, el('td', null, nomDuMois(m.mois, true)), el('td', null, argent(m.prevu)),
-      el('td', null, m.futur ? 'à venir' : argent(m.recu)), el('td', null, argent(m.depenses)))));
+      el('td', null, m.futur ? 'à venir' : argent(m.recu)), el('td', null, argent(m.depenses))))));
   let dessinee = -1;
   const dessiner = () => {
     const largeur = boite.clientWidth;
@@ -311,6 +310,7 @@ function rendreEncaisser() {
   if (!boite || attente(boite)) return;
   const a = E.argent, r = a.resume;
   const dues = a.echeances.filter(f => f.etat === 'due' || f.etat === 'en_retard');
+  signal('carte-encaisser', r.en_retard ? 'alerte' : dues.length ? 'attente' : '');
   const blocs = [];
   if (r.a_encaisser > 0) {
     const phrase = [pluriel(dues.length, 'facture due', 'factures dues')];
@@ -340,10 +340,9 @@ function rendreAbonnements() {
   const boite = $('#argent-abonnements');
   if (!boite || attente(boite)) return;
   const liste = E.argent.abonnements;
+  signal('carte-abonnements', liste.some(ab => ab.probleme) ? 'alerte' : '');
   if (!liste.length) {
-    return vider(boite, el('div', { class: 'vide vide--action' },
-      el('p', null, el('b', null, 'Aucun abonnement pour l’instant.'), ' Ajoute un client qui paie : ses factures, le crédit des frais de départ et la garantie du 1er mois se calculent tout seuls.'),
-      el('button', { class: 'btn btn--petit', type: 'button', onclick: () => ouvrirAbonnement() }, icone('i-plus'), 'Ajouter le premier abonnement')));
+    return vider(boite, el('p', { class: 'vide' }, 'Aucun abonnement pour l’instant. Ses factures, le crédit des frais et la garantie se calculent tout seuls.'));
   }
   vider(boite, el('div', { class: 'abonnements' }, liste.map(carteAbonnement)));
 }
@@ -383,8 +382,10 @@ function rendreMinutes() {
   const boite = $('#argent-minutes');
   if (!boite || attente(boite)) return;
   const m = E.argent.minutes || {};
+  const cl = m.disponible ? m.clients || [] : [];
+  signal('carte-minutes', cl.some(c => c.pourcentage >= 100) ? 'alerte' : cl.some(c => c.alerte) ? 'attente' : '');
   if (!m.disponible) {
-    return vider(boite, el('p', { class: 'vide' }, `Les appels de Retell sont indisponibles pour le moment (${m.raison || 'raison inconnue'}). Les minutes et le profit reviendront tout seuls.`));
+    return vider(boite, el('p', { class: 'vide' }, `Appels de Retell indisponibles pour le moment (${m.raison || 'raison inconnue'}).`));
   }
   const blocs = [];
   if (m.clients.length) {
@@ -394,7 +395,7 @@ function rendreMinutes() {
       ', pour ', [`${nombre(minutes, minutes % 1 ? 1 : 0)} min`], ' d’appels.'));
     blocs.push(el('div', { class: 'minutes' }, m.clients.map(ligneMinutes)));
   } else {
-    blocs.push(el('p', { class: 'vide' }, 'Relie l’agent Retell d’un client à son abonnement (Abonnements, puis le client) : ses minutes, son coût et son profit s’afficheront ici.'));
+    blocs.push(el('p', { class: 'vide' }, 'Relie l’agent Retell d’un client à son abonnement : ses minutes et son profit s’afficheront ici.'));
   }
   if (m.autres && m.autres.length) {
     blocs.push(el('div', { class: 'bloc' }, el('h3', { class: 'petit-titre' }, 'Autres agents ce mois-ci (agence, démos)'),
@@ -403,7 +404,7 @@ function rendreMinutes() {
         el('span', { class: 'ligne__meta' }, `${pluriel(x.appels, 'appel', 'appels')} · ${nombre(x.minutes, x.minutes % 1 ? 1 : 0)} min`),
         el('span', { class: 'montant' }, argent(x.cout))))))));
   }
-  blocs.push(el('p', { class: 'note' }, `Coût : Retell (réel) et Twilio (estimé à ${nombre(m.twilio_estime_us_minute, 3)} $ US la minute), en dollars canadiens. Les pourriels, les essais web et les appels de moins de 15 s ne comptent pas dans les minutes d’un client.`));
+  blocs.push(el('p', { class: 'note' }, `En $ CA : Retell réel, Twilio estimé (${nombre(m.twilio_estime_us_minute, 3)} $ US la minute). Pourriels, essais web et appels de moins de 15 s non comptés.`));
   if (m.complet === false) blocs.push(el('p', { class: 'note' }, 'Plus de 1 000 appels : seuls les 1 000 plus récents sont comptés.'));
   vider(boite, blocs);
 }
@@ -466,6 +467,9 @@ function rendreCredits() {
   const c = E.argent.credits, s = c.seuils || {};
   const rt = c.retell || {}, tw = c.twilio || {}, oa = c.openai || {};
   const lignes = [];
+  const twilioVide = tw.alerte && tw.solde_usd != null && Number(tw.solde_usd) <= 0;
+  signal('carte-credits', rt.etat === 'epuise' || twilioVide || oa.etat === 'epuise' || oa.etat === 'cle_refusee' ? 'alerte'
+    : rt.alerte || tw.alerte ? 'attente' : '');
 
   const bR = [], mR = [];
   if (rt.etat === 'estime') {
@@ -480,7 +484,7 @@ function rendreCredits() {
   } else if (rt.etat === 'trop_vieux') {
     mR.push('Le dernier solde noté date de plus de 3 mois. Note le solde affiché dans Retell.');
   } else {
-    mR.push(rt.note && rt.raison ? `Estimation indisponible (${rt.raison}).` : 'Note le solde affiché dans Retell : l’admin suit ensuite ce qui reste, appel par appel.');
+    mR.push(rt.note && rt.raison ? `Estimation indisponible (${rt.raison}).` : 'Note le solde affiché dans Retell : le CRM suit ensuite ce qui reste, appel par appel.');
   }
   lignes.push(rangee({ lettre: 'R', titre: lienService('retell'), badges: bR, meta: mR, action: actionsCredit('retell') }));
   if (ui.solde === 'retell') lignes.push(formulaireSolde('retell'));
@@ -503,7 +507,7 @@ function rendreCredits() {
   if (ui.solde === 'openai') lignes.push(formulaireSolde('openai'));
 
   vider(boite, el('div', { class: 'rangees' }, lignes),
-    el('p', { class: 'note' }, `Retell : une estimation (le dernier solde noté, plus les recharges, moins le coût des appels), alerte sous ${usd(s.retell_usd)}. Twilio : le solde réel. OpenAI : un essai d’un jeton toutes les 30 minutes.`));
+    el('p', { class: 'note' }, `Retell : estimé d’après le dernier solde noté (alerte sous ${usd(s.retell_usd)}). Twilio : le solde réel. OpenAI : vérifié toutes les 30 min.`));
 }
 
 // Le nom du service ouvre son tableau de bord (nouvel onglet)
@@ -548,9 +552,7 @@ function rendreDepenses() {
   if (!boite || attente(boite)) return;
   const a = E.argent, liste = a.depenses;
   if (!liste.length) {
-    return vider(boite, el('div', { class: 'vide vide--action' },
-      el('p', null, el('b', null, 'Aucune dépense pour l’instant.'), ' Ajoute ce que l’agence paie (Retell, Twilio, le domaine, les logiciels…) et qui l’a payé : le partage 50/50 se calcule tout seul.'),
-      el('button', { class: 'btn btn--petit', type: 'button', onclick: () => ouvrirDepense() }, icone('i-plus'), 'Ajouter une dépense')));
+    return vider(boite, el('p', { class: 'vide' }, 'Aucune dépense pour l’instant. Note ce que l’agence paie et qui l’a payé : le partage 50/50 suit.'));
   }
   const revient = liste.filter(d => d.active && d.frequence !== 'unique');
   const parMois = revient.reduce((s, d) => s + (d.frequence === 'mensuel' ? d.cad : d.cad / 12), 0);
@@ -593,13 +595,14 @@ function rendrePartage() {
   const boite = $('#argent-partage');
   if (!boite || attente(boite)) return;
   const a = E.argent, p = a.partage || {}, gens = p.personnes || [];
-  if (gens.length < 2) return vider(boite, el('p', { class: 'vide' }, 'Le partage s’affiche dès que deux comptes existent (Compte, puis Équipe).'));
   const sugg = p.suggestions || [];
+  signal('carte-partage', gens.length >= 2 && sugg.length ? 'attente' : '');
+  if (gens.length < 2) return vider(boite, el('p', { class: 'vide' }, 'Le partage s’affiche dès que deux associés ont leur compte.'));
   const blocs = [];
   if (sugg.length) {
     blocs.push(grand(argent(somme(sugg, 'montant')), 'à envoyer', 'Pour que chacun ait sa moitié de ce qui est entré et sorti.'));
     blocs.push(el('div', { class: 'rangees' }, sugg.map(s => rangee({ lettre: initiale(s.de), titre: `${majuscule(nomDe(s.de))} envoie ${argent(s.montant)} à ${nomDe(s.a)}`,
-      meta: ['Par virement Interac, par exemple. Touche « C’est fait » une fois l’argent envoyé.'],
+      meta: ['Par virement Interac, puis « C’est fait ».'],
       action: confirmer(`vir:${s.de}:${s.a}:${s.montant}`, 'C’est fait', `${majuscule(nomDe(s.de))} a envoyé ${argent(s.montant)} ?`, async () => {
         await ecrireUneFois(`vir:${s.de}:${s.a}:${s.montant}`, 'vi', 'virement', { de: s.de, a: s.a, montant: s.montant, date: aujourdhui(), note: 'Partage 50/50' });
         toast('Virement noté.');
@@ -621,7 +624,7 @@ function rendrePartage() {
             toast('Virement annulé.');
           }, { classe: 'lien' }))))))));
   }
-  blocs.push(el('p', { class: 'note' }, 'Chacun garde l’argent reçu, moins les dépenses payées, plus ou moins les virements. Le compte de l’agence ne compte pas : ce qui y entre est à vous deux.'));
+  blocs.push(el('p', { class: 'note' }, 'Chacun garde ce qu’il a reçu, moins ce qu’il a payé, plus ou moins les virements.'));
   vider(boite, blocs);
 }
 
@@ -631,7 +634,7 @@ function rendrePaiements() {
   if (!boite || attente(boite)) return;
   const a = E.argent, R = a.regles, liste = a.paiements || [];
   if (!liste.length) {
-    return vider(boite, el('p', { class: 'vide' }, 'Aucun paiement pour l’instant. Touche « Marquer payée » sur une facture, ou « Autre revenu » pour l’argent qui ne vient pas d’un abonnement.'));
+    return vider(boite, el('p', { class: 'vide' }, 'Aucun paiement pour l’instant : « Marquer payée » sur une facture le note ici.'));
   }
   const montres = ui.plusPaiements ? liste : liste.slice(0, 8);
   vider(boite,
@@ -844,7 +847,7 @@ export function ouvrirAbonnement(id = '', preset = {}) {
   const agents = casesAgents(v, () => maj());
   const notes = champTexte('Notes', { multiligne: true, maxlength: 400, placeholder: 'Ex. : rabais promis au téléphone' }, '', 'facultatif');
   notes.input.value = v.notes;
-  const deja = ab ? null : bascule('Ses factures passées sont déjà payées', 'Pour un client qui payait avant l’admin : les factures avant aujourd’hui sont notées payées.', false, x => { extra.deja = x; maj(); });
+  const deja = ab ? null : bascule('Ses factures passées sont déjà payées', 'Pour un client qui payait avant le CRM : les factures avant aujourd’hui sont notées payées.', false, x => { extra.deja = x; maj(); });
   const recu = ab ? null : pilules('Elles ont été reçues par', optionsPersonnes(), a.moi, x => { extra.recu_par = x; });
   const application = ab ? pilules('Le changement de prix vaut', [['prochaine', `Dès la prochaine facture (n° ${ab.prochaine})`], ['debut', 'Depuis le début (corriger une erreur)']],
     'prochaine', x => { extra.application = x; maj(); }) : null;

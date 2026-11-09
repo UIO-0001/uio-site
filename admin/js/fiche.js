@@ -1,10 +1,11 @@
 // La fiche d'un client (le panneau qui glisse de la droite) : tout ce qu'on sait de lui au même
-// endroit. Elle remplace l'ancien « avancement en % + étapes » (2026-11-08).
-//  - Coordonnées et langue de ses courriels ; où en est son service ; notes internes.
-//  - Son forfait et ses factures (de l'Argent), avec un rappel de paiement prêt à envoyer.
-//  - Son rapport du mois : avis et mot (ce qu'il voit dans son espace), et le courriel du rapport.
-//  - Ses documents, ce qu'il voit dans son espace client (note, démo, fonctionnalités, mot de
-//    passe), les courriels qu'on lui a envoyés et l'historique.
+// endroit. Elle remplace l'ancien « avancement en % + étapes » (2026-11-08). En haut, son statut,
+// ce qu'il doit et Appeler · Écrire · Son site · Modifier ; puis quatre onglets (2026-11-09) :
+//  - Aperçu : coordonnées, notes internes, son espace client (note, démo, fonctionnalités, mot de
+//    passe) et ses documents, en lecture. « Modifier » les ouvre en champs, « Annuler » revient.
+//  - Factures : son forfait et ses factures (de l'Argent), avec un rappel de paiement prêt à envoyer.
+//  - Rapport : avis et mot (ce qu'il voit dans son espace), et le courriel du rapport.
+//  - Historique : les courriels qu'on lui a envoyés et ce qui a changé (lu à la 1re ouverture).
 // « Enregistrer » écrit la fiche, l'espace client et le rapport. Un courriel ne part jamais sans
 // un clic sur son propre bouton (ou l'envoi du mois, si la fiche le demande).
 import { $, icone, vider, majuscule, date, heure, toast, urlSure, lienTel, lienCourriel, ymd, FUSEAU } from './outils.js';
@@ -132,80 +133,221 @@ export function ouvrirFiche(c, { section = '', rappel = null } = {}) {
     return ch;
   }
 
-  // ── Le résumé en haut : statut, forfait, factures à encaisser, appeler / écrire ──
+  let onglet = 'apercu', edition = false, formulaire = null, vueLecture = null;
+  const doux = () => (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth');
+
+  // ── Le résumé en haut : statut, forfait, factures à encaisser, appeler / écrire / modifier ──
   const resume = el('div', { class: 'fiche__resume', 'aria-live': 'polite' });
   function dessinerResume() {
     const f = ficheDe(c), ab = abonnementDe(f), dues = aEncaisser(f);
     const statut = v.fiche.statut;
     const depuis = depart.fiche.depuis || (statut === 'en_service' && ab ? ab.debut : '');
     const quand = statut === 'en_service' && depuis ? `depuis le ${leJour(depuis, { long: true })}` : '';
-    const contacts = [
+    const actions = [
       lienTel(depart.fiche.telephone) ? el('a', { class: 'puce', href: lienTel(depart.fiche.telephone) }, icone('i-telephone'), 'Appeler') : null,
       lienCourriel(depart.fiche.courriel) ? el('a', { class: 'puce', href: lienCourriel(depart.fiche.courriel) }, icone('i-courriel'), 'Écrire') : null,
-      urlSure(depart.fiche.site) ? el('a', { class: 'puce', href: urlSure(depart.fiche.site), target: '_blank', rel: 'noopener noreferrer' }, icone('i-ordinateur'), 'Son site') : null
+      urlSure(depart.fiche.site) ? el('a', { class: 'puce', href: urlSure(depart.fiche.site), target: '_blank', rel: 'noopener noreferrer' }, icone('i-ordinateur'), 'Son site') : null,
+      edition ? null : el('button', { class: 'puce', type: 'button', 'data-focus': 'fiche-modifier', onclick: () => modifier() }, icone('i-crayon'), 'Modifier')
     ].filter(Boolean);
+    const avant = document.activeElement && resume.contains(document.activeElement) ? document.activeElement.dataset.focus || '' : '';
     vider(resume,
       el('div', { class: 'fiche__statut' }, badgeStatut(statut), el('span', null, [ab ? texteForfait(ab) : 'Pas encore d’abonnement', quand].filter(Boolean).join(' · '))),
       dues.length ? el('ul', { class: 'fiche__alertes', 'aria-label': 'À encaisser' }, dues.map(x => el('li', null,
         badgeFacture(x), el('span', null, `Facture ${x.numero} · ${montant(x.reste)}`),
-        el('button', { class: 'lien lien--petit', type: 'button', onclick: () => preparerRappel(x.abonnement, x.numero) }, 'Préparer le rappel')))) : null,
-      contacts.length ? el('div', { class: 'actions' }, contacts) : null);
+        el('button', { class: 'lien lien--petit', type: 'button', 'data-focus': `resume-rappel-${x.abonnement}:${x.numero}`, onclick: () => preparerRappel(x.abonnement, x.numero) }, 'Préparer le rappel')))) : null,
+      actions.length ? el('div', { class: 'actions' }, actions) : null);
+    if (avant) { const b = [...resume.querySelectorAll('[data-focus]')].find(x => x.dataset.focus === avant); if (b) b.focus({ preventScroll: true }); }
   }
 
-  // ── Les parties ──
-  const sections = {};
-  const partie = (cle, titre, ...contenu) => {
-    sections[cle] = el('section', { class: 'bloc fiche__partie', id: `fiche-${cle}`, 'aria-labelledby': `fiche-t-${cle}`, tabindex: '-1' },
-      el('h3', { id: `fiche-t-${cle}`, class: 'fiche__titre' }, titre), ...contenu);
-    return sections[cle];
-  };
+  // ── Quatre onglets : Aperçu · Factures · Rapport · Historique ──
+  const ONGLETS = [['apercu', 'Aperçu'], ['factures', 'Factures'], ['rapport', 'Rapport'], ['historique', 'Historique']];
+  const vues = Object.fromEntries(ONGLETS.map(([k]) => [k, el('section', { class: 'fiche__vue', id: `fiche-${k}`, role: 'tabpanel',
+    'aria-labelledby': `fiche-o-${k}`, tabindex: '-1', hidden: k !== onglet })]));
+  const boutonsOnglets = ONGLETS.map(([k, t]) => el('button', { class: 'fiche__onglet', type: 'button', role: 'tab', id: `fiche-o-${k}`,
+    'aria-controls': `fiche-${k}`, 'aria-selected': String(k === onglet), tabindex: k === onglet ? '0' : '-1', 'data-onglet': k, onclick: () => choisir(k) },
+    el('span', null, t), el('span', { class: 'fiche__compte', hidden: true })));
+  const barre = el('div', { class: 'fiche__barre' }, el('div', { class: 'fiche__onglets', role: 'tablist', 'aria-label': 'Parties de la fiche' }, boutonsOnglets));
+  const repere = el('div', { class: 'fiche__repere', 'aria-hidden': 'true' });       // où la barre se colle
+  barre.addEventListener('keydown', e => {
+    const i = boutonsOnglets.indexOf(document.activeElement);
+    const n = i < 0 ? null : { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: boutonsOnglets.length - 1 }[e.key];
+    if (n == null) return;
+    e.preventDefault();
+    choisir(boutonsOnglets[(n + boutonsOnglets.length) % boutonsOnglets.length].dataset.onglet, true);
+  });
+  function dessinerOnglets() {
+    const dues = aEncaisser(ficheDe(c)), retard = dues.some(x => x.etat === 'en_retard');
+    for (const b of boutonsOnglets) {
+      const k = b.dataset.onglet, actif = k === onglet;
+      b.setAttribute('aria-selected', String(actif));
+      b.tabIndex = actif ? 0 : -1;
+      if (k !== 'factures') continue;
+      const n = b.lastChild;
+      n.hidden = !dues.length;
+      n.textContent = String(dues.length);
+      n.className = `fiche__compte${retard ? ' fiche__compte--alerte' : ''}`;
+      if (dues.length) b.setAttribute('aria-label', `Factures, ${dues.length} à encaisser`); else b.removeAttribute('aria-label');
+    }
+    for (const [k] of ONGLETS) vues[k].hidden = k !== onglet;
+  }
+  function choisir(k, focus = false) {
+    if (!vues[k]) return;
+    const neuf = k !== onglet;
+    onglet = k;
+    dessinerOnglets();
+    if (neuf) {
+      // L'onglet s'ouvre par son début : si on était descendu plus bas que la barre, on remonte jusqu'à elle
+      const corps = $('#panneau-corps');
+      if (corps) {
+        const haut = repere.getBoundingClientRect().top - corps.getBoundingClientRect().top + corps.scrollTop;
+        if (corps.scrollTop > haut) corps.scrollTop = haut;
+      }
+      if (k === 'historique' && !H.lu && !H.lecture && !H.erreur) lireHistorique();
+    }
+    if (focus) { const b = boutonsOnglets.find(x => x.dataset.onglet === k); if (b) b.focus(); }
+  }
+  // Une partie de la fiche, avec son titre
+  const bloc = (cle, titre, ...contenu) => el('section', { class: 'bloc fiche__partie', 'data-bloc': cle, 'aria-label': titre },
+    el('h3', { class: 'fiche__titre' }, titre), ...contenu);
 
-  // Coordonnées
-  const nom = champ(v.portail, 'project_name', 'Nom du client', { maxlength: 100, placeholder: 'Ex. : Plomberie Côté' });
-  const contact = champ(v.fiche, 'contact', 'Personne-contact', { maxlength: 80, placeholder: 'Ex. : Marc Côté', autocomplete: 'off' });
-  const metier = champ(v.fiche, 'metier', 'Métier', { maxlength: 60, placeholder: 'Ex. : Plombier' });
-  const courriel = champ(v.fiche, 'courriel', 'Courriel', { type: 'email', inputmode: 'email', maxlength: 120, spellcheck: 'false', autocapitalize: 'none', placeholder: 'Ex. : marc@plomberiecote.ca' },
-    'Les rappels et les rapports partent seulement à cette adresse.');
-  const telephone = champ(v.fiche, 'telephone', 'Téléphone', { type: 'tel', inputmode: 'tel', maxlength: 40, placeholder: 'Ex. : 819 555-0142' });
-  const site = champ(v.fiche, 'site', 'Site web', { type: 'url', inputmode: 'url', maxlength: 200, spellcheck: 'false', autocapitalize: 'none', placeholder: 'Ex. : plomberiecote.ca' }, '', 'facultatif');
-  const adresse = champ(v.fiche, 'adresse', 'Adresse', { maxlength: 160, placeholder: 'Ex. : 12, rue des Érables' }, '', 'facultatif');
-  const langue = pilules('Langue de ses courriels', [['fr', 'Français'], ['en', 'English']], v.fiche.langue, x => { v.fiche.langue = x; change(); },
-    { aide: 'Le rappel de paiement et le rapport par courriel partent dans cette langue.', petit: true });
-  if (!lisible) langue.boite.disabled = true;
-  partie('coordonnees', 'Coordonnées', nom.boite, el('div', { class: 'deux' }, contact.boite, metier.boite),
-    el('div', { class: 'deux' }, courriel.boite, telephone.boite), el('div', { class: 'deux' }, site.boite, adresse.boite), langue.boite,
-    f0.depuis_prospect ? el('p', { class: 'note' }, 'Courriel, téléphone et site repris de sa fiche de prospect : enregistre pour les garder ici.') : null);
+  // ── L'aperçu, en lecture : ce qu'on sait de lui ──
+  const apercu = el('div', { class: 'fiche__apercu' });
+  const lecture = { coord: el('div', { class: 'fiche__lu' }), notes: el('div', { class: 'fiche__lu' }), espace: el('div', { class: 'fiche__lu' }) };
+  // Construite une fois (le mot de passe en cours et les documents gardent leur état)
+  const construireLecture = () => el('div', { class: 'fiche__lecture' },
+    bloc('coordonnees', 'Coordonnées', lecture.coord),
+    bloc('notes', 'Notes internes', lecture.notes),
+    bloc('espace', 'Son espace client', lecture.espace,
+      el('p', null, el('a', { class: 'lien-service', href: ESPACE_CLIENT, target: '_blank', rel: 'noopener' }, 'Ouvrir l’espace client', icone('i-sortie'))),
+      blocMotDePasse(c)),
+    bloc('documents', 'Documents', docs));
+  function dessinerLecture() {
+    const d = depart.fiche, p = depart.portail;
+    const rien = t => el('span', { class: 'texte-doux' }, t);
+    const info = (titre, valeur, href = null, dehors = false) => (valeur ? el('div', null, el('dt', null, titre),
+      el('dd', null, href ? el('a', { href, ...(dehors ? { target: '_blank', rel: 'noopener noreferrer' } : {}) }, valeur) : valeur)) : null);
+    const site = urlSure(d.site);
+    const infos = [info('Personne-contact', d.contact), info('Métier', d.metier),
+      info('Courriel', d.courriel, lienCourriel(d.courriel)), info('Téléphone', d.telephone, lienTel(d.telephone)),
+      info('Site web', site ? hote(site) || d.site : d.site, site, true), info('Adresse', d.adresse),
+      info('Ses courriels', d.langue === 'en' ? 'En anglais' : 'En français')].filter(Boolean);
+    const manque = [!d.courriel && 'son courriel', !d.telephone && 'son téléphone'].filter(Boolean);
+    vider(lecture.coord, el('dl', { class: 'fiche__infos' }, infos),
+      manque.length ? el('p', { class: 'note' }, `Il manque ${manque.join(' et ')}. `,
+        el('button', { class: 'lien-texte', type: 'button', onclick: () => modifier(d.courriel ? 'telephone' : 'courriel') }, manque.length > 1 ? 'Les ajouter' : 'L’ajouter')) : null);
+    vider(lecture.notes, d.notes_internes ? el('p', { class: 'fiche__texte' }, d.notes_internes) : el('p', { class: 'note' }, 'Aucune note. Le client ne les voit jamais.'));
+    const actives = E.fonctionnalites.filter(x => p.features[x.key]).map(x => x.label);
+    const demo = urlSure(p.demo_url);
+    vider(lecture.espace, el('dl', { class: 'fiche__infos' },
+      el('div', null, el('dt', null, 'Note pour le client'), el('dd', { class: 'fiche__texte' }, p.notes || rien('Aucune'))),
+      el('div', null, el('dt', null, 'Démo'), el('dd', null, demo ? el('a', { href: demo, target: '_blank', rel: 'noopener' }, hote(demo) || 'Ouvrir la démo') : rien('Aucune'))),
+      E.fonctionnalites.length ? el('div', null, el('dt', null, 'Fonctionnalités'), el('dd', null, actives.length ? actives.join(', ') : rien('Aucune'))) : null));
+  }
 
-  // Service
-  const statut = pilules('Où en est le client', Object.entries(STATUTS), v.fiche.statut, x => { v.fiche.statut = x; change(); },
-    { aide: 'Le client voit où en est son service dans son espace client.' });
-  if (!lisible) statut.boite.disabled = true;
-  const depuis = champDate('Mise en service', v.fiche.depuis, { aide: 'Le client voit « En service depuis le … ». Vide : le début de son abonnement.', facultatif: 'facultatif' });
-  depuis.input.addEventListener('input', () => { v.fiche.depuis = depuis.input.value; change(); });
-  if (!lisible) depuis.input.disabled = true;
-  entrees.depuis = depuis.input;
+  // ── « Modifier » : ses coordonnées, son service, les notes et ce qu'il voit dans son espace ──
+  function construireFormulaire() {
+    for (const k of Object.keys(entrees)) delete entrees[k];
+    const nom = champ(v.portail, 'project_name', 'Nom du client', { maxlength: 100, placeholder: 'Ex. : Plomberie Côté' });
+    const contact = champ(v.fiche, 'contact', 'Personne-contact', { maxlength: 80, placeholder: 'Ex. : Marc Côté', autocomplete: 'off' });
+    const metier = champ(v.fiche, 'metier', 'Métier', { maxlength: 60, placeholder: 'Ex. : Plombier' });
+    const courriel = champ(v.fiche, 'courriel', 'Courriel', { type: 'email', inputmode: 'email', maxlength: 120, spellcheck: 'false', autocapitalize: 'none', placeholder: 'Ex. : marc@plomberiecote.ca' },
+      'Les rappels et les rapports partent seulement à cette adresse.');
+    const telephone = champ(v.fiche, 'telephone', 'Téléphone', { type: 'tel', inputmode: 'tel', maxlength: 40, placeholder: 'Ex. : 819 555-0142' });
+    const site = champ(v.fiche, 'site', 'Site web', { type: 'url', inputmode: 'url', maxlength: 200, spellcheck: 'false', autocapitalize: 'none', placeholder: 'Ex. : plomberiecote.ca' }, '', 'facultatif');
+    const adresse = champ(v.fiche, 'adresse', 'Adresse', { maxlength: 160, placeholder: 'Ex. : 12, rue des Érables' }, '', 'facultatif');
+    const langue = pilules('Langue de ses courriels', [['fr', 'Français'], ['en', 'English']], v.fiche.langue, x => { v.fiche.langue = x; change(); },
+      { aide: 'Le rappel de paiement et le rapport par courriel partent dans cette langue.', petit: true });
+    if (!lisible) langue.boite.disabled = true;
+    const statut = pilules('Où en est le client', Object.entries(STATUTS), v.fiche.statut, x => { v.fiche.statut = x; change(); },
+      { aide: 'Le client voit où en est son service dans son espace client.' });
+    if (!lisible) statut.boite.disabled = true;
+    const depuis = champDate('Mise en service', v.fiche.depuis, { aide: 'Le client voit « En service depuis le … ». Vide : le début de son abonnement.', facultatif: 'facultatif' });
+    depuis.input.addEventListener('input', () => { v.fiche.depuis = depuis.input.value; change(); });
+    if (!lisible) depuis.input.disabled = true;
+    entrees.depuis = depuis.input;
+    const notes = champ(v.fiche, 'notes_internes', 'Notes internes', { multiligne: true, maxlength: String(NOTES_MAX), rows: 5,
+      placeholder: 'Ex. : préfère les textos ; paie par Interac le 15 ; son neveu s’occupe du site.' }, 'Seulement pour l’équipe : le client ne les voit jamais.');
+    const noteClient = champ(v.portail, 'notes', 'Note pour le client', { multiligne: true, maxlength: String(NOTE_CLIENT_MAX), rows: 3,
+      placeholder: 'Ex. : votre agent répond maintenant aussi en anglais.' }, 'Le client la voit en haut de son espace client.', 'facultatif');
+    const demo = champ(v.portail, 'demo_url', 'Lien de la démo', { type: 'url', inputmode: 'url', placeholder: 'https://…', spellcheck: 'false', autocapitalize: 'none' }, '', 'facultatif');
+    const ouvrirDemo = el('a', { class: 'btn btn--contour btn--petit', target: '_blank', rel: 'noopener' }, 'Ouvrir');
+    const majDemo = () => { const u = urlSure(v.portail.demo_url.trim()); ouvrirDemo.hidden = !u; if (u) ouvrirDemo.href = u; };
+    demo.input.addEventListener('input', majDemo);
+    majDemo();
+    const ligneDemo = el('div', { class: 'champ__ligne' });     // le champ et « Ouvrir » sur la même ligne
+    demo.input.before(ligneDemo);
+    ligneDemo.append(demo.input, ouvrirDemo);
+    const fonctions = E.fonctionnalites.map(x => bascule(x.label, x.desc, v.portail.features[x.key], ok => { v.portail.features[x.key] = ok; change(); }).boite);
+    return el('div', { class: 'fiche__formulaire' },
+      bloc('coordonnees', 'Coordonnées', nom.boite, el('div', { class: 'deux' }, contact.boite, metier.boite),
+        el('div', { class: 'deux' }, courriel.boite, telephone.boite), el('div', { class: 'deux' }, site.boite, adresse.boite), langue.boite,
+        f0.depuis_prospect ? el('p', { class: 'note' }, 'Courriel, téléphone et site repris de sa fiche de prospect : enregistre pour les garder ici.') : null),
+      bloc('service', 'Service', statut.boite, depuis.boite),
+      bloc('notes', 'Notes internes', notes.boite),
+      bloc('espace', 'Son espace client', noteClient.boite, demo.boite,
+        fonctions.length ? el('div', { class: 'bloc' }, el('h4', null, 'Fonctionnalités'), fonctions) : null));
+  }
+  function dessinerApercu() {
+    if (edition) {
+      if (!formulaire) formulaire = construireFormulaire();
+      if (apercu.firstChild !== formulaire) vider(apercu, formulaire);
+      return;
+    }
+    if (!vueLecture) vueLecture = construireLecture();
+    dessinerLecture();
+    if (apercu.firstChild !== vueLecture) vider(apercu, vueLecture);
+  }
+  function modifier(cle = '') {
+    choisir('apercu');
+    if (!edition) {
+      edition = true;
+      dessinerApercu(); dessinerResume(); etat.majPied();
+    }
+    const cible = (cle && entrees[cle]) || entrees.project_name;
+    requestAnimationFrame(() => {
+      if (!cible || !cible.isConnected) return;
+      cible.focus({ preventScroll: true });
+      cible.scrollIntoView({ block: cle ? 'center' : 'nearest', behavior: doux() });
+    });
+  }
+  function finirEdition() {
+    edition = false; formulaire = null;
+    for (const k of Object.keys(entrees)) delete entrees[k];
+    dessinerApercu(); dessinerResume(); etat.majPied();
+  }
+  // « Annuler » : les champs reviennent à ce qui est enregistré (le rapport en cours, lui, reste)
+  function annulerEdition() {
+    for (const k of CHAMPS) if (k !== 'rapport_auto') v.fiche[k] = depart.fiche[k];
+    Object.assign(v.portail, JSON.parse(JSON.stringify(depart.portail)));
+    erreur.textContent = '';
+    finirEdition();
+    dessinerAuto();
+    const b = $('#panneau-corps [data-focus="fiche-modifier"]');
+    if (b) b.focus({ preventScroll: true });
+  }
+  // Le champ d'une erreur : « Modifier » s'ouvre au besoin
+  const champDe = cle => { if (!entrees[cle]) modifier(cle); return entrees[cle]; };
+
+  // ── Son forfait (en haut de l'onglet Factures) ──
   const forfait = el('div', { class: 'fiche__forfait' });
   function dessinerForfait() {
     const ab = abonnementDe(ficheDe(c));
     if (!ab) {
       return vider(forfait, el('div', { class: 'vide vide--action' },
-        el('p', null, el('b', null, 'Pas encore d’abonnement.'), ' Ajoute-le dans l’Argent : ses factures, le crédit des frais de départ et la garantie se calculent tout seuls.'),
-        el('button', { class: 'btn btn--contour btn--petit', type: 'button', onclick: () => versArgent('', { client: id, nom: v.portail.project_name.trim() }) }, 'Ajouter son abonnement')));
+        el('p', null, el('b', null, 'Pas encore d’abonnement.'), ' Ses factures, le crédit des frais et la garantie se calculent tout seuls.'),
+        el('button', { class: 'btn btn--contour btn--petit', type: 'button', onclick: () => versArgent('', { client: id, nom: v.portail.project_name.trim() }) }, icone('i-plus'), 'Ajouter son abonnement')));
     }
     vider(forfait, el('div', { class: 'fiche__ligne' },
       el('span', null, el('b', null, ab.forfait_nom), el('span', null, [`${montant(ab.total_mensuel)} par mois`, ab.minutes_incluses ? `${ab.minutes_incluses} min incluses` : '',
         `depuis le ${leJour(ab.debut, { long: true })}`, ab.fin ? `jusqu’au ${leJour(ab.fin, { long: true })}` : ''].filter(Boolean).join(' · '))),
       el('button', { class: 'lien lien--petit', type: 'button', onclick: () => versArgent(ab.id) }, 'Voir dans l’Argent')));
   }
-  partie('service', 'Service', statut.boite, depuis.boite, el('div', { class: 'champ' }, el('span', { class: 'champ__titre' }, 'Forfait'), forfait));
 
   // Factures, et le rappel prêt à envoyer
   const factures = el('div', { class: 'bloc' });
   const rappels = {};             // « ab:numéro » → l'éditeur du rappel
-  partie('factures', 'Factures', factures);
   function dessinerFactures() {
     const f = ficheDe(c), ab = abonnementDe(f);
-    sections.factures.hidden = !ab;
     if (!ab) return vider(factures);
     const liste = ab.factures || [];
     if (!liste.length) return vider(factures, el('p', { class: 'vide' }, `La 1re facture arrive le ${leJour(ab.debut, { long: true })}.`));
@@ -290,7 +432,7 @@ export function ouvrirFiche(c, { section = '', rappel = null } = {}) {
     const deja = (R.modele && R.modele.deja) || [];
     return el('div', { class: 'rappel formulaire--encadre' },
       el('p', { class: 'rappel__a' }, a ? ['À ', el('b', null, a), ' · copie cachée à la boîte de l’agence · les réponses vont à ', el('b', null, (E.fiches && E.fiches.repondre_a) || 'info@agenceuio.ca')]
-        : el('b', { class: 'attention' }, 'Écris son courriel dans Coordonnées, enregistre, puis envoie le rappel.')),
+        : el('b', { class: 'attention' }, 'Ajoute son courriel (Aperçu, puis Modifier), enregistre, puis envoie le rappel.')),
       courrielChange ? el('p', { class: 'note note--fort' }, 'Le rappel part à l’adresse enregistrée : enregistre d’abord la fiche.') : null,
       sujet.boite, texte.boite,
       deja.length ? el('p', { class: 'note' }, dejaEnvoye(deja)) : null,
@@ -312,7 +454,7 @@ export function ouvrirFiche(c, { section = '', rappel = null } = {}) {
     detail.textContent = fr(`Le ${envoi.jour} du mois vers ${envoi.heure} h, le rapport du mois d’avant part à ${a || 'son courriel'}.`);
     if (!detail.isConnected) auto.boite.querySelector('span').append(detail);
     const enregistre = !!depart.fiche.rapport_auto;
-    if (v.fiche.rapport_auto && !a) autoAide.textContent = fr('Écris son courriel dans Coordonnées : sans lui, rien ne part.');
+    if (v.fiche.rapport_auto && !a) autoAide.textContent = fr('Ajoute son courriel (Aperçu, puis Modifier) : sans lui, rien ne part.');
     else if (v.fiche.rapport_auto !== enregistre) autoAide.textContent = fr(v.fiche.rapport_auto ? 'Enregistre pour l’activer.' : 'Enregistre pour l’arrêter.');
     else if (enregistre) {
       const p = prochainEnvoi(ficheDe(c));
@@ -376,7 +518,7 @@ export function ouvrirFiche(c, { section = '', rappel = null } = {}) {
           p.mot ? el('blockquote', null, p.mot) : null,
           el('p', { class: 'note' }, 'Plus un bouton « Voir le rapport complet » vers son espace client.'))),
       (p.deja || []).length ? el('p', { class: 'note' }, dejaEnvoye(p.deja)) : null,
-      !a ? el('p', { class: 'note note--fort' }, 'Écris son courriel dans Coordonnées, enregistre, puis envoie.') : null,
+      !a ? el('p', { class: 'note note--fort' }, 'Ajoute son courriel (Aperçu, puis Modifier), enregistre, puis envoie.') : null,
       courrielChange ? el('p', { class: 'note note--fort' }, 'Le rapport part à l’adresse enregistrée : enregistre d’abord la fiche.') : null,
       RC.erreurEnvoi ? el('p', { class: 'erreur', role: 'alert' }, fr(RC.erreurEnvoi)) : null,
       RC.recent ? el('div', { class: 'confirmer', role: 'group', 'aria-label': 'Envoyer encore ?' },
@@ -384,11 +526,10 @@ export function ouvrirFiche(c, { section = '', rappel = null } = {}) {
         el('span', { class: 'confirmer__boutons' }, el('button', { class: 'btn btn--discret btn--petit', type: 'button', onclick: () => { RC.recent = ''; dessinerCourrielRapport(); } }, 'Non'), envoyerEncore))
         : el('div', { class: 'formulaire__pied' }, el('button', { class: 'btn btn--discret btn--petit', type: 'button', onclick: fermer }, 'Fermer l’aperçu'), envoyer));
   }
-  partie('rapport', 'Rapport du mois', rapport.boite,
+  vues.rapport.append(rapport.boite,
     el('div', { class: 'bloc fiche__sous' }, el('h4', null, 'Le rapport par courriel'),
       el('p', null, 'Les chiffres du mois fini, en français ou en anglais selon sa fiche. Un courriel ne part qu’avec ton clic, ou tout seul si tu l’actives.'),
       auto.boite, autoAide, courrielRapport));
-  rapport.boite.classList.remove('bloc');
   const titreRapport = rapport.boite.querySelector('h3');
   if (titreRapport) titreRapport.classList.add('sr');
 
@@ -407,7 +548,7 @@ export function ouvrirFiche(c, { section = '', rappel = null } = {}) {
         garderDocuments(r);
         toast('Document retiré.');
       }, { classe: 'lien lien--petit' }))))
-      : el('p', { class: 'vide' }, 'Aucun document pour ce client. Ajoute le lien de son contrat, de son logo, de ses photos ou de son dossier Drive.')];
+      : el('p', { class: 'note' }, 'Aucun document : le lien de son contrat, de son logo ou de son dossier Drive. Ils restent aussi dans Équipe, Documents.')];
     if (D.ajout) {
       const cle = D.cle || (D.cle = nouvelleCle('do'));
       const titre = champTexte('Nom', { maxlength: 100, autocomplete: 'off', placeholder: 'Ex. : Contrat signé' });
@@ -440,29 +581,6 @@ export function ouvrirFiche(c, { section = '', rappel = null } = {}) {
     }
     dessinerDocuments();
   }
-  partie('documents', 'Documents', el('p', null, 'Ses liens : contrat, logo, photos, accès. Ils restent aussi dans Équipe → Documents.'), docs);
-
-  // Notes internes (jamais montrées au client)
-  const notes = champ(v.fiche, 'notes_internes', 'Notes internes', { multiligne: true, maxlength: String(NOTES_MAX), rows: 5,
-    placeholder: 'Ex. : préfère les textos ; paie par Interac le 15 ; son neveu s’occupe du site.' }, 'Seulement pour l’équipe : le client ne les voit jamais.');
-  partie('notes', 'Notes internes', notes.boite);
-
-  // Son espace client (ce qu'il voit)
-  const noteClient = champ(v.portail, 'notes', 'Note pour le client', { multiligne: true, maxlength: String(NOTE_CLIENT_MAX), rows: 3,
-    placeholder: 'Ex. : votre agent répond maintenant aussi en anglais.' }, 'Le client la voit en haut de son espace client.', 'facultatif');
-  const demo = champ(v.portail, 'demo_url', 'Lien de la démo', { type: 'url', inputmode: 'url', placeholder: 'https://…', spellcheck: 'false', autocapitalize: 'none' }, '', 'facultatif');
-  const ouvrirDemo = el('a', { class: 'btn btn--contour btn--petit', target: '_blank', rel: 'noopener' }, 'Ouvrir');
-  const majDemo = () => { const u = urlSure(v.portail.demo_url.trim()); ouvrirDemo.hidden = !u; if (u) ouvrirDemo.href = u; };
-  demo.input.addEventListener('input', majDemo);
-  majDemo();
-  const ligneDemo = el('div', { class: 'champ__ligne' });     // le champ et « Ouvrir » sur la même ligne
-  demo.input.before(ligneDemo);
-  ligneDemo.append(demo.input, ouvrirDemo);
-  const fonctions = E.fonctionnalites.map(x => bascule(x.label, x.desc, v.portail.features[x.key], ok => { v.portail.features[x.key] = ok; change(); }).boite);
-  partie('espace', 'Son espace client', el('p', null, 'Ce que le client voit en se connectant : son service, son forfait, son rapport du mois et cette note.'),
-    noteClient.boite, demo.boite, fonctions.length ? el('div', { class: 'bloc' }, el('h4', null, 'Fonctionnalités'), fonctions) : null,
-    el('p', null, el('a', { class: 'lien-service', href: ESPACE_CLIENT, target: '_blank', rel: 'noopener' }, 'Ouvrir l’espace client', icone('i-sortie'))),
-    blocMotDePasse(c));
 
   // Courriels envoyés
   const envoyes = el('div', { class: 'bloc' });
@@ -476,7 +594,7 @@ export function ouvrirFiche(c, { section = '', rappel = null } = {}) {
         el('span', { class: 'ligne__meta' }, [SORTES[m.sorte] || m.sorte, m.a ? `à ${m.a}` : '', m.qui ? `par ${m.qui}` : '', m.resultat === 'echec' && m.detail ? m.detail : ''].filter(Boolean).join(' · ')));
     })));
   }
-  partie('courriels', 'Courriels envoyés', envoyes);
+  vues.historique.append(bloc('courriels', 'Courriels envoyés', envoyes));
 
   // Historique (lu seulement quand on le demande)
   const H = { lu: false, lecture: false, liste: [], erreur: '' };
@@ -500,57 +618,19 @@ export function ouvrirFiche(c, { section = '', rappel = null } = {}) {
       el('span', { class: 'ligne__meta' }, [h.detail, h.qui].filter(Boolean).join(' · '))))),
       el('div', { class: 'actions' }, el('button', { class: 'lien lien--petit', type: 'button', onclick: lireHistorique }, 'Relire')));
   }
-  partie('historique', 'Historique', el('p', null, 'Ce qui a changé dans sa fiche, son abonnement et ses paiements, les courriels envoyés, et ses contacts quand il était prospect.'), historique);
+  vues.historique.append(bloc('historique', 'Historique', el('p', { class: 'note' }, 'Sa fiche, son abonnement, ses paiements, les courriels envoyés et ses contacts quand il était prospect.'), historique));
   dessinerHistorique();
 
-  // La barre des parties (on y saute d'un toucher)
-  const ordre = [['coordonnees', 'Coordonnées'], ['service', 'Service'], ['factures', 'Factures'], ['rapport', 'Rapport'], ['documents', 'Documents'],
-    ['notes', 'Notes'], ['espace', 'Espace client'], ['courriels', 'Courriels'], ['historique', 'Historique']];
-  // La partie qu'on lit est allumée ; un fondu sur un bord dit qu'il y a d'autres parties de ce côté
-  const puces = el('div', { class: 'fiche__puces' });
-  const barre = el('nav', { class: 'fiche__barre', 'aria-label': 'Parties de la fiche' }, puces);
-  const doux = () => (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth');
-  let actuelle = '';
-  function bords() {
-    const plus = puces.scrollWidth - puces.clientWidth;
-    puces.classList.toggle('fiche__puces--gauche', puces.scrollLeft > 2);
-    puces.classList.toggle('fiche__puces--droite', plus > 2 && puces.scrollLeft < plus - 2);
-  }
-  puces.addEventListener('scroll', bords, { passive: true });
-  function dessinerBarre() {
-    vider(puces, ordre.filter(([k]) => !sections[k].hidden).map(([k, t]) => el('button', { class: 'puce', type: 'button', 'data-partie': k,
-      'aria-current': k === actuelle ? 'true' : null, onclick: () => aller(k, true) }, t)));
-    requestAnimationFrame(bords);
-  }
-  // La partie en haut de l'écran (ou la dernière, tout en bas) : allumée, et ramenée en vue dans la barre
-  function suivreLecture() {
-    const corps = $('#panneau-corps');
-    if (!corps || E.panneau !== etat) return;
-    const ligne = corps.getBoundingClientRect().top + barre.offsetHeight + 48;
-    const visibles = ordre.map(([k]) => k).filter(k => !sections[k].hidden);
-    let cle = visibles[0] || '';
-    for (const k of visibles) if (sections[k].getBoundingClientRect().top <= ligne) cle = k;
-    if (corps.scrollTop > 0 && corps.scrollTop + corps.clientHeight >= corps.scrollHeight - 4) cle = visibles[visibles.length - 1] || cle;
-    if (cle === actuelle) return;
-    actuelle = cle;
-    for (const b of puces.children) {
-      if (b.dataset.partie !== cle) { b.removeAttribute('aria-current'); continue; }
-      b.setAttribute('aria-current', 'true');
-      // hors des fondus des bords (56 px) : la puce allumée revient au milieu de la barre
-      if (b.offsetLeft - 56 < puces.scrollLeft || b.offsetLeft + b.offsetWidth + 56 > puces.scrollLeft + puces.clientWidth) {
-        const max = puces.scrollWidth - puces.clientWidth;
-        puces.scrollTo({ left: Math.min(max, Math.max(0, b.offsetLeft - (puces.clientWidth - b.offsetWidth) / 2)), behavior: doux() });
-      }
-    }
-  }
+  // Une partie de la fiche (depuis l'Argent, la recherche, « À faire ») : son onglet, puis la partie
+  const OU = { coordonnees: 'apercu', service: 'apercu', notes: 'apercu', espace: 'apercu', documents: 'apercu',
+    factures: 'factures', rapport: 'rapport', courriels: 'historique', historique: 'historique' };
   function aller(cle, focus = false) {
-    const s = sections[cle];
-    if (!s || s.hidden) return;
-    const corps = $('#panneau-corps');
-    // le filet du titre passe sous celui de la barre : un seul trait
-    const haut = s.getBoundingClientRect().top - corps.getBoundingClientRect().top + corps.scrollTop - barre.offsetHeight + 1;
-    corps.scrollTo({ top: Math.max(0, haut), behavior: doux() });
-    if (focus) s.focus({ preventScroll: true });
+    const k = OU[cle] || (vues[cle] ? cle : '');
+    if (!k) return;
+    choisir(k);
+    const partie = k === 'apercu' && cle !== 'apercu' ? apercu.querySelector(`[data-bloc="${CSS.escape(cle)}"]`) : null;
+    if (partie) requestAnimationFrame(() => partie.scrollIntoView({ block: 'start', behavior: doux() }));
+    if (focus) vues[k].focus({ preventScroll: true });
   }
   etat.aller = aller;
   // Occupé : un rappel ou un document qu'on écrit, ou l'aperçu du rapport ouvert (la relecture des 2 min attend)
@@ -559,15 +639,15 @@ export function ouvrirFiche(c, { section = '', rappel = null } = {}) {
   // ── Enregistrer : la fiche, l'espace client, puis le rapport ──
   function preparer() {
     const p = nettoyer(v), d = nettoyer(depart);
-    if (!p.portail.project_name) throw new Invalide('Écris le nom du client.', entrees.project_name);
+    if (!p.portail.project_name) throw new Invalide('Écris le nom du client.', champDe('project_name'));
     const fiche = p.fiche;
-    if (fiche.courriel && (fiche.courriel.length > 120 || !COURRIEL_RE.test(fiche.courriel))) throw new Invalide('Le courriel est illisible (ex. : marc@plomberiecote.ca).', entrees.courriel);
+    if (fiche.courriel && (fiche.courriel.length > 120 || !COURRIEL_RE.test(fiche.courriel))) throw new Invalide('Le courriel est illisible (ex. : marc@plomberiecote.ca).', champDe('courriel'));
     const n = chiffresTel(fiche.telephone).length;
-    if (fiche.telephone && (n < 10 || n > 15)) throw new Invalide('Le téléphone est illisible (ex. : 819 555-0142).', entrees.telephone);
-    if (fiche.site && !SITE_RE.test(fiche.site)) throw new Invalide('Le site est illisible (ex. : plomberiecote.ca).', entrees.site);
-    if (fiche.rapport_auto && !fiche.courriel) throw new Invalide('Le rapport par courriel a besoin de son courriel.', entrees.courriel);
-    if (fiche.notes_internes.length > NOTES_MAX) throw new Invalide(`Les notes internes : ${NOTES_MAX} caractères au plus.`, entrees.notes_internes);
-    if (p.portail.demo_url && !urlSure(p.portail.demo_url)) throw new Invalide('Le lien de la démo doit commencer par https://', entrees.demo_url);
+    if (fiche.telephone && (n < 10 || n > 15)) throw new Invalide('Le téléphone est illisible (ex. : 819 555-0142).', champDe('telephone'));
+    if (fiche.site && !SITE_RE.test(fiche.site)) throw new Invalide('Le site est illisible (ex. : plomberiecote.ca).', champDe('site'));
+    if (fiche.rapport_auto && !fiche.courriel) throw new Invalide('Le rapport par courriel a besoin de son courriel.', champDe('courriel'));
+    if (fiche.notes_internes.length > NOTES_MAX) throw new Invalide(`Les notes internes : ${NOTES_MAX} caractères au plus.`, champDe('notes_internes'));
+    if (p.portail.demo_url && !urlSure(p.portail.demo_url)) throw new Invalide('Le lien de la démo doit commencer par https://', champDe('demo_url'));
     const demandes = {};
     const champsFiche = CHAMPS.filter(k => JSON.stringify(fiche[k]) !== JSON.stringify(d.fiche[k]));
     if (champsFiche.length) {
@@ -586,13 +666,25 @@ export function ouvrirFiche(c, { section = '', rappel = null } = {}) {
   }
   const marque = el('span', { class: 'modif', hidden: true }, 'Changements non enregistrés');
   const boutonEnregistrer = el('button', { class: 'btn', type: 'button', disabled: true }, 'Enregistrer');
-  etat.majPied = () => { const m = etat.modifie(); marque.hidden = !m; if (!etat.envoi) boutonEnregistrer.disabled = !m; };
+  const boutonFermer = el('button', { class: 'btn btn--discret', type: 'button', onclick: () => fermerPanneau() }, 'Fermer');
+  const boutonAnnuler = el('button', { class: 'btn btn--discret', type: 'button', hidden: true, onclick: () => annulerEdition() }, 'Annuler');
+  // En lecture : « Fermer » (et « Enregistrer » si le rapport a changé) ; dans « Modifier » : « Annuler » et « Enregistrer »
+  etat.majPied = () => {
+    const m = etat.modifie();
+    marque.hidden = !m;
+    boutonFermer.hidden = edition; boutonAnnuler.hidden = !edition;
+    boutonEnregistrer.hidden = !edition && !m;
+    if (!etat.envoi) boutonEnregistrer.disabled = !m;
+  };
   async function enregistrer() {
     if (!etat.modifie() || etat.envoi) return;
     erreur.textContent = '';
     rapport.effacerErreur();
     let demandes;
-    try { demandes = preparer(); } catch (e) { if (e.champ && rapport.boite.contains(e.champ)) rapport.montrerErreur(e); else montrerErreur(e); return; }
+    try { demandes = preparer(); } catch (e) {
+      if (e.champ && rapport.boite.contains(e.champ)) { choisir('rapport'); rapport.montrerErreur(e); } else montrerErreur(e);
+      return;
+    }
     etat.envoi = true;
     const liberer = occuper(boutonEnregistrer, 'Enregistrement…');
     try {
@@ -614,10 +706,11 @@ export function ouvrirFiche(c, { section = '', rappel = null } = {}) {
       }
       if (demandes.rapport) {
         try { await rapport.envoyer(demandes.rapport); }
-        catch (e) { if (e.statut !== 401) rapport.montrerErreur(e); throw Object.assign(e, { montre: true }); }
+        catch (e) { if (e.statut !== 401) { choisir('rapport'); rapport.montrerErreur(e); } throw Object.assign(e, { montre: true }); }
       }
       toast(demandes.portail || demandes.rapport ? 'Enregistré. Le client le voit dès maintenant.' : 'Fiche enregistrée.');
       rendreClients(); rendrePortail();
+      if (edition) finirEdition();
       rafraichir();
     } catch (e) {
       if (e.statut !== 401 && !e.montre) montrerErreur(e);
@@ -632,7 +725,7 @@ export function ouvrirFiche(c, { section = '', rappel = null } = {}) {
 
   // Relu du serveur (toutes les 2 min, ou après un envoi) : seulement ce qui ne s'écrit pas ici
   function rafraichir() {
-    dessinerResume(); dessinerForfait(); dessinerFactures(); dessinerAuto(); dessinerCourrielRapport(); dessinerDocuments(); dessinerCourriels(); dessinerBarre();
+    dessinerResume(); dessinerOnglets(); dessinerApercu(); dessinerForfait(); dessinerFactures(); dessinerAuto(); dessinerCourrielRapport(); dessinerDocuments(); dessinerCourriels();
   }
   // Relue d'ailleurs (l'Argent, l'Équipe, les 2 min) : pas pendant qu'on écrit un rappel ou un document
   etat.rafraichir = force => { if (force || !etat.occupe()) rafraichir(); };
@@ -640,24 +733,15 @@ export function ouvrirFiche(c, { section = '', rappel = null } = {}) {
   const avertissement = lisible ? null : el('div', { class: 'vide' },
     E.fichesErreur === 'pas-encore' ? 'La fiche s’affichera dès que le serveur aura reçu sa mise à jour. L’espace client et le rapport marchent déjà.'
       : `La fiche n’a pas pu être lue${E.fichesErreur ? ` (${E.fichesErreur})` : ''}. Ferme et rouvre dans un instant.`);
-  // Une seule boîte (pas la grille du panneau) : la barre des parties peut rester collée en haut
-  const corps = [el('div', { class: 'fiche' }, resume, barre, avertissement, sections.coordonnees, sections.service, sections.factures, sections.rapport,
-    sections.documents, sections.notes, sections.espace, sections.courriels, sections.historique, erreur)];
+  vues.apercu.append(...[avertissement, apercu].filter(Boolean));
+  vues.factures.append(forfait, factures);
+  // Une seule boîte (pas la grille du panneau) : la barre des onglets peut rester collée en haut
+  const corps = [el('div', { class: 'fiche' }, resume, repere, barre, vues.apercu, vues.factures, vues.rapport, vues.historique, erreur)];
   etat.focus = () => null;                 // le titre : pas de clavier qui surgit sur un téléphone
-  ouvrirPanneau(etat, c.project_name || c.client_id, `@${c.username} · ID ${c.client_id}`, corps,
-    [marque, el('button', { class: 'btn btn--discret', type: 'button', onclick: () => fermerPanneau() }, 'Fermer'), boutonEnregistrer]);
+  ouvrirPanneau(etat, c.project_name || c.client_id, c.username && c.username !== c.client_id ? `@${c.username} · ID ${c.client_id}` : `@${c.client_id}`, corps,
+    [marque, boutonFermer, boutonAnnuler, boutonEnregistrer]);
   rafraichir();
   etat.majPied();
-  // La barre suit la lecture, seulement tant que cette fiche est ouverte
-  const fin = new AbortController();
-  etat.fermer = () => fin.abort();
-  let image = 0;
-  $('#panneau-corps').addEventListener('scroll', () => {
-    if (E.panneau !== etat) return fin.abort();
-    if (!image) image = requestAnimationFrame(() => { image = 0; suivreLecture(); });
-  }, { passive: true, signal: fin.signal });
-  window.addEventListener('resize', bords, { passive: true, signal: fin.signal });
-  requestAnimationFrame(suivreLecture);
   if (rappel) setTimeout(() => preparerRappel(rappel.abonnement, rappel.facture), 80);
   else if (section) setTimeout(() => aller(section), 80);
 }

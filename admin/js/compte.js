@@ -1,5 +1,6 @@
-// Compte : Face ID et clés d'accès, mot de passe, appareils, notifications sur le téléphone,
-// équipe (inviter quelqu'un), l'application installée et le journal de tout ce qui change.
+// Les réglages du compte (la roue ⚙ de la barre) : Face ID et clés d'accès, mot de passe, associés
+// (inviter quelqu'un), appareils, l'app sur cet appareil et l'historique de tout ce qui change.
+// Les cartes sont dans la page (index.html) ; ce module les remplit.
 import { $, el, icone, vider, date, relatif, heure, jourLong, majuscule, ymd, pluriel, toast, copier, biometrie } from './outils.js';
 import { E } from './etat.js';
 import { api, ErreurApi, sessionActuelle, retenirSession } from './api.js';
@@ -53,22 +54,12 @@ export function viderCompte() {
 function construire() {
   if (ui.construit) return;
   ui.construit = true;
-  const carte = (classe, id, titreCarte, ...tete) => el('article', { class: `carte ${classe}`, id: `carte-${id}`, 'aria-labelledby': `t-${id}` },
-    el('div', { class: 'carte__tete' }, el('h2', { id: `t-${id}` }, titreCarte), ...tete),
-    el('div', { class: 'carte__corps', id: `compte-${id}` }));
   const filtres = el('fieldset', { class: 'choix choix--petit' }, el('legend', { class: 'sr' }, 'Montrer'),
     el('div', { class: 'choix__liste' }, [['tout', 'Tout'], ['connexions', 'Connexions'], ['clients', 'Clients'], ['argent', 'Argent'], ['equipe', 'Équipe'], ['comptes', 'Comptes']].map(([v, t]) =>
       el('label', null, el('input', { type: 'radio', name: 'filtre-journal', value: v, checked: E.filtreJournal === v,
         onchange: () => { E.filtreJournal = v; rendreJournal(); } }), el('span', null, t)))));
-  vider($('#vue-compte'),
-    el('div', { class: 'compte__tete' }, el('h1', null, 'Compte'), el('p', { id: 'compte-phrase' }, 'Lecture de ton compte…')),
-    el('div', { class: 'grille' },
-      carte('carte--securite l7', 'securite', 'Connexion et sécurité'),
-      carte('carte--appareils l5', 'appareils', 'Appareils'),
-      carte('carte--notifications pleine-largeur', 'notifications', 'Notifications'),
-      carte('carte--equipe l5', 'equipe', 'Associés'),
-      carte('carte--appli l7', 'appli', 'L’application'),
-      carte('carte--journal pleine-largeur', 'journal', 'Journal', filtres)));
+  const tete = $('#carte-journal .carte__tete');
+  if (tete) tete.append(filtres);
   biometrieDispo().then(v => { ui.bio = v; rendreSecurite(); });
   quandInstallChange(rendreAppli);
 }
@@ -143,10 +134,10 @@ function rendreSecurite() {
 
   // Face ID / empreinte sur CET appareil
   let actionBio = null, metaBio = '';
-  if (!clesPossibles() || !moi.cles_dispo) metaBio = 'Ce navigateur ne permet pas les clés d’accès. Le mot de passe et le code restent là.';
-  else if (moiIci) metaBio = `Activé${bio.e} ici : l’admin s’ouvre d’un geste sur cet appareil.`;
-  else if (ui.bio === false) metaBio = 'Cet appareil n’a ni Face ID ni empreinte : une clé d’accès peut passer par ton téléphone ou une clé USB.';
-  else metaBio = `Pas encore activé${bio.e} ici. Un geste pour entrer, et rien de ton visage ou de ton doigt ne quitte l’appareil.`;
+  if (!clesPossibles() || !moi.cles_dispo) metaBio = 'Ce navigateur ne permet pas les clés d’accès : le mot de passe et le code restent là.';
+  else if (moiIci) metaBio = `Activé${bio.e} ici : le CRM s’ouvre d’un geste.`;
+  else if (ui.bio === false) metaBio = 'Ni Face ID ni empreinte ici : une clé d’accès peut passer par ton téléphone.';
+  else metaBio = `Pas encore activé${bio.e} ici. Rien de ton visage ou de ton doigt ne quitte l’appareil.`;
   if (clesPossibles() && moi.cles_dispo && !moiIci) {
     prechargerOptions();
     const bouton = el('button', { class: 'btn btn--petit', type: 'button' }, icone(bio.icone), 'Activer ici');
@@ -175,7 +166,7 @@ function rendreSecurite() {
   if (ouvert) lignes.push(ui.formMdp);
 
   lignes.push(rangee({ icon: 'i-horloge', titre: 'Code de vérification', badges: [badge('Actif')],
-    meta: ['Demandé avec le mot de passe, à chaque connexion. Nouveau téléphone : « Problème pour entrer ? » sur l’écran de connexion.'] }));
+    meta: ['À chaque connexion. Nouveau téléphone : « Problème pour entrer ? » à l’écran de connexion.'] }));
   vider(boite, el('div', { class: 'rangees' }, lignes));
 }
 
@@ -269,7 +260,7 @@ function rendreAppareils() {
       chargerCompte(); chargerJournal();
     })));
   }
-  blocs.push(el('p', { class: 'note' }, 'Un appareil jamais vu envoie un courriel d’alerte à la boîte de l’agence.'));
+  blocs.push(el('p', { class: 'note' }, 'Un nouvel appareil envoie une alerte à la boîte de l’agence.'));
   vider(boite, blocs);
 }
 
@@ -278,35 +269,33 @@ const versIdentifiant = p => String(p || '').normalize('NFD').replace(/[̀-ͯ]/g
 
 function rendreEquipe() {
   const boite = $('#compte-equipe');
-  if (!boite || attente(boite)) return;
+  if (!boite) return;
+  if (!E.moi) return vider(boite);
   const moi = E.moi;
   const equipe = Array.isArray(moi.equipe) ? moi.equipe : [];
-  const lignes = equipe.map(m => {
-    const toi = m.identifiant === moi.identifiant;
-    const badges = [toi ? badge('Toi', 'neutre') : null,
-      m.etat === 'invite' ? badge('Invitation en attente', 'attente') : m.etat === 'a_confirmer' ? badge('Code à ajouter', 'attente') : null];
-    let meta = '';
-    if (m.etat === 'actif') meta = [m.derniere_connexion ? `Dernière connexion ${quandCourt(m.derniere_connexion)}` : 'Aucune connexion encore',
-      m.cles ? pluriel(m.cles, 'clé d’accès', 'clés d’accès') : 'pas de Face ID ni d’empreinte'].join(' · ');
-    else if (m.etat === 'invite') meta = m.invitation_expire ? `Lien valable jusqu’au ${quandLong(m.invitation_expire)}` : 'Lien d’invitation envoyé';
-    else if (m.etat === 'a_confirmer') meta = 'Le code de vérification reste à ajouter à la prochaine connexion.';
-    return rangee({ lettre: (prenom(m.nom) || m.identifiant).charAt(0).toUpperCase(), titre: `${m.nom} (${m.identifiant})`, badges, meta: [meta],
-      action: m.etat === 'invite' ? action(`invitation:${m.identifiant}`, 'Annuler', 'Annuler l’invitation ?', async () => {
-        await api('/portal/admin/invitation/annuler', { methode: 'POST', corps: { identifiant: m.identifiant } });
-        if (ui.lien && ui.lien.identifiant === m.identifiant) ui.lien = null;
-        toast('Invitation annulée : le lien ne marche plus.');
-        await chargerCompte(); chargerJournal();
-      }) : null });
-  });
+  const comptes = equipe.filter(m => m.etat !== 'invite');
+  const qui = comptes.map(m => {
+    const nom = prenom(m.nom) || m.identifiant;
+    if (m.identifiant === moi.identifiant) return `${nom} (toi)`;
+    if (m.etat === 'a_confirmer') return `${nom}, code à ajouter`;
+    return m.derniere_connexion ? `${nom}, vu ${quandCourt(m.derniere_connexion)}` : `${nom}, pas encore connecté`;
+  }).join(' · ');
+  const peutInviter = equipe.length < 4 && !ui.lien && !ui.formInvitation;
+  const lignes = [rangee({ icon: 'i-clients', titre: 'Associés', meta: [qui, 'Chacun son compte, son code et son Face ID. 4 comptes au plus.'],
+    action: peutInviter ? el('button', { class: 'btn btn--contour btn--petit', type: 'button',
+      onclick: () => { ui.formInvitation = formulaireInvitation(); rendreEquipe(); ui.formInvitation.querySelector('input').focus(); } }, 'Inviter') : null })];
+  equipe.filter(m => m.etat === 'invite').forEach(m => lignes.push(rangee({
+    lettre: (prenom(m.nom) || m.identifiant).charAt(0).toUpperCase(), titre: `${m.nom} (${m.identifiant})`, badges: [badge('Invitation en attente', 'attente')],
+    meta: [m.invitation_expire ? `Lien valable jusqu’au ${quandLong(m.invitation_expire)}` : 'Lien d’invitation envoyé'],
+    action: action(`invitation:${m.identifiant}`, 'Annuler', 'Annuler l’invitation ?', async () => {
+      await api('/portal/admin/invitation/annuler', { methode: 'POST', corps: { identifiant: m.identifiant } });
+      if (ui.lien && ui.lien.identifiant === m.identifiant) ui.lien = null;
+      toast('Invitation annulée : le lien ne marche plus.');
+      await chargerCompte(); chargerJournal();
+    }) })));
   const blocs = [el('div', { class: 'rangees' }, lignes)];
   if (ui.lien) blocs.push(blocLien(ui.lien));
   else if (ui.formInvitation) blocs.push(ui.formInvitation);
-  else if (equipe.length < 4) {
-    blocs.push(el('button', { class: 'btn btn--contour btn--petit debut', type: 'button',
-      onclick: () => { ui.formInvitation = formulaireInvitation(); rendreEquipe(); ui.formInvitation.querySelector('input').focus(); } },
-    icone('i-plus-carre'), 'Inviter quelqu’un'));
-  }
-  blocs.push(el('p', { class: 'note' }, 'Chacun a son compte, son mot de passe, son code et son Face ID ou son empreinte. 4 comptes au plus.'));
   vider(boite, blocs);
 }
 
@@ -344,7 +333,7 @@ function formulaireInvitation() {
 
 function blocLien(l) {
   const partageable = !!navigator.share;
-  const texte = `${prenom(l.nom)}, voici ton lien pour créer ton compte dans l’admin d’Agence UIO (valable 48 heures, une seule fois) :`;
+  const texte = `${prenom(l.nom)}, voici ton lien pour créer ton compte dans le CRM d’Agence UIO (valable 48 heures, une seule fois) :`;
   return el('div', { class: 'formulaire formulaire--encadre' },
     el('p', { class: 'champ__titre' }, `Le lien de ${prenom(l.nom)}`),
     el('div', { class: 'lien-invitation' }, l.lien),
@@ -352,7 +341,7 @@ function blocLien(l) {
     el('div', { class: 'formulaire__pied' },
       el('button', { class: 'btn btn--discret btn--petit', type: 'button', onclick: () => { ui.lien = null; rendreEquipe(); } }, 'Terminé'),
       partageable ? el('button', { class: 'btn btn--contour btn--petit', type: 'button',
-        onclick: () => navigator.share({ title: 'Admin d’Agence UIO', text: texte, url: l.lien }).catch(() => {}) }, icone('i-partager'), 'Partager') : null,
+        onclick: () => navigator.share({ title: 'CRM d’Agence UIO', text: texte, url: l.lien }).catch(() => {}) }, icone('i-partager'), 'Partager') : null,
       el('button', { class: 'btn btn--petit', type: 'button', 'data-copier-lien': '',
         onclick: async () => toast(await copier(l.lien) ? 'Lien copié.' : 'Copie impossible : sélectionne le lien à la main.', false) }, icone('i-copier'), 'Copier le lien')));
 }
@@ -361,8 +350,7 @@ function blocLien(l) {
 function rendreAppli() {
   const boite = $('#compte-appli');
   if (!boite) return;
-  vider(boite, blocInstaller(), el('p', { class: 'note' },
-    'L’app se met à jour toute seule. Elle se verrouille après 15 minutes en arrière-plan, et la session dure 12 heures au plus.'));
+  vider(boite, blocInstaller(), el('p', { class: 'note' }, 'Elle se met à jour toute seule et se verrouille après 15 minutes en arrière-plan.'));
 }
 
 // ─── Journal ───────────────────────────────────────────────────────────────
@@ -390,6 +378,18 @@ const ACTIONS = {
   'client.modifie': ['Client modifié', 'clients'],
   'client.ajoute': ['Client ajouté', 'clients'],
   'client.mot_de_passe': ['Nouveau mot de passe pour un client', 'clients'],
+  'fiches.modifie': ['Fiche client modifiée', 'clients'],
+  'fiches.rappel': ['Rappel de paiement envoyé', 'clients'],
+  'fiches.rapport': ['Rapport du mois envoyé', 'clients'],
+  'rapports.note': ['Rapport du mois noté', 'clients'],
+  'prospects.ajoute': ['Prospect ajouté', 'clients'],
+  'prospects.etape': ['Prospect : nouvelle étape', 'clients'],
+  'prospects.importes': ['Prospects importés', 'clients'],
+  'prospects.modifie': ['Prospect modifié', 'clients'],
+  'prospects.retire': ['Prospect retiré', 'clients'],
+  'prospects.suivi': ['Contact noté avec un prospect', 'clients'],
+  'demandes.retiree': ['Demande du chatbot retirée', 'clients'],
+  'demandes.remise': ['Demande du chatbot remise', 'clients'],
   'argent.abonnement.ajoute': ['Abonnement ajouté', 'argent'],
   'argent.abonnement.modifie': ['Abonnement modifié', 'argent'],
   'argent.abonnement.termine': ['Abonnement terminé', 'argent'],
@@ -431,11 +431,11 @@ function rendreJournal() {
   const boite = $('#compte-journal');
   if (!boite) return;
   if (E.journalErreur && !E.journal) return vider(boite, el('p', { class: 'vide' }, E.journalErreur));
-  if (!E.journal) return vider(boite, el('p', { class: 'vide' }, 'Lecture du journal…'));
+  if (!E.journal) return vider(boite, el('p', { class: 'vide' }, 'Lecture de l’historique…'));
   const noms = new Map(((E.moi && E.moi.equipe) || []).map(m => [m.identifiant, prenom(m.nom) || m.identifiant]));
   const clients = new Map((E.clients || []).map(c => [c.client_id, c.project_name || c.client_id]));
   const lignes = E.journal.filter(l => E.filtreJournal === 'tout' || (ACTIONS[l.action] || [])[1] === E.filtreJournal);
-  if (!lignes.length) return vider(boite, el('p', { class: 'vide' }, E.journal.length ? 'Rien de ce genre dans le journal pour l’instant.' : 'Le journal est vide pour l’instant.'));
+  if (!lignes.length) return vider(boite, el('p', { class: 'vide' }, E.journal.length ? 'Rien de ce genre pour l’instant.' : 'L’historique est vide pour l’instant.'));
   const auj = ymd(new Date()), hier = ymd(new Date(Date.now() - 864e5));
   const items = [];
   let jourCourant = '';
@@ -448,8 +448,10 @@ function rendreJournal() {
     }
     const [libelle, , rate] = ACTIONS[l.action] || [l.action || 'Changement', '', false];
     const qui = noms.get(l.qui) || l.qui;
-    const cible = l.action && l.action.startsWith('client.') ? clients.get(l.cible) || l.cible
-      : (l.cible && l.cible !== l.qui ? noms.get(l.cible) || l.cible : '');
+    const act = String(l.action || '');
+    const cible = /^(client|fiches)\./.test(act) ? clients.get(l.cible) || l.cible
+      : act === 'rapports.note' ? String(l.cible || '').replace(/^\S+/, id => clients.get(id) || id)
+        : (l.cible && l.cible !== l.qui ? noms.get(l.cible) || l.cible : '');
     const detail = /^(argent|equipe)\./.test(String(l.action || '')) ? detailJoli(l.detail) : l.detail;
     const meta = [qui && qui !== '?' ? qui : '', detail, l.appareil && !String(l.detail || '').includes(l.appareil) ? l.appareil : '', l.ip ? `réseau ${l.ip}` : ''].filter(Boolean).join(' · ');
     items.push(el('li', { class: rate ? 'rate' : null },
@@ -462,6 +464,6 @@ function rendreJournal() {
   if (!ui.plus && E.journal.length >= 200) {
     blocs.push(el('button', { class: 'btn btn--contour btn--petit debut', type: 'button', onclick: () => { ui.plus = true; chargerJournal(); } }, 'Voir plus ancien'));
   }
-  blocs.push(el('p', { class: 'note' }, 'Chaque connexion et chaque changement (clients, argent, équipe, comptes) est écrit ici avec l’appareil et le réseau. Les 3 000 dernières lignes sont gardées.'));
+  blocs.push(el('p', { class: 'note' }, 'Chaque connexion et chaque changement, avec l’appareil et le réseau. Les 3 000 dernières lignes sont gardées.'));
   vider(boite, blocs);
 }

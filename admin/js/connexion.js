@@ -1,4 +1,4 @@
-// L'entrée de l'admin. D'abord Face ID (ou l'empreinte) sur un appareil déjà connu,
+// L'entrée du CRM. D'abord Face ID (ou l'empreinte) sur un appareil déjà connu,
 // sinon l'identifiant, le mot de passe, puis le code de vérification à 6 chiffres.
 // Ici aussi : créer le premier compte, accepter une invitation, ajouter le code,
 // proposer Face ID après la connexion, et le dépannage (compte perdu ou bloqué).
@@ -55,9 +55,9 @@ const quand = iso => { const d = date(iso); return d ? `${jourLong(d)} à ${heur
 
 function phraseBio() {
   const b = biometrie();
-  if (estIOS()) return 'La prochaine fois, un regard suffit pour ouvrir l’admin. Ton visage ne quitte jamais ton appareil : le serveur ne reçoit qu’une clé publique, inutile à quelqu’un d’autre.';
-  if (estAndroid()) return 'La prochaine fois, ton doigt suffit pour ouvrir l’admin. Ton empreinte ne quitte jamais ton téléphone : le serveur ne reçoit qu’une clé publique, inutile à quelqu’un d’autre.';
-  return `La prochaine fois, ${b.nom} suffit pour ouvrir l’admin. Rien ne quitte ton appareil : le serveur ne reçoit qu’une clé publique, inutile à quelqu’un d’autre.`;
+  if (estIOS()) return 'La prochaine fois, un regard suffit pour ouvrir le CRM. Ton visage ne quitte jamais ton appareil : le serveur ne reçoit qu’une clé publique, inutile à quelqu’un d’autre.';
+  if (estAndroid()) return 'La prochaine fois, ton doigt suffit pour ouvrir le CRM. Ton empreinte ne quitte jamais ton téléphone : le serveur ne reçoit qu’une clé publique, inutile à quelqu’un d’autre.';
+  return `La prochaine fois, ${b.nom} suffit pour ouvrir le CRM. Rien ne quitte ton appareil : le serveur ne reçoit qu’une clé publique, inutile à quelqu’un d’autre.`;
 }
 
 // ─── Départ ────────────────────────────────────────────────────────────────
@@ -73,7 +73,7 @@ function lireInvitation() {
 export async function demarrerConnexion({ message = '' } = {}) {
   lireInvitation();
   if (!etat) {
-    afficher(chargement('Ouverture de l’admin…'));
+    afficher(chargement('Ouverture du CRM…'));
     const ici = generation;
     const lent = setTimeout(() => { if (ici === generation) afficher(chargement('Le serveur se réveille. Ça peut prendre jusqu’à une minute…')); }, 4000);
     try {
@@ -94,7 +94,7 @@ function ecranPanne(e) {
   const reessayer = el('button', { class: 'btn btn--plein', type: 'button', 'data-focus': '', onclick: () => demarrerConnexion() }, 'Réessayer');
   afficher(titre(pasEncore ? 'Presque prêt' : 'Le serveur ne répond pas'),
     phrase(pasEncore
-      ? 'Le serveur n’a pas encore reçu la mise à jour des comptes de l’admin. Elle arrive avec la prochaine mise en ligne du serveur.'
+      ? 'Le serveur n’a pas encore reçu la mise à jour des comptes du CRM. Elle arrive avec la prochaine mise en ligne du serveur.'
       : e.message),
     reessayer);
 }
@@ -132,8 +132,8 @@ export function ecranConnexion({ message = '' } = {}) {
     }
   });
 
-  const blocs = [titre(nom ? salutation()(nom) : 'Espace admin'),
-    phrase(nom ? 'L’admin de l’agence, rien que pour l’équipe.' : 'Le tableau de bord de l’agence, réservé à l’équipe.'), erreur];
+  const blocs = [titre(nom ? salutation()(nom) : 'CRM d’Agence UIO'),
+    phrase(nom ? 'Le CRM de l’agence, rien que pour l’équipe.' : 'Les clients, l’argent et l’équipe de l’agence, réservés à l’équipe.'), erreur];
   if (avecCle) {
     const boutonCle = el('button', { class: ici ? 'btn btn--plein' : 'btn btn--contour btn--plein', type: 'button' },
       icone(ici ? bio.icone : 'i-cle'), ici ? `Entrer avec ${bio.nom}` : 'Entrer avec une clé d’accès');
@@ -301,7 +301,7 @@ function ecranPremierCompte() {
     type: 'text', name: 'username', autocomplete: 'username', autocapitalize: 'none', autocorrect: 'off', spellcheck: 'false', required: true, maxlength: 30 });
   const contexte = () => ({ prenom: prenomC.input.value, identifiant: ident.input.value });
   const mdp = champMotDePasse({ etiquette: 'Ton mot de passe', autocomplete: 'new-password', regles: true, contexte });
-  const ancien = champMotDePasse({ etiquette: 'Ancien mot de passe de l’admin', autocomplete: 'off',
+  const ancien = champMotDePasse({ etiquette: 'Ancien mot de passe du CRM', autocomplete: 'off',
     aide: 'Celui que l’équipe utilisait jusqu’ici. Il sert une dernière fois, pour prouver que c’est toi.' });
   let identTouche = false;
   prenomC.input.addEventListener('input', () => { if (!identTouche) ident.input.value = versIdentifiant(prenomC.input.value); mdp.verifier(); });
@@ -316,7 +316,7 @@ function ecranPremierCompte() {
     if (!nom) { erreur.textContent = 'Écris ton prénom.'; return prenomC.input.focus(); }
     if (!IDENTIFIANT_RE.test(id)) { erreur.textContent = 'Identifiant : lettres minuscules et chiffres, de 2 à 30 caractères, en commençant par une lettre.'; return ident.input.focus(); }
     if (!mdp.valide()) { erreur.textContent = 'Le mot de passe ne suit pas encore les règles sous le champ.'; return mdp.input.focus(); }
-    if (!ancien.valeur()) { erreur.textContent = 'Écris l’ancien mot de passe de l’admin.'; return ancien.input.focus(); }
+    if (!ancien.valeur()) { erreur.textContent = 'Écris l’ancien mot de passe du CRM.'; return ancien.input.focus(); }
     const liberer = occuper(creerBtn, 'Création du compte…');
     try {
       const r = await api('/portal/admin/compte/creer', { methode: 'POST', auth: false, delai: 90000,
@@ -326,7 +326,7 @@ function ecranPremierCompte() {
     } catch (e) { liberer(); erreur.textContent = e.message; }
   });
   afficher(progression(1, 'Ton compte'), titre('Créer ton compte'),
-    phrase('L’admin passe aux comptes personnels : chacun a le sien, avec un mot de passe, un code de vérification et Face ID ou l’empreinte. Ensuite, tu pourras inviter le reste de l’équipe.'),
+    phrase('Le CRM passe aux comptes personnels : chacun a le sien, avec un mot de passe, un code de vérification et Face ID ou l’empreinte. Ensuite, tu pourras inviter le reste de l’équipe.'),
     erreur, form);
 }
 
@@ -373,7 +373,7 @@ async function ecranInvitation(code) {
   });
   const par = inv.par ? prenom(inv.par) : '';
   afficher(progression(1, 'Ton compte'), titre(`Bienvenue, ${prenom(inv.nom) || inv.identifiant}.`),
-    phrase(par ? `${par} t’a ouvert un compte dans l’admin d’Agence UIO.` : 'Un compte t’attend dans l’admin d’Agence UIO.'),
+    phrase(par ? `${par} t’a ouvert un compte dans le CRM d’Agence UIO.` : 'Un compte t’attend dans le CRM d’Agence UIO.'),
     el('div', { class: 'info' }, el('span', null, 'Ton identifiant : ', el('b', null, inv.identifiant), '. Tu l’écriras pour te connecter.'),
       inv.expire ? el('span', null, `Ce lien marche jusqu’au ${quand(inv.expire)}, une seule fois.`) : null),
     erreur, form);
@@ -459,7 +459,7 @@ function ecranDepannage() {
   const erreur = erreurZone();
   const ident = champ({ etiquette: 'Ton identifiant', type: 'text', name: 'username', autocomplete: 'username', autocapitalize: 'none',
     autocorrect: 'off', spellcheck: 'false', required: true, maxlength: 30, value: lire('localStorage', IDENTIFIANT) || '' });
-  const ancien = champMotDePasse({ etiquette: 'Ancien mot de passe de l’admin', autocomplete: 'off', aide: 'Celui de Render (ADMIN_PASSWORD), que l’équipe utilisait avant les comptes.' });
+  const ancien = champMotDePasse({ etiquette: 'Ancien mot de passe du CRM', autocomplete: 'off', aide: 'Celui de Render (ADMIN_PASSWORD), que l’équipe utilisait avant les comptes.' });
   const nouveau = champMotDePasse({ etiquette: 'Nouveau mot de passe', facultatif: 'seulement si tu l’as oublié', autocomplete: 'new-password',
     regles: true, contexte: () => ({ identifiant: ident.input.value }) });
   focusSiOrdinateur(ident.input.value ? ancien.input : ident.input);
@@ -470,7 +470,7 @@ function ecranDepannage() {
     erreur.textContent = '';
     const id = ident.input.value.trim().toLowerCase();
     if (!id) { erreur.textContent = 'Écris ton identifiant.'; return ident.input.focus(); }
-    if (!ancien.valeur()) { erreur.textContent = 'Écris l’ancien mot de passe de l’admin.'; return ancien.input.focus(); }
+    if (!ancien.valeur()) { erreur.textContent = 'Écris l’ancien mot de passe du CRM.'; return ancien.input.focus(); }
     if (nouveau.valeur() && !nouveau.valide()) { erreur.textContent = 'Le nouveau mot de passe ne suit pas encore les règles.'; return nouveau.input.focus(); }
     const liberer = occuper(remettre, 'Remise à zéro…');
     try {
@@ -481,7 +481,7 @@ function ecranDepannage() {
       ecrire('localStorage', IDENTIFIANT, id);
       afficher(el('div', { class: 'grand-icone grand-icone--ok' }, icone('i-ok')), titre('Compte remis à zéro'),
         phrase('Ton code de vérification et tes clés d’accès sont effacés, et toutes tes sessions sont fermées. Un courriel est parti à la boîte de l’agence.'),
-        phrase('Connecte-toi avec ton mot de passe : l’admin te fera ajouter un nouveau code, puis Face ID ou l’empreinte.'),
+        phrase('Connecte-toi avec ton mot de passe : le CRM te fera ajouter un nouveau code, puis Face ID ou l’empreinte.'),
         el('button', { class: 'btn btn--plein', type: 'button', 'data-focus': '', onclick: () => ecranConnexion() }, 'Se connecter'));
     } catch (e) { liberer(); erreur.textContent = e.message; }
   });
@@ -489,6 +489,6 @@ function ecranDepannage() {
     el('div', { class: 'info' }, el('b', null, 'Compte bloqué après 5 essais ratés'),
       el('span', null, 'Attends 15 minutes. Face ID et l’empreinte marchent encore pendant ce temps.')),
     el('div', { class: 'info info--attention' }, el('b', null, 'Téléphone perdu ou mot de passe oublié'),
-      el('span', null, 'Remets ton compte à zéro avec l’ancien mot de passe de l’admin : le code de vérification et les clés d’accès sont effacés, toutes tes sessions se ferment, et un courriel part à la boîte de l’agence.')),
+      el('span', null, 'Remets ton compte à zéro avec l’ancien mot de passe du CRM : le code de vérification et les clés d’accès sont effacés, toutes tes sessions se ferment, et un courriel part à la boîte de l’agence.')),
     erreur, form, liens(lien('Retour', () => ecranConnexion())));
 }
