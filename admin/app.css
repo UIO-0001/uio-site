@@ -1205,3 +1205,89 @@ html[data-theme="sombre"] .afaire__ligne[data-prio="urgent"] .afaire__prio { col
 @keyframes eclat { 0%, 35% { background: var(--voix-teinte); box-shadow: 0 0 0 8px var(--voix-teinte); } 100% { background: transparent; box-shadow: 0 0 0 8px transparent; } }
 @media (prefers-reduced-motion: reduce) { .eclat { animation: none; outline: 2px solid var(--lampe); outline-offset: 4px; } }
 .carte { scroll-margin-top: 96px; }
+
+/* ── L'assistant Claude (la bulle en bas à droite, touche A) ─────────────── */
+.assistant-bulle { position: fixed; z-index: 50; right: max(18px, env(safe-area-inset-right, 0px)); bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  display: grid; place-items: center; width: 56px; height: 56px; padding: 0; border: 0; border-radius: 50%; cursor: pointer;
+  background: linear-gradient(180deg, #374151, #1F2937); color: var(--lampe);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), 0 10px 26px -10px rgba(31, 41, 55, .7), 0 2px 6px rgba(31, 41, 55, .18);
+  transition: transform .35s var(--coule), box-shadow .2s; -webkit-tap-highlight-color: transparent; }
+.assistant-bulle svg { width: 26px; height: 26px; }
+.assistant-bulle:hover { transform: translateY(-2px) scale(1.04); }
+.assistant-bulle:active { transform: scale(.94); }
+.assistant-bulle[aria-expanded="true"] { transform: scale(.92); }
+html[data-theme="sombre"] .assistant-bulle { background: linear-gradient(180deg, #2B3850, #1B2436); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), inset 0 0 0 1px rgba(255, 255, 255, .08), 0 10px 26px -10px rgba(0, 0, 0, .8); }
+@media (max-width: 719px) { .assistant-bulle { right: max(12px, env(safe-area-inset-right, 0px)); bottom: calc(86px + env(safe-area-inset-bottom, 0px)); width: 52px; height: 52px; } }
+@media print { .assistant-bulle, .assistant { display: none !important; } }
+
+.assistant { position: fixed; z-index: 65; right: max(18px, env(safe-area-inset-right, 0px)); bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+  display: flex; flex-direction: column; width: min(420px, calc(100vw - 36px)); height: min(640px, calc(100dvh - 130px));
+  border-radius: 24px; background: var(--carte); box-shadow: var(--ombre-flotte), inset 0 0 0 1px var(--trait); overflow: hidden;
+  opacity: 0; transform: translateY(12px) scale(.98); transform-origin: bottom right; transition: opacity .2s, transform .45s var(--sortie); }
+.assistant.ouvert { opacity: 1; transform: none; }
+@media (max-width: 719px) {
+  html.avec-assistant { overflow: hidden; }
+  html.avec-assistant .assistant-bulle { display: none; }
+  .assistant { inset: 0; width: auto; height: auto; border-radius: 0; padding-top: env(safe-area-inset-top, 0px); }
+}
+.assistant__tete { display: flex; align-items: center; gap: 10px; flex: none; padding: 12px 8px 12px 16px; border-bottom: 1px solid var(--trait); }
+.assistant__marque { display: grid; place-items: center; width: 36px; height: 36px; flex: none; border-radius: 12px; background: linear-gradient(180deg, #374151, #1F2937); color: var(--lampe); }
+.assistant__marque svg { width: 20px; height: 20px; }
+.assistant__noms { flex: 1; min-width: 0; }
+.assistant__noms h2 { font-size: 1.0625rem; font-weight: 700; letter-spacing: -.01em; line-height: 1.2; }
+.assistant__noms p { overflow: hidden; color: var(--texte-3); font-size: .8125rem; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+.assistant__fil { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 14px; padding: 16px; }
+.assistant__vide { display: grid; gap: 10px; margin: auto 0 0; }
+.assistant__bonjour { font-size: 1.0625rem; font-weight: 650; line-height: 1.35; }
+.assistant__suggestions { display: grid; gap: 8px; padding-top: 4px; }
+.assistant__suggestions .puce { justify-content: flex-start; min-height: 40px; padding: 8px 14px; border-radius: 14px; white-space: normal; text-align: left; line-height: 1.35; font-weight: 550; }
+.assistant__moi { align-self: flex-end; max-width: 86%; padding: 10px 14px; border-radius: 18px 18px 6px 18px; background: var(--encre); color: var(--page); font-size: .9375rem; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
+.assistant__claude { display: grid; gap: 10px; max-width: 100%; }
+.assistant__texte { display: grid; gap: 8px; font-size: .9375rem; line-height: 1.5; overflow-wrap: anywhere; }
+.assistant__texte ul { display: grid; gap: 4px; padding-left: 18px; list-style: disc; }
+.assistant__texte b { font-weight: 650; }
+.assistant__cout { color: var(--texte-3); font-size: .75rem; font-variant-numeric: tabular-nums; }
+.assistant__travail { display: flex; align-items: center; gap: 10px; color: var(--texte-2); font-size: .875rem; }
+.assistant__travail .roue--petite { color: var(--lampe-trait); }
+.assistant__pied { flex: none; display: grid; gap: 8px; padding: 10px 12px calc(12px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--trait); }
+.assistant__note { padding: 0 4px; }
+.assistant__note code { font-size: .75rem; }
+.assistant__saisie { display: flex; align-items: flex-end; gap: 8px; padding: 6px 6px 6px 14px; border: 1.5px solid var(--trait-fort); border-radius: 22px; background: var(--carte); transition: border-color .15s, box-shadow .15s; }
+.assistant__saisie:focus-within { border-color: var(--encre); box-shadow: 0 0 0 1px var(--encre); }
+.assistant__saisie textarea { flex: 1; min-width: 0; min-height: 34px; max-height: 160px; padding: 6px 0; border: 0; background: transparent; color: var(--encre); font-size: 1rem; line-height: 1.4; resize: none; }
+.assistant__saisie textarea:focus { outline: none; }
+.assistant__saisie textarea::placeholder { color: var(--texte-3); }
+.assistant__envoyer { display: grid; place-items: center; width: 36px; height: 36px; flex: none; padding: 0; border: 0; border-radius: 50%; background: var(--lampe); color: #1F2937; cursor: pointer; transition: opacity .2s, transform .15s; }
+.assistant__envoyer svg { width: 18px; height: 18px; }
+.assistant__envoyer:disabled { opacity: .35; cursor: not-allowed; }
+.assistant__envoyer:not(:disabled):active { transform: scale(.92); }
+
+.proposition { display: grid; gap: 10px; padding: 14px; border-radius: 18px; background: var(--carte-2); box-shadow: inset 0 0 0 1px var(--trait); }
+.proposition--attente { box-shadow: inset 0 0 0 1.5px var(--lampe-trait); background: var(--carte); }
+.proposition__tete { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.proposition__tete b { font-size: .9375rem; font-weight: 650; line-height: 1.35; overflow-wrap: anywhere; }
+.proposition__champs { display: grid; grid-template-columns: minmax(70px, auto) minmax(0, 1fr); gap: 4px 12px; margin: 0; font-size: .875rem; line-height: 1.4; }
+.proposition__champs dt { color: var(--texte-3); }
+.proposition__champs dt::first-letter { text-transform: uppercase; }
+.proposition__champs dd { margin: 0; overflow-wrap: anywhere; }
+.proposition__champs s { color: var(--texte-3); }
+.proposition__champs b { font-weight: 650; }
+.proposition__details { display: grid; gap: 3px; padding-left: 16px; list-style: disc; color: var(--texte-2); font-size: .8125rem; line-height: 1.4; }
+.proposition__boutons { display: flex; flex-wrap: wrap; gap: 8px; }
+.proposition .erreur { min-height: 0; font-size: .875rem; }
+.proposition--ignore, .proposition--expire, .proposition--defait { opacity: .75; }
+
+/* Réglages → Brancher mon Claude : la carte de l'assistant */
+.assistant-jauge { display: grid; gap: 6px; }
+.assistant-jauge__barre { height: 8px; border-radius: 999px; background: var(--carte-2); box-shadow: inset 0 0 0 1px var(--trait); overflow: hidden; }
+.assistant-jauge__barre i { display: block; height: 100%; border-radius: inherit; background: var(--lampe-trait); }
+.assistant-jauge p { font-size: .9375rem; color: var(--texte-2); }
+.assistant-jauge b { color: var(--encre); font-variant-numeric: tabular-nums; }
+.assistant-qui { display: grid; gap: 4px; font-size: .875rem; }
+.assistant-qui li { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-top: 1px solid var(--trait); }
+.assistant-qui li:first-child { border-top: 0; }
+.assistant-qui b { font-variant-numeric: tabular-nums; }
+.assistant-champs { display: grid; gap: 12px; }
+.assistant-champs .champ > span { font-size: .9375rem; font-weight: 600; }
+@media (min-width: 720px) { .assistant-champs { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); } }
+#carte-assistant .carte__corps { display: grid; gap: 14px; }

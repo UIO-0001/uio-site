@@ -6,11 +6,11 @@
 // Le réseau seulement pour un fichier qui manque. Changer VERSION à chaque mise en ligne du CRM
 // (toujours « admin-… » : le ménage des anciennes versions cherche ce début) :
 // la nouvelle version s'installe à côté et l'app propose « Mettre à jour ».
-const VERSION = 'admin-2026-11-09-1';
+const VERSION = 'admin-2026-11-09-2';
 const BASE = new URL('./', self.location.href).pathname;           // /admin/
 const COQUILLE = [
   './', 'app.css', 'theme.js', 'manifest.webmanifest',
-  'js/afaire.js', 'js/app.js', 'js/api.js', 'js/appareil.js', 'js/argent.js', 'js/cles.js', 'js/clients.js', 'js/compte.js', 'js/confiance.js',
+  'js/afaire.js', 'js/app.js', 'js/api.js', 'js/appareil.js', 'js/assistant.js', 'js/argent.js', 'js/cles.js', 'js/clients.js', 'js/compte.js', 'js/confiance.js',
   'js/connexion.js', 'js/equipe.js', 'js/etat.js', 'js/fiche.js', 'js/formes.js', 'js/installer.js', 'js/navigation.js', 'js/notifications.js', 'js/outils.js', 'js/panneau.js', 'js/prospects.js', 'js/rapport.js', 'js/recherche.js',
   'js/qr.js', 'js/tableau.js', 'js/ui.js', 'js/vendor/qrcode.mjs',
   'icones/icone-192.png', 'icones/apple-touch-icon.png', 'icones/icone-admin.svg', 'icones/icone-admin-32.png', 'icones/icone-admin-192.png', 'icones/badge-96.png',
