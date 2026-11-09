@@ -18,6 +18,7 @@ import { preparerConnexion, demarrerConnexion } from './connexion.js';
 import { installer, quandInstallChange } from './installer.js';
 import { ouvrirRecherche, viderRecherche, rechercheOuverte } from './recherche.js';
 import { reprendreNotifications, brancherNotifications } from './notifications.js';
+import { ouvrirAssistant, fermerAssistant, viderAssistant, assistantOuvert, brancherAssistant, chargerReglagesAssistant } from './assistant.js';
 
 const CACHE_DEPUIS = 'uio-admin-cache-depuis';     // l'heure où l'admin est passé en arrière-plan
 const INSTALLER_NON = 'uio-admin-installer-non';
@@ -79,6 +80,7 @@ function remettreAZero() {
   viderArgent();
   viderEquipe();
   viderProspects();
+  viderAssistant();
 }
 
 function verifierExpiration() {
@@ -147,7 +149,7 @@ function actualiser() {
 
 quandVue('reglages', () => { rendreCompte(); chargerCompte(); });
 quandPage('historique', () => chargerJournal());
-quandPage('claude', () => { rendreClaude(); if (!E.equipe || Date.now() - E.equipeLu > 30e3) chargerEquipe(); });
+quandPage('claude', () => { chargerReglagesAssistant(); rendreClaude(); if (!E.equipe || Date.now() - E.equipeLu > 30e3) chargerEquipe(); });
 quandPage('systeme', () => {
   rendrePouls(); rendreSite(); rendreOffre();
   chargerGithub();
@@ -218,6 +220,7 @@ document.addEventListener('keydown', e => {
     return;
   }
   if (e.key === 'Escape') {
+    if (assistantOuvert() && !E.panneau && $('#aide').hidden && !rechercheOuverte()) { fermerAssistant(); return; }
     if (!$('#aide').hidden) fermerAide();
     else if (E.panneau && $('#panneau-pied').dataset.abandon) E.panneau.reprendre();
     else if (E.panneau) fermerPanneau();
@@ -230,6 +233,7 @@ document.addEventListener('keydown', e => {
   if (k === '/') { e.preventDefault(); ouvrirRecherche(); }
   else if (k === 'n' || k === 'N') { e.preventDefault(); montrer('clients'); nouveau(); }
   else if (k === 'r' || k === 'R') { e.preventDefault(); actualiser(); }
+  else if (k === 'a' || k === 'A') { e.preventDefault(); ouvrirAssistant(); }
   else if (k === 't' || k === 'T') basculerTheme();
   else if (k === 'l' || k === 'L') { e.preventDefault(); verrouiller(); }
   else if (['1', '2', '3', '4'].includes(k)) montrer(ONGLETS[Number(k) - 1]);
@@ -326,6 +330,9 @@ $('#recherche').addEventListener('keydown', e => {
   if (premier) premier.click();
 });
 document.addEventListener('uio:reveil', () => { if (sessionActuelle()) chargerClients(); });
+// Un changement confirmé dans l'assistant : tout se relit (l'argent, l'équipe, les clients…)
+document.addEventListener('uio:assistant', () => { if (sessionActuelle()) chargerTout(true); });
+brancherAssistant();
 window.addEventListener('resize', () => { placerLentille(); if (sessionActuelle() && surPage('systeme')) rendrePouls(); });
 window.addEventListener('beforeunload', e => { if (E.panneau && E.panneau.modifie && E.panneau.modifie()) { e.preventDefault(); e.returnValue = ''; } });
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(placerLentille);
