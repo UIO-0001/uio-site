@@ -10,8 +10,9 @@ import { ouvrirPanneau, fermerPanneau } from './panneau.js';
 import { montrer } from './navigation.js';
 import { depliant } from './ui.js';
 import { prenom, rendreBonjour } from './tableau.js';
-import { fr, el, Invalide, nouvelleCle, dureeHM, badge, rangee, confirmations, champTexte, champDate, pilules, formulaireEnLigne,
+import { fr, el, Invalide, nouvelleCle, dureeHM, badge, rangee, confirmations, champTexte, champDate, pilules, liste, formulaireEnLigne,
   panneauFormulaire as panneauBase } from './formes.js';
+import { suivreDocuments } from './fiche.js';
 
 const ui = { construit: false, charge: null, confirmer: '', filtre: 'moi', plusTaches: false, recapsMontres: 6,
   emoji: '', note: '', chrono: false, brouillons: new Map(), clesNotes: new Map(), trouve: '', trouveJusqua: 0 };
@@ -98,6 +99,7 @@ async function ecrire(chemin, corps) {
   if (r.equipe) { E.equipe = r.equipe; E.equipeErreur = ''; E.equipeLu = Date.now(); }
   rendreEquipe();
   rendreBonjour();
+  if (chemin === 'document' && r.equipe) suivreDocuments(r.equipe);   // la fiche du client suit
   if (E.panneau && E.panneau.rafraichir) E.panneau.rafraichir();
   return r;
 }
@@ -744,21 +746,29 @@ function rendreDocuments() {
   vider(boite, el('ul', { class: 'documents' }, docs.map(d => el('li', { class: 'document' },
     el('a', { class: 'document__lien', href: urlSure(d.lien), target: '_blank', rel: 'noopener noreferrer' },
       el('span', { class: 'document__icone', 'aria-hidden': 'true' }, icone('i-document')),
-      el('span', { class: 'document__texte' }, el('b', null, d.titre), el('span', null, d.note || hote(d.lien)))),
+      el('span', { class: 'document__texte' }, el('b', null, d.titre, d.client ? badge(nomClient(d.client), 'neutre') : null), el('span', null, d.note || hote(d.lien)))),
     el('button', { class: 'mini', type: 'button', 'aria-label': `Modifier « ${d.titre} »`, title: 'Modifier', 'data-focus': `doc-${d.id}`,
       onclick: () => ouvrirDocument(d.id) }, icone('i-crayon'))))));
 }
+
+// Le nom d'un client (l'espace client), pour ses documents
+const nomClient = id => { const c = (E.clients || []).find(x => String(x.client_id) === String(id)); return (c && (c.project_name || c.client_id)) || id; };
 
 export function ouvrirDocument(id = '') {
   if (!pret()) return;
   const d = id ? E.equipe.documents.find(x => x.id === id) : null;
   if (id && !d) return toast('Ce document n’existe plus.', true);
   const cle = nouvelleCle('do');
+  // À qui est ce document : l'agence, ou un client (il est alors aussi dans sa fiche)
+  const clients = [...(E.clients || [])].sort((a, b) => String(a.project_name || a.client_id).localeCompare(String(b.project_name || b.client_id), 'fr', { sensitivity: 'base' }));
+  const choix = [['', 'L’agence'], ...clients.map(c => [String(c.client_id), c.project_name || String(c.client_id)])];
+  if (d && d.client && !choix.some(([v]) => v === d.client)) choix.push([d.client, d.client]);
+  const aQui = liste('À qui', choix, d ? d.client || '' : '', 'Un document d’un client est aussi dans sa fiche (Clients).');
   const titre = champTexte('Nom', { maxlength: 100, autocomplete: 'off', placeholder: 'Ex. : Dossier Drive de l’agence', value: d ? d.titre : null });
   const lien = champTexte('Lien', { type: 'url', inputmode: 'url', maxlength: 500, autocomplete: 'off', spellcheck: 'false', autocapitalize: 'none',
     placeholder: 'https://…', value: d ? d.lien : null });
   const note = champTexte('Note', { maxlength: 200, autocomplete: 'off', placeholder: 'Ex. : contrats, factures et logos', value: d ? d.note || null : null }, '', 'facultatif');
-  const valeurs = () => [titre, lien, note].map(c => c.input.value.trim()).join('|');
+  const valeurs = () => [titre, lien, note, aQui].map(c => c.input.value.trim()).join('|');
   const depart = valeurs();
   const apres = [];
   if (d) {
@@ -775,12 +785,12 @@ export function ouvrirDocument(id = '') {
   }
   panneauFormulaire({
     titre: d ? d.titre : 'Nouveau document', sousTitre: 'Un lien que toute l’équipe retrouve ici', edition: !!d, apres,
-    corps: [titre.boite, lien.boite, note.boite], bouton: d ? 'Enregistrer' : 'Ajouter', chemin: 'document',
+    corps: [titre.boite, lien.boite, note.boite, aQui.boite], bouton: d ? 'Enregistrer' : 'Ajouter', chemin: 'document',
     preparer: () => {
       const t = titre.input.value.trim(), l = lien.input.value.trim();
       if (!t) throw new Invalide('Donne un nom au document.', titre.input);
       if (!/^https:\/\/\S+$/.test(l)) throw new Invalide('Colle le lien du document : il commence par https://', lien.input);
-      return { ...(d ? { id: d.id } : { cle }), titre: t, lien: l, note: note.input.value.trim() };
+      return { ...(d ? { id: d.id } : { cle }), titre: t, lien: l, note: note.input.value.trim(), client: aQui.input.value };
     },
     reussite: d ? 'Document enregistré.' : 'Document ajouté.',
     modifie: () => valeurs() !== depart,

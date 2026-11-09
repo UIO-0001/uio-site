@@ -331,7 +331,7 @@ export function ouvrirProspect(id) {
 function creerEspaceClient(p) {
   fermerPanneau();
   if (E.panneau) return;
-  ouvrirNouveau({ projet: p.entreprise, quandCree: async clientId => {
+  ouvrirNouveau({ projet: p.entreprise, courriel: p.courriel, telephone: p.telephone, quandCree: async clientId => {
     try { await ecrire('prospect', { id: p.id, client: clientId }); } catch (e) { /* le client existe quand même */ }
   } });
 }

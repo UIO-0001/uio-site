@@ -1,207 +1,172 @@
-// Clients : la liste, le panneau d'un client (progression, étapes, note, mot de passe), un nouveau client.
-import { $, $$, el, icone, vider, nombre, pluriel, urlSure, toast, copier, normal } from './outils.js';
+// Clients : la liste (une carte par client : où en est son service, son forfait, ses factures à
+// encaisser), la carte « Espace client » du tableau de bord, et un nouveau client.
+// La fiche de chaque client (fiche.js) remplace l'ancien « avancement en % + étapes » (2026-11-08).
+import { $, icone, vider, nombre, pluriel, toast, copier, normal, urlSure } from './outils.js';
 import { E, ESPACE_CLIENT } from './etat.js';
-import { api } from './api.js';
+import { api, sessionActuelle } from './api.js';
 import { gros, rendreBonjour } from './tableau.js';
 import { montrer } from './navigation.js';
 import { ouvrirPanneau, fermerPanneau } from './panneau.js';
-import { blocRapport } from './rapport.js';
+import { el } from './formes.js';
+import { argent as montant, badgeFacture } from './argent.js';
+import { ficheDe, documentsDe, abonnementDe, aEncaisser, badgeStatut, ouvrirFiche } from './fiche.js';
 
+// ─── Lecture ───────────────────────────────────────────────────────────────
+// L'espace client (comptes, note, démo, fonctionnalités) et les fiches, lus ensemble
 export async function chargerClients(auto = false) {
-  if (auto && E.panneau && E.panneau.modifie()) return;   // ne jamais écraser une modification en cours
-  try {
-    const d = await api('/portal/admin/clients', { delai: 80000 });
+  // Jamais par-dessus une modification en cours, ni un rappel ou un document qu'on écrit
+  if (auto && E.panneau && ((E.panneau.modifie && E.panneau.modifie()) || (E.panneau.occupe && E.panneau.occupe()))) return;
+  const s = sessionActuelle();
+  const [clients, fiches] = await Promise.allSettled([
+    api('/portal/admin/clients', { delai: 80000 }),
+    api('/portal/admin/fiches', { delai: 80000 })
+  ]);
+  if (sessionActuelle() !== s) return;            // verrouillé pendant la lecture : rien n'est gardé
+  if (clients.status === 'fulfilled') {
+    const d = clients.value;
     E.clients = Array.isArray(d.clients) ? d.clients : [];
     E.fonctionnalites = Array.isArray(d.available_features) ? d.available_features : [];
     E.clientsErreur = ''; E.clientsLus = true;
-  } catch (e) {
-    if (e.statut === 401) return;
-    E.clientsErreur = e.message;
+  } else {
+    if (clients.reason.statut === 401) return;
+    E.clientsErreur = clients.reason.message;
   }
-  rendreClients(); rendrePortail(); rendreBonjour();
+  if (fiches.status === 'fulfilled') garderFiches(fiches.value);
+  else if (fiches.reason.statut !== 401) E.fichesErreur = fiches.reason.statut === 404 ? 'pas-encore' : fiches.reason.message;
+  apresLecture();
 }
 
+// Seulement les fiches (après un envoi, ou un changement dans l'Argent)
+export async function chargerFiches() {
+  const s = sessionActuelle();
+  try {
+    const d = await api('/portal/admin/fiches', { delai: 80000 });
+    if (sessionActuelle() !== s) return;
+    garderFiches(d);
+  } catch (e) {
+    if (e.statut === 401 || sessionActuelle() !== s) return;
+    E.fichesErreur = e.statut === 404 ? 'pas-encore' : e.message;
+  }
+  apresLecture();
+}
+
+// Chaque réponse du serveur sur les fiches les porte toutes : on les garde telles quelles
+export function garderFiches(r) {
+  if (!r || !r.fiches || typeof r.fiches !== 'object') return;
+  E.fiches = { fiches: r.fiches, documents: Array.isArray(r.documents) ? r.documents : [], statuts: r.statuts || null,
+    langues: r.langues || null, envoi_du_mois: r.envoi_du_mois || null, repondre_a: r.repondre_a || '', genere_a: r.genere_a || '' };
+  E.fichesErreur = '';
+}
+
+function apresLecture() {
+  rendreClients(); rendrePortail(); rendreBonjour();
+  if (E.panneau && E.panneau.type === 'client' && E.panneau.rafraichir && !(E.panneau.occupe && E.panneau.occupe())) E.panneau.rafraichir();
+}
+
+// ─── Ordre : ce qui demande quelque chose d'abord ──────────────────────────
+const RANGS = { mise_en_place: 2, en_service: 3, termine: 4 };
+const nomDe = c => String(c.project_name || c.client_id || '');
+function priorite(c) {
+  const dues = aEncaisser(ficheDe(c));
+  if (dues.some(x => x.etat === 'en_retard')) return 0;
+  if (dues.length) return 1;
+  return RANGS[ficheDe(c).statut] ?? 3;
+}
+const trier = liste => [...liste].sort((a, b) => priorite(a) - priorite(b) || nomDe(a).localeCompare(nomDe(b), 'fr', { sensitivity: 'base' }));
+// « Répondeur · 199 $ par mois »
+const forfaitCourt = ab => (ab ? `${ab.forfait_nom} · ${montant(ab.total_mensuel)} par mois` : '');
+// « Facture 2 · 199 $ », ou « 2 factures · 398 $ »
+function aPayer(dues) {
+  if (!dues.length) return '';
+  if (dues.length === 1) return `Facture ${dues[0].numero} · ${montant(dues[0].reste)}`;
+  return `${dues.length} factures · ${montant(dues.reduce((s, x) => s + (Number(x.reste) || 0), 0))}`;
+}
+
+// ─── Le tableau de bord : la carte « Espace client » ───────────────────────
 export function rendrePortail() {
   const boite = $('#portail');
+  if (!boite) return;
   if (!E.clientsLus) return vider(boite, el('p', { class: 'vide' }, E.clientsErreur || 'Lecture en cours…'));
   const n = E.clients.length;
-  const enCours = E.clients.filter(c => (parseInt(c.progress, 10) || 0) < 100);
-  const finis = n - enCours.length;
-  const blocs = [gros(n, n >= 2 ? 'clients' : 'client',
-    [pluriel(enCours.length, 'projet', 'projets')], ' en cours, ', [nombre(finis)], finis >= 2 ? ' terminés.' : ' terminé.')];
-  if (!n) blocs.push(el('p', { class: 'vide' }, 'Aucun client pour l’instant. Ajoute le premier dans Clients.'));
-  else blocs.push(el('div', { class: 'raccourcis' }, [...E.clients].sort((a, b) => (parseInt(a.progress, 10) || 0) - (parseInt(b.progress, 10) || 0)).slice(0, 5).map(c => {
-    const pct = Math.max(0, Math.min(100, parseInt(c.progress, 10) || 0));
-    return el('button', { class: 'raccourci raccourci--bouton', type: 'button', onclick: () => ouvrirClient(c.client_id) },
-      el('b', null, c.project_name || c.client_id),
-      el('span', { class: 'jauge-ligne pleine-largeur' }, el('span', { class: 'jauge', role: 'img', 'aria-label': `Progression ${pct} %` }, el('i', { style: `width:${pct}%` })), el('b', null, `${pct} %`)));
-  })));
-  vider(boite, blocs);
+  if (!n) return vider(boite, gros(0, 'client'), el('p', { class: 'vide' }, 'Aucun client pour l’instant. Ajoute le premier dans Clients.'));
+  const compte = { en_service: 0, mise_en_place: 0, termine: 0 };
+  let retards = 0, dues = 0;
+  for (const c of E.clients) {
+    const f = ficheDe(c), d = aEncaisser(f);
+    compte[f.statut] = (compte[f.statut] || 0) + 1;
+    retards += d.filter(x => x.etat === 'en_retard').length;
+    dues += d.filter(x => x.etat === 'due').length;
+  }
+  // « 2 en service, 1 en mise en place et 1 terminé. »
+  const morceaux = [];
+  if (compte.en_service) morceaux.push([[nombre(compte.en_service)], ' en service']);
+  if (compte.mise_en_place) morceaux.push([[nombre(compte.mise_en_place)], ' en mise en place']);
+  if (compte.termine) morceaux.push([[nombre(compte.termine)], compte.termine >= 2 ? ' terminés' : ' terminé']);
+  const phrase = [];
+  morceaux.forEach((m, i) => { if (i) phrase.push(i === morceaux.length - 1 ? ' et ' : ', '); phrase.push(...m); });
+  phrase.push('.');
+  if (retards) phrase.push(' ', el('b', { class: 'attention' }, pluriel(retards, 'facture en retard', 'factures en retard')), '.');
+  else if (dues) phrase.push(' ', [pluriel(dues, 'facture due', 'factures dues')], '.');
+  vider(boite, gros(n, n >= 2 ? 'clients' : 'client', ...phrase),
+    el('div', { class: 'raccourcis' }, trier(E.clients).slice(0, 5).map(c => {
+      const f = ficheDe(c), d = aEncaisser(f), ab = abonnementDe(f);
+      return el('button', { class: 'raccourci raccourci--bouton raccourci--client', type: 'button', 'data-focus': `raccourci-${c.client_id}`, onclick: () => ouvrirClient(c.client_id) },
+        el('b', null, nomDe(c)),
+        d.length ? badgeFacture(d[0]) : badgeStatut(f.statut),
+        el('span', null, d.length ? aPayer(d) : forfaitCourt(ab) || f.contact || `@${c.username}`));
+    })));
 }
+
+// ─── La liste des clients ──────────────────────────────────────────────────
+const texteRecherche = c => {
+  const f = ficheDe(c);
+  return normal([c.project_name, c.client_id, c.username, f.contact, f.courriel, f.telephone, f.metier, f.site].join(' '));
+};
 
 export function rendreClients() {
   const boite = $('#clients-liste');
+  if (!boite) return;
   const n = E.clientsLus ? String(E.clients.length) : '';
   if (E.sousClients !== 'prospects') $('#clients-compte').textContent = n;   // sinon : le nombre de prospects
   if ($('#n-clients')) $('#n-clients').textContent = n;
   if (!E.clientsLus) return vider(boite, el('p', { class: 'vide' }, E.clientsErreur || 'Lecture en cours…'));
-  const q = normal(E.recherche);
-  const liste = E.clients.filter(c => !q || normal(`${c.project_name} ${c.client_id} ${c.username}`).includes(q));
-  if (!E.clients.length) return vider(boite, el('p', { class: 'vide' }, 'Aucun client pour l’instant. ', el('b', null, 'Nouveau client'), ' crée son accès à l’espace client.'));
-  if (!liste.length) return vider(boite, el('p', { class: 'vide' }, `Aucun client ne correspond à « ${E.recherche} ».`));
-  vider(boite, liste.map(c => {
-    const pct = Math.max(0, Math.min(100, parseInt(c.progress, 10) || 0));
-    const etapes = Array.isArray(c.checklist) ? c.checklist : [];
-    const faites = etapes.filter(e => e && e.done).length;
-    const suivante = etapes.find(e => e && !e.done);
-    const actives = E.fonctionnalites.filter(f => c.features && c.features[f.key]);
-    return el('button', { class: 'client', type: 'button', 'data-id': c.client_id, onclick: () => ouvrirClient(c.client_id) },
-      el('span', { class: 'client__haut' }, el('span', { class: 'client__nom' }, c.project_name || c.client_id), el('span', { class: 'client__pct' }, `${pct} %`)),
-      el('span', { class: 'jauge', role: 'img', 'aria-label': `Progression ${pct} %` }, el('i', { style: `width:${pct}%` })),
-      el('span', { class: 'client__meta' }, el('span', null, `@${c.username}`), el('span', null, `ID ${c.client_id}`), actives.map(f => el('span', { class: 'marque' }, f.label))),
-      etapes.length ? el('span', { class: 'client__etapes' }, `${faites} étape${faites > 1 ? 's' : ''} sur ${etapes.length}`, suivante ? [' · ensuite : ', el('b', null, suivante.label)] : ' · tout est fait') : null);
-  }));
-}
-
-export function ouvrirClient(id) {
-  const c = E.clients.find(x => String(x.client_id) === String(id));
-  if (!c) return;
-  if (E.vue !== 'clients') montrer('clients');
-  const donnees = {
-    progress: Math.max(0, Math.min(100, parseInt(c.progress, 10) || 0)),
-    demo_url: c.demo_url || '',
-    notes: c.notes || '',
-    checklist: (Array.isArray(c.checklist) ? c.checklist : []).filter(e => e && e.label).map(e => ({ label: String(e.label), done: !!e.done })),
-    features: Object.fromEntries(E.fonctionnalites.map(f => [f.key, !!(c.features && c.features[f.key])]))
-  };
-  // Le rapport du mois : ses avis et le mot de l'équipe s'enregistrent avec le reste (même bouton)
-  const rapport = blocRapport(c, () => etat.majPied && etat.majPied());
-  const etat = { type: 'client', id: c.client_id, donnees, initial: JSON.stringify(donnees), rapport };
-  etat.modifie = () => JSON.stringify(donnees) !== etat.initial || rapport.modifie();
-
-  const marque = el('span', { class: 'modif', hidden: true }, 'Changements non enregistrés');
-  const enregistrer = el('button', { class: 'btn', type: 'button', disabled: true, onclick: () => enregistrerClient(etat) }, 'Enregistrer');
-  etat.majPied = () => { const m = etat.modifie(); marque.hidden = !m; enregistrer.disabled = !m || etat.envoi; };
-  etat.enregistrer = () => enregistrerClient(etat);
-  etat.boutonEnregistrer = enregistrer;
-  const change = () => etat.majPied();
-
-  // Progression
-  const sortie = el('output', { for: 'p-progres' }, `${donnees.progress} %`);
-  const curseur = el('input', { id: 'p-progres', type: 'range', min: 0, max: 100, step: 5, value: donnees.progress, style: `--p:${donnees.progress}%`,
-    oninput: e => { donnees.progress = Number(e.target.value); e.target.style.setProperty('--p', `${donnees.progress}%`); sortie.textContent = `${donnees.progress} %`; change(); } });
-  // Lien de la démo
-  const ouvrirDemo = el('a', { class: 'btn btn--contour btn--petit', target: '_blank', rel: 'noopener' }, 'Ouvrir');
-  const majDemo = () => { const u = urlSure(donnees.demo_url); ouvrirDemo.hidden = !u; if (u) ouvrirDemo.href = u; };
-  const demo = el('input', { id: 'p-demo', type: 'url', value: donnees.demo_url, placeholder: 'https://…', inputmode: 'url',
-    oninput: e => { donnees.demo_url = e.target.value.trim(); majDemo(); change(); } });
-  majDemo();
-  // Note
-  const compte = el('span', { class: 'champ__aide' });
-  const majCompte = () => { compte.textContent = `${donnees.notes.length} caractères. Le client la voit dans son espace.`; };
-  const note = el('textarea', { id: 'p-note', placeholder: 'Ex. : on attend vos photos pour terminer la page d’accueil.',
-    oninput: e => { donnees.notes = e.target.value; majCompte(); change(); } }, donnees.notes);
-  majCompte();
-  // Étapes
-  const etapes = el('ul', { class: 'etapes', 'aria-label': 'Étapes du projet' });
-  const dessinerEtapes = () => {
-    vider(etapes, editeurEtapes(donnees.checklist, () => { dessinerEtapes(); change(); }, change));
-    requestAnimationFrame(() => $$('textarea', etapes).forEach(ajusterHauteur));
-  };
-  dessinerEtapes();
-  const nouvelle = el('input', { type: 'text', placeholder: 'Ajouter une étape', 'aria-label': 'Nouvelle étape',
-    onkeydown: e => { if (e.key === 'Enter') { e.preventDefault(); ajouterEtape(); } } });
-  const ajouterEtape = () => { const t = nouvelle.value.trim(); if (!t) return; donnees.checklist.push({ label: t, done: false }); nouvelle.value = ''; dessinerEtapes(); change(); nouvelle.focus(); };
-  // Fonctionnalités
-  const fonctions = E.fonctionnalites.map(f => el('label', { class: 'interrupteur' },
-    el('span', null, el('b', null, f.label), f.desc && el('span', null, f.desc)),
-    el('input', { type: 'checkbox', role: 'switch', checked: donnees.features[f.key], onchange: e => { donnees.features[f.key] = e.target.checked; change(); } })));
-
-  const corps = [
-    el('div', { class: 'bloc' }, el('h3', null, 'Progression'), el('div', { class: 'progres' }, el('label', { class: 'sr', for: 'p-progres' }, 'Progression du projet'), curseur, sortie)),
-    el('div', { class: 'champ' }, el('label', { for: 'p-demo' }, 'Lien de la démo'), el('div', { class: 'champ__ligne' }, demo, ouvrirDemo)),
-    el('div', { class: 'bloc' }, el('h3', null, 'Étapes'), el('p', null, 'Coche ce qui est fait. Glisse une étape, ou utilise les flèches, pour changer l’ordre.'), etapes,
-      el('div', { class: 'ajout' }, nouvelle, el('button', { class: 'btn btn--contour btn--petit', type: 'button', onclick: ajouterEtape }, 'Ajouter'))),
-    el('div', { class: 'champ' }, el('label', { for: 'p-note' }, 'Note pour le client'), note, compte),
-    rapport.boite,
-    fonctions.length ? el('div', { class: 'bloc' }, el('h3', null, 'Fonctionnalités'), fonctions) : null,
-    blocMotDePasse(c)
-  ];
-  etat.focus = () => curseur;
-  ouvrirPanneau(etat, c.project_name || c.client_id, `@${c.username} · ID ${c.client_id}`, corps,
-    [marque, el('button', { class: 'btn btn--discret', type: 'button', onclick: () => fermerPanneau() }, 'Fermer'), enregistrer]);
-  etat.majPied();
-}
-
-// Un champ d'une ligne qui grandit avec son texte
-const ajusterHauteur = t => { t.style.height = 'auto'; t.style.height = `${t.scrollHeight}px`; };
-
-// Éditeur d'étapes : case, texte, glisser-déposer, et flèches pour le clavier.
-function editeurEtapes(liste, redessiner, change) {
-  return liste.map((e, i) => {
-    const ligne = el('li', { class: 'etape' + (e.done ? ' fait' : ''), draggable: 'true' });
-    const coche = el('input', { type: 'checkbox', checked: e.done, 'aria-label': `Fait : ${e.label}`,
-      onchange: ev => { e.done = ev.target.checked; ligne.classList.toggle('fait', e.done); change(); } });
-    const texte = el('textarea', { rows: 1, 'aria-label': `Étape ${i + 1}`,
-      oninput: ev => { ev.target.value = ev.target.value.replace(/\n/g, ' '); e.label = ev.target.value; ajusterHauteur(ev.target); change(); },
-      onkeydown: ev => { if (ev.key === 'Enter') ev.preventDefault(); },
-      onblur: ev => { if (!ev.target.value.trim()) { liste.splice(liste.indexOf(e), 1); redessiner(); } } });
-    texte.value = e.label;
-    const bouger = (de, vers) => { const [x] = liste.splice(de, 1); liste.splice(vers, 0, x); redessiner(); };
-    ligne.append(
-      el('span', { class: 'poignee', title: 'Glisser pour déplacer' }, icone('i-poignee')),
-      coche, texte,
-      el('span', { class: 'etape__outils' },
-        el('button', { class: 'mini', type: 'button', disabled: i === 0, 'aria-label': `Monter « ${e.label} »`, onclick: () => bouger(i, i - 1) }, icone('i-haut')),
-        el('button', { class: 'mini', type: 'button', disabled: i === liste.length - 1, 'aria-label': `Descendre « ${e.label} »`, onclick: () => bouger(i, i + 1) }, icone('i-bas')),
-        el('button', { class: 'mini', type: 'button', 'aria-label': `Retirer « ${e.label} »`, onclick: () => { liste.splice(i, 1); redessiner(); } }, icone('i-fermer'))));
-    ligne.addEventListener('dragstart', ev => { ev.dataTransfer.effectAllowed = 'move'; ev.dataTransfer.setData('text/plain', String(i)); ligne.classList.add('glisse'); });
-    ligne.addEventListener('dragend', () => ligne.classList.remove('glisse'));
-    ligne.addEventListener('dragover', ev => { ev.preventDefault(); ligne.classList.add('dessus'); });
-    ligne.addEventListener('dragleave', () => ligne.classList.remove('dessus'));
-    ligne.addEventListener('drop', ev => {
-      ev.preventDefault(); ligne.classList.remove('dessus');
-      const de = Number(ev.dataTransfer.getData('text/plain'));
-      if (!Number.isNaN(de) && de !== i) bouger(de, i);
-    });
-    texte.addEventListener('mousedown', () => { ligne.draggable = false; });
-    texte.addEventListener('mouseup', () => { ligne.draggable = true; });
-    texte.addEventListener('blur', () => { ligne.draggable = true; });
-    return ligne;
-  });
-}
-
-async function enregistrerClient(etat) {
-  if (!etat.modifie() || etat.envoi) return;
-  const d = etat.donnees;
-  // Le rapport d'abord vérifié : rien ne part si un de ses champs est à corriger
-  let demandeRapport = null;
-  try { demandeRapport = etat.rapport && etat.rapport.modifie() ? etat.rapport.preparer() : null; }
-  catch (e) { etat.rapport.montrerErreur(e); return; }
-  d.checklist = d.checklist.map(e => ({ label: e.label.trim(), done: !!e.done })).filter(e => e.label);
-  const projetChange = JSON.stringify(d) !== etat.initial;
-  etat.envoi = true; etat.boutonEnregistrer.textContent = 'Enregistrement…'; etat.majPied();
-  try {
-    if (projetChange) {
-      await api('/portal/admin/update', { methode: 'POST', corps: { client_id: etat.id, ...d } });
-      const c = E.clients.find(x => String(x.client_id) === String(etat.id));
-      if (c) Object.assign(c, JSON.parse(JSON.stringify(d)));
-      etat.initial = JSON.stringify(d);   // si le rapport échoue ensuite, le projet reste enregistré
-    }
-    if (demandeRapport) {
-      try { await etat.rapport.envoyer(demandeRapport); }
-      catch (e) { if (e.statut !== 401) etat.rapport.montrerErreur(e); throw Object.assign(e, { montre: true }); }
-    }
-    toast(demandeRapport && !projetChange ? 'Rapport enregistré. Le client le voit dès maintenant.' : 'Enregistré. Le client le voit dès maintenant.');
-    etat.envoi = false;
-    fermerPanneau(true);
-    rendreClients(); rendrePortail();
-  } catch (e) {
-    if (e.statut !== 401 && !e.montre) toast(e.message, true);
-    etat.envoi = false; etat.boutonEnregistrer.textContent = 'Enregistrer'; etat.majPied && etat.majPied();
+  if (!E.clients.length) {
+    return vider(boite, el('p', { class: 'vide' }, 'Aucun client pour l’instant. ', el('b', null, 'Nouveau client'), ' crée son accès à l’espace client et sa fiche.'));
   }
+  const q = normal(E.recherche).trim();
+  const liste = trier(E.clients).filter(c => !q || texteRecherche(c).includes(q));
+  const avis = E.fichesErreur && E.fichesErreur !== 'pas-encore' && !E.fiches
+    ? el('p', { class: 'note clients__avis' }, `Les fiches n’ont pas pu être lues (${E.fichesErreur}) : statut et factures manquent pour l’instant.`) : null;
+  if (!liste.length) return vider(boite, avis, el('p', { class: 'vide' }, `Aucun client ne correspond à « ${E.recherche.trim()} ».`));
+  vider(boite, avis, liste.map(carteClient));
 }
 
+function carteClient(c) {
+  const f = ficheDe(c), ab = abonnementDe(f), dues = aEncaisser(f);
+  const docs = documentsDe(c.client_id).length;
+  const actives = E.fonctionnalites.filter(x => c.features && c.features[x.key]);
+  const qui = [f.contact, f.metier].filter(Boolean).join(' · ') || `@${c.username}`;
+  const marques = [
+    ...actives.map(x => el('span', { class: 'marque' }, x.label)),
+    f.rapport_auto ? el('span', { class: 'marque marque--bleu' }, 'Rapport par courriel') : null,
+    docs ? el('span', { class: 'client__docs' }, icone('i-document'), pluriel(docs, 'document', 'documents')) : null
+  ].filter(Boolean);
+  return el('button', { class: 'client', type: 'button', 'data-id': c.client_id, 'data-focus': `client-${c.client_id}`, onclick: () => ouvrirClient(c.client_id) },
+    el('span', { class: 'client__haut' }, el('span', { class: 'client__nom' }, nomDe(c)), badgeStatut(f.statut)),
+    el('span', { class: 'client__meta' }, el('span', null, qui), el('span', null, forfaitCourt(ab) || 'Pas encore d’abonnement')),
+    dues.length ? el('span', { class: 'client__alerte' }, badgeFacture(dues[0]), el('span', null, aPayer(dues))) : null,
+    marques.length ? el('span', { class: 'client__marques' }, marques) : null);
+}
+
+// options : { section, rappel } (voir ouvrirFiche)
+export function ouvrirClient(id, options = {}) {
+  const c = E.clients.find(x => String(x.client_id) === String(id));
+  if (!c) return toast('Ce client n’est plus dans l’espace client.', true);
+  if (E.vue !== 'clients') montrer('clients');
+  ouvrirFiche(c, options);
+}
+
+// ─── Mot de passe et accès du client ───────────────────────────────────────
 // Mot de passe lisible et solide : 12 caractères sans 0/O, 1/l/i.
 function motDePasse() {
   const a = 'abcdefghjkmnpqrstuvwxyz23456789';
@@ -211,7 +176,7 @@ function motDePasse() {
   return `${s.slice(0, 4)}-${s.slice(4, 8)}-${s.slice(8)}`;
 }
 function messageAcces(identifiant, mdp) {
-  return `Bonjour,\n\nVoici votre accès à l’espace client d’Agence UIO, pour suivre votre projet :\n${ESPACE_CLIENT}\nNom d’utilisateur : ${identifiant}\nMot de passe : ${mdp}\n\nGardez-le précieusement : pour des raisons de sécurité, nous ne pouvons pas le revoir, seulement le remplacer.`;
+  return `Bonjour,\n\nVoici votre accès à l’espace client d’Agence UIO : votre service, votre forfait et le rapport de chaque mois.\n${ESPACE_CLIENT}\nNom d’utilisateur : ${identifiant}\nMot de passe : ${mdp}\n\nGardez-le précieusement : pour des raisons de sécurité, nous ne pouvons pas le revoir, seulement le remplacer.`;
 }
 function blocAcces(identifiant, mdp, titre) {
   const message = messageAcces(identifiant, mdp);
@@ -224,8 +189,8 @@ function blocAcces(identifiant, mdp, titre) {
       el('button', { class: 'puce', type: 'button', onclick: async () => toast(await copier(mdp) ? 'Mot de passe copié.' : 'Copie impossible.') }, 'Copier le mot de passe')));
 }
 
-function blocMotDePasse(c) {
-  const bloc = el('div', { class: 'bloc' }, el('h3', null, 'Mot de passe du client'),
+export function blocMotDePasse(c) {
+  const bloc = el('div', { class: 'bloc' }, el('h4', null, 'Mot de passe du client'),
     el('p', null, 'Personne ne peut relire un mot de passe : il est gardé chiffré. Si le client l’a perdu, donne-lui-en un nouveau.'));
   const zone = el('div', { class: 'bloc' });
   const debut = el('button', { class: 'btn btn--contour btn--petit debut', type: 'button', onclick: () => {
@@ -240,65 +205,60 @@ function blocMotDePasse(c) {
         await api('/portal/admin/mot_de_passe', { methode: 'POST', corps: { client_id: c.client_id, password: mdp } });
         vider(zone, blocAcces(c.username, mdp, 'Nouveau mot de passe enregistré.'));
       } catch (e) {
+        if (e.statut === 401) return;
         erreur.textContent = e.statut === 404 ? 'Le serveur n’a pas encore cette fonction : il faut d’abord le mettre à jour.' : e.message;
         valider.disabled = false; valider.textContent = 'Remplacer le mot de passe';
       }
     } }, 'Remplacer le mot de passe');
     vider(zone, el('div', { class: 'champ' }, el('label', { for: 'p-mdp' }, 'Nouveau mot de passe'),
       el('div', { class: 'champ__ligne' }, champ, el('button', { class: 'btn btn--contour btn--petit', type: 'button', onclick: () => { champ.value = motDePasse(); } }, 'Autre'))),
-      el('div', { class: 'actions' }, valider, el('button', { class: 'btn btn--discret btn--petit', type: 'button', onclick: () => { vider(zone); debut.hidden = false; } }, 'Annuler')), erreur);
+      el('div', { class: 'actions' }, valider, el('button', { class: 'btn btn--discret btn--petit', type: 'button', onclick: () => { vider(zone); debut.hidden = false; debut.focus(); } }, 'Annuler')), erreur);
     champ.focus(); champ.select();
   } }, 'Donner un nouveau mot de passe');
   bloc.append(debut, zone);
   return bloc;
 }
 
-// Les étapes que le client voit dans son espace, selon son forfait. « Site web » garde
-// les étapes de départ du serveur (structure, design, contenu…).
-const DEPART = ['Appel de départ : vos services, vos heures et vos urgences', 'Script de l’agent répondeur écrit pour votre métier',
-  'Votre numéro branché à l’agent répondeur', 'Urgences transférées à votre cellulaire'];
-const CENTRE = ['Rendez-vous réservés dans votre agenda', 'Demandes d’avis Google après chaque travail', 'Courriels automatiques : relances et rappels'];
-const MODELES = [
-  { nom: 'Répondeur', etapes: [...DEPART, 'Appels d’essai avec vous', 'Mise en service', 'Premier suivi : appels écoutés et script ajusté'] },
-  { nom: 'Croissance', etapes: [...DEPART, ...CENTRE, 'Appels d’essai avec vous', 'Mise en service', 'Premier rapport mensuel'] },
-  { nom: 'Complet', etapes: [...DEPART, ...CENTRE, 'Structure et textes de votre site', 'Design et photos du site', 'Site bilingue en ligne sur votre domaine', 'Appels d’essai avec vous', 'Mise en service', 'Premier rapport mensuel'] },
-  { nom: 'Site web', etapes: ['Structure du site', 'Design et couleurs', 'Contenu et textes', 'Photos et médias', 'SEO optimisé', 'Chatbot IA intégré', 'Tests mobile', 'Domaine connecté', 'Livraison finale'], serveur: true }
-];
-
-// options : { projet, quandCree } quand un prospect signé devient client (le nom est déjà écrit,
-// et le prospect garde le lien vers son espace client). Appelé par un bouton : options est l'événement.
+// ─── Nouveau client ────────────────────────────────────────────────────────
+// Son accès à l'espace client, puis sa fiche (« Mise en place »), avec ses coordonnées si on les a.
+// options : { projet, courriel, telephone, site, metier, quandCree } quand un prospect signé devient
+// client (le prospect garde le lien vers son espace client). Appelé par un bouton : options est l'événement.
+const COURRIEL_RE = /^[^\s@<>"'(),;:]{1,64}@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
 export function ouvrirNouveau(options) {
-  const { projet: nomDuProjet = '', quandCree = null } = options && !(options instanceof Event) ? options : {};
+  const o = options && !(options instanceof Event) ? options : {};
+  const quandCree = typeof o.quandCree === 'function' ? o.quandCree : null;
   if (E.vue !== 'clients') montrer('clients');
   const donnees = { project_name: '', client_id: '', username: '', password: motDePasse(), demo_url: '' };
+  const fiche = { contact: '', courriel: String(o.courriel || '').trim(), telephone: String(o.telephone || '').trim() };
   let idTouche = false, userTouche = false;
-  const etat = { type: 'nouveau', donnees, modifie: () => !!(donnees.project_name || donnees.demo_url) && !etat.cree };
+  const etat = { type: 'nouveau', donnees, modifie: () => !!(donnees.project_name || donnees.demo_url || fiche.contact) && !etat.cree };
   const slug = s => normal(s).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 32);
-  const champ = (id, libelle, attrs, aide) => el('div', { class: 'champ' }, el('label', { for: id }, libelle), el('input', { id, type: 'text', ...attrs }), aide && el('span', { class: 'champ__aide' }, aide));
-  const projet = champ('n-projet', 'Nom du projet', { placeholder: 'Ex. : Plomberie Côté', autocomplete: 'off' });
-  const ident = champ('n-id', 'ID client', { placeholder: 'plomberie-cote', autocomplete: 'off', spellcheck: 'false' }, 'Lettres, chiffres et tirets. Ne change plus ensuite.');
-  const user = champ('n-user', 'Nom d’utilisateur', { placeholder: 'plomberie-cote', autocomplete: 'off', spellcheck: 'false' }, 'Ce que le client tape pour se connecter.');
+  const champ = (id, libelle, attrs, aide, facultatif = false) => el('div', { class: 'champ' },
+    el('span', { class: 'champ__etiquette' }, el('label', { for: id }, libelle), facultatif ? el('span', { class: 'facultatif' }, ' (facultatif)') : null),
+    el('input', { id, type: 'text', ...attrs }), aide && el('p', { class: 'champ__aide' }, aide));
+  const projet = champ('n-projet', 'Nom du client', { placeholder: 'Ex. : Plomberie Côté', autocomplete: 'off', maxlength: 100 });
+  const ident = champ('n-id', 'ID client', { placeholder: 'plomberie-cote', autocomplete: 'off', spellcheck: 'false', autocapitalize: 'none' }, 'Lettres, chiffres et tirets. Ne change plus ensuite.');
+  const user = champ('n-user', 'Nom d’utilisateur', { placeholder: 'plomberie-cote', autocomplete: 'off', spellcheck: 'false', autocapitalize: 'none' }, 'Ce que le client tape pour se connecter.');
   const mdp = el('div', { class: 'champ' }, el('label', { for: 'n-mdp' }, 'Mot de passe'),
     el('div', { class: 'champ__ligne' }, el('input', { id: 'n-mdp', type: 'text', value: donnees.password, autocomplete: 'new-password', spellcheck: 'false' }),
       el('button', { class: 'btn btn--contour btn--petit', type: 'button', onclick: () => { donnees.password = motDePasse(); $('#n-mdp').value = donnees.password; } }, 'Autre')),
-    el('span', { class: 'champ__aide' }, 'Généré pour toi. Tu pourras copier le message à envoyer au client juste après.'));
-  const demo = champ('n-demo', 'Lien de la démo (facultatif)', { type: 'url', placeholder: 'https://…', inputmode: 'url' });
-  let modele = MODELES[0];
-  const apercu = el('ol', { class: 'apercu-etapes', 'aria-label': 'Étapes de départ' });
-  const majApercu = () => vider(apercu, modele.etapes.map(t => el('li', null, t)));
-  majApercu();
-  const forfait = el('fieldset', { class: 'choix' }, el('legend', null, 'Forfait'),
-    el('div', { class: 'choix__liste' }, MODELES.map((m, i) => el('label', null,
-      el('input', { type: 'radio', name: 'n-forfait', value: m.nom, checked: i === 0, onchange: () => { modele = m; majApercu(); } }),
-      el('span', null, m.nom)))),
-    el('p', { class: 'champ__aide' }, 'Les étapes que le client verra dans son espace. Tu pourras les changer ensuite.'), apercu);
+    el('p', { class: 'champ__aide' }, 'Généré pour toi. Tu pourras copier le message à envoyer au client juste après.'));
+  const contact = champ('n-contact', 'Personne-contact', { placeholder: 'Ex. : Marc Côté', autocomplete: 'off', maxlength: 80 }, '', true);
+  const courriel = champ('n-courriel', 'Courriel', { type: 'email', inputmode: 'email', placeholder: 'marc@plomberiecote.ca', autocomplete: 'off', spellcheck: 'false', autocapitalize: 'none', maxlength: 120, value: fiche.courriel || null },
+    'Pour son rappel de paiement et son rapport du mois.', true);
+  const telephone = champ('n-tel', 'Téléphone', { type: 'tel', inputmode: 'tel', placeholder: '819 555-0142', autocomplete: 'off', maxlength: 40, value: fiche.telephone || null }, '', true);
+  const demo = champ('n-demo', 'Lien de la démo', { type: 'url', placeholder: 'https://…', inputmode: 'url', spellcheck: 'false', autocapitalize: 'none' }, '', true);
   const erreur = el('p', { class: 'erreur', role: 'alert' });
   const creer = el('button', { class: 'btn', type: 'button' }, 'Créer le client');
-  const corps = [el('div', { class: 'deux' }, projet, ident), el('div', { class: 'deux' }, user, mdp), demo, forfait, erreur];
-  ouvrirPanneau(etat, 'Nouveau client', 'Son accès à l’espace client, avec les étapes de départ.', corps,
+  const corps = [el('div', { class: 'deux' }, projet, ident), el('div', { class: 'deux' }, user, mdp),
+    el('div', { class: 'bloc' }, el('h3', null, 'Sa fiche'), el('p', null, 'Il commence « En mise en place ». Le reste (forfait, factures, documents, notes) se remplit dans sa fiche.'),
+      contact, el('div', { class: 'deux' }, courriel, telephone)),
+    demo, erreur];
+  ouvrirPanneau(etat, 'Nouveau client', 'Son accès à l’espace client et sa fiche.', corps,
     [el('button', { class: 'btn btn--discret ml-auto', type: 'button', onclick: () => fermerPanneau() }, 'Annuler'), creer]);
   etat.focus = () => $('#n-projet');
   const iProjet = $('#n-projet'), iId = $('#n-id'), iUser = $('#n-user'), iMdp = $('#n-mdp'), iDemo = $('#n-demo');
+  const iContact = $('#n-contact'), iCourriel = $('#n-courriel'), iTel = $('#n-tel');
   iProjet.addEventListener('input', () => {
     donnees.project_name = iProjet.value.trim();
     if (!idTouche) iId.value = donnees.client_id = slug(iProjet.value);
@@ -308,31 +268,52 @@ export function ouvrirNouveau(options) {
   iUser.addEventListener('input', () => { userTouche = true; donnees.username = iUser.value.trim(); });
   iMdp.addEventListener('input', () => { donnees.password = iMdp.value.trim(); });
   iDemo.addEventListener('input', () => { donnees.demo_url = iDemo.value.trim(); });
-  if (nomDuProjet) { iProjet.value = String(nomDuProjet).slice(0, 100); iProjet.dispatchEvent(new Event('input')); }
+  iContact.addEventListener('input', () => { fiche.contact = iContact.value.trim(); });
+  iCourriel.addEventListener('input', () => { fiche.courriel = iCourriel.value.trim(); });
+  iTel.addEventListener('input', () => { fiche.telephone = iTel.value.trim(); });
+  if (o.projet) { iProjet.value = String(o.projet).slice(0, 100); iProjet.dispatchEvent(new Event('input')); }
   const envoyer = async () => {
+    if (etat.envoi || etat.cree) return;
     erreur.textContent = '';
-    if (!donnees.project_name || !donnees.client_id || !donnees.username) { erreur.textContent = 'Il faut le nom du projet, l’ID et le nom d’utilisateur.'; return; }
+    if (!donnees.project_name || !donnees.client_id || !donnees.username) { erreur.textContent = 'Il faut le nom du client, l’ID et le nom d’utilisateur.'; return; }
     if (!/^[a-z0-9][a-z0-9-]*$/i.test(donnees.client_id)) { erreur.textContent = 'L’ID ne garde que des lettres, des chiffres et des tirets.'; iId.focus(); return; }
     if (donnees.password.length < 8) { erreur.textContent = 'Le mot de passe doit avoir au moins 8 caractères.'; iMdp.focus(); return; }
+    if (fiche.courriel && !COURRIEL_RE.test(fiche.courriel)) { erreur.textContent = 'Le courriel est illisible (ex. : marc@plomberiecote.ca).'; iCourriel.focus(); return; }
+    if (fiche.telephone && fiche.telephone.replace(/\D/g, '').length < 10) { erreur.textContent = 'Le téléphone est illisible (ex. : 819 555-0142).'; iTel.focus(); return; }
     if (donnees.demo_url && !urlSure(donnees.demo_url)) { erreur.textContent = 'Le lien de la démo doit commencer par https://'; iDemo.focus(); return; }
+    etat.envoi = true;
     creer.disabled = true; creer.textContent = 'Création…';
     try {
       await api('/portal/admin/add_client', { methode: 'POST', corps: donnees });
-      etat.cree = true;
-      if (quandCree) quandCree(donnees.client_id);
-      let suite = `Il commence à 0 % avec les étapes du forfait ${modele.nom}. Ouvre-le dans la liste pour les ajuster.`;
-      if (!modele.serveur) {
-        try { await api('/portal/admin/update', { methode: 'POST', corps: { client_id: donnees.client_id, checklist: modele.etapes.map(label => ({ label, done: false })) } }); }
-        catch (e) { if (e.statut === 401) return; suite = 'Le client est créé, mais ses étapes n’ont pas pu être mises : ouvre-le dans la liste pour les ajouter.'; }
-      }
-      vider($('#panneau-corps'), blocAcces(donnees.username, donnees.password, `${donnees.project_name} est créé.`),
-        el('p', { class: 'champ__aide' }, suite));
-      vider($('#panneau-pied'), el('button', { class: 'btn ml-auto', type: 'button', onclick: () => fermerPanneau(true) }, 'Terminé'));
-      chargerClients();
     } catch (e) {
+      etat.envoi = false;
       if (e.statut !== 401) erreur.textContent = e.message === 'Username déjà utilisé' ? 'Ce nom d’utilisateur est déjà pris.' : e.message === 'ID client déjà utilisé' ? 'Cet ID est déjà pris.' : e.message;
       creer.disabled = false; creer.textContent = 'Créer le client';
+      return;
     }
+    etat.cree = true;
+    if (quandCree) { try { await quandCree(donnees.client_id); } catch (e) { /* le client existe quand même */ } }
+    // Sa fiche : seulement ce qui est écrit (celle d'un prospect garde le courriel et le téléphone du prospect)
+    let suite = 'Sa fiche est prête : ouvre-la pour ajouter son abonnement, ses documents et tes notes.';
+    const corpsFiche = { client: donnees.client_id, statut: 'mise_en_place', ...Object.fromEntries(Object.entries(fiche).filter(([, x]) => x)) };
+    try {
+      const r = await api('/portal/admin/fiche', { methode: 'POST', corps: corpsFiche, delai: 60000 });
+      garderFiches(r);
+    } catch (e) {
+      if (e.statut === 401) return;
+      suite = e.statut === 404 ? 'Sa fiche s’affichera dès que le serveur aura reçu sa mise à jour.'
+        : 'Le client est créé, mais sa fiche n’a pas pu être écrite : ouvre-le dans la liste pour la remplir.';
+    }
+    const lecture = chargerClients();
+    const ouvrir = el('button', { class: 'btn', type: 'button', onclick: async () => {
+      ouvrir.disabled = true;
+      await lecture;
+      fermerPanneau(true);
+      ouvrirClient(donnees.client_id);
+    } }, 'Ouvrir sa fiche');
+    vider($('#panneau-corps'), blocAcces(donnees.username, donnees.password, `${donnees.project_name} est créé.`),
+      el('p', { class: 'champ__aide' }, suite));
+    vider($('#panneau-pied'), el('button', { class: 'btn btn--discret ml-auto', type: 'button', onclick: () => fermerPanneau(true) }, 'Terminé'), ouvrir);
   };
   creer.addEventListener('click', envoyer);
   etat.enregistrer = envoyer;

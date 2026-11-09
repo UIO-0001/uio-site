@@ -8,6 +8,7 @@ import { el } from './formes.js';
 import { E } from './etat.js';
 import { montrer } from './navigation.js';
 import { chargerClients, ouvrirClient } from './clients.js';
+import { ficheDe, abonnementDe, aEncaisser, nomStatut } from './fiche.js';
 import { chargerProspects, voirProspects, choisirSousVue } from './prospects.js';
 import { chargerEquipe, ouvrirTache, ouvrirDocument, voirRecap } from './equipe.js';
 import { chargerArgent, ouvrirAbonnement, ouvrirDepense, argent, leJour } from './argent.js';
@@ -42,13 +43,12 @@ const OUVERTES = ['a_contacter', 'contacte', 'rendez_vous'];
 function deClients() {
   if (!Array.isArray(E.clients)) return [];
   return E.clients.map(c => {
-    const pct = Math.max(0, Math.min(100, parseInt(c.progress, 10) || 0));
-    const etapes = (Array.isArray(c.checklist) ? c.checklist : []).filter(x => x && x.label);
-    const suite = etapes.find(x => !x.done);
+    const f = ficheDe(c), ab = abonnementDe(f), dues = aEncaisser(f);
     return article({ groupe: 'clients', id: c.client_id, titre: c.project_name || c.client_id,
-      meta: [c.username ? `@${c.username}` : '', `${pct} %`, suite ? `ensuite : ${suite.label}` : ''],
-      champs: [c.client_id, c.notes, etapes.map(x => x.label), c.demo_url], poids: 1,
-      ouvrir: () => { choisirSousVue('clients'); ouvrirClient(c.client_id); } });
+      meta: [nomStatut(f.statut), f.contact || (c.username ? `@${c.username}` : ''), ab ? ab.forfait_nom : '',
+        dues.some(x => x.etat === 'en_retard') ? 'facture en retard' : dues.length ? 'facture due' : ''],
+      champs: [c.client_id, c.username, c.notes, c.demo_url, f.contact, f.courriel, f.telephone, chiffres(f.telephone), f.metier, f.site, f.adresse, f.notes_internes],
+      poids: 1, ouvrir: () => { choisirSousVue('clients'); ouvrirClient(c.client_id); } });
   });
 }
 
@@ -97,7 +97,8 @@ function deDocuments() {
   if (!Q || !Array.isArray(Q.documents)) return [];
   return Q.documents.map(d => {
     const u = urlSure(d.lien);
-    return article({ groupe: 'documents', id: d.id, titre: d.titre, meta: [d.note || hote(d.lien)], champs: [d.lien], externe: !!u,
+    const c = d.client ? (E.clients || []).find(x => String(x.client_id) === String(d.client)) : null;
+    return article({ groupe: 'documents', id: d.id, titre: d.titre, meta: [c ? c.project_name || c.client_id : d.client, d.note || hote(d.lien)], champs: [d.lien, d.client], externe: !!u,
       // Le document s'ouvre dans un nouvel onglet, comme dans la liste ; un lien illisible ouvre sa fiche
       ouvrir: () => { if (u) window.open(u, '_blank', 'noopener,noreferrer'); else { montrer('equipe'); ouvrirDocument(d.id); } } });
   });
