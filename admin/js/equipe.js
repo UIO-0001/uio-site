@@ -1,9 +1,10 @@
 // Équipe : les tâches entre associés (et leurs Claude), les récaps « Qui a fait quoi » avec
 // leurs réactions et leurs notes, les heures de chacun (le chrono de l'app et les sessions des
 // récaps, jamais comptées deux fois), les documents importants, et les clés pour brancher
-// son Claude. Le serveur garde tout dans la feuille du portail ; l'app montre et envoie.
+// son Claude (la carte est dans Réglages → Brancher mon Claude). Le serveur garde tout dans la
+// feuille du portail ; l'app montre et envoie.
 // Chaque ajout porte une clé tirée au hasard : envoyé deux fois, il n'est ajouté qu'une fois.
-import { $, $$, icone, vider, pluriel, majuscule, date, relatif, heure, ymd, toast, copier, urlSure, FUSEAU } from './outils.js';
+import { $, $$, icone, vider, pluriel, majuscule, date, relatif, heure, ymd, toast, copier, urlSure, signal, FUSEAU } from './outils.js';
 import { E, BACKEND } from './etat.js';
 import { api, sessionActuelle } from './api.js';
 import { ouvrirPanneau, fermerPanneau } from './panneau.js';
@@ -150,16 +151,12 @@ function construire() {
       el('div', { class: 'equipe__titre' }, el('h1', null, 'Équipe'), el('p', { id: 'equipe-phrase' }, 'Lecture de l’équipe…')),
       el('div', { class: 'equipe__actions' },
         el('button', { class: 'btn btn--petit btn--sombre chrono', type: 'button', id: 'chrono', onclick: basculerChrono }, icone('i-lecture'), 'Je commence'),
-        el('button', { class: 'btn btn--contour btn--petit', type: 'button', onclick: () => ouvrirTache() }, icone('i-plus'), 'Tâche'),
-        el('button', { class: 'btn btn--contour btn--petit', type: 'button', onclick: () => ouvrirRecap() }, icone('i-plus'), 'Récap'),
-        el('button', { class: 'btn btn--contour btn--petit', type: 'button', onclick: () => ouvrirCollage() }, icone('i-coller'), 'Coller de Claude'))),
+        el('button', { class: 'btn btn--contour btn--petit', type: 'button', onclick: () => ouvrirTache() }, icone('i-plus'), 'Tâche'))),
     el('div', { class: 'grille' },
-      carte('carte--taches l7', 'taches', 'Tâches', lien('Ajouter', () => ouvrirTache())),
+      carte('carte--taches l7', 'taches', 'Tâches'),
       carte('carte--heures l5', 'heures', 'Heures', lien('Mes heures', () => ouvrirHeures())),
       carte('carte--recaps l7', 'recaps', 'Qui a fait quoi', lien('Écrire un récap', () => ouvrirRecap())),
-      el('div', { class: 'pile l5' },
-        carte('carte--documents', 'documents', 'Documents', lien('Ajouter', () => ouvrirDocument())),
-        carte('carte--claude', 'claude', 'Brancher mon Claude'))));
+      carte('carte--documents l5', 'documents', 'Documents', lien('Ajouter', () => ouvrirDocument()))));
 }
 
 export function rendreEquipe() {
@@ -170,6 +167,9 @@ export function rendreEquipe() {
 
 const ouvertes = () => (E.equipe ? E.equipe.taches.filter(t => t.statut === 'a_faire' || t.statut === 'en_cours') : []);
 const tachesPourMoi = () => ouvertes().filter(t => t.pour === moi() || t.pour === TOUS);
+// Pour « À faire aujourd'hui » du tableau de bord : les tâches qui m'attendent, et les cocher de là
+export const mesTaches = () => tachesPourMoi();
+export const finirTache = id => ecrire('tache', { id, statut: 'fait' });
 const tachesDesAutres = () => ouvertes().filter(t => t.pour !== moi() && t.pour !== TOUS);
 const faites = () => (E.equipe ? E.equipe.taches.filter(t => t.statut === 'fait') : []);
 const trouverTache = id => (E.equipe ? E.equipe.taches.find(t => t.id === id) : null);
@@ -253,10 +253,9 @@ function rendreTaches() {
   const max = ui.plusTaches ? 200 : 7;
   const vides = { moi: 'Rien pour toi en ce moment.', autres: lui ? `Aucune tâche pour ${lui}.` : 'Aucune tâche pour les autres.',
     faites: 'Aucune tâche faite ces 30 derniers jours.' };
-  const ajouter = ui.filtre === 'faites' ? null : el('button', { class: 'lien-texte', type: 'button',
-    onclick: () => ouvrirTache({ pour: ui.filtre === 'autres' && a.length === 1 ? a[0].identifiant : moi() }) }, 'Ajouter une tâche');
+  signal('carte-taches', groupes.moi.some(t => t.priorite === 'urgente' || t.en_retard > 0) ? 'alerte' : '');
   vider(boite, filtres,
-    liste.length ? el('ul', { class: 'taches' }, liste.slice(0, max).map(ligneTache)) : el('p', { class: 'vide' }, vides[ui.filtre], ajouter ? [' ', ajouter, '.'] : null),
+    liste.length ? el('ul', { class: 'taches' }, liste.slice(0, max).map(ligneTache)) : el('p', { class: 'vide' }, vides[ui.filtre]),
     liste.length > max ? el('button', { class: 'btn btn--contour btn--petit debut', type: 'button', onclick: () => { ui.plusTaches = true; rendreEquipe(); } },
       `Voir les ${liste.length - max} autres`) : null);
 }
@@ -444,9 +443,7 @@ function rendreRecaps() {
   if (!boite || attente(boite)) return;
   const liste = E.equipe.recaps;
   if (!liste.length) {
-    return vider(boite, el('div', { class: 'vide vide--action' },
-      el('p', null, 'Aucun récap pour l’instant. Après une grande session de travail, ton Claude écrit ici ce qui a avancé (branche-le avec la carte « Brancher mon Claude »). Tu peux aussi l’écrire toi-même.'),
-      el('button', { class: 'btn btn--petit', type: 'button', onclick: () => ouvrirRecap() }, 'Écrire un récap')));
+    return vider(boite, el('p', { class: 'vide' }, 'Aucun récap pour l’instant. Ton Claude en écrit un après chaque grande session.'));
   }
   const montres = liste.slice(0, ui.recapsMontres);
   vider(boite, el('div', { class: 'recaps' }, montres.map(carteRecap)),
@@ -618,7 +615,7 @@ function rendreHeures() {
   // Une même échelle pour tout le monde : les barres se comparent d'un coup d'œil
   const max = Math.max(60, ...h.flatMap(p => p.par_jour.map(j => j.minutes)));
   vider(boite, el('div', { class: 'heures' }, h.map(p => blocHeures(p, max))),
-    el('p', { class: 'note' }, 'Le chrono de l’app et les sessions des récaps, réunis : un même moment ne compte jamais deux fois. La semaine commence le lundi.'));
+    el('p', { class: 'note' }, 'Le chrono de l’app et les récaps, réunis sans doublon. La semaine commence le lundi.'));
 }
 
 function auTravail(enCours) {
@@ -739,9 +736,7 @@ function rendreDocuments() {
   if (!boite || attente(boite)) return;
   const docs = E.equipe.documents;
   if (!docs.length) {
-    return vider(boite, el('div', { class: 'vide vide--action' },
-      el('p', null, 'Garde ici les liens importants : le dossier Drive de l’agence, le contrat d’associés, le tableau des dépenses…'),
-      el('button', { class: 'btn btn--petit', type: 'button', onclick: () => ouvrirDocument() }, 'Ajouter un lien')));
+    return vider(boite, el('p', { class: 'vide' }, 'Aucun lien pour l’instant : le dossier Drive, le contrat d’associés…'));
   }
   vider(boite, el('ul', { class: 'documents' }, docs.map(d => el('li', { class: 'document' },
     el('a', { class: 'document__lien', href: urlSure(d.lien), target: '_blank', rel: 'noopener noreferrer' },
@@ -799,14 +794,14 @@ export function ouvrirDocument(id = '') {
 }
 
 // ─── Brancher mon Claude ───────────────────────────────────────────────────
-function rendreClaude() {
+export function rendreClaude() {
   const boite = $('#equipe-claude');
   if (!boite || attente(boite)) return;
   const q = E.equipe;
   const miennes = q.cles.filter(k => k.qui === moi()).length;
   const code = t => el('code', null, t);
   vider(boite,
-    el('p', { class: 'claude__intro' }, 'Ton Claude lit tes tâches, en donne aux autres et écrit le récap de ta session. Sa clé ne sert qu’aux tâches et aux récaps : jamais à l’argent, aux clients ni aux comptes.'),
+    el('p', { class: 'claude__intro' }, 'Ton Claude lit tes tâches, en donne aux autres et écrit le récap de ta session. Sa clé ne sert qu’à ça : jamais à l’argent, aux clients ni aux comptes.'),
     el('ol', { class: 'etapes-installer' },
       el('li', null, el('span', null, el('b', null, 'Crée une clé'), ' pour ton Claude (une par Claude).')),
       el('li', null, el('span', null, 'Mets-la dans la variable ', code('UIO_CLE_CLAUDE'), ' de son environnement : jamais dans un message, un fichier ni sa mémoire.')),
@@ -816,7 +811,11 @@ function rendreClaude() {
       el('button', { class: 'btn btn--contour btn--petit', type: 'button', onclick: copierModeEmploi }, icone('i-copier'), 'Copier le mode d’emploi')),
     miennes >= q.regles.cles_max ? el('p', { class: 'note' }, `Tu as déjà ${q.regles.cles_max} clés : retire celle d’un Claude que tu n’utilises plus.`) : null,
     depliant('Lire le mode d’emploi', el('pre', { class: 'mode-emploi' }, modeEmploi())),
-    el('p', { class: 'note' }, 'Sans clé ou sans réseau, ton Claude écrit un bloc « RÉCAP UIO » ou « TÂCHE UIO » : colle-le avec « Coller de Claude ».'),
+    el('div', { class: 'rangee rangee--secours' },
+      el('span', { class: 'rangee__icone', 'aria-hidden': 'true' }, icone('i-coller')),
+      el('span', { class: 'rangee__texte' }, el('span', { class: 'rangee__titre' }, 'Sans clé ni réseau'),
+        el('span', { class: 'rangee__meta' }, 'Ton Claude écrit un bloc « RÉCAP UIO » ou « TÂCHE UIO » : colle-le ici.')),
+      el('span', { class: 'rangee__action' }, el('button', { class: 'btn btn--contour btn--petit', type: 'button', onclick: () => ouvrirCollage() }, 'Coller un bloc'))),
     q.cles.length ? el('div', { class: 'rangees cles-claude' }, q.cles.map(k => rangee({
       icon: 'i-cle', titre: k.nom,
       badges: [k.qui === moi() ? badge('À toi') : badge(`À ${prenom(k.nom_personne) || k.qui}`, 'neutre')],
@@ -847,7 +846,7 @@ export function modeEmploi() {
   return [
     `# Agence UIO : tâches et récaps de l’équipe`,
     ``,
-    `Tu es le Claude de ${nom}, associé d’Agence UIO${avec}. L’onglet Équipe de l’admin (agenceuio.ca/admin/) garde les tâches entre associés et les récaps « Qui a fait quoi ». Ta clé est dans la variable d’environnement UIO_CLE_CLAUDE.`,
+    `Tu es le Claude de ${nom}, associé d’Agence UIO${avec}. L’onglet Équipe du CRM (agenceuio.ca/admin/) garde les tâches entre associés et les récaps « Qui a fait quoi ». Ta clé est dans la variable d’environnement UIO_CLE_CLAUDE.`,
     ``,
     `## Règles`,
     `- Ne montre, n’écris et ne mémorise jamais la clé (ni dans un fichier, ni dans un message, ni dans un commit, ni dans ta mémoire). Sers-toi seulement de $UIO_CLE_CLAUDE.`,
@@ -879,7 +878,7 @@ export function modeEmploi() {
     `curl -sS "${B}/portal/claude/recaps?n=10" ${entete}`,
     ``,
     `## Sans réseau ou sans clé : un bloc à coller`,
-    `Écris le bloc tel quel ; ${nom} le colle dans l’admin (onglet Équipe, « Coller de Claude »). Un même bloc collé deux fois ne compte qu’une fois.`,
+    `Écris le bloc tel quel ; ${nom} le colle dans le CRM (Réglages, Brancher mon Claude, « Coller un bloc »). Un même bloc collé deux fois ne compte qu’une fois.`,
     ``,
     `RÉCAP UIO`,
     `Titre : …`,
@@ -988,12 +987,12 @@ export function ouvrirCollage() {
   };
   texte.input.addEventListener('input', () => { clearTimeout(minuterie); minuterie = setTimeout(verifier, 450); });
   panneauFormulaire({
-    titre: 'Coller de Claude', sousTitre: 'Un récap ou une tâche que ton Claude a écrit',
+    titre: 'Coller un bloc de Claude', sousTitre: 'Un récap ou une tâche que ton Claude a écrit',
     corps: [texte.boite, apercu], bouton: 'Ajouter', chemin: 'coller',
     preparer: () => {
       const t = texte.input.value.trim();
       if (!t) throw new Invalide('Colle d’abord le texte de ton Claude.', texte.input);
-      if (resultat && resultat.length && resultat.every(b => b.deja)) throw new Invalide('Rien de nouveau : tout est déjà dans l’admin.', texte.input);
+      if (resultat && resultat.length && resultat.every(b => b.deja)) throw new Invalide('Rien de nouveau : tout est déjà dans le CRM.', texte.input);
       return { texte: t };
     },
     reussite: r => (r.ajoutes ? `${pluriel(r.ajoutes, 'ajout', 'ajouts')} dans l’équipe.` : 'Rien de nouveau : tout était déjà là.'),

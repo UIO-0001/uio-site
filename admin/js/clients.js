@@ -1,14 +1,15 @@
-// Clients : la liste (une carte par client : où en est son service, son forfait, ses factures à
-// encaisser), la carte « Espace client » du tableau de bord, et un nouveau client.
+// Clients : la liste (une carte par client : son service, son forfait, sa prochaine facture, ses
+// minutes du cycle, et l'appeler ou lui écrire d'un toucher), la carte « Clients » du tableau de
+// bord, et un nouveau client.
 // La fiche de chaque client (fiche.js) remplace l'ancien « avancement en % + étapes » (2026-11-08).
-import { $, icone, vider, nombre, pluriel, toast, copier, normal, urlSure } from './outils.js';
+import { $, icone, vider, nombre, pluriel, toast, copier, normal, urlSure, lienTel, lienCourriel, signal } from './outils.js';
 import { E, ESPACE_CLIENT } from './etat.js';
 import { api, sessionActuelle } from './api.js';
 import { gros, rendreBonjour } from './tableau.js';
 import { montrer } from './navigation.js';
 import { ouvrirPanneau, fermerPanneau } from './panneau.js';
 import { el } from './formes.js';
-import { argent as montant, badgeFacture } from './argent.js';
+import { argent as montant, badgeFacture, leJour } from './argent.js';
 import { ficheDe, documentsDe, abonnementDe, aEncaisser, badgeStatut, ouvrirFiche } from './fiche.js';
 
 // ─── Lecture ───────────────────────────────────────────────────────────────
@@ -88,7 +89,7 @@ export function rendrePortail() {
   if (!boite) return;
   if (!E.clientsLus) return vider(boite, el('p', { class: 'vide' }, E.clientsErreur || 'Lecture en cours…'));
   const n = E.clients.length;
-  if (!n) return vider(boite, gros(0, 'client'), el('p', { class: 'vide' }, 'Aucun client pour l’instant. Ajoute le premier dans Clients.'));
+  if (!n) { signal('carte-portail', ''); return vider(boite, el('p', { class: 'vide' }, 'Aucun client pour l’instant.')); }
   const compte = { en_service: 0, mise_en_place: 0, termine: 0 };
   let retards = 0, dues = 0;
   for (const c of E.clients) {
@@ -97,6 +98,7 @@ export function rendrePortail() {
     retards += d.filter(x => x.etat === 'en_retard').length;
     dues += d.filter(x => x.etat === 'due').length;
   }
+  signal('carte-portail', retards ? 'alerte' : dues ? 'attente' : '');
   // « 2 en service, 1 en mise en place et 1 terminé. »
   const morceaux = [];
   if (compte.en_service) morceaux.push([[nombre(compte.en_service)], ' en service']);
@@ -141,21 +143,53 @@ export function rendreClients() {
   vider(boite, avis, liste.map(carteClient));
 }
 
+// Sa prochaine facture pas encore due, et ses minutes du cycle (onglet Argent, s'il est lu)
+const prochaineFacture = ab => (ab ? (ab.factures || []).filter(x => x.etat === 'a_venir' && x.du > 0)
+  .sort((a, b) => String(a.echeance).localeCompare(String(b.echeance)))[0] || null : null);
+function minutesDe(ab) {
+  const m = E.argent && E.argent.minutes;
+  if (!ab || !m || !m.disponible) return null;
+  return (m.clients || []).find(x => x.abonnement === ab.id) || null;
+}
+const chiffre = (titre, valeur, genre = '') => el('div', { class: `client__chiffre${genre ? ` client__chiffre--${genre}` : ''}` },
+  el('dt', null, titre), el('dd', null, valeur));
+
 function carteClient(c) {
   const f = ficheDe(c), ab = abonnementDe(f), dues = aEncaisser(f);
   const docs = documentsDe(c.client_id).length;
   const actives = E.fonctionnalites.filter(x => c.features && c.features[x.key]);
   const qui = [f.contact, f.metier].filter(Boolean).join(' · ') || `@${c.username}`;
+  const tel = lienTel(f.telephone), courriel = lienCourriel(f.courriel);
+  const retard = dues.some(x => x.etat === 'en_retard');
+  const chiffres = [];
+  if (dues.length) chiffres.push(chiffre(retard ? 'En retard' : 'À encaisser', [aPayer(dues), ' ', badgeFacture(dues[0])], retard ? 'alerte' : 'attente'));
+  else {
+    const suivante = prochaineFacture(ab);
+    if (suivante) chiffres.push(chiffre('Prochaine facture', `${montant(suivante.du)} le ${leJour(suivante.echeance)}`));
+  }
+  const mi = minutesDe(ab);
+  if (mi) {
+    const n = v => nombre(v, v % 1 ? 1 : 0);
+    const pct = mi.pourcentage;
+    chiffres.push(chiffre('Minutes du cycle', [mi.incluses ? `${n(mi.minutes)} / ${nombre(mi.incluses)} min` : `${n(mi.minutes)} min`,
+      mi.incluses ? el('span', { class: `jauge${pct >= 100 ? ' jauge--rouge' : mi.alerte ? '' : ' jauge--bleu'}`, role: 'img', 'aria-label': `${pct} % des minutes du forfait` },
+        el('i', { style: `width:${Math.min(100, Math.max(0, pct || 0))}%` })) : null], pct >= 100 ? 'alerte' : mi.alerte ? 'attente' : ''));
+  }
   const marques = [
     ...actives.map(x => el('span', { class: 'marque' }, x.label)),
     f.rapport_auto ? el('span', { class: 'marque marque--bleu' }, 'Rapport par courriel') : null,
     docs ? el('span', { class: 'client__docs' }, icone('i-document'), pluriel(docs, 'document', 'documents')) : null
   ].filter(Boolean);
-  return el('button', { class: 'client', type: 'button', 'data-id': c.client_id, 'data-focus': `client-${c.client_id}`, onclick: () => ouvrirClient(c.client_id) },
-    el('span', { class: 'client__haut' }, el('span', { class: 'client__nom' }, nomDe(c)), badgeStatut(f.statut)),
-    el('span', { class: 'client__meta' }, el('span', null, qui), el('span', null, forfaitCourt(ab) || 'Pas encore d’abonnement')),
-    dues.length ? el('span', { class: 'client__alerte' }, badgeFacture(dues[0]), el('span', null, aPayer(dues))) : null,
-    marques.length ? el('span', { class: 'client__marques' }, marques) : null);
+  return el('article', { class: `client${retard ? ' client--retard' : ''}`, 'data-id': c.client_id },
+    el('div', { class: 'client__haut' },
+      el('button', { class: 'client__nom', type: 'button', 'data-focus': `client-${c.client_id}`, onclick: () => ouvrirClient(c.client_id) }, nomDe(c)),
+      badgeStatut(f.statut)),
+    el('p', { class: 'client__meta' }, [qui, forfaitCourt(ab) || 'Pas encore d’abonnement'].join(' · ')),
+    chiffres.length ? el('dl', { class: 'client__chiffres' }, chiffres) : null,
+    marques.length ? el('div', { class: 'client__marques' }, marques) : null,
+    tel || courriel ? el('div', { class: 'client__actions' },
+      tel ? el('a', { class: 'puce', href: tel, title: f.telephone }, icone('i-telephone'), 'Appeler') : null,
+      courriel ? el('a', { class: 'puce', href: courriel, title: f.courriel }, icone('i-courriel'), 'Écrire') : null) : null);
 }
 
 // options : { section, rappel } (voir ouvrirFiche)

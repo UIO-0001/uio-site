@@ -4,18 +4,18 @@
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://uio-backend.onrender.com https://api.github.com; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; require-trusted-types-for 'script'; trusted-types uio">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Admin · Agence UIO</title>
+<title>CRM · Agence UIO</title>
 <meta name="uio-backend" content="https://uio-backend.onrender.com">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#F4F5F8">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="UIO Admin">
+<meta name="apple-mobile-web-app-title" content="UIO CRM">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="format-detection" content="telephone=no">
 <link rel="manifest" href="manifest.webmanifest">
-<!-- L'admin a son logo à lui (orange) : on le reconnaît tout de suite à côté du site -->
+<!-- Le CRM a son logo à lui (orange) : on le reconnaît tout de suite à côté du site -->
 <link rel="icon" type="image/svg+xml" href="icones/icone-admin.svg?v=1">
 <link rel="icon" type="image/png" sizes="32x32" href="icones/icone-admin-32.png?v=1">
 <link rel="icon" type="image/png" sizes="192x192" href="icones/icone-admin-192.png?v=1">
@@ -37,7 +37,7 @@
 <script src="theme.js"></script>
 <script type="module" src="js/app.js"></script>
 <!--
-  Admin d'Agence UIO : une application installable (iPhone, Android, ordinateur).
+  Le CRM d'Agence UIO (l'ancien « admin ») : une application installable (iPhone, Android, ordinateur).
   Sécurité : chaque associé a son compte (mot de passe + code de vérification, puis
   Face ID ou l'empreinte), sessions de 12 h, verrouillage après 15 minutes en arrière-plan.
   Aucun script dans la page (règles de sécurité CSP + Trusted Types ci-dessus) ; tout
@@ -85,6 +85,9 @@
   <symbol id="i-sourire" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10" cy="10" r="7.2"/><path d="M7.1 11.7c.7 1.1 1.7 1.7 2.9 1.7s2.2-.6 2.9-1.7M7.7 7.9v.3M12.3 7.9v.3"/></g></symbol>
   <symbol id="i-crayon" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.3 3.5l3.2 3.2-9 9-3.9.7.7-3.9z"/><path d="M11.5 5.3l3.2 3.2"/></g></symbol>
   <symbol id="i-chercher" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="8.8" cy="8.8" r="5.6"/><path d="M13 13l4.3 4.3"/></g></symbol>
+  <symbol id="i-reglages" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></g></symbol>
+  <symbol id="i-alerte" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.6 3.6 2.4 14.4A1.6 1.6 0 0 0 3.8 16.8h12.4a1.6 1.6 0 0 0 1.4-2.4L11.4 3.6a1.6 1.6 0 0 0-2.8 0z"/><path d="M10 8v3.4M10 14.2v.1"/></g></symbol>
+  <symbol id="i-retour" viewBox="0 0 20 20"><path d="M12.5 4.5 7 10l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-cle" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6.8" cy="13.2" r="3.4"/><path d="M9.2 10.8l7.3-7.3M14.2 5.8l2 2M12.2 7.8l1.6 1.6"/></g></symbol>
 </svg>
 <div class="aurore" aria-hidden="true"><i></i><i></i></div>
@@ -97,33 +100,35 @@
       <span class="mot" aria-hidden="true"><svg viewBox="0 0 1317 727" fill="currentColor"><use href="#i-mot" width="1317" height="727"/></svg><small>Agence</small></span>
     </div>
     <div class="ecran" id="ecran">
-      <div class="chargement"><span class="roue" aria-hidden="true"></span><p>Ouverture de l’admin…</p></div>
+      <div class="chargement"><span class="roue" aria-hidden="true"></span><p>Ouverture du CRM…</p></div>
     </div>
-    <noscript><p class="erreur">L’admin a besoin de JavaScript.</p></noscript>
+    <noscript><p class="erreur">Le CRM a besoin de JavaScript.</p></noscript>
   </div>
 </main>
 
-<!-- ── L'admin ───────────────────────────────────────────────────────── -->
+<!-- ── Le CRM ────────────────────────────────────────────────────────── -->
 <div id="appli" hidden>
   <header class="nav">
     <div class="nav__pilule">
       <a class="nav__logo" href="../" aria-label="Agence UIO, le site">
-        <span class="icone-uio" aria-hidden="true"></span><b>Admin</b>
+        <span class="icone-uio" aria-hidden="true"></span><b>CRM</b>
       </a>
-      <div class="onglets" role="tablist" aria-label="Sections">
-        <span class="lentille" aria-hidden="true"></span>
-        <button type="button" role="tab" id="onglet-tableau" aria-controls="vue-tableau" aria-selected="true" data-vue="tableau"><svg class="onglet__icone" aria-hidden="true"><use href="#i-tableau"/></svg><span>Tableau<span class="onglet__suite"> de bord</span></span></button>
-        <button type="button" role="tab" id="onglet-clients" aria-controls="vue-clients" aria-selected="false" tabindex="-1" data-vue="clients"><svg class="onglet__icone" aria-hidden="true"><use href="#i-clients"/></svg><span>Clients</span></button>
-        <button type="button" role="tab" id="onglet-argent" aria-controls="vue-argent" aria-selected="false" tabindex="-1" data-vue="argent"><svg class="onglet__icone" aria-hidden="true"><use href="#i-argent"/></svg><span>Argent</span></button>
-        <button type="button" role="tab" id="onglet-equipe" aria-controls="vue-equipe" aria-selected="false" tabindex="-1" data-vue="equipe"><svg class="onglet__icone" aria-hidden="true"><use href="#i-equipe"/></svg><span>Équipe</span></button>
-        <button type="button" role="tab" id="onglet-compte" aria-controls="vue-compte" aria-selected="false" tabindex="-1" data-vue="compte"><svg class="onglet__icone" aria-hidden="true"><use href="#i-compte"/></svg><span>Compte</span></button>
+      <!-- Les onglets, et la loupe juste à leur droite -->
+      <div class="nav__centre">
+        <div class="onglets" role="tablist" aria-label="Sections">
+          <span class="lentille" aria-hidden="true"></span>
+          <button type="button" role="tab" id="onglet-tableau" aria-controls="vue-tableau" aria-selected="true" data-vue="tableau"><svg class="onglet__icone" aria-hidden="true"><use href="#i-tableau"/></svg><span>Tableau<span class="onglet__suite"> de bord</span></span></button>
+          <button type="button" role="tab" id="onglet-clients" aria-controls="vue-clients" aria-selected="false" tabindex="-1" data-vue="clients"><svg class="onglet__icone" aria-hidden="true"><use href="#i-clients"/></svg><span>Clients</span></button>
+          <button type="button" role="tab" id="onglet-argent" aria-controls="vue-argent" aria-selected="false" tabindex="-1" data-vue="argent"><svg class="onglet__icone" aria-hidden="true"><use href="#i-argent"/></svg><span>Argent</span></button>
+          <button type="button" role="tab" id="onglet-equipe" aria-controls="vue-equipe" aria-selected="false" tabindex="-1" data-vue="equipe"><svg class="onglet__icone" aria-hidden="true"><use href="#i-equipe"/></svg><span>Équipe</span></button>
+        </div>
+        <button class="rond nav__chercher" type="button" id="chercher-ouvrir" aria-label="Chercher partout (/)" title="Chercher partout (/ ou ⌘K)" aria-keyshortcuts="/ Meta+K Control+K"><svg aria-hidden="true"><use href="#i-chercher"/></svg></button>
       </div>
       <div class="nav__droite">
-        <span class="direct" id="direct" data-etat="attente" role="status"><i class="direct__point" aria-hidden="true"></i><span id="direct-texte">Lecture…</span></span>
-        <button class="rond" type="button" id="chercher-ouvrir" aria-label="Chercher partout (/)" title="Chercher partout (/ ou ⌘K)" aria-keyshortcuts="/ Meta+K Control+K"><svg aria-hidden="true"><use href="#i-chercher"/></svg></button>
-        <button class="rond nav__actualiser" type="button" id="actualiser" aria-label="Actualiser (R)" title="Actualiser (R)"><svg aria-hidden="true"><use href="#i-actualiser"/></svg></button>
-        <button class="rond theme" type="button" id="theme" aria-pressed="false" aria-label="Mode sombre (T)" title="Mode sombre (T)"><svg class="theme__lune" aria-hidden="true"><use href="#i-lune"/></svg><svg class="theme__soleil" aria-hidden="true"><use href="#i-soleil"/></svg></button>
-        <button class="rond" type="button" id="verrouiller" aria-label="Verrouiller (L)" title="Verrouiller (L)"><svg aria-hidden="true"><use href="#i-verrou"/></svg></button>
+        <!-- L'état du serveur ; le toucher relit tout (touche R) -->
+        <button class="direct" type="button" id="direct" data-etat="attente" title="Actualiser (R)" aria-keyshortcuts="R"><i class="direct__point" aria-hidden="true"></i><span id="direct-texte">Lecture…</span></button>
+        <button class="rond nav__reglages" type="button" id="reglages-ouvrir" aria-controls="vue-reglages" aria-label="Réglages (,)" title="Réglages (,)" aria-keyshortcuts=","><svg aria-hidden="true"><use href="#i-reglages"/></svg></button>
+        <button class="rond" type="button" id="verrouiller" aria-label="Verrouiller (L)" title="Verrouiller (L)" aria-keyshortcuts="L"><svg aria-hidden="true"><use href="#i-verrou"/></svg></button>
       </div>
     </div>
   </header>
@@ -133,28 +138,36 @@
     <section id="vue-tableau" role="tabpanel" aria-labelledby="onglet-tableau">
       <aside class="bandeau-installer" id="bandeau-installer" hidden>
         <svg aria-hidden="true"><use href="#i-plus-carre"/></svg>
-        <p><b>Installe l’admin sur ton téléphone.</b> Une icône sur l’écran d’accueil, Face ID ou l’empreinte pour entrer, et les notifications.</p>
+        <p><b>Installe le CRM sur ton téléphone.</b> Une icône sur l’écran d’accueil, Face ID ou l’empreinte pour entrer, et les notifications.</p>
         <button class="btn btn--petit" type="button" id="bandeau-installer-oui">Comment ?</button>
         <button class="rond" type="button" id="bandeau-installer-non" aria-label="Ne plus afficher"><svg aria-hidden="true"><use href="#i-fermer"/></svg></button>
       </aside>
       <div class="grille">
-        <div class="bonjour l7">
-          <h1 id="bonjour-titre">Bonjour.</h1>
-          <p class="bonjour__phrase" id="bonjour-phrase">On lit ce qui se passe en ce moment…</p>
-          <p class="bonjour__date" id="bonjour-date"></p>
-          <div class="bonjour__outils">
-            <button class="btn btn--contour btn--petit" type="button" data-actualiser>Actualiser</button>
+        <div class="bonjour pleine-largeur">
+          <div class="bonjour__texte">
+            <h1 id="bonjour-titre">Bonjour.</h1>
+            <p class="bonjour__phrase" id="bonjour-phrase">On lit ce qui se passe en ce moment…</p>
+            <p class="bonjour__date" id="bonjour-date"></p>
           </div>
+          <nav class="raccourcis-liens" id="raccourcis" aria-label="Raccourcis"></nav>
         </div>
 
-        <article class="carte carte--pouls l5" aria-labelledby="t-pouls">
-          <div class="carte__tete"><h2 id="t-pouls">Le pouls du serveur</h2></div>
-          <div class="carte__corps">
-            <div class="pouls__haut" id="pouls-etat"></div>
-            <div class="graphe" id="pouls-graphe"></div>
-            <p class="note" id="pouls-note"></p>
-          </div>
+        <!-- Ce qui demande une action, du plus pressé au moins pressé -->
+        <article class="carte carte--afaire l7" id="carte-afaire" aria-labelledby="t-afaire">
+          <div class="carte__tete"><h2 id="t-afaire">À faire aujourd’hui</h2><span class="compteur" id="afaire-compte" hidden></span></div>
+          <div class="carte__corps" id="afaire"></div>
         </article>
+
+        <div class="pile l5">
+          <article class="carte carte--audits" id="carte-audits" aria-labelledby="t-audits">
+            <div class="carte__tete"><h2 id="t-audits">Prochains audits</h2><a class="lien" href="https://calendar.google.com/" target="_blank" rel="noopener">Agenda</a></div>
+            <div class="carte__corps" id="audits"></div>
+          </article>
+          <article class="carte carte--portail" id="carte-portail" aria-labelledby="t-portail">
+            <div class="carte__tete"><h2 id="t-portail">Clients</h2><button class="lien" type="button" data-vers="clients">Tous les clients</button></div>
+            <div class="carte__corps" id="portail"></div>
+          </article>
+        </div>
 
         <article class="carte carte--appels l7" id="carte-appels" aria-labelledby="t-appels">
           <div class="carte__tete"><h2 id="t-appels">Agent répondeur</h2><a class="lien" id="lien-retell" href="https://dashboard.retellai.com/" target="_blank" rel="noopener">Ouvrir Retell</a></div>
@@ -165,37 +178,6 @@
           <div class="carte__tete"><h2 id="t-demandes">Demandes du chatbot</h2></div>
           <div class="carte__corps" id="demandes"></div>
         </article>
-
-        <article class="carte carte--audits l4 s3" id="carte-audits" aria-labelledby="t-audits">
-          <div class="carte__tete"><h2 id="t-audits">Prochains audits</h2><a class="lien" href="https://calendar.google.com/" target="_blank" rel="noopener">Agenda</a></div>
-          <div class="carte__corps" id="audits"></div>
-        </article>
-
-        <article class="carte carte--site l4 s3" id="carte-site" aria-labelledby="t-site">
-          <div class="carte__tete"><h2 id="t-site">Le site</h2><a class="lien" href="https://github.com/UIO-0001/uio-site/pulls" target="_blank" rel="noopener">GitHub</a></div>
-          <div class="carte__corps" id="site"></div>
-        </article>
-
-        <article class="carte carte--portail l4" id="carte-portail" aria-labelledby="t-portail">
-          <div class="carte__tete"><h2 id="t-portail">Espace client</h2><button class="lien" type="button" data-vers="clients">Gérer</button></div>
-          <div class="carte__corps" id="portail"></div>
-        </article>
-
-        <article class="carte carte--offre l8" id="carte-offre" aria-labelledby="t-offre">
-          <div class="carte__tete"><h2 id="t-offre">L’offre en ligne</h2><a class="lien" href="../#forfaits" target="_blank" rel="noopener">Voir sur le site</a></div>
-          <div class="carte__corps" id="offre"></div>
-        </article>
-
-        <div class="pile l4">
-          <article class="carte carte--chatbot" id="carte-chatbot" aria-labelledby="t-chatbot">
-            <div class="carte__tete"><h2 id="t-chatbot">Chatbot aujourd’hui</h2></div>
-            <div class="carte__corps" id="chatbot"></div>
-          </article>
-          <article class="carte" aria-labelledby="t-liens">
-            <div class="carte__tete"><h2 id="t-liens">Raccourcis</h2><button class="lien" type="button" data-aide>Clavier</button></div>
-            <div class="raccourcis" id="raccourcis"></div>
-          </article>
-        </div>
       </div>
     </section>
 
@@ -224,8 +206,93 @@
     <!-- Équipe : tâches, récaps « Qui a fait quoi », heures, documents, clés pour Claude -->
     <section id="vue-equipe" role="tabpanel" aria-labelledby="onglet-equipe" hidden></section>
 
-    <!-- Compte : sécurité, appareils, associés, application, journal -->
-    <section id="vue-compte" role="tabpanel" aria-labelledby="onglet-compte" hidden></section>
+    <!-- Réglages (la roue de la barre) : le compte et sa sécurité, les notifications, Claude,
+         l'historique de tout ce qui change, le système (serveur, site, offre) et l'affichage -->
+    <section id="vue-reglages" class="vue-reglages" aria-labelledby="reglages-titre" hidden>
+      <div class="reglages__tete">
+        <h1 id="reglages-titre" tabindex="-1">Réglages</h1>
+        <p id="compte-phrase">Lecture de ton compte…</p>
+      </div>
+      <div class="reglages">
+        <nav class="reglages__menu" aria-label="Parties des réglages">
+          <button type="button" data-page="securite"><svg aria-hidden="true"><use href="#i-compte"/></svg><span>Compte et sécurité</span></button>
+          <button type="button" data-page="notifications"><svg aria-hidden="true"><use href="#i-cloche"/></svg><span>Notifications</span></button>
+          <button type="button" data-page="claude"><svg aria-hidden="true"><use href="#i-cle"/></svg><span>Brancher mon Claude</span></button>
+          <button type="button" data-page="historique"><svg aria-hidden="true"><use href="#i-horloge"/></svg><span>Historique</span></button>
+          <button type="button" data-page="systeme"><svg aria-hidden="true"><use href="#i-ordinateur"/></svg><span>Système</span></button>
+          <button type="button" data-page="affichage"><svg aria-hidden="true"><use href="#i-soleil"/></svg><span>Affichage et app</span></button>
+        </nav>
+        <div class="reglages__pages">
+          <div class="reglages__page" id="reglages-securite" data-page="securite">
+            <article class="carte carte--securite" id="carte-securite" aria-labelledby="t-securite">
+              <div class="carte__tete"><h2 id="t-securite">Connexion et sécurité</h2></div>
+              <div class="carte__corps"><div id="compte-securite"></div><div class="compte__associes" id="compte-equipe"></div></div>
+            </article>
+            <article class="carte carte--appareils" id="carte-appareils" aria-labelledby="t-appareils">
+              <div class="carte__tete"><h2 id="t-appareils">Appareils</h2></div>
+              <div class="carte__corps" id="compte-appareils"></div>
+            </article>
+          </div>
+          <div class="reglages__page" id="reglages-notifications" data-page="notifications" hidden>
+            <article class="carte carte--notifications" id="carte-notifications" aria-labelledby="t-notifications">
+              <div class="carte__tete"><h2 id="t-notifications">Notifications</h2></div>
+              <div class="carte__corps" id="compte-notifications"></div>
+            </article>
+          </div>
+          <div class="reglages__page" id="reglages-claude" data-page="claude" hidden>
+            <article class="carte carte--claude" id="carte-claude" aria-labelledby="t-claude">
+              <div class="carte__tete"><h2 id="t-claude">Brancher mon Claude</h2></div>
+              <div class="carte__corps" id="equipe-claude"></div>
+            </article>
+          </div>
+          <div class="reglages__page" id="reglages-historique" data-page="historique" hidden>
+            <article class="carte carte--journal" id="carte-journal" aria-labelledby="t-journal">
+              <div class="carte__tete"><h2 id="t-journal">Historique</h2></div>
+              <div class="carte__corps" id="compte-journal"></div>
+            </article>
+          </div>
+          <div class="reglages__page" id="reglages-systeme" data-page="systeme" hidden>
+            <article class="carte carte--pouls" id="carte-pouls" aria-labelledby="t-pouls">
+              <div class="carte__tete"><h2 id="t-pouls">Le serveur</h2><a class="lien" href="https://dashboard.render.com/" target="_blank" rel="noopener">Render</a></div>
+              <div class="carte__corps">
+                <div class="pouls__haut" id="pouls-etat"></div>
+                <div class="graphe" id="pouls-graphe"></div>
+                <p class="note" id="pouls-note"></p>
+              </div>
+            </article>
+            <article class="carte carte--site" id="carte-site" aria-labelledby="t-site">
+              <div class="carte__tete"><h2 id="t-site">Le site</h2><a class="lien" href="https://github.com/UIO-0001/uio-site/pulls" target="_blank" rel="noopener">GitHub</a></div>
+              <div class="carte__corps" id="site"></div>
+            </article>
+            <article class="carte carte--chatbot" id="carte-chatbot" aria-labelledby="t-chatbot">
+              <div class="carte__tete"><h2 id="t-chatbot">Chatbots aujourd’hui</h2></div>
+              <div class="carte__corps" id="chatbot"></div>
+            </article>
+            <article class="carte carte--offre" id="carte-offre" aria-labelledby="t-offre">
+              <div class="carte__tete"><h2 id="t-offre">L’offre en ligne</h2><a class="lien" href="../#forfaits" target="_blank" rel="noopener">Voir sur le site</a></div>
+              <div class="carte__corps" id="offre"></div>
+            </article>
+          </div>
+          <div class="reglages__page" id="reglages-affichage" data-page="affichage" hidden>
+            <article class="carte carte--affichage" id="carte-affichage" aria-labelledby="t-affichage">
+              <div class="carte__tete"><h2 id="t-affichage">Affichage</h2></div>
+              <div class="carte__corps">
+                <label class="interrupteur"><span><b>Mode sombre</b><span>Sur cet appareil. Touche T au clavier.</span></span><input type="checkbox" role="switch" id="theme"></label>
+                <div class="rangee">
+                  <span class="rangee__icone" aria-hidden="true"><svg><use href="#i-ordinateur"/></svg></span>
+                  <span class="rangee__texte"><span class="rangee__titre">Raccourcis clavier</span><span class="rangee__meta">1 à 4 pour les onglets, / pour chercher, N pour un nouveau client.</span></span>
+                  <span class="rangee__action"><button class="btn btn--contour btn--petit" type="button" data-aide>Voir tout</button></span>
+                </div>
+              </div>
+            </article>
+            <article class="carte carte--appli" id="carte-appli" aria-labelledby="t-appli">
+              <div class="carte__tete"><h2 id="t-appli">L’app sur cet appareil</h2></div>
+              <div class="carte__corps" id="compte-appli"></div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 </div>
 
@@ -245,20 +312,22 @@
   <div class="aide__carte" role="dialog" aria-modal="true" aria-labelledby="aide-titre">
     <h2 id="aide-titre">Raccourcis clavier</h2>
     <dl>
-      <dt><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd><kbd>5</kbd></dt><dd>Tableau de bord, Clients, Argent, Équipe, Compte</dd>
+      <dt><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd></dt><dd>Tableau de bord, Clients, Argent, Équipe</dd>
+      <dt><kbd>,</kbd></dt><dd>Réglages : compte, notifications, Claude, historique, système</dd>
       <dt><kbd>/</kbd><kbd>⌘</kbd><kbd>K</kbd></dt><dd>Chercher partout : clients, prospects, tâches, récaps, documents, argent (Ctrl+K sur Windows)</dd>
       <dt><kbd>N</kbd></dt><dd>Nouveau client, ou nouveau prospect dans Prospects</dd>
       <dt><kbd>R</kbd></dt><dd>Actualiser tout</dd>
       <dt><kbd>T</kbd></dt><dd>Mode sombre ou clair</dd>
-      <dt><kbd>L</kbd></dt><dd>Verrouiller l’admin</dd>
+      <dt><kbd>L</kbd></dt><dd>Verrouiller le CRM</dd>
       <dt><kbd>⌘</kbd><kbd>S</kbd></dt><dd>Enregistrer ce qui est ouvert (Ctrl+S sur Windows)</dd>
+      <dt><kbd>?</kbd></dt><dd>Cette liste</dd>
       <dt><kbd>Échap</kbd></dt><dd>Fermer</dd>
     </dl>
     <button class="btn btn--contour btn--petit" type="button" id="aide-fermer">Fermer</button>
   </div>
 </div>
 
-<!-- Chercher partout (la loupe, « / » ou ⌘K) : seulement ce que l'admin a déjà lu, rien n'est envoyé -->
+<!-- Chercher partout (la loupe, « / » ou ⌘K) : seulement ce que le CRM a déjà lu, rien n'est envoyé -->
 <div class="chercher" id="chercher" hidden>
   <div class="chercher__carte" role="dialog" aria-modal="true" aria-labelledby="chercher-titre">
     <h2 class="sr" id="chercher-titre">Chercher partout</h2>
@@ -274,7 +343,7 @@
 </div>
 
 <div class="maj" id="maj" hidden>
-  <p><b>Nouvelle version de l’admin.</b> Elle s’ouvre en une seconde.</p>
+  <p><b>Nouvelle version du CRM.</b> Elle s’ouvre en une seconde.</p>
   <button class="btn btn--petit" type="button" id="maj-oui">Mettre à jour</button>
 </div>
 <div class="toast" id="toast" aria-hidden="true"></div>

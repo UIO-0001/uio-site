@@ -36,7 +36,9 @@ export const pluriel = (n, un, plus) => `${nombre(n, Number.isInteger(n) ? 0 : 1
 // Pas de coupure de ligne dans « 14 h 00 », « 99 $ », « 15 % » ni « 3 min »
 export const insecable = t => String(t).replace(/(\d)[  ](\$|%|h\b|min\b|ms\b|s\b|j\b)/g, '$1 $2').replace(/\b(h) (\d)/g, '$1 $2');
 export const heure = d => insecable(d.toLocaleTimeString('fr-CA', { timeZone: FUSEAU, hour: 'numeric', minute: '2-digit' }).replace(/\s/g, ' '));
-export const jourLong = d => d.toLocaleDateString('fr-CA', { timeZone: FUSEAU, weekday: 'long', day: 'numeric', month: 'long' });
+// « 1er novembre », jamais « 1 novembre »
+export const premier = s => String(s).replace(/(^|\s)1(\s)/u, (m, a, b) => `${a}1er${b}`);
+export const jourLong = d => premier(d.toLocaleDateString('fr-CA', { timeZone: FUSEAU, weekday: 'long', day: 'numeric', month: 'long' }));
 export const jourSemaine = d => d.toLocaleDateString('fr-CA', { timeZone: FUSEAU, weekday: 'long' });
 export const ymd = d => d.toLocaleDateString('en-CA', { timeZone: FUSEAU });
 export const heureLocale = d => Number(d.toLocaleString('en-CA', { timeZone: FUSEAU, hour: 'numeric', hourCycle: 'h23' }));
@@ -53,7 +55,7 @@ export function relatif(d, m = new Date()) {
   if (jour === hier) return `hier à ${heure(d)}`;
   if (jour === demain) return `demain à ${heure(d)}`;
   if (abs < 6 * 864e2) return passe ? `${jourSemaine(d)} dernier` : `${jourSemaine(d)} à ${heure(d)}`;
-  return d.toLocaleDateString('fr-CA', { timeZone: FUSEAU, day: 'numeric', month: 'long' });
+  return premier(d.toLocaleDateString('fr-CA', { timeZone: FUSEAU, day: 'numeric', month: 'long' }));
 }
 export function duree(sec) {
   sec = Math.max(0, Math.round(sec || 0));
@@ -110,4 +112,12 @@ export function biometrie() {
   if (/Android/.test(ua)) return { nom: 'l’empreinte', icone: 'i-empreinte', e: 'e' };
   if (/Windows/.test(ua)) return { nom: 'Windows Hello', icone: 'i-visage', e: '' };
   return { nom: 'une clé d’accès', icone: 'i-cle', e: 'e' };
+}
+
+// La pastille du titre d'une carte : « alerte » (rouge : une action t'attend), « attente » (orange :
+// bientôt), rien sinon. Elle ne montre plus la couleur de la carte : elle veut dire quelque chose.
+export function signal(carte, niveau = '') {
+  const c = typeof carte === 'string' ? document.getElementById(carte) : carte;
+  if (!c) return;
+  if (niveau) c.dataset.signal = niveau; else delete c.dataset.signal;
 }

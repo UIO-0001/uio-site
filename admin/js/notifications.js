@@ -1,4 +1,4 @@
-// Notifications sur le téléphone (carte « Notifications » de l'onglet Compte) : les activer sur cet
+// Notifications sur le téléphone (Réglages → Notifications) : les activer sur cet
 // appareil, choisir ce qu'on reçoit (une tâche pour moi, une facture en retard, un crédit bas ou
 // épuisé), s'envoyer un essai, et couper un autre appareil. Sur iPhone : seulement dans l'app
 // installée sur l'écran d'accueil (iOS 16.4 ou plus). Le service worker montre l'avis (sw.js).
@@ -7,6 +7,7 @@ import { api, ErreurApi, sessionActuelle } from './api.js';
 import { nomAppareil } from './appareil.js';
 import { el, badge, rangee, bascule, confirmations } from './formes.js';
 import { occuper } from './ui.js';
+import { montrer } from './navigation.js';
 
 const DETAILS = {
   tache: 'Quand un associé, ou son Claude, t’en donne une.',
@@ -106,7 +107,7 @@ export function brancherNotifications(aller) {
 // ─── Actions ───────────────────────────────────────────────────────────────
 function messageErreur(e) {
   if (e instanceof ErreurApi) return e.message;
-  if (e && e.name === 'NotAllowedError') return 'Le navigateur a refusé les notifications pour l’admin : permets-les dans ses réglages.';
+  if (e && e.name === 'NotAllowedError') return 'Le navigateur a refusé les notifications pour le CRM : permets-les dans ses réglages.';
   if (e && e.name === 'AbortError') return 'Le service de notifications de ce navigateur ne répond pas. Réessaie dans un instant.';
   return 'Les notifications n’ont pas pu s’activer. Réessaie dans un instant.';
 }
@@ -189,9 +190,9 @@ async function essayer(bouton, ligne) {
 
 // ─── La carte ──────────────────────────────────────────────────────────────
 const aideBloquees = () => {
-  if (estIOS()) return 'Pour les permettre : Réglages de l’iPhone, Notifications, UIO Admin, puis « Autoriser les notifications ».';
+  if (estIOS()) return 'Pour les permettre : Réglages de l’iPhone, Notifications, l’app UIO (CRM ou Admin), puis « Autoriser les notifications ».';
   if (estAndroid()) {
-    return estInstallee() ? 'Pour les permettre : touche longuement l’icône UIO Admin, « Infos sur l’appli », Notifications, puis Autoriser.'
+    return estInstallee() ? 'Pour les permettre : touche longuement l’icône de l’app UIO, « Infos sur l’appli », Notifications, puis Autoriser.'
       : 'Pour les permettre : le cadenas à gauche de l’adresse, Autorisations, Notifications, puis Autoriser.';
   }
   if (/Macintosh/.test(navigator.userAgent) && !/Chrome|Firefox|Edg\//.test(navigator.userAgent)) {
@@ -216,7 +217,8 @@ function blocIci() {
       return [rangee({ icon: 'i-cloche', titre: nom, badges: [badge('App à installer', 'attente')],
         meta: ['Sur iPhone, les notifications arrivent dans l’app installée sur l’écran d’accueil (iOS 16.4 ou plus). Installe-la, ouvre-la depuis son icône, puis reviens ici.'],
         action: el('button', { class: 'btn btn--contour btn--petit', type: 'button', onclick: () => {
-          const c = $('#carte-appli'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          montrer('reglages', { page: 'affichage' });
+          requestAnimationFrame(() => { const c = $('#carte-appli'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
         } }, 'Comment l’installer') })];
     }
     return [rangee({ icon: 'i-cloche-barre', titre: nom, badges: [badge('Pas possible ici', 'neutre')],
@@ -225,7 +227,7 @@ function blocIci() {
   }
   if (permission() === 'denied') {
     return [rangee({ icon: 'i-cloche-barre', titre: nom, badges: [badge('Bloquées', 'attente')],
-      meta: ['Les notifications de l’admin sont bloquées dans les réglages de cet appareil.', aideBloquees()],
+      meta: ['Les notifications du CRM sont bloquées dans les réglages de cet appareil.', aideBloquees()],
       action: el('button', { class: 'btn btn--contour btn--petit', type: 'button', onclick: () => rendreNotifications() }, 'C’est fait') })];
   }
   if (!ligne || !ligne.recoit) {
@@ -237,7 +239,7 @@ function blocIci() {
       badges: [pause ? badge('En pause', 'attente') : refaire ? badge('À réactiver', 'attente') : badge('Pas activées', 'neutre')],
       meta: [pause ? 'En pause depuis une déconnexion de tous les appareils ou un nouveau mot de passe.'
         : refaire ? 'Ce navigateur a oublié son abonnement aux notifications (données effacées, ou nouvelle clé du serveur) : touche « Réactiver ».'
-          : 'Reçois ici les tâches pour toi, les factures en retard et les crédits bas, même quand l’admin est fermé.'],
+          : 'Reçois ici les tâches pour toi, les factures en retard et les crédits bas, même quand le CRM est fermé.'],
       action: bouton })];
   }
   const blocs = [rangee({ icon: 'i-cloche', titre: nom, badges: [badge('Activées')],
@@ -259,7 +261,7 @@ function blocIci() {
 function blocAutres() {
   const d = etat.donnees, { ligne, ancienne } = lignesIci();
   const autres = d.appareils.filter(a => a !== ligne && a !== ancienne);
-  if (!autres.length) return [el('p', { class: 'vide' }, 'Aucun autre appareil. Ouvre l’admin sur ton téléphone (ou ton ordinateur) et touche « Activer » là-bas.')];
+  if (!autres.length) return [el('p', { class: 'vide' }, 'Aucun autre appareil. Ouvre le CRM sur ton téléphone (ou ton ordinateur) et touche « Activer » là-bas.')];
   return [el('div', { class: 'rangees' }, autres.map(a => rangee({
     icon: /iPhone|iPad|Android|Téléphone|Tablette/i.test(a.nom) ? 'i-telephone' : 'i-ordinateur', titre: a.nom || 'Appareil',
     badges: [a.recoit ? null : badge('En pause', 'attente')],
@@ -297,6 +299,6 @@ export function rendreNotifications() {
       el('div', { class: 'notif__cote' },
         el('section', { 'aria-labelledby': 'notif-autres-t' }, el('h3', { class: 'petit-titre', id: 'notif-autres-t' }, 'Tes autres appareils'), blocAutres()),
         el('section', { 'aria-labelledby': 'notif-derniers-t' }, el('h3', { class: 'petit-titre', id: 'notif-derniers-t' }, 'Derniers avis'), blocDerniers()))),
-    el('p', { class: 'note' }, 'Chaque avis est chiffré pour ton appareil : Apple ou Google le transportent sans pouvoir le lire. Verrouiller l’admin ne coupe pas les notifications ; « Déconnecter tous les autres appareils » ou un nouveau mot de passe les met en pause jusqu’à la prochaine connexion sur chacun.'));
+    el('p', { class: 'note' }, 'Chaque avis est chiffré pour ton appareil. Verrouiller le CRM ne les coupe pas ; un nouveau mot de passe les met en pause jusqu’à la prochaine connexion.'));
   if (focus) { const n = boite.querySelector(`[data-focus="${CSS.escape(focus)}"]`); if (n) n.focus(); }
 }

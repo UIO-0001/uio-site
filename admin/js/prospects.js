@@ -123,14 +123,13 @@ function majCompte() {
   const t = $('#clients-compte'); if (t) t.textContent = sousVue() === 'prospects' ? nP : nC;
 }
 
-// Depuis le tableau de bord (« 3 prospects à relancer ») ou la recherche
+// Depuis « À faire aujourd'hui » (les relances) ou la recherche
 export function voirProspects({ filtre = '', id = '' } = {}) {
   montrer('clients');
   choisirSousVue('prospects');
   if (filtre) { ui.filtre = filtre; rendreProspects(); }
   if (id) ouvrirProspect(id);
 }
-document.addEventListener('uio:prospects', e => voirProspects(e.detail || {}));
 document.addEventListener('uio:prospect-depuis-demande', e => {
   montrer('clients');
   choisirSousVue('prospects');
@@ -165,11 +164,8 @@ export function rendreProspects() {
   }
   const d = E.prospects, liste = d.prospects;
   if (!liste.length) {
-    return vider(boite, el('div', { class: 'vide vide--action' },
-      el('p', null, 'Aucun prospect pour l’instant. Ajoute le premier, ou colle une liste copiée d’un tableur.'),
-      el('div', { class: 'actions' },
-        el('button', { class: 'btn btn--petit', type: 'button', onclick: () => ouvrirNouveauProspect() }, 'Nouveau prospect'),
-        el('button', { class: 'btn btn--contour btn--petit', type: 'button', onclick: () => ouvrirCollageListe() }, icone('i-coller'), 'Coller une liste'))));
+    return vider(boite, el('p', { class: 'vide' }, 'Aucun prospect pour l’instant. « Nouveau prospect » en ajoute un, ou ',
+      el('button', { class: 'lien-texte', type: 'button', onclick: () => ouvrirCollageListe() }, 'colle une liste'), ' copiée d’un tableur.'));
   }
   const ouverts = liste.filter(p => OUVERTES.includes(p.etape)).length;
   // L'entonnoir : une tuile par étape, qui filtre la liste (un 2e toucher revient à « En cours »)
