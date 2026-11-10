@@ -6,7 +6,7 @@
 // Le réseau seulement pour un fichier qui manque. Changer VERSION à chaque mise en ligne du CRM
 // (toujours « admin-… » : le ménage des anciennes versions cherche ce début) :
 // la nouvelle version s'installe à côté et l'app propose « Mettre à jour ».
-const VERSION = 'admin-2026-11-09-3';
+const VERSION = 'admin-2026-11-09-4';
 const BASE = new URL('./', self.location.href).pathname;           // /admin/
 const COQUILLE = [
   './', 'app.css', 'theme.js', 'manifest.webmanifest',

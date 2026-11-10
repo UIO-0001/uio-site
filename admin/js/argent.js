@@ -636,10 +636,10 @@ function rendrePaiements() {
   if (!liste.length) {
     return vider(boite, el('p', { class: 'vide' }, 'Aucun paiement pour l’instant : « Marquer payée » sur une facture le note ici.'));
   }
-  const montres = ui.plusPaiements ? liste : liste.slice(0, 8);
-  vider(boite,
-    grand(argent(a.resume.total.recu), 'reçus depuis le début', 'Ce mois-ci : ', [argent(a.resume.mois.recu)], '.'),
-    el('ul', { class: 'liste liste--paiements' }, montres.map(p => el('li', { class: p.annule ? 'annule' : null },
+  // Les paiements annulés ne gênent plus la liste : ils restent (rien n'est effacé), repliés à la fin
+  const actifs = liste.filter(p => !p.annule), annules = liste.filter(p => p.annule);
+  const montres = ui.plusPaiements ? actifs : actifs.slice(0, 8);
+  const ligneDe = p => el('li', { class: p.annule ? 'annule' : null },
       el('div', { class: 'ligne' },
         el('span', { class: 'ligne__titre' }, p.nom ? `${p.nom}${p.facture ? ` · facture ${p.facture}` : ''}` : (p.quoi || 'Revenu')),
         p.montant < 0 ? badge('Remboursement', 'neutre') : null,
@@ -651,8 +651,14 @@ function rendrePaiements() {
         p.annule ? null : el('span', { class: 'ml-auto' }, confirmer(`pa-annuler:${p.id}`, 'Annuler', 'Annuler ce paiement ?', async () => {
           await ecrire('paiement/annuler', { id: p.id });
           toast(p.facture ? `Paiement annulé : la facture ${p.facture} redevient due.` : 'Paiement annulé.');
-        }, { classe: 'lien' })))))),
-    liste.length > montres.length ? el('button', { class: 'btn btn--contour btn--petit debut', type: 'button', onclick: () => { ui.plusPaiements = true; rendrePaiements(); } }, `Voir les ${liste.length - montres.length} autres`) : null);
+        }, { classe: 'lien' }))));
+  vider(boite,
+    grand(argent(a.resume.total.recu), 'reçus depuis le début', 'Ce mois-ci : ', [argent(a.resume.mois.recu)], '.'),
+    actifs.length ? el('ul', { class: 'liste liste--paiements' }, montres.map(ligneDe)) : el('p', { class: 'vide' }, 'Aucun paiement actif.'),
+    actifs.length > montres.length ? el('button', { class: 'btn btn--contour btn--petit debut', type: 'button', onclick: () => { ui.plusPaiements = true; rendrePaiements(); } }, `Voir les ${actifs.length - montres.length} autres`) : null,
+    annules.length ? el('details', { class: 'depliant', open: ui.paiementsAnnules, ontoggle: e => { ui.paiementsAnnules = e.target.open; } },
+      el('summary', null, `Annulés (${annules.length})`),
+      el('ul', { class: 'liste liste--paiements' }, annules.map(ligneDe))) : null);
 }
 
 // ─── Morceaux de formulaire ────────────────────────────────────────────────
