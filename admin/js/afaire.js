@@ -6,7 +6,7 @@
 import { $, $$, icone, vider, nombre, pluriel, majuscule, date, relatif, heure, ymd, compteARebours, lienTel, lienCourriel,
   urlSure, lire, ecrire, toast, signal, normal } from './outils.js';
 import { E } from './etat.js';
-import { sessionActuelle } from './api.js';
+import { sessionActuelle, api } from './api.js';
 import { montrer } from './navigation.js';
 import { el } from './formes.js';
 import { source, etatServeur, reveiller, prenom } from './tableau.js';
@@ -75,6 +75,15 @@ function allerA(vue, carteId, dedans = '') {
 const puceLien = (texte, href, icon = '') => href ? el('a', { class: 'puce', href, ...(/^https:/.test(href) ? { target: '_blank', rel: 'noopener' } : {}) },
   icon ? icone(icon) : null, texte) : null;
 const puceBouton = (texte, onclick, focus) => el('button', { class: 'puce', type: 'button', 'data-focus': focus, onclick }, texte);
+// « Fait » sur un rappel : rangé sur le serveur, donc disparu aussi chez l'autre associé (et l'assistant peut le faire)
+const puceRappelFait = (r, cle) => puceBouton('Fait', async () => {
+  marquerFait(cle); rendreAFaire(true);
+  if (!r.id) { toast('Rappel : c’est noté sur cet appareil.'); return; }
+  try {
+    await api('/portal/admin/demande/retirer', { methode: 'POST', corps: { id: r.id, nom: `Rappeler ${r.prenom || r.de || 'l’appelant'}`, date: r.debut || '', raison: 'Rappel fait' } });
+    toast('Rappel : c’est fait, pour vous deux.');
+  } catch (e) { toast('Rappel : noté sur cet appareil seulement, le serveur n’a pas répondu.', true); }
+}, `afait:${cle}`);
 const puceFait = (cle, quoi) => puceBouton('Fait', () => { marquerFait(cle); toast(`${quoi} : c’est noté sur cet appareil.`); rendreAFaire(true); }, `afait:${cle}`);
 
 // ─── Ce qui presse, source par source ──────────────────────────────────────
@@ -153,7 +162,7 @@ function deRappels(L, F) {
       titre: `Rappeler ${r.prenom || r.de || 'l’appelant'}`,
       meta: [quoi, moment, r.prenom ? String(r.de || '').replace(/ /g, '\u00a0') : '', quand ? `appel ${relatif(quand)}` : ''].filter(Boolean).join(' · '),
       ouvrir: urlSure(r.lien) ? { href: urlSure(r.lien) } : null, titreAction: 'Écouter l’appel dans Retell',
-      actions: [puceLien('Appeler', lienTel(r.de), 'i-telephone'), puceFait(cle, 'Rappel')] });
+      actions: [puceLien('Appeler', lienTel(r.de), 'i-telephone'), puceRappelFait(r, cle)] });
   }
 }
 
