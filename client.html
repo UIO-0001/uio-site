@@ -32,6 +32,10 @@
   « Relancer une soumission » passent par POST /portal/centre/avis et /relance (mêmes règles que
   les commandes par texto) ; « Annuler » par /portal/centre/annuler. Un client sans agent ni
   numéro (Mobilo) ne voit rien de nouveau.
+  Vos conversations (2026-11-14) : une conversation par client (ses appels, ses textos, ses photos,
+  ses textos de suivi), GET /portal/centre/conversations et /conversation?numero= ; répondre part
+  du numéro du commerce (POST /portal/centre/repondre, seulement à quelqu'un qui a appelé ou texté)
+  et « C'est réglé » (/portal/centre/reglee). Relu toutes les minutes quand la page est visible.
   Tout texte venu du serveur est inséré avec textContent, jamais innerHTML.
 -->
 <style>
@@ -463,6 +467,136 @@ html[data-theme="sombre"] .carte--visites .graphe__jour.actif .graphe__barre, ht
 .centre__note { font-size: .8125rem; line-height: 1.5; color: var(--texte-3); text-wrap: pretty; }
 .centre.lecture .centre__grille { opacity: .6; transition: opacity .2s; }
 
+/* ── Vos conversations : un fil par client (appels, textos, photos), répondre depuis votre numéro ── */
+:root { --bulle-nous: #2563EB; }
+html[data-theme="sombre"] { --bulle-nous: #2F6BD8; }
+.carte--convs { --teinte: var(--texto); scroll-margin-top: 84px; }
+.filtre--attente span { color: var(--voix-fonce); }
+.filtre--attente[aria-pressed="true"] span { color: inherit; }
+.convs { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+.convs > * { min-width: 0; }
+.convs__liste { display: grid; align-content: start; gap: 6px; }
+.convs__items { display: grid; gap: 2px; }
+.convs__plus { justify-self: start; margin: 4px 0 0 8px; }
+.conv { display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; align-items: center; gap: 12px; width: 100%; padding: 10px; border: 1px solid transparent; border-radius: 16px; background: none; color: inherit; text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color .15s, border-color .15s; }
+.conv:hover { background: var(--survol); }
+.conv[aria-current="true"] { background: var(--carte-2); border-color: var(--trait); }
+.conv__avatar { display: grid; place-items: center; width: 42px; height: 42px; flex: none; border-radius: 50%; background: var(--texto-teinte); color: var(--texto-fonce); font-weight: 700; font-size: 1.0625rem; }
+.conv__avatar svg { width: 18px; height: 18px; }
+.conv__avatar--urgence { background: var(--urgence-teinte); color: var(--urgence); }
+.conv__texte { display: grid; gap: 1px; min-width: 0; }
+.conv__haut { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.conv__nom { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 650; }
+.conv__quand { flex: none; margin-left: auto; font-size: .8125rem; color: var(--texte-3); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.conv__tel { font-size: .8125rem; color: var(--texte-3); font-variant-numeric: tabular-nums; }
+.conv__apercu { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; font-size: .875rem; line-height: 1.35; color: var(--texte-2); }
+.conv--attend .conv__nom { font-weight: 750; }
+.conv--attend .conv__apercu { color: var(--encre); }
+.conv__marques { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+.conv__marques:empty { display: none; }
+.conv__point { width: 10px; height: 10px; border-radius: 50%; background: var(--lampe); box-shadow: 0 0 0 3px var(--voix-teinte); }
+
+.fil { display: flex; flex-direction: column; min-width: 0; border: 1px solid var(--trait); border-radius: 18px; background: var(--carte); overflow: hidden; }
+.fil__rien { display: grid; place-items: center; align-content: center; gap: 10px; flex: 1; min-height: 260px; padding: 24px; font-size: .9375rem; color: var(--texte-3); text-align: center; text-wrap: pretty; }
+.fil__rien svg { width: 30px; height: 30px; }
+.fil__tete { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 10px 14px; border-bottom: 1px solid var(--trait); }
+.fil__qui { flex: 1; min-width: 0; }
+.fil__qui h3 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 1.0625rem; font-weight: 700; line-height: 1.25; letter-spacing: -.015em; }
+.fil__qui h3:focus { outline: none; }
+.fil__infos { display: flex; flex-wrap: wrap; gap: 0 10px; font-size: .8125rem; color: var(--texte-2); }
+.fil__infos > * + *::before { content: "·"; margin-right: 10px; color: var(--texte-3); }
+.fil__tel { color: inherit; font-weight: 650; text-decoration: none; font-variant-numeric: tabular-nums; }
+.fil__tel:hover { text-decoration: underline; text-underline-offset: 3px; }
+.fil__actions { display: flex; align-items: center; gap: 8px; flex: none; }
+.fil__outils { display: flex; flex-wrap: wrap; gap: 6px; flex-basis: 100%; }
+.fil__outils .court { display: none; }
+.fil__lien { min-height: 36px; padding: 0 4px; border: 0; background: none; color: var(--texte-2); font-size: .8125rem; font-weight: 650; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.fil__lien:hover { color: var(--encre); }
+.fil__evenements { display: flex; flex: 1; flex-direction: column; gap: 8px; min-height: 0; padding: 14px; overflow-y: auto; overscroll-behavior: contain; background: var(--carte-2); }
+.fil__evenements > .vide { align-self: stretch; background: var(--carte); }
+.fil__jour { align-self: center; margin: 8px 0 2px; }
+.fil__jour:first-child { margin-top: 0; }
+.fil__jour span { display: inline-block; padding: 3px 11px; border: 1px solid var(--trait); border-radius: 999px; background: var(--carte); font-size: .75rem; font-weight: 650; color: var(--texte-2); }
+.fil__lecture { display: flex; flex: 1; align-items: center; justify-content: center; gap: 10px; min-height: 160px; font-size: .9375rem; color: var(--texte-2); }
+.roue { width: 18px; height: 18px; flex: none; border: 2px solid var(--trait-fort); border-top-color: var(--encre); border-radius: 50%; animation: tourne .8s linear infinite; }
+.fil__heure { display: block; margin-top: 3px; font-size: .75rem; color: var(--texte-3); font-variant-numeric: tabular-nums; }
+.msg { max-width: min(86%, 520px); padding: 8px 13px 7px; border-radius: 20px; font-size: .9375rem; line-height: 1.42; }
+.msg__texte { white-space: pre-wrap; overflow-wrap: anywhere; }
+.msg--recu { align-self: flex-start; border: 1px solid var(--trait); border-bottom-left-radius: 6px; background: var(--carte); }
+.msg--envoye { align-self: flex-end; border-bottom-right-radius: 6px; background: var(--bulle-nous); color: #FFFFFF; }
+.msg--envoye .fil__heure { color: rgba(255, 255, 255, .86); text-align: right; }
+.msg--auto { border: 1px solid var(--trait); background: var(--texto-teinte); color: var(--encre); }
+.msg--auto .fil__heure { color: var(--texte-3); }
+.msg--echec { box-shadow: 0 0 0 2px var(--urgence); }
+.msg__qui { display: block; margin-bottom: 1px; font-size: .6875rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; opacity: .8; }
+.msg__photos { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.msg__photo { display: block; width: 200px; max-width: 100%; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 14px; background: var(--carte-2); }
+.msg__photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.msg__video { font-weight: 650; }
+.msg__note { margin-top: 4px; font-size: .8125rem; color: var(--texte-3); }
+.evt { padding: 11px 13px; border: 1px solid var(--trait); border-radius: 16px; background: var(--carte); }
+.evt--appel { display: grid; gap: 4px; align-self: center; width: 100%; max-width: 600px; }
+.evt__tete { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.evt__tete .fil__heure { margin: 0 0 0 auto; }
+.evt__icone { display: grid; place-items: center; width: 26px; height: 26px; flex: none; border-radius: 50%; background: var(--centre-teinte); color: var(--centre-fonce); }
+.evt__icone svg { width: 14px; height: 14px; }
+.evt--urgence { border-color: var(--urgence); }
+.evt--urgence .evt__icone { background: var(--urgence-teinte); color: var(--urgence); }
+.evt__besoin { font-weight: 650; overflow-wrap: anywhere; }
+.evt__resume, .evt__demande { font-size: .875rem; line-height: 1.45; color: var(--texte-2); overflow-wrap: anywhere; }
+.evt__demande b { font-weight: 650; color: var(--encre); }
+.evt__suite { font-size: .875rem; font-weight: 650; color: var(--centre-fonce); }
+.evt--urgence .evt__suite { color: var(--urgence); }
+.evt--petit { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 4px 8px; align-self: center; max-width: 600px; padding: 6px 12px 6px 7px; border-radius: 999px; font-size: .8125rem; line-height: 1.35; color: var(--texte-2); }
+.evt--petit .fil__heure { margin: 0; }
+.evt--petit .fil__lien { min-height: 28px; }
+.evt--suivi .evt__icone { background: var(--texto-teinte); color: var(--texto-fonce); }
+.evt--annule, .evt--echec { opacity: .78; }
+.fil__pied { padding: 10px 12px 12px; border-top: 1px solid var(--trait); background: var(--carte); }
+.fil__reponse { display: flex; align-items: flex-end; gap: 8px; }
+.fil__zone { flex: 1; min-width: 0; min-height: 44px; max-height: 180px; padding: 10px 15px; border: 1.5px solid var(--trait-fort); border-radius: 22px; background: var(--carte); color: var(--encre); font: inherit; font-size: 1rem; line-height: 1.35; resize: none; }
+.fil__zone::placeholder { color: var(--texte-3); }
+.fil__zone:focus { outline: none; border-color: var(--encre); box-shadow: 0 0 0 2px var(--encre); }
+.fil__envoi { display: flex; align-items: center; gap: 8px; }
+.fil__envoi .btn:disabled { cursor: default; }
+.fil__compte { font-size: .75rem; color: var(--texte-3); font-variant-numeric: tabular-nums; }
+.fil__compte:empty { display: none; }
+.fil__note { margin-top: 6px; padding: 0 6px; font-size: .75rem; color: var(--texte-3); text-wrap: pretty; }
+.fil__note:empty { display: none; }
+.fil__pourquoi { padding: 10px 12px; border-radius: 12px; background: var(--carte-2); font-size: .875rem; color: var(--texte-2); }
+.fil__pourquoi:empty { display: none; }
+.carte--convs[data-vide="1"] .fil { display: none; }
+/* Ordinateur : les conversations à gauche, le fil à droite, sous la barre */
+@media (min-width: 900px) {
+  .convs { grid-template-columns: minmax(280px, 340px) minmax(0, 1fr); gap: 16px; align-items: start; }
+  .convs__liste { max-height: min(620px, calc(100dvh - 130px)); overflow-y: auto; overscroll-behavior: contain; margin: -4px; padding: 4px; }
+  .fil { height: min(620px, calc(100dvh - 130px)); }
+  .fil__retour { display: none; }
+  .carte--convs[data-vide="1"] .convs { grid-template-columns: minmax(0, 1fr); }
+}
+/* Téléphone : les conversations, ou le fil d'un client (avec Retour) */
+@media (max-width: 899px) {
+  .carte--convs[data-ouvert="1"] .convs__liste, .carte--convs[data-ouvert="0"] .fil, .carte--convs[data-ouvert="1"] .filtres { display: none; }
+  .fil__tete { padding: 8px 12px 8px 4px; }
+  .fil__outils { padding-left: 8px; }
+  .fil__evenements { max-height: max(240px, calc(100dvh - 400px)); padding: 12px 10px; }
+  .msg { max-width: 90%; }
+  .evt--petit { border-radius: 16px; }
+  .fil__infos { flex-direction: column; }
+  .fil__infos > * + *::before { content: none; }
+}
+@media (max-width: 479px) {
+  .carte--convs { padding: 18px 12px; }
+  .carte--convs .carte__tete { padding: 0 6px; }
+  .fil__tete .conv__avatar { display: none; }
+  .fil__outils { padding-left: 4px; }
+  .fil__outils .mini { min-height: 34px; padding: 0 11px; }
+  .fil__outils .long { display: none; }
+  .fil__outils .court { display: inline; }
+  .conv { gap: 10px; padding: 10px 6px; }
+}
+@media (prefers-reduced-motion: reduce) { .conv { transition: none; } .roue { animation-duration: 2.4s; } }
+
 /* La fenêtre « Demander un avis » / « Relancer une soumission » */
 .boite { width: min(480px, calc(100% - 24px)); max-height: calc(100dvh - 24px); padding: 0; border: 0; border-radius: 26px; background: var(--carte); color: var(--encre); box-shadow: var(--ombre-flotte); overflow: auto; }
 .boite::backdrop { background: rgba(14, 20, 32, .5); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
@@ -510,6 +644,7 @@ html[data-theme="sombre"] .carte--visites .graphe__jour.actif .graphe__barre, ht
   <symbol id="i-relance" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5l12.8-6.2-3.9 12.4-3-5.2z"/><path d="M9.4 11.5l6.9-7.2"/></g></symbol>
   <symbol id="i-agenda" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.2" width="14" height="12.8" rx="2.4"/><path d="M3 8.2h14M7 2.8v2.6M13 2.8v2.6"/></g></symbol>
   <symbol id="i-fermer" viewBox="0 0 20 20"><path d="M5.5 5.5l9 9M14.5 5.5l-9 9" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="i-envoyer" viewBox="0 0 20 20"><path d="M10 16V4.4M5 9.2l5-5 5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-retour" viewBox="0 0 20 20"><path d="M12 4.5L6.5 10l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 </svg>
 <div class="aurore" aria-hidden="true"><i></i><i></i></div>
@@ -593,6 +728,16 @@ html[data-theme="sombre"] .carte--visites .graphe__jour.actif .graphe__barre, ht
           <button class="btn btn--petit btn--second" type="button" id="bouton-relance" hidden><svg aria-hidden="true"><use href="#i-relance"/></svg>Relancer une soumission</button>
         </div>
       </div>
+      <!-- Vos conversations : un fil par client (appels, textos, photos) ; répondre depuis votre numéro (conversations.py) -->
+      <article class="carte carte--convs" id="carte-convs" aria-labelledby="t-convs" data-ouvert="0" hidden>
+        <div class="carte__tete"><h2 id="t-convs">Vos conversations</h2><span class="carte__compte" id="convs-compte"></span></div>
+        <div class="filtres" id="convs-filtres" role="group" aria-label="Montrer les conversations"></div>
+        <div class="convs">
+          <div class="convs__liste" id="convs-liste"></div>
+          <section class="fil" id="fil" aria-label="Conversation"></section>
+        </div>
+        <p class="centre__note" id="convs-note" hidden></p>
+      </article>
       <div class="centre__grille">
         <article class="carte carte--appels" id="carte-appels" aria-labelledby="t-appels">
           <div class="carte__tete"><h2 id="t-appels">Appels des 30 derniers jours</h2><span class="carte__compte" id="appels-compte"></span></div>
@@ -1449,6 +1594,7 @@ async function chargerCentre() {
     if (!E.projet) return;
     E.centre = c;
     rendreCentre(c);
+    if (c.actif) demarrerConvs(); else rendreConvs();
   } catch (e) {
     if (e.code === 401) E.jeton = '';
     if (!E.centre) section.hidden = true;
@@ -1704,9 +1850,430 @@ async function envoyerAction(ev) {
     if (!r.ok) { ecrireTexte(erreur, r.message); return; }
     fermerAction();
     toast(r.message);
+    if (CV.ouvert) relireFil();
   } catch (e) {
     ecrireTexte(erreur, e.message);
   } finally { bouton.disabled = false; }
+}
+
+// ─── Vos conversations : un fil par client (ses appels, ses textos, ses photos) ─
+// GET /portal/centre/conversations et /portal/centre/conversation?numero= (même jeton que le centre).
+// Répondre part du numéro du commerce, à son nom (POST /portal/centre/repondre) : seulement à
+// quelqu'un qui a appelé ou texté depuis 30 jours. « C'est réglé » : POST /portal/centre/reglee.
+// Les textes des clients sont mis tels quels (textContent) ; les photos passent par le lien signé du serveur.
+const MAX_REPONSE = 600;
+const CONVS_PAR_PAGE = 20;
+const FILTRES_CONVS = [['tous', 'Toutes'], ['attente', 'À répondre'], ['urgence', 'Urgences']];
+const CV = {
+  vue: null, erreur: '', lu: 0, lecture: null, filtre: 'tous', vues: CONVS_PAR_PAGE, minuterie: 0,
+  ouvert: '', fil: null, filErreur: '', filLecture: null, brouillons: new Map(), cle: '', basAvant: true
+};
+const brut = (tag, attrs, t) => { const n = el(tag, attrs); n.textContent = String(t == null ? '' : t); return n; };
+const convsListe = () => (CV.vue && CV.vue.conversations) || [];
+const convDe = numero => convsListe().find(c => c.numero === numero)
+  || (CV.fil && CV.fil.conversation && CV.fil.conversation.numero === numero ? CV.fil.conversation : null);
+const nomConv = c => (c && c.prenom) || (c && c.tel) || 'Client';
+const cleEnvoi = () => 'cv_' + Array.from(crypto.getRandomValues(new Uint8Array(8)), b => b.toString(16).padStart(2, '0')).join('');
+const raccourci = () => !matchMedia('(hover: hover) and (pointer: fine)').matches ? ''
+  : /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent) ? ' ⌘ Entrée pour envoyer.' : ' Ctrl + Entrée pour envoyer.';
+function quandCourt(iso) {
+  const d = new Date(iso), m = new Date();
+  if (isNaN(d)) return '';
+  const s = (m - d) / 1000;
+  if (s < 45) return 'à l’instant';
+  if (s < 3600) return `il y a ${Math.max(1, Math.round(s / 60))} min`;
+  if (ymd(d) === ymd(m)) return heure(d);
+  if (ymd(d) === ymd(new Date(m - 864e5))) return 'hier';
+  if (m - d < 6 * 864e5) return jourSemaine(d);
+  return d.toLocaleDateString('fr-CA', { timeZone: FUSEAU, day: 'numeric', month: 'short' });
+}
+function jourFil(d) {
+  const j = ymd(d), m = new Date();
+  if (j === ymd(m)) return 'Aujourd’hui';
+  if (j === ymd(new Date(m - 864e5))) return 'Hier';
+  if (j === ymd(new Date(m.getTime() + 864e5))) return 'Demain';
+  const t = jourLong(j);
+  return t.charAt(0).toUpperCase() + t.slice(1);
+}
+
+async function lireConvs(chemin) {
+  const ctrl = new AbortController();
+  const fin = setTimeout(() => ctrl.abort(), DELAIS.max);
+  try {
+    const r = await fetch(BACKEND + '/portal/centre/' + chemin, { headers: { Authorization: 'Bearer ' + E.jeton }, signal: ctrl.signal, cache: 'no-store' });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new ErreurConnexion(data.error || 'Vos conversations ne se lisent pas pour le moment.', r.status);
+    return data;
+  } catch (e) {
+    if (e instanceof ErreurConnexion) throw e;
+    throw new ErreurConnexion('Le serveur ne répond pas pour le moment. Vos conversations reviennent dans une minute.', 0);
+  } finally { clearTimeout(fin); }
+}
+
+function chargerConvs({ frais = false, auto = false } = {}) {
+  if (!E.jeton || !E.centre || !E.centre.actif) return Promise.resolve();
+  if (CV.lecture) return CV.lecture;
+  CV.lecture = (async () => {
+    try {
+      const r = await lireConvs('conversations' + (frais ? '?frais=1' : ''));
+      if (!E.projet) return;
+      Object.assign(CV, { vue: r, erreur: '', lu: Date.now() });
+    } catch (e) {
+      if (e.code === 401) E.jeton = '';
+      if (e.code === 403 || e.code === 404) Object.assign(CV, { vue: null, erreur: 'absent' });   // pas pour cette entreprise
+      else if (!auto || !CV.vue) CV.erreur = e.message;
+    } finally { CV.lecture = null; }
+    rendreConvs();
+    if (CV.ouvert && CV.vue) chargerFil({ silencieux: true, frais });
+  })();
+  return CV.lecture;
+}
+
+function chargerFil({ silencieux = false, frais = false } = {}) {
+  const numero = CV.ouvert;
+  if (!numero || !E.jeton) return Promise.resolve();
+  if (CV.filLecture && CV.filLecture.numero === numero && !frais) return CV.filLecture.promesse;
+  if (!silencieux) { CV.fil = null; CV.filErreur = ''; rendreFil(); }
+  const promesse = (async () => {
+    try {
+      const q = new URLSearchParams({ numero });
+      if (frais) q.set('frais', '1');
+      const r = await lireConvs('conversation?' + q.toString());
+      if (CV.ouvert !== numero) return;
+      Object.assign(CV, { fil: r, filErreur: '' });
+    } catch (e) {
+      if (CV.ouvert !== numero) return;
+      if (e.code === 401) E.jeton = '';
+      if (!silencieux || !CV.fil) CV.filErreur = e.message;
+    } finally { if (CV.filLecture && CV.filLecture.numero === numero) CV.filLecture = null; }
+    rendreFil();
+  })();
+  CV.filLecture = { numero, promesse };
+  return promesse;
+}
+// Après un geste (réponse, « réglée », annulation) : une lecture neuve, jamais celle qui était déjà en route
+async function relireFil() {
+  if (CV.filLecture) await CV.filLecture.promesse.catch(() => {});
+  return chargerFil({ silencieux: true });
+}
+
+function demarrerConvs() {
+  if (!CV.minuterie) CV.minuterie = setInterval(() => { if (!document.hidden) chargerConvs({ auto: true }); }, 60e3);
+  chargerConvs({ auto: !!CV.vue });
+}
+function viderConvs() {
+  clearInterval(CV.minuterie);
+  Object.assign(CV, { vue: null, erreur: '', lu: 0, lecture: null, filtre: 'tous', vues: CONVS_PAR_PAGE, minuterie: 0,
+    ouvert: '', fil: null, filErreur: '', filLecture: null, cle: '', basAvant: true });
+  CV.brouillons.clear();
+  const carte = $('#carte-convs');
+  carte.hidden = true;
+  carte.dataset.ouvert = '0';
+  delete $('#fil').dataset.numero;
+  vider($('#fil')); vider($('#convs-liste')); vider($('#convs-filtres'));
+}
+
+function rendreConvs() {
+  const carte = $('#carte-convs');
+  if (!E.centre || !E.centre.actif || CV.erreur === 'absent') { carte.hidden = true; return; }
+  carte.hidden = false;
+  const v = CV.vue, toutes = convsListe();
+  carte.dataset.vide = toutes.length || CV.ouvert ? '0' : '1';          // rien encore : pas de grand cadre vide
+  const n = { tous: toutes.length, attente: toutes.filter(c => c.a_repondre).length, urgence: toutes.filter(c => c.urgence).length };
+  ecrireTexte($('#convs-compte'), !v || !n.tous ? '' : n.attente ? `${pluriel(n.tous, 'conversation', 'conversations')} · ${nombre(n.attente)} à répondre`
+    : pluriel(n.tous, 'conversation', 'conversations'));
+  $('#convs-filtres').hidden = !v || !n.tous;
+  vider($('#convs-filtres'), !v || !n.tous ? [] : FILTRES_CONVS.filter(([f]) => f !== 'urgence' || n.urgence || CV.filtre === f).map(([f, nom]) =>
+    el('button', { type: 'button', class: 'filtre' + (f === 'attente' && n.attente ? ' filtre--attente' : ''), 'aria-pressed': String(CV.filtre === f),
+      onclick: () => { CV.filtre = f; CV.vues = CONVS_PAR_PAGE; rendreConvs(); } },
+      nom, el('span', { 'aria-hidden': 'true' }, String(n[f])))));
+  rendreListeConvs();
+  rendreFil();
+  const note = $('#convs-note'), manque = [];
+  if (v && v.appels && v.appels.disponible === false) manque.push('les appels');
+  if (v && v.textos && v.textos.disponible === false && v.textos.raison !== 'Aucun numéro Twilio pour ce commerce') manque.push('les textos');
+  const morceaux = [];
+  if (manque.length) morceaux.push(`Pour l’instant, ${listeFr(manque)} ne se lisent pas : ils reviennent dans quelques minutes.`);
+  if (v) morceaux.push(`Les 30 derniers jours.${v.peut_texter ? ' Vos réponses partent de votre numéro, à votre nom. Un client qui a écrit ARRÊT ne reçoit plus de textos.' : ''}`);
+  ecrireTexte(note, morceaux.join(' '));
+  note.hidden = !morceaux.length;
+}
+
+function convsFiltrees() {
+  return convsListe().filter(c => CV.filtre === 'tous' || (CV.filtre === 'attente' ? c.a_repondre : c.urgence));
+}
+
+function rendreListeConvs() {
+  const boite = $('#convs-liste');
+  if (!CV.vue) {
+    vider(boite, el('p', { class: 'vide' }, CV.erreur || 'Lecture de vos conversations…'));
+    return;
+  }
+  const liste = convsFiltrees(), montres = liste.slice(0, CV.vues);
+  if (!liste.length) {
+    vider(boite, el('p', { class: 'vide' }, CV.filtre === 'attente' ? 'Personne n’attend de réponse. Tout est à jour !'
+      : CV.filtre === 'urgence' ? 'Aucune urgence ces 7 derniers jours.'
+        : 'Aucun appel ni texto depuis 30 jours. Dès qu’un client appelle ou texte votre numéro, sa conversation arrive ici.'));
+    return;
+  }
+  vider(boite, el('ul', { class: 'convs__items' }, montres.map(itemConv)),
+    liste.length > montres.length ? el('button', { type: 'button', class: 'btn btn--petit btn--second convs__plus',
+      onclick: () => { CV.vues += CONVS_PAR_PAGE; rendreListeConvs(); } }, 'Voir plus de conversations') : null);
+}
+
+function avatar(c) {
+  return el('span', { class: 'conv__avatar' + (c.urgence ? ' conv__avatar--urgence' : ''), 'aria-hidden': 'true' },
+    c.prenom ? c.prenom.charAt(0).toUpperCase() : icone('i-tel'));
+}
+
+function itemConv(c) {
+  return el('li', null, el('button', { type: 'button', class: 'conv' + (c.a_repondre ? ' conv--attend' : ''), 'aria-current': CV.ouvert === c.numero ? 'true' : null,
+    'data-numero': c.numero, onclick: () => ouvrirConv(c.numero) },
+    avatar(c),
+    el('span', { class: 'conv__texte' },
+      el('span', { class: 'conv__haut' }, brut('b', { class: 'conv__nom' }, nomConv(c)), el('time', { class: 'conv__quand', datetime: c.dernier }, quandCourt(c.dernier))),
+      c.prenom ? el('span', { class: 'conv__tel' }, c.tel) : null,
+      brut('span', { class: 'conv__apercu' }, c.apercu)),
+    el('span', { class: 'conv__marques' },
+      c.a_repondre ? el('span', { class: 'conv__point' }, el('span', { class: 'sr' }, 'À répondre')) : null,
+      c.urgence ? el('span', { class: 'tag tag--urgence' }, 'Urgence') : null,
+      c.rdv ? el('span', { class: 'tag tag--rdv' }, 'Rendez-vous') : null,
+      c.arret ? el('span', { class: 'tag' }, 'ARRÊT') : null)));
+}
+
+function ouvrirConv(numero) {
+  if (CV.ouvert === numero) { const z = $('#fil-texte'); if (z) z.focus(); return; }
+  Object.assign(CV, { ouvert: numero, fil: null, filErreur: '', cle: '', basAvant: true });
+  rendreListeConvs();
+  rendreFil();
+  chargerFil();
+  if (matchMedia('(max-width: 899px)').matches) $('#carte-convs').scrollIntoView({ block: 'start', behavior: reduit() ? 'auto' : 'smooth' });
+}
+
+function fermerConv() {
+  const numero = CV.ouvert;
+  Object.assign(CV, { ouvert: '', fil: null, filErreur: '' });
+  rendreListeConvs();
+  rendreFil();
+  const b = [...document.querySelectorAll('#convs-liste .conv')].find(x => x.dataset.numero === numero);
+  if (b) { b.scrollIntoView({ block: 'nearest' }); b.focus({ preventScroll: true }); }
+}
+
+function rendreFil() {
+  const s = $('#fil'), carte = $('#carte-convs');
+  carte.dataset.ouvert = CV.ouvert ? '1' : '0';
+  if (!CV.ouvert) {
+    delete s.dataset.numero;
+    vider(s, el('div', { class: 'fil__rien' }, icone('i-bulle'), el('p', null, convsListe().length
+      ? 'Choisissez une conversation : les appels, les textos et les photos de ce client sont réunis ici.'
+      : 'Les conversations avec vos clients s’afficheront ici.')));
+    return;
+  }
+  const c = convDe(CV.ouvert) || { numero: CV.ouvert, tel: CV.ouvert, prenom: '' };
+  const meme = s.dataset.numero === CV.ouvert;
+  const ancienne = meme ? $('.fil__evenements', s) : null;
+  if (ancienne) CV.basAvant = ancienne.scrollHeight - ancienne.scrollTop - ancienne.clientHeight < 80;
+  const tete = teteFil(c);
+  const corps = el('ol', { class: 'fil__evenements', 'aria-label': `Appels et textos avec ${nomConv(c)}` }, evenementsFil(c));
+  const pied = meme ? $('.fil__pied', s) : null;
+  if (pied && ancienne && $('.fil__tete', s)) {
+    // Le même fil : la tête et les événements changent, la zone de réponse garde le focus et le texte
+    s.replaceChild(tete, $('.fil__tete', s));
+    s.replaceChild(corps, ancienne);
+    majPied(pied, c);
+  } else {
+    s.dataset.numero = CV.ouvert;
+    const neuf = piedFil(c);
+    vider(s, tete, corps, neuf);
+    neuf.maj();
+  }
+  if (CV.basAvant) corps.scrollTop = corps.scrollHeight;
+}
+
+function teteFil(c) {
+  const infos = [NUMERO_RE.test(c.numero || '') ? el('a', { class: 'fil__tel', href: 'tel:' + c.numero }, c.tel || c.numero) : el('span', null, c.tel || c.numero)];
+  if (c.rdv) infos.push(el('span', null, `Rendez-vous ${c.rdv}`));
+  if (c.anglais) infos.push(el('span', null, 'Anglais'));
+  const actions = el('div', { class: 'fil__actions' });
+  if (c.a_repondre) actions.append(el('button', { type: 'button', class: 'mini', onclick: ev => reglerConv(true, ev.currentTarget) }, icone('i-coche'), 'C’est réglé'));
+  else if (c.reglee) actions.append(el('button', { type: 'button', class: 'fil__lien', onclick: ev => reglerConv(false, ev.currentTarget) }, 'Remettre à répondre'));
+  const act = (E.centre && E.centre.actions) || {};
+  const pre = { numero: c.numero, prenom: c.prenom, anglais: c.anglais };
+  const outils = [];
+  if (NUMERO_RE.test(c.numero || '') && !c.arret) {
+    if (act.avis) outils.push(el('button', { type: 'button', class: 'mini', 'aria-label': 'Demander un avis', onclick: () => ouvrirAction('avis', pre) },
+      icone('i-etoile'), el('span', { class: 'long' }, 'Demander un avis'), el('span', { class: 'court' }, 'Avis Google')));
+    if (act.relance) outils.push(el('button', { type: 'button', class: 'mini', 'aria-label': 'Relancer la soumission', onclick: () => ouvrirAction('relance', pre) },
+      icone('i-relance'), el('span', { class: 'long' }, 'Relancer la soumission'), el('span', { class: 'court' }, 'Relancer')));
+  }
+  return el('header', { class: 'fil__tete' },
+    el('button', { type: 'button', class: 'rond fil__retour', 'aria-label': 'Retour aux conversations', title: 'Retour', onclick: fermerConv }, icone('i-retour')),
+    avatar(c),
+    el('div', { class: 'fil__qui' }, brut('h3', { tabindex: '-1' }, nomConv(c)), el('p', { class: 'fil__infos' }, infos)),
+    actions.childElementCount ? actions : null,
+    outils.length ? el('div', { class: 'fil__outils' }, outils) : null);
+}
+
+function evenementsFil(c) {
+  if (CV.filErreur) return [el('li', { class: 'vide' }, CV.filErreur)];
+  if (!CV.fil) return [el('li', { class: 'fil__lecture' }, el('span', { class: 'roue', 'aria-hidden': 'true' }), el('span', null, 'Lecture de la conversation…'))];
+  const evs = CV.fil.evenements || [];
+  if (!evs.length) return [el('li', { class: 'vide' }, 'Rien de ce numéro depuis 30 jours.')];
+  const sortie = [];
+  let jour = '';
+  for (const ev of evs) {
+    const d = new Date(ev.quand), ok = !isNaN(d);
+    if (ok && ymd(d) !== jour) { jour = ymd(d); sortie.push(el('li', { class: 'fil__jour' }, el('span', null, jourFil(d)))); }
+    sortie.push(evenementFil(ev, c, ok ? d : null));
+  }
+  return sortie;
+}
+
+const momentFil = (d, plus = '') => el('time', { class: 'fil__heure', datetime: d ? d.toISOString() : null }, (d ? heure(d) : '') + plus);
+
+function evenementFil(ev, c, d) {
+  if (ev.sorte === 'recu') {
+    const photos = (ev.liens || []).map(p => ({ url: p && urlSure(p.url), video: !!(p && p.video) })).filter(p => p.url).map(p => p.video
+      ? el('a', { class: 'msg__video', href: p.url, target: '_blank', rel: 'noopener noreferrer' }, 'Ouvrir la vidéo')
+      : el('a', { class: 'msg__photo', href: p.url, target: '_blank', rel: 'noopener noreferrer', 'aria-label': `Photo de ${nomConv(c)} (ouvrir en grand)` },
+        el('img', { src: p.url, alt: '', loading: 'lazy', decoding: 'async', referrerpolicy: 'no-referrer' })));
+    const manque = ev.photos && !photos.length ? el('p', { class: 'msg__note' }, ev.photos > 1 ? `${ev.photos} photos (non affichées ici)` : 'Une photo (non affichée ici)') : null;
+    return el('li', { class: 'msg msg--recu' }, ev.texte ? brut('p', { class: 'msg__texte' }, ev.texte) : null,
+      photos.length ? el('div', { class: 'msg__photos' }, photos) : null, manque, momentFil(d));
+  }
+  if (ev.sorte === 'envoye') {
+    return el('li', { class: 'msg msg--envoye' + (ev.auto ? ' msg--auto' : '') + (ev.echec ? ' msg--echec' : '') },
+      el('span', { class: 'msg__qui' }, ev.auto ? 'Texto automatique' : 'Votre réponse'),
+      brut('p', { class: 'msg__texte' }, ev.texte),
+      momentFil(d, ev.statut ? ` · ${ev.statut}` : ''));
+  }
+  if (ev.sorte === 'appel') {
+    const ton = ev.ton || '';
+    return el('li', { class: 'evt evt--appel' + (ev.urgence ? ' evt--urgence' : '') },
+      el('div', { class: 'evt__tete' }, el('span', { class: 'evt__icone', 'aria-hidden': 'true' }, icone('i-tel')),
+        el('b', null, ev.secondes ? `Appel de ${dureeTxt(ev.secondes)}` : 'Appel'),
+        TONS[ton] ? el('span', { class: `tag tag--${ton}` }, ev.etiquette || TONS[ton]) : null,
+        ev.anglais ? el('span', { class: 'tag' }, 'Anglais') : null,
+        momentFil(d)),
+      ev.besoin ? brut('p', { class: 'evt__besoin' }, ev.besoin) : null,
+      ev.resume ? brut('p', { class: 'evt__resume' }, ev.resume) : null,
+      ev.demande ? el('p', { class: 'evt__demande' }, el('b', null, 'Demande : '), brut('span', null, ev.demande)) : null,
+      ev.suite ? el('p', { class: 'evt__suite' }, ev.suite) : null);
+  }
+  if (ev.sorte === 'manque') {
+    return el('li', { class: 'evt evt--petit' }, el('span', { class: 'evt__icone', 'aria-hidden': 'true' }, icone('i-tel')),
+      el('span', null, 'Appel manqué : raccroché pendant le message d’accueil'), momentFil(d));
+  }
+  if (ev.sorte === 'suivi') {
+    const f = /^(Relance|Demande)/.test(ev.libelle || '') ? 'e' : '';          // « Relance prévue », « Rappel prévu »
+    const etat = { prevu: `prévu${f}`, envoye: `envoyé${f}`, annule: `annulé${f}`, echec: `pas parti${f}` }[ev.etat] || '';
+    const quand = ev.etat === 'prevu' && d ? ` ${momentTxt(ev.quand)}` : '';
+    return el('li', { class: `evt evt--petit evt--suivi evt--${ev.etat}` }, el('span', { class: 'evt__icone', 'aria-hidden': 'true' }, icone('i-bulle')),
+      el('span', null, `${ev.libelle} ${etat}${quand}` + (ev.raison ? ` · ${ev.raison}` : '')),
+      ev.etat === 'prevu' ? null : momentFil(d),
+      ev.annulable && ev.id ? el('button', { type: 'button', class: 'fil__lien', onclick: e => annulerDansLeFil(ev.id, e.currentTarget), 'aria-label': `Annuler : ${ev.libelle}` }, 'Annuler') : null);
+  }
+  return el('li', { class: 'evt evt--petit' }, el('span', null, 'Événement'), momentFil(d));
+}
+
+function piedFil(c) {
+  const zone = el('textarea', { id: 'fil-texte', class: 'fil__zone', rows: '2', maxlength: String(MAX_REPONSE), autocomplete: 'off', enterkeyhint: 'send' });
+  const compte = el('span', { class: 'fil__compte', 'aria-live': 'polite' });
+  const bouton = el('button', { type: 'submit', class: 'btn btn--petit' }, icone('i-envoyer'), 'Envoyer');
+  const formulaire = el('form', { class: 'fil__reponse', novalidate: true },
+    el('label', { class: 'sr', for: 'fil-texte' }, 'Votre message'), zone, el('div', { class: 'fil__envoi' }, compte, bouton));
+  const pied = el('div', { class: 'fil__pied' }, el('p', { class: 'fil__pourquoi', role: 'status' }), formulaire, el('p', { class: 'fil__note' }));
+  zone.value = CV.brouillons.get(CV.ouvert) || '';
+  pied.maj = () => {
+    const n = [...zone.value].length;
+    compte.textContent = n > MAX_REPONSE - 150 ? `${n} / ${MAX_REPONSE}` : '';
+    bouton.disabled = !zone.value.trim() || pied.dataset.ferme === '1' || pied.dataset.envoi === '1';
+    if (!zone.isConnected) return;
+    zone.style.height = 'auto';
+    zone.style.height = Math.min(zone.scrollHeight + 3, 180) + 'px';
+  };
+  zone.addEventListener('input', () => { CV.brouillons.set(CV.ouvert, zone.value); CV.cle = ''; pied.maj(); });
+  zone.addEventListener('keydown', e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); formulaire.requestSubmit(); } });
+  formulaire.addEventListener('submit', e => { e.preventDefault(); envoyerReponse(zone, bouton, pied); });
+  majPied(pied, c);
+  return pied;
+}
+
+function majPied(pied, c) {
+  const f = CV.fil, ferme = f ? !f.peut_texter : false;
+  pied.dataset.ferme = ferme ? '1' : '0';
+  $('.fil__reponse', pied).hidden = ferme;
+  ecrireTexte($('.fil__pourquoi', pied), ferme ? (f.pourquoi || 'Ce numéro ne peut pas recevoir de texto.') : '');
+  const de = (f && f.de) || (CV.vue && CV.vue.numero) || '';
+  const nom = (CV.vue && CV.vue.entreprise) || (E.centre && E.centre.entreprise) || '';
+  ecrireTexte($('.fil__note', pied), ferme ? '' : `Le texto part de votre numéro${de ? ` (${de})` : ''}${nom ? `, signé ${nom}` : ''}.${raccourci()}`);
+  $('.fil__zone', pied).placeholder = `Écrire à ${nomConv(c)}…`;
+  pied.maj();
+}
+
+async function envoyerReponse(zone, bouton, pied) {
+  const texte = zone.value.trim(), numero = CV.ouvert;
+  if (!texte || !numero || pied.dataset.envoi === '1') return;
+  if ([...texte].length > MAX_REPONSE) { toast(`Le message est trop long : ${MAX_REPONSE} caractères au plus.`, true); return; }
+  CV.cle = CV.cle || cleEnvoi();
+  const libelle = bouton.lastChild;
+  pied.dataset.envoi = '1';
+  pied.maj();
+  libelle.textContent = 'Envoi…';
+  try {
+    const r = await posterCentre('repondre', { numero, texte, cle: CV.cle });
+    if (!r.ok) { toast(r.message || 'Pas envoyé. Réessayez dans une minute.', true); return; }
+    CV.cle = '';
+    CV.brouillons.delete(numero);
+    if (CV.ouvert === numero) zone.value = '';
+    toast(r.message || 'Envoyé.');
+    const c = convsListe().find(x => x.numero === numero);
+    if (c && r.envoye) Object.assign(c, { a_repondre: false, dernier: r.envoye.quand, apercu: `Vous : ${r.envoye.texte.replace(/\s+/g, ' ')}`.slice(0, 90), de_nous: true, sorte: 'envoye' });
+    if (CV.fil && r.envoye && CV.ouvert === numero) {
+      const relance = (CV.fil.evenements || []).some(e => e.sorte === 'suivi' && e.etat === 'prevu' && /^Relance/.test(e.libelle || ''));
+      CV.fil.evenements.push(r.envoye);
+      CV.fil.evenements.sort((a, b) => (new Date(a.quand) || 0) - (new Date(b.quand) || 0));     // un texto prévu reste à la fin
+      if (CV.fil.conversation) CV.fil.conversation.a_repondre = false;
+      if (relance) { relireFil(); chargerCentre(); }          // répondre annule la relance de soumission qui attendait
+    }
+    CV.basAvant = true;
+    rendreConvs();
+  } catch (e) {
+    toast(e.message, true);
+  } finally {
+    delete pied.dataset.envoi;
+    libelle.textContent = 'Envoyer';
+    pied.maj();
+    if (CV.ouvert === numero && zone.isConnected) zone.focus();
+  }
+}
+
+async function reglerConv(reglee, bouton) {
+  const numero = CV.ouvert;
+  if (!numero) return;
+  if (bouton) bouton.disabled = true;
+  try {
+    await posterCentre('reglee', { numero, reglee });
+    toast(reglee ? 'C’est noté : cette conversation sort de « À répondre ».' : 'Elle revient dans « À répondre ».');
+    if (CV.lecture) await CV.lecture.catch(() => {});
+    await chargerConvs();
+  } catch (e) {
+    toast(e.message, true);
+    if (bouton && bouton.isConnected) bouton.disabled = false;
+  }
+}
+
+async function annulerDansLeFil(id, bouton) {
+  if (bouton) bouton.disabled = true;
+  try {
+    const r = await posterCentre('annuler', { id });
+    toast(r.message, !r.ok);
+    majSuivis(r);
+    await relireFil();
+  } catch (e) {
+    toast(e.message, true);
+    if (bouton && bouton.isConnected) bouton.disabled = false;
+  }
 }
 
 // ─── Connexion, mise à jour, déconnexion ──────────────────────────────────
@@ -1749,6 +2316,7 @@ function entrer(client) {
   planifier();
   E.jeton = client._jeton || ''; E.moisRapport = ''; E.signatureGraphe = '';
   E.centre = null; E.filtre = 'tous'; E.appelsVus = APPELS_PAR_PAGE;
+  viderConvs();
   chargerCentre();
   chargerRapport('');
   $('#projet-nom').focus({ preventScroll: true });
@@ -1808,6 +2376,7 @@ function quitter(message = '', garderNom = false) {
   E.jeton = ''; E.rapport = null; E.moisRapport = ''; E.signatureGraphe = ''; E.jourActif = -1;
   $('#rapport').hidden = true;
   E.centre = null; E.lectureCentre = false; E.filtre = 'tous'; E.appelsVus = APPELS_PAR_PAGE;
+  viderConvs();
   fermerAction();
   $('#centre').hidden = true;
   E.titre = TITRE; document.title = TITRE;
@@ -1879,6 +2448,7 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden) return;
   if (E.nonVus) { E.nonVus = 0; document.title = E.titre; }
   if (E.projet && Date.now() - E.maj > DELAIS.retour) actualiser();
+  else if (E.projet && CV.vue && Date.now() - CV.lu > 60e3) chargerConvs({ auto: true });
 });
 majTheme();
 })();

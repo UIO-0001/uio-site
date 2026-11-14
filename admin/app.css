@@ -1378,7 +1378,7 @@ html[data-theme="sombre"] { --bulle-nous: #2F6BD8; }
 .evt--urgence .evt__suite { color: var(--urgence); }
 .evt__suite:empty { display: none; }
 .evt__lien { justify-self: start; margin-top: 2px; }
-.evt--petit { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; align-self: center; max-width: 620px; padding: 6px 12px 6px 7px; border-radius: 999px; color: var(--texte-2); font-size: .8125rem; line-height: 1.35; }
+.evt--petit { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 4px 8px; align-self: center; max-width: 620px; padding: 6px 12px 6px 7px; border-radius: 999px; color: var(--texte-2); font-size: .8125rem; line-height: 1.35; }
 .evt--petit .fil__heure { margin: 0; }
 .evt--suivi .evt__icone { background: var(--texto-teinte); color: var(--texto-fonce); }
 .evt--annule, .evt--echec { opacity: .78; }
@@ -1407,7 +1407,7 @@ html[data-theme="sombre"] { --bulle-nous: #2F6BD8; }
 @media (max-width: 899px) {
   .appels[data-ouvert="1"] .appels__liste, .appels[data-ouvert="0"] .fil { display: none; }
   .vue-appels[data-ouvert="1"] .appels__tete, .vue-appels[data-ouvert="1"] .appels__phrase,
-  .vue-appels[data-ouvert="1"] .appels__lignes, .vue-appels[data-ouvert="1"] .appels__filtres { display: none; }
+  .vue-appels[data-ouvert="1"] .appels__barre { display: none; }
   .vue-appels[data-ouvert="1"] .appels { margin-top: 0; }
   .fil { overflow: visible; }
   .fil__tete { padding: 10px 12px 10px 6px; border-radius: var(--r-carte) var(--r-carte) 0 0; }
@@ -1415,6 +1415,9 @@ html[data-theme="sombre"] { --bulle-nous: #2F6BD8; }
   .fil__pied { position: sticky; bottom: calc(80px + env(safe-area-inset-bottom, 0px)); z-index: 2; border-radius: 0 0 var(--r-carte) var(--r-carte); box-shadow: 0 -10px 24px -18px rgba(31, 41, 55, .35); }
   .fil__actions .btn { padding: 0 12px; }
   .bulle { max-width: 88%; }
+  .evt--petit { border-radius: 16px; }
+  .fil__infos { flex-direction: column; }
+  .fil__infos > * + *::before { content: none; }
   html:has(#vue-appels:not([hidden])[data-ouvert="1"]) .assistant-bulle { display: none; }
 }
 @media (max-width: 479px) {
