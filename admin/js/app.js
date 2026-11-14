@@ -12,6 +12,7 @@ import { chargerClients, rendreClients, rendrePortail, ouvrirNouveau } from './c
 import { fermerPanneau } from './panneau.js';
 import { chargerCompte, chargerJournal, rendreCompte, viderCompte } from './compte.js';
 import { chargerArgent, rendreArgent, viderArgent } from './argent.js';
+import { chargerAppels, rendreAppels, viderAppels, appelsLus } from './appels.js';
 import { chargerEquipe, rendreEquipe, viderEquipe, rendreChrono, rendreClaude } from './equipe.js';
 import { chargerProspects, viderProspects, rendreProspects, choisirSousVue, reprendreSousVue, sousVue, ouvrirNouveauProspect } from './prospects.js';
 import { preparerConnexion, demarrerConnexion } from './connexion.js';
@@ -78,6 +79,7 @@ function remettreAZero() {
   viderRecherche();                                     // la recherche partout oublie tout, elle aussi
   viderCompte();
   viderArgent();
+  viderAppels();
   viderEquipe();
   viderProspects();
   viderAssistant();
@@ -89,7 +91,7 @@ function verifierExpiration() {
 }
 
 // ─── Chargements et minuteries ─────────────────────────────────────────────
-function rendreTout() { rendreTableau(); rendreSite(); rendreOffre(); rendreClients(); rendreProspects(); rendrePortail(); rendrePouls(); rendreArgent(); rendreEquipe(); rendreCompte(); }
+function rendreTout() { rendreTableau(); rendreSite(); rendreOffre(); rendreClients(); rendreProspects(); rendrePortail(); rendrePouls(); rendreArgent(); rendreAppels(); rendreEquipe(); rendreCompte(); }
 
 // Les réglages ne se lisent que s'ils sont ouverts : le compte, et la page affichée (historique, système)
 const surPage = page => E.vue === 'reglages' && E.page === page;
@@ -99,6 +101,7 @@ function chargerTout(frais = false) {
   if (surPage('historique')) travaux.push(chargerJournal());
   if (surPage('systeme')) travaux.push(chargerGithub(frais), chargerOffre());
   if (E.vue === 'argent' || E.argent) travaux.push(chargerArgent({ frais }));
+  if (E.vue === 'appels' || appelsLus()) travaux.push(chargerAppels({ frais }));
   if (E.vue === 'equipe' || E.equipe) travaux.push(chargerEquipe({ frais }));
   if ((E.vue === 'clients' && sousVue() === 'prospects') || E.prospects) travaux.push(chargerProspects({ frais }));
   return Promise.allSettled(travaux);
@@ -119,6 +122,7 @@ function planifier() {
   boucle(() => { if (E.vue === 'reglages') chargerCompte(); if (surPage('historique')) chargerJournal(); }, DELAIS.compte);
   boucle(() => { if (E.vue === 'argent') chargerArgent({ auto: true }); }, DELAIS.argent || 120e3);   // jamais pendant qu'on écrit
   boucle(() => { if (E.vue === 'equipe') chargerEquipe({ auto: true }); }, DELAIS.equipe || 60e3);
+  boucle(() => { if (E.vue === 'appels') chargerAppels({ auto: true }); }, DELAIS.appels || 45e3);   // un client qui écrit : vu en moins d'une minute
   // « À faire aujourd'hui » reste juste : l'argent et l'équipe relus toutes les 5 min sur le tableau de bord
   boucle(() => {
     if (E.vue !== 'tableau') return;
@@ -157,6 +161,7 @@ quandPage('systeme', () => {
 });
 quandVue('argent', () => { rendreArgent(); if (!E.argent || Date.now() - E.argentLu > 60e3) chargerArgent(); });
 quandVue('equipe', () => { rendreEquipe(); if (!E.equipe || Date.now() - E.equipeLu > 30e3) chargerEquipe(); });
+quandVue('appels', () => { rendreAppels(); if (Date.now() - appelsLus() > 20e3) chargerAppels(); });
 quandVue('clients', () => { rendreClients(); if (sousVue() === 'prospects' && (!E.prospects || Date.now() - (E.prospectsLu || 0) > 30e3)) chargerProspects(); });
 // « À faire aujourd'hui » se redessine avec la phrase du tableau de bord (toutes les 15 s, et après chaque lecture)
 brancherAFaire(rendreAFaire);
@@ -236,7 +241,7 @@ document.addEventListener('keydown', e => {
   else if (k === 'a' || k === 'A') { e.preventDefault(); ouvrirAssistant(); }
   else if (k === 't' || k === 'T') basculerTheme();
   else if (k === 'l' || k === 'L') { e.preventDefault(); verrouiller(); }
-  else if (['1', '2', '3', '4'].includes(k)) montrer(ONGLETS[Number(k) - 1]);
+  else if (['1', '2', '3', '4', '5'].includes(k)) montrer(ONGLETS[Number(k) - 1]);
   else if (k === ',') { e.preventDefault(); montrer('reglages'); }
   else if (k === '?') ouvrirAide();
 });

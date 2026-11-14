@@ -1,9 +1,9 @@
-// Les vues du CRM : quatre onglets (Tableau, Clients, Argent, Équipe) et les Réglages, ouverts par
+// Les vues du CRM : cinq onglets (Tableau, Appels, Clients, Argent, Équipe) et les Réglages, ouverts par
 // la roue de la barre, avec leurs pages (sécurité, notifications, Claude, historique, système, affichage).
 import { $, $$ } from './outils.js';
 import { E } from './etat.js';
 
-export const ONGLETS = ['tableau', 'clients', 'argent', 'equipe'];
+export const ONGLETS = ['tableau', 'appels', 'clients', 'argent', 'equipe'];
 export const VUES = [...ONGLETS, 'reglages'];
 export const PAGES = ['securite', 'notifications', 'claude', 'historique', 'systeme', 'affichage'];
 const crochets = {}, crochetsPage = {};
