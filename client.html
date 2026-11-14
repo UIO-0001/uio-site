@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Espace client · Agence UIO</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="description" content="L’espace client d’Agence UIO : votre service, votre forfait et votre rapport du mois.">
+<meta name="description" content="L’espace client d’Agence UIO : vos appels, vos rendez-vous, vos textos de suivi et votre rapport du mois.">
 <meta name="theme-color" content="#F4F5F8">
 <script>try{if(localStorage.getItem('uio-theme')==='sombre'){document.documentElement.setAttribute('data-theme','sombre');document.querySelector('meta[name="theme-color"]').setAttribute('content','#0E1420');}}catch(e){}</script>
 <link rel="icon" type="image/svg+xml" href="assets/logo/uio-icone.svg?v=3">
@@ -26,6 +26,12 @@
   statut (100 % = en service).
   Sur l'appareil, on garde seulement une empreinte (le statut, et une empreinte de la note et de
   la démo, jamais leur texte) pour dire « depuis votre dernière visite ».
+  Le centre de contrôle (2026-11-14) : GET /portal/centre avec le jeton du rapport donne les appels
+  des 30 derniers jours (résumé, demande, suite), les rendez-vous à venir pris par l'agent (tels
+  qu'ils sont dans l'agenda Google du client) et les textos de suivi. « Demander un avis » et
+  « Relancer une soumission » passent par POST /portal/centre/avis et /relance (mêmes règles que
+  les commandes par texto) ; « Annuler » par /portal/centre/annuler. Un client sans agent ni
+  numéro (Mobilo) ne voit rien de nouveau.
   Tout texte venu du serveur est inséré avec textContent, jamais innerHTML.
 -->
 <style>
@@ -353,6 +359,114 @@ html[data-theme="sombre"] .graphe__jour.actif .graphe__barre, html[data-theme="s
 }
 @media (max-width: 359px) { .chiffre { flex-basis: 100%; } }
 
+/* ── Le centre de contrôle : les appels, les rendez-vous et les textos de suivi ─ */
+.centre { display: grid; gap: 18px; margin-top: 36px; }
+@media (min-width: 1000px) { .centre { margin-top: 48px; } }
+.centre__tete { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px 20px; }
+.centre__titres { display: grid; gap: 4px; min-width: 0; }
+.centre__sur { display: flex; align-items: flex-start; gap: 10px; font-size: .9375rem; font-weight: 650; color: var(--texte-2); }
+.centre__sur::before { content: ""; width: 10px; height: 10px; flex: none; margin-top: calc(.75em - 5px); border-radius: 50%; background: var(--centre); }
+.centre h2#centre-titre { font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.375rem); line-height: 1.08; font-weight: 700; letter-spacing: -.035em; }
+.centre h2#centre-titre:focus { outline: none; }
+.centre__resume { font-size: .9375rem; color: var(--texte-2); text-wrap: pretty; }
+.centre__resume b { color: var(--encre); font-weight: 650; }
+.centre__boutons { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn--second { background: var(--carte); color: var(--encre); box-shadow: inset 0 0 0 1.5px var(--trait-fort); }
+.btn--second:hover { background: var(--carte-2); }
+@media (max-width: 479px) { .centre__boutons { width: 100%; } .centre__boutons .btn { flex: 1 1 0; padding: 0 12px; } }
+.centre__grille { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.centre__grille > * { min-width: 0; }
+@media (min-width: 960px) { .centre__grille { grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 20px; align-items: start; } }
+.centre__cote { display: grid; gap: 16px; min-width: 0; }
+.carte--appels { --teinte: var(--lampe); }
+.carte--agenda { --teinte: var(--centre); }
+.carte--suivis { --teinte: var(--texto); }
+.carte__compte { font-size: .875rem; font-weight: 650; color: var(--texte-2); font-variant-numeric: tabular-nums; }
+
+.filtres { display: flex; flex-wrap: wrap; gap: 6px; margin-top: -4px; }
+.filtre { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 14px; border: 1px solid var(--trait); border-radius: 999px; background: none; color: var(--texte-2); font-size: .875rem; font-weight: 650; cursor: pointer; font-variant-numeric: tabular-nums; transition: background-color .15s, color .15s; }
+.filtre:hover { background: var(--survol); color: var(--encre); }
+.filtre[aria-pressed="true"] { background: var(--encre); border-color: var(--encre); color: var(--carte); }
+
+.appels { display: grid; }
+.appels__jour { padding: 14px 0 6px; font-size: .8125rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--texte-3); }
+.appels__jour:first-child { padding-top: 0; }
+.appel { display: grid; grid-template-columns: 62px minmax(0, 1fr); gap: 0 12px; padding: 12px 0; border-top: 1px solid var(--trait); }
+.appels__jour + .appel { border-top: 0; }
+.appel__heure { padding-top: 1px; font-size: .9375rem; font-weight: 650; color: var(--texte-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.appel__corps { display: grid; gap: 3px; min-width: 0; }
+.appel__ligne { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.appel__besoin { font-weight: 650; line-height: 1.35; overflow-wrap: anywhere; }
+.appel__qui { font-size: .875rem; color: var(--texte-2); }
+.appel__suite { font-size: .9375rem; line-height: 1.4; color: var(--encre); }
+.appel--urgence .appel__suite { color: var(--urgence); font-weight: 650; }
+.appel--rdv .appel__suite { color: var(--centre-fonce); font-weight: 650; }
+.appel details { margin-top: 2px; }
+.appel summary { display: inline-flex; align-items: center; gap: 4px; min-height: 36px; margin: -4px 0; border-radius: 999px; color: var(--texte-2); font-size: .875rem; font-weight: 650; cursor: pointer; list-style: none; }
+.appel summary::-webkit-details-marker { display: none; }
+.appel summary::after { content: ""; width: 7px; height: 7px; margin: -3px 0 0 6px; border-right: 1.8px solid currentColor; border-bottom: 1.8px solid currentColor; transform: rotate(45deg); transition: transform .2s; }
+.appel details[open] summary::after { margin-top: 3px; transform: rotate(-135deg); }
+.appel summary:hover { color: var(--encre); }
+.appel__detail { display: grid; gap: 10px; margin-top: 8px; padding: 12px 14px; border-radius: 14px; background: var(--carte-2); font-size: .9375rem; line-height: 1.5; }
+.appel__detail p { overflow-wrap: anywhere; }
+.appel__detail b { display: block; font-size: .8125rem; font-weight: 700; color: var(--texte-2); }
+.appel__actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.appels__plus { justify-self: start; margin-top: 8px; }
+.tag { display: inline-flex; align-items: center; flex: none; min-height: 24px; padding: 0 10px; border-radius: 999px; background: var(--carte-2); color: var(--texte-2); font-size: .75rem; font-weight: 700; white-space: nowrap; }
+.tag--rdv { background: var(--centre-teinte); color: var(--centre-fonce); }
+.tag--urgence { background: var(--urgence-teinte); color: var(--urgence); }
+.tag--rappel { background: var(--voix-teinte); color: var(--voix-fonce); }
+.tag--transfert { background: var(--texto-teinte); color: var(--texto-fonce); }
+.mini { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 13px; border: 1px solid var(--trait-fort); border-radius: 999px; background: var(--carte); color: var(--encre); font-size: .875rem; font-weight: 650; text-decoration: none; white-space: nowrap; cursor: pointer; }
+.mini:hover { background: var(--survol); }
+.mini svg { width: 15px; height: 15px; flex: none; }
+
+.rdvs, .suivis { display: grid; }
+.rdv { display: grid; grid-template-columns: 54px minmax(0, 1fr); gap: 12px; align-items: start; padding: 12px 0; border-top: 1px solid var(--trait); }
+.rdv:first-child, .suivi:first-child { border-top: 0; padding-top: 0; }
+.rdv__date { display: grid; justify-items: center; align-content: center; gap: 3px; height: 54px; border-radius: 15px; background: var(--centre-teinte); color: var(--centre-fonce); line-height: 1; }
+.rdv__date small { font-size: .6875rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.rdv__date b { font-size: 1.375rem; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.rdv__texte { display: grid; gap: 2px; min-width: 0; }
+.rdv__titre { font-weight: 650; overflow-wrap: anywhere; }
+.rdv__detail { font-size: .875rem; color: var(--texte-2); overflow-wrap: anywhere; }
+.rdv__rappel { display: inline-flex; align-items: center; gap: 6px; font-size: .8125rem; font-weight: 600; color: var(--texto-fonce); }
+.rdv__rappel::before { content: ""; width: 6px; height: 6px; flex: none; border-radius: 50%; background: currentColor; }
+.suivi { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--trait); }
+.suivi__icone { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; background: var(--texto-teinte); color: var(--texto-fonce); }
+.suivi__icone svg { width: 18px; height: 18px; }
+.suivi--avis .suivi__icone, .suivi--avis_rappel .suivi__icone { background: var(--site-teinte); color: var(--site-fonce); }
+.suivi--rappel_rdv .suivi__icone { background: var(--centre-teinte); color: var(--centre-fonce); }
+.suivi__texte { display: grid; gap: 1px; min-width: 0; }
+.suivi__titre { font-size: .9375rem; font-weight: 650; overflow-wrap: anywhere; }
+.suivi__detail { font-size: .8125rem; line-height: 1.4; color: var(--texte-2); overflow-wrap: anywhere; }
+.suivi--annule .suivi__titre, .suivi--echec .suivi__titre { color: var(--texte-3); }
+.suivi .mini { min-height: 34px; padding: 0 11px; }
+.centre__note { font-size: .8125rem; line-height: 1.5; color: var(--texte-3); text-wrap: pretty; }
+.centre.lecture .centre__grille { opacity: .6; transition: opacity .2s; }
+
+/* La fenêtre « Demander un avis » / « Relancer une soumission » */
+.boite { width: min(480px, calc(100% - 24px)); max-height: calc(100dvh - 24px); padding: 0; border: 0; border-radius: 26px; background: var(--carte); color: var(--encre); box-shadow: var(--ombre-flotte); overflow: auto; }
+.boite::backdrop { background: rgba(14, 20, 32, .5); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+.boite[open] { animation: monte .35s var(--sortie) both; }
+.action { display: grid; gap: 16px; padding: 24px 22px 20px; }
+@media (min-width: 480px) { .action { padding: 28px 28px 24px; } }
+.action__tete { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.action__tete h2 { font-size: 1.5rem; line-height: 1.15; font-weight: 700; letter-spacing: -.03em; }
+.action__tete p { margin-top: 4px; font-size: .9375rem; color: var(--texte-2); }
+.action__tete .rond { margin: -6px -8px 0 0; }
+.action__deux { display: grid; gap: 14px; }
+@media (min-width: 480px) { .action__deux { grid-template-columns: 1.2fr 1fr; } }
+.choix { display: inline-flex; gap: 2px; padding: 3px; border-radius: 999px; background: var(--carte-2); }
+.choix button { min-height: 38px; padding: 0 16px; border: 0; border-radius: 999px; background: none; color: var(--texte-2); font-size: .9375rem; font-weight: 650; cursor: pointer; }
+.choix button[aria-pressed="true"] { background: var(--carte); color: var(--encre); box-shadow: var(--ombre-douce); }
+.apercu { display: grid; gap: 6px; }
+.apercu__titre { font-size: .875rem; font-weight: 650; color: var(--texte-2); }
+.apercu__bulle { justify-self: start; max-width: 100%; padding: 11px 14px; border-radius: 18px 18px 18px 5px; background: var(--carte-2); font-size: .9375rem; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
+.action__regles { font-size: .8125rem; line-height: 1.5; color: var(--texte-2); text-wrap: pretty; }
+.action__pied { display: flex; flex-wrap: wrap-reverse; justify-content: flex-end; gap: 8px; }
+.action .erreur:empty { display: none; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .service__embleme::after { display: none; }
@@ -374,6 +488,10 @@ html[data-theme="sombre"] .graphe__jour.actif .graphe__barre, html[data-theme="s
   <symbol id="i-bulle" viewBox="0 0 20 20"><path d="M4.6 3.8h10.8a2.6 2.6 0 0 1 2.6 2.6v6a2.6 2.6 0 0 1-2.6 2.6H9.2L5.4 18v-3h-.8A2.6 2.6 0 0 1 2 12.4v-6a2.6 2.6 0 0 1 2.6-2.6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
   <symbol id="i-sortie" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4H5.5A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16h9a1.5 1.5 0 0 0 1.5-1.5V12"/><path d="M11 4h5v5M16 4l-7 7"/></g></symbol>
   <symbol id="i-quitter" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 3.5H5.5A1.5 1.5 0 0 0 4 5v10a1.5 1.5 0 0 0 1.5 1.5h3"/><path d="M12.5 6.5L16 10l-3.5 3.5M16 10H8"/></g></symbol>
+  <symbol id="i-etoile" viewBox="0 0 20 20"><path d="M10 2.6l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5L2.8 7.9l5-.7z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+  <symbol id="i-relance" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5l12.8-6.2-3.9 12.4-3-5.2z"/><path d="M9.4 11.5l6.9-7.2"/></g></symbol>
+  <symbol id="i-agenda" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.2" width="14" height="12.8" rx="2.4"/><path d="M3 8.2h14M7 2.8v2.6M13 2.8v2.6"/></g></symbol>
+  <symbol id="i-fermer" viewBox="0 0 20 20"><path d="M5.5 5.5l9 9M14.5 5.5l-9 9" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
   <symbol id="i-retour" viewBox="0 0 20 20"><path d="M12 4.5L6.5 10l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 </svg>
 <div class="aurore" aria-hidden="true"><i></i><i></i></div>
@@ -387,7 +505,7 @@ html[data-theme="sombre"] .graphe__jour.actif .graphe__barre, html[data-theme="s
     </div>
     <div>
       <h1>Espace client</h1>
-      <p>Votre service, votre forfait et votre rapport du mois.</p>
+      <p>Vos appels, votre service et votre rapport du mois.</p>
     </div>
     <div class="champ">
       <label for="identifiant">Nom d’utilisateur</label>
@@ -441,6 +559,42 @@ html[data-theme="sombre"] .graphe__jour.actif .graphe__barre, html[data-theme="s
         <p class="service__etat" id="service-etat">En service</p>
         <p class="service__depuis" id="service-depuis" hidden></p>
         <p class="service__forfait" id="service-forfait" hidden></p>
+      </div>
+    </section>
+
+    <!-- Le centre de contrôle : seulement si le client a un agent répondeur ou un numéro (centre_client.py) -->
+    <section class="centre" id="centre" aria-labelledby="centre-titre" aria-busy="false" hidden>
+      <div class="centre__tete">
+        <div class="centre__titres">
+          <p class="centre__sur">Votre centre de contrôle</p>
+          <h2 id="centre-titre" tabindex="-1">Vos appels</h2>
+          <p class="centre__resume" id="centre-resume"></p>
+        </div>
+        <div class="centre__boutons">
+          <button class="btn btn--petit" type="button" id="bouton-avis" hidden><svg aria-hidden="true"><use href="#i-etoile"/></svg>Demander un avis</button>
+          <button class="btn btn--petit btn--second" type="button" id="bouton-relance" hidden><svg aria-hidden="true"><use href="#i-relance"/></svg>Relancer une soumission</button>
+        </div>
+      </div>
+      <div class="centre__grille">
+        <article class="carte carte--appels" id="carte-appels" aria-labelledby="t-appels">
+          <div class="carte__tete"><h2 id="t-appels">Appels des 30 derniers jours</h2><span class="carte__compte" id="appels-compte"></span></div>
+          <div class="filtres" id="filtres" role="group" aria-label="Montrer"></div>
+          <div class="appels" id="appels"></div>
+          <button class="btn btn--petit btn--second appels__plus" type="button" id="appels-plus" hidden>Voir plus d’appels</button>
+          <p class="centre__note" id="appels-note" hidden></p>
+        </article>
+        <div class="centre__cote">
+          <article class="carte carte--agenda" id="carte-agenda" aria-labelledby="t-agenda" hidden>
+            <div class="carte__tete"><h2 id="t-agenda">Rendez-vous à venir</h2></div>
+            <div class="rdvs" id="rdvs"></div>
+            <p class="centre__note" id="agenda-note" hidden></p>
+          </article>
+          <article class="carte carte--suivis" aria-labelledby="t-suivis">
+            <div class="carte__tete"><h2 id="t-suivis">Textos de suivi</h2></div>
+            <div class="suivis" id="suivis"></div>
+            <p class="centre__note" id="suivis-note" hidden></p>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -512,6 +666,43 @@ html[data-theme="sombre"] .graphe__jour.actif .graphe__barre, html[data-theme="s
   </footer>
 </div>
 
+<!-- « Demander un avis » et « Relancer une soumission » : le texto part du numéro de l'entreprise -->
+<dialog class="boite" id="boite-action" aria-labelledby="action-titre" aria-describedby="action-sous-titre">
+  <form class="action" id="form-action" novalidate>
+    <div class="action__tete">
+      <div><h2 id="action-titre">Demander un avis</h2><p id="action-sous-titre"></p></div>
+      <button class="rond" type="button" id="action-fermer" aria-label="Fermer" title="Fermer"><svg aria-hidden="true"><use href="#i-fermer"/></svg></button>
+    </div>
+    <div class="action__deux">
+      <div class="champ">
+        <label for="action-numero">Cellulaire du client</label>
+        <input id="action-numero" type="tel" inputmode="tel" autocomplete="off" placeholder="819 555-0142" required>
+      </div>
+      <div class="champ">
+        <label for="action-prenom">Prénom <span class="champ__aide">(facultatif)</span></label>
+        <input id="action-prenom" type="text" autocomplete="off" maxlength="30">
+      </div>
+    </div>
+    <div class="champ">
+      <span class="champ__aide" id="action-langue-titre">Langue du texto</span>
+      <div class="choix" role="group" aria-labelledby="action-langue-titre">
+        <button type="button" id="action-fr" aria-pressed="true">Français</button>
+        <button type="button" id="action-en" aria-pressed="false">English</button>
+      </div>
+    </div>
+    <div class="apercu">
+      <span class="apercu__titre">Le texto que votre client va recevoir</span>
+      <p class="apercu__bulle" id="action-apercu"></p>
+    </div>
+    <p class="action__regles" id="action-regles"></p>
+    <p class="erreur" id="action-erreur" role="alert"></p>
+    <div class="action__pied">
+      <button class="btn btn--petit btn--discret" type="button" id="action-annuler">Annuler</button>
+      <button class="btn btn--petit" type="submit" id="action-envoyer">Envoyer la demande</button>
+    </div>
+  </form>
+</dialog>
+
 <div class="toast" id="toast" aria-hidden="true"></div>
 <div class="sr" id="annonce" role="status" aria-live="polite"></div>
 
@@ -536,7 +727,9 @@ const E = {
   noteNeuve: false, demoNeuve: false, nonVus: 0, titre: TITRE,
   widget: null, idWidget: '',
   // Le rapport du mois : jeton de 12 h donné par /portal/login (jamais le mot de passe), mois choisi ('' = en cours)
-  jeton: '', rapport: null, moisRapport: '', lectureRapport: false, signatureGraphe: '', jourActif: -1
+  jeton: '', rapport: null, moisRapport: '', lectureRapport: false, signatureGraphe: '', jourActif: -1,
+  // Le centre de contrôle (même jeton) : appels, rendez-vous, textos de suivi
+  centre: null, lectureCentre: false, filtre: 'tous', appelsVus: 15
 };
 
 // ─── Petits outils ────────────────────────────────────────────────────────
@@ -1073,6 +1266,299 @@ function rendreForfait(f) {
       reste > 0 ? `il reste ${minutesTxt(reste)}` : reste === 0 ? 'forfait utilisé en entier' : `${minutesTxt(-reste)} de plus que le forfait`, '.'));
 }
 
+// ─── Le centre de contrôle : appels, rendez-vous, textos de suivi ─────────
+// Même jeton que le rapport. Tout texte venu du serveur passe par textContent (el()).
+const TONS = { rdv: 'Rendez-vous', urgence: 'Urgence', rappel: 'À rappeler', transfert: 'Transféré', manque: 'Manqué' };
+const FILTRES = [['tous', 'Tous'], ['rappel', 'À rappeler'], ['rdv', 'Rendez-vous'], ['urgence', 'Urgences']];
+const APPELS_PAR_PAGE = 15;
+const NUMERO_RE = /^\+1[2-9]\d{2}[2-9]\d{6}$/;
+const SORTE_ICONE = { avis: 'i-etoile', avis_rappel: 'i-etoile', relance: 'i-relance', rappel_rdv: 'i-agenda' };
+
+async function lireCentre() {
+  const ctrl = new AbortController();
+  const fin = setTimeout(() => ctrl.abort(), DELAIS.max);
+  try {
+    const r = await fetch(BACKEND + '/portal/centre', { headers: { Authorization: 'Bearer ' + E.jeton }, signal: ctrl.signal, cache: 'no-store' });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new ErreurConnexion(data.error || 'Centre indisponible', r.status);
+    return data;
+  } catch (e) {
+    if (e instanceof ErreurConnexion) throw e;
+    throw new ErreurConnexion('Le serveur ne répond pas pour le moment.', 0);
+  } finally { clearTimeout(fin); }
+}
+
+async function chargerCentre() {
+  if (!E.jeton || !E.projet) { if (!E.centre) $('#centre').hidden = true; return; }
+  if (E.lectureCentre) return;
+  E.lectureCentre = true;
+  const section = $('#centre');
+  section.classList.add('lecture');
+  section.setAttribute('aria-busy', 'true');
+  try {
+    const c = await lireCentre();
+    if (!E.projet) return;
+    E.centre = c;
+    rendreCentre(c);
+  } catch (e) {
+    if (e.code === 401) E.jeton = '';
+    if (!E.centre) section.hidden = true;
+  } finally {
+    E.lectureCentre = false;
+    section.classList.remove('lecture');
+    section.setAttribute('aria-busy', 'false');
+  }
+}
+
+// « 8 h », « 13 h 30 » : l'heure d'un rendez-vous ou d'un texto prévu, sans « 00 »
+const heureCourte = d => heure(d).replace(/\s00$/, '');
+const momentTxt = iso => { const d = new Date(iso); return `${jourLong(ymd(d))} à ${heureCourte(d)}`; };
+function jourTxt(d) {
+  const m = new Date();
+  if (ymd(d) === ymd(m)) return 'Aujourd’hui';
+  if (ymd(d) === ymd(new Date(m - 864e5))) return 'Hier';
+  return jourLong(ymd(d));
+}
+const dansLeFiltre = (a, f) => f === 'tous' || a.ton === f || (f === 'rappel' && a.ton === 'urgence');
+
+function rendreCentre(c) {
+  const section = $('#centre');
+  if (!c || !c.actif) { section.hidden = true; return; }
+  section.hidden = false;
+  const actions = c.actions || {};
+  $('#bouton-avis').hidden = !actions.avis;
+  $('#bouton-relance').hidden = !actions.relance;
+  const a = c.appels;
+  const resume = [];
+  if (a && a.disponible) {
+    const auj = a.liste.filter(x => ymd(new Date(x.quand)) === ymd(new Date())).length;
+    const aRappeler = a.liste.filter(x => x.ton === 'rappel' || x.ton === 'urgence').length;
+    resume.push(...phrase(auj, auj > 1 ? ' appels aujourd’hui' : ' appel aujourd’hui'));
+    if (aRappeler) resume.push(' · ', ...phrase(aRappeler, ' à rappeler'));
+  }
+  const rv = (c.rendez_vous && c.rendez_vous.liste) || [];
+  if (rv.length) resume.push(resume.length ? ' · ' : '', ...phrase(rv.length, ' rendez-vous à venir'));
+  vider($('#centre-resume'), resume.length ? resume : ['Vos appels, vos rendez-vous et vos textos de suivi, au même endroit.']);
+  $('#carte-appels').hidden = !a;
+  if (a) rendreAppels();
+  rendreAgenda(c.rendez_vous);
+  rendreSuivis(c.suivis, actions);
+}
+
+function rendreAppels() {
+  const a = E.centre && E.centre.appels;
+  const boite = $('#appels'), note = $('#appels-note'), plus = $('#appels-plus');
+  if (!a || !a.disponible) {
+    vider($('#filtres')); ecrireTexte($('#appels-compte'), '');
+    vider(boite, el('p', { class: 'vide' }, 'Vos appels ne sont pas lisibles pour le moment. Ils reviennent dans quelques minutes.'));
+    plus.hidden = true; note.hidden = true;
+    return;
+  }
+  const compte = f => a.liste.filter(x => dansLeFiltre(x, f)).length;
+  vider($('#filtres'), FILTRES.filter(([f]) => f === 'tous' || compte(f)).map(([f, nom]) =>
+    el('button', { type: 'button', class: 'filtre', 'aria-pressed': String(E.filtre === f), onclick: () => { E.filtre = f; E.appelsVus = APPELS_PAR_PAGE; rendreAppels(); } },
+      nom, el('span', { 'aria-hidden': 'true' }, String(compte(f))))));
+  if (!FILTRES.some(([f]) => f === E.filtre) || (E.filtre !== 'tous' && !compte(E.filtre))) E.filtre = 'tous';
+  ecrireTexte($('#appels-compte'), appelsTxt(a.liste.length));
+  const liste = a.liste.filter(x => dansLeFiltre(x, E.filtre));
+  const montres = liste.slice(0, E.appelsVus);
+  const lignes = [];
+  let jour = '';
+  for (const x of montres) {
+    const d = new Date(x.quand), j = jourTxt(d);
+    if (j !== jour) { jour = j; lignes.push(el('h3', { class: 'appels__jour' }, j)); }
+    lignes.push(ligneAppel(x, d));
+  }
+  vider(boite, lignes.length ? lignes : [el('p', { class: 'vide' }, E.filtre === 'tous'
+    ? 'Aucun appel depuis 30 jours. Dès qu’un client appelle, l’appel arrive ici avec son résumé.'
+    : 'Aucun appel de ce genre depuis 30 jours.')]);
+  plus.hidden = liste.length <= montres.length;
+  const n = [];
+  if (a.filtres) n.push(`${a.filtres > 1 ? `${nombre(a.filtres)} appels indésirables ou mauvais numéros ont été filtrés` : 'Un appel indésirable ou un mauvais numéro a été filtré'}.`);
+  if (!a.complet) n.push('Beaucoup d’appels : seuls les 100 plus récents sont montrés.');
+  ecrireTexte(note, n.join(' '));
+  note.hidden = !n.length;
+}
+
+function ligneAppel(x, d) {
+  const qui = [x.prenom, x.de, x.secondes ? dureeTxt(x.secondes) : ''].filter(Boolean).join(' · ');
+  const detail = [];
+  if (x.resume) detail.push(el('p', null, el('b', null, 'Résumé'), x.resume));
+  if (x.demande) detail.push(el('p', null, el('b', null, 'Demande prise en note'), x.demande));
+  const actions = [];
+  if (NUMERO_RE.test(x.numero || '')) {
+    actions.push(el('a', { class: 'mini', href: 'tel:' + x.numero }, icone('i-tel'), 'Rappeler'));
+    const pre = { numero: x.numero, prenom: x.prenom, anglais: x.anglais };
+    if (E.centre.actions && E.centre.actions.avis) actions.push(el('button', { type: 'button', class: 'mini', onclick: () => ouvrirAction('avis', pre) }, icone('i-etoile'), 'Demander un avis'));
+    if (E.centre.actions && E.centre.actions.relance) actions.push(el('button', { type: 'button', class: 'mini', onclick: () => ouvrirAction('relance', pre) }, icone('i-relance'), 'Relancer la soumission'));
+  }
+  if (actions.length) detail.push(el('div', { class: 'appel__actions' }, actions));
+  return el('article', { class: `appel appel--${x.ton}` },
+    el('span', { class: 'appel__heure' }, heure(d)),
+    el('div', { class: 'appel__corps' },
+      el('div', { class: 'appel__ligne' }, el('span', { class: 'appel__besoin' }, x.besoin || 'Appel'),
+        TONS[x.ton] ? el('span', { class: `tag tag--${x.ton}` }, x.etiquette || TONS[x.ton]) : null),
+      el('span', { class: 'appel__qui' }, qui),
+      el('span', { class: 'appel__suite' }, x.suite),
+      detail.length ? el('details', null, el('summary', null, 'Résumé et suite'), el('div', { class: 'appel__detail' }, detail)) : null));
+}
+
+function rendreAgenda(rv) {
+  const carte = $('#carte-agenda'), note = $('#agenda-note');
+  const liste = (rv && rv.liste) || [];
+  carte.hidden = !(rv && (rv.actif || liste.length));
+  if (carte.hidden) return;
+  vider($('#rdvs'), liste.length ? liste.map(x => {
+    const d = new Date(x.quand);
+    const du = x.rappel && x.rappel.du ? new Date(x.rappel.du) : null;
+    const rappel = !x.rappel ? '' : x.rappel.etat === 'envoye' ? 'Texto de rappel envoyé'
+      : x.rappel.etat === 'prevu' && du ? `Texto de rappel ${ymd(du) === ymd(new Date()) ? 'aujourd’hui' : 'la veille'} à ${heureCourte(du)}` : '';
+    return el('div', { class: 'rdv' },
+      el('div', { class: 'rdv__date', 'aria-hidden': 'true' },
+        el('small', null, d.toLocaleDateString('fr-CA', { timeZone: FUSEAU, weekday: 'short' }).replace('.', '')),
+        el('b', null, d.toLocaleDateString('fr-CA', { timeZone: FUSEAU, day: 'numeric' }))),
+      el('div', { class: 'rdv__texte' },
+        el('span', { class: 'rdv__titre' }, momentTxt(x.quand)),
+        el('span', { class: 'rdv__detail' }, [x.prenom, x.tel, x.detail].filter(Boolean).join(' · ')),
+        rappel ? el('span', { class: 'rdv__rappel' }, rappel) : null));
+  }) : [el('p', { class: 'vide' }, 'Aucun rendez-vous à venir. Ceux que l’agent répondeur prend pendant un appel arrivent ici et dans votre agenda.')]);
+  const n = rv.agenda === 'injoignable' ? 'Votre agenda Google ne répond pas pour le moment : les heures montrées sont celles de la réservation.'
+    : rv.agenda === 'demo' ? 'Démo : ces rendez-vous ne vont dans aucun agenda.'
+    : liste.length ? 'Votre agenda Google fait foi : un rendez-vous déplacé ou effacé y est suivi, et son texto de rappel aussi.' : '';
+  ecrireTexte(note, n);
+  note.hidden = !n;
+}
+
+function rendreSuivis(s, actions) {
+  const note = $('#suivis-note');
+  const liste = (s && s.liste) || [];
+  if (s && !s.disponible) {
+    vider($('#suivis'), el('p', { class: 'vide' }, 'Vos textos de suivi reviennent dans quelques minutes.'));
+  } else {
+    vider($('#suivis'), liste.length ? liste.map(ligneSuivi) : [el('p', { class: 'vide' },
+      actions.avis ? 'Aucun texto de suivi pour l’instant. Après un travail, touchez « Demander un avis » : votre client reçoit un texto à votre nom.'
+        : 'Aucun texto de suivi pour l’instant.')]);
+  }
+  const n = [];
+  if (!actions.avis) n.push('Les demandes d’avis Google s’activent dès qu’on a le lien de votre fiche Google : écrivez-nous à ' + COURRIEL + '.');
+  n.push('Chaque texto part de votre numéro, à votre nom, entre 9 h et 20 h. Un client qui répond ARRÊT ne reçoit plus rien.');
+  ecrireTexte(note, n.join(' '));
+  note.hidden = false;
+}
+
+function ligneSuivi(x) {
+  const quand = x.quand ? new Date(x.quand) : null;
+  const etat = x.etat === 'envoye' ? (quand ? `envoyé ${relatif(quand)}` : 'envoyé')
+    : x.etat === 'prevu' ? (quand ? `prévu ${quand <= new Date() ? 'dans quelques minutes' : momentTxt(x.quand)}` : 'prévu')
+    : (x.raison || (x.etat === 'echec' ? 'Pas parti' : 'Annulé'));
+  const detail = [x.prenom, x.pour, x.rdv_le ? `rendez-vous ${momentTxt(x.rdv_le)}` : '', etat].filter(Boolean).join(' · ');
+  return el('div', { class: `suivi suivi--${x.sorte} suivi--${x.etat}` },
+    el('span', { class: 'suivi__icone', 'aria-hidden': 'true' }, icone(SORTE_ICONE[x.sorte] || 'i-bulle')),
+    el('span', { class: 'suivi__texte' }, el('span', { class: 'suivi__titre' }, x.libelle), el('span', { class: 'suivi__detail' }, detail)),
+    x.annulable ? el('button', { type: 'button', class: 'mini', onclick: ev => annulerSuivi(x, ev.currentTarget), 'aria-label': `Annuler : ${x.libelle}, ${x.pour}` }, 'Annuler') : el('span'));
+}
+
+async function posterCentre(chemin, corps) {
+  const ctrl = new AbortController();
+  const fin = setTimeout(() => ctrl.abort(), DELAIS.max);
+  try {
+    const r = await fetch(BACKEND + '/portal/centre/' + chemin, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + E.jeton },
+      body: JSON.stringify(corps), signal: ctrl.signal
+    });
+    const data = await r.json().catch(() => ({}));
+    if (r.status === 401) { E.jeton = ''; throw new ErreurConnexion('Votre session a expiré : touchez « Mettre à jour », puis réessayez.', 401); }
+    if (!r.ok) throw new ErreurConnexion(data.error || 'Le serveur n’a pas pu le faire. Réessayez dans un instant.', r.status);
+    return data;
+  } catch (e) {
+    if (e instanceof ErreurConnexion) throw e;
+    throw new ErreurConnexion('Le serveur ne répond pas pour le moment. Réessayez dans une minute.', 0);
+  } finally { clearTimeout(fin); }
+}
+
+function majSuivis(data) {
+  if (data && data.centre && data.centre.suivis && E.centre) {
+    E.centre.suivis = data.centre.suivis;
+    rendreSuivis(E.centre.suivis, E.centre.actions || {});
+  }
+}
+
+async function annulerSuivi(x, bouton) {
+  if (bouton) bouton.disabled = true;
+  try {
+    const r = await posterCentre('annuler', { id: x.id });
+    toast(r.message, !r.ok);
+    majSuivis(r);
+  } catch (e) { toast(e.message, true); }
+  finally { if (bouton && bouton.isConnected) bouton.disabled = false; }
+}
+
+// La fenêtre « Demander un avis » / « Relancer une soumission »
+const A = { sorte: 'avis', anglais: false, retour: null };
+function apercu() {
+  const nom = (E.centre && E.centre.entreprise) || 'votre entreprise';
+  const p = $('#action-prenom').value.trim().split(/\s+/)[0] || '';
+  const bonjour = A.anglais ? `Hi${p ? ' ' + p : ''}, this is ${nom}.` : `Bonjour${p ? ' ' + p : ''}, ici ${nom}.`;
+  const corps = A.sorte === 'avis'
+    ? (A.anglais ? ' Thank you for choosing us! Would you take 30 seconds to leave us a Google review? It really helps a local business: [your Google link]'
+      : ' Merci d’avoir fait affaire avec nous! Auriez-vous 30 secondes pour nous laisser un avis Google? Ça aide beaucoup une entreprise d’ici : [votre lien Google]')
+    : (A.anglais ? ' Did you get a chance to look at our quote? If you have any questions, just reply to this text.'
+      : ' Avez-vous eu le temps de regarder notre soumission? Si vous avez des questions, répondez simplement à ce texto.');
+  $('#action-apercu').textContent = (bonjour + corps + '\n\n' + (A.anglais ? 'Reply STOP to opt out.' : 'STOP pour ne plus recevoir de textos.')).replace(/’/g, '\'');
+}
+function choisirLangue(anglais) {
+  A.anglais = anglais;
+  $('#action-fr').setAttribute('aria-pressed', String(!anglais));
+  $('#action-en').setAttribute('aria-pressed', String(anglais));
+  apercu();
+}
+function ouvrirAction(sorte, pre = {}) {
+  const act = (E.centre && E.centre.actions) || {};
+  A.sorte = sorte;
+  A.retour = document.activeElement;
+  const avis = sorte === 'avis';
+  ecrireTexte($('#action-titre'), avis ? 'Demander un avis Google' : 'Relancer une soumission');
+  ecrireTexte($('#action-sous-titre'), avis ? 'Après un travail : votre client reçoit un texto avec le lien de votre fiche Google.'
+    : 'Votre client reçoit un petit texto qui demande s’il a regardé votre soumission.');
+  ecrireTexte($('#action-regles'), avis
+    ? `Le texto part de votre numéro tout de suite entre 9 h et 20 h, sinon à 10 h.${act.rappel_avis_jours ? ` Un seul rappel ${act.rappel_avis_jours} jours plus tard, sauf si le client répond ou écrit ARRÊT.` : ''} Jamais deux demandes au même client en 90 jours.`
+    : `La relance part dans ${act.relance_jours || 3} jours, à 10 h, et s’annule toute seule si le client vous répond avant.`);
+  ecrireTexte($('#action-envoyer'), avis ? 'Envoyer la demande' : 'Prévoir la relance');
+  $('#action-numero').value = pre.numero ? pre.numero.replace(/^\+1(\d{3})(\d{3})(\d{4})$/, '$1 $2-$3') : '';
+  $('#action-prenom').value = pre.prenom || '';
+  $('#action-erreur').textContent = '';
+  choisirLangue(!!pre.anglais);
+  const boite = $('#boite-action');
+  if (typeof boite.showModal === 'function') boite.showModal(); else boite.setAttribute('open', '');
+  (pre.numero ? $('#action-prenom') : $('#action-numero')).focus();
+}
+function fermerAction() {
+  const boite = $('#boite-action');
+  if (boite.open) { if (typeof boite.close === 'function') boite.close(); else boite.removeAttribute('open'); }
+}
+async function envoyerAction(ev) {
+  ev.preventDefault();
+  const erreur = $('#action-erreur'), bouton = $('#action-envoyer');
+  const chiffres = $('#action-numero').value.replace(/\D/g, '');
+  erreur.textContent = '';
+  if (!(chiffres.length === 10 || (chiffres.length === 11 && chiffres[0] === '1'))) {
+    erreur.textContent = 'Écrivez le cellulaire du client, avec l’indicatif régional (ex. : 819 555-0142).';
+    $('#action-numero').focus();
+    return;
+  }
+  bouton.disabled = true;
+  try {
+    const r = await posterCentre(A.sorte === 'avis' ? 'avis' : 'relance',
+      { numero: chiffres, prenom: $('#action-prenom').value.trim(), langue: A.anglais ? 'en' : 'fr' });
+    majSuivis(r);
+    if (!r.ok) { ecrireTexte(erreur, r.message); return; }
+    fermerAction();
+    toast(r.message);
+  } catch (e) {
+    ecrireTexte(erreur, e.message);
+  } finally { bouton.disabled = false; }
+}
+
 // ─── Connexion, mise à jour, déconnexion ──────────────────────────────────
 async function connecter(ev) {
   ev.preventDefault();
@@ -1112,6 +1598,8 @@ function entrer(client) {
   E.horloge = setInterval(majHorloge, DELAIS.horloge);
   planifier();
   E.jeton = client._jeton || ''; E.moisRapport = ''; E.signatureGraphe = '';
+  E.centre = null; E.filtre = 'tous'; E.appelsVus = APPELS_PAR_PAGE;
+  chargerCentre();
   chargerRapport('');
   $('#projet-nom').focus({ preventScroll: true });
 }
@@ -1133,6 +1621,7 @@ async function actualiser(manuel = false) {
     ecrireVisite(p);
     if (p.chatbot) chargerChatbot(p.id); else retirerChatbot();
     if (client._jeton) E.jeton = client._jeton;
+    chargerCentre();
     chargerRapport();
     const annonce = annoncer(c, avant, p);
     if (manuel && !annonce) toast('C’est à jour : rien de nouveau.');
@@ -1168,6 +1657,9 @@ function quitter(message = '', garderNom = false) {
   E.noteNeuve = E.demoNeuve = false;
   E.jeton = ''; E.rapport = null; E.moisRapport = ''; E.signatureGraphe = ''; E.jourActif = -1;
   $('#rapport').hidden = true;
+  E.centre = null; E.lectureCentre = false; E.filtre = 'tous'; E.appelsVus = APPELS_PAR_PAGE;
+  fermerAction();
+  $('#centre').hidden = true;
   E.titre = TITRE; document.title = TITRE;
   $('#appli').hidden = true;
   $('#connexion').hidden = false;
@@ -1212,6 +1704,17 @@ $('#actualiser').addEventListener('click', () => actualiser(true));
 $('#theme').addEventListener('click', basculerTheme);
 $('#quitter').addEventListener('click', () => quitter());
 $('#ouvrir-chatbot').addEventListener('click', ouvrirChatbot);
+$('#bouton-avis').addEventListener('click', () => ouvrirAction('avis'));
+$('#bouton-relance').addEventListener('click', () => ouvrirAction('relance'));
+$('#appels-plus').addEventListener('click', () => { E.appelsVus += APPELS_PAR_PAGE; rendreAppels(); });
+$('#form-action').addEventListener('submit', envoyerAction);
+$('#action-fermer').addEventListener('click', fermerAction);
+$('#action-annuler').addEventListener('click', fermerAction);
+$('#action-fr').addEventListener('click', () => choisirLangue(false));
+$('#action-en').addEventListener('click', () => choisirLangue(true));
+$('#action-prenom').addEventListener('input', apercu);
+$('#boite-action').addEventListener('close', () => { if (A.retour && A.retour.isConnected) A.retour.focus(); });
+$('#boite-action').addEventListener('click', e => { if (e.target === $('#boite-action')) fermerAction(); });
 $('#mois-avant').addEventListener('click', () => changerMois(1));
 $('#mois-apres').addEventListener('click', () => changerMois(-1));
 $('#graphe-zone').addEventListener('keydown', clavierGraphe);
