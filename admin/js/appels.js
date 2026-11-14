@@ -4,6 +4,8 @@
 // résumé, demande, suite), les appels manqués, les textos reçus avec leurs photos, les textos
 // envoyés (automatiques ou réponses de l'équipe), les suivis prévus et le prochain rendez-vous.
 // « À répondre » : le client attend quelque chose ; « C'est réglé » le retire de la pile.
+// « Retirer de la liste » : un numéro qui n'est pas un client (un essai, un proche) ne s'affiche plus,
+// même s'il rappelle ; le filtre « Retirées » le montre et « Remettre » le ramène.
 // Répondre part du numéro du commerce, avec les mêmes règles que « 0142 message » par texto.
 // Tout texte venu du serveur est inséré comme du texte (el, textContent), jamais comme du HTML.
 import { $, el as brut, icone, vider, relatif, heure, ymd, jourLong, duree, toast, lire, ecrire, normal, lienTel, date, urlSure } from './outils.js';
@@ -39,9 +41,11 @@ export function chargerAppels({ frais = false, auto = false } = {}) {
     const q = new URLSearchParams();
     if (A.ligne) q.set('ligne', A.ligne);
     if (frais) q.set('frais', '1');
+    q.set('retirees', '1');                              // le filtre « Retirées » sans relire
     try {
       const r = await api('/portal/admin/conversations?' + q.toString());
       Object.assign(A, { lignes: r.lignes || [], ligne: r.ligne || '', vue: r, erreur: '', lu: Date.now() });
+      if (A.filtre === 'retirees' && !retirees().length) A.filtre = 'tout';
       ecrire('localStorage', CLE_LIGNE, A.ligne || null);
     } catch (e) {
       if (e.statut === 404) A.erreur = 'pas-encore';
@@ -81,6 +85,8 @@ function chargerFil({ silencieux = false, frais = false } = {}) {
 
 // ─── Petits outils ─────────────────────────────────────────────────────────
 const convs = () => (A.vue && A.vue.conversations) || [];
+const visibles = () => convs().filter(c => !c.retiree);
+const retirees = () => convs().filter(c => c.retiree);
 const convDe = numero => convs().find(c => c.numero === numero) || (A.fil && A.fil.conversation && A.fil.conversation.numero === numero ? A.fil.conversation : null);
 const nomDe = c => (c && c.prenom) || (c && c.tel) || 'Client';
 const ligneActuelle = () => A.lignes.find(l => l.id === A.ligne) || null;
@@ -101,14 +107,19 @@ function jourDe(d) {
   return t.charAt(0).toUpperCase() + t.slice(1);
 }
 
-function filtrees() {
+function correspond(c) {
   const q = normal(A.recherche).trim(), chiffres = A.recherche.replace(/\D/g, '');
-  return convs().filter(c => {
+  if (!q) return true;
+  if (chiffres.length >= 3 && c.numero.replace(/\D/g, '').includes(chiffres)) return true;
+  return normal(`${c.prenom} ${c.tel} ${c.apercu}`).includes(q);
+}
+
+function filtrees() {
+  if (A.filtre === 'retirees') return retirees().filter(correspond);
+  return visibles().filter(c => {
     if (A.filtre === 'attente' && !c.a_repondre) return false;
     if (A.filtre === 'urgence' && !c.urgence) return false;
-    if (!q) return true;
-    if (chiffres.length >= 3 && c.numero.replace(/\D/g, '').includes(chiffres)) return true;
-    return normal(`${c.prenom} ${c.tel} ${c.apercu}`).includes(q);
+    return correspond(c);
   });
 }
 
@@ -163,7 +174,7 @@ export function rendreAppels() {
 
 function rendreTete() {
   const v = A.vue, p = $('#appels-phrase'), compte = $('#appels-compte');
-  compte.textContent = v ? String(convs().length) : '';
+  compte.textContent = v ? String(visibles().length) : '';
   if (!v) {
     p.textContent = A.erreur === 'pas-encore' ? 'Bientôt : le serveur doit d’abord recevoir sa mise à jour.' : (A.erreur || 'Lecture des appels et des textos…');
     return;
@@ -194,10 +205,11 @@ function rendreLignes() {
 
 function rendreFiltres() {
   const boite = $('#appels-filtres');
-  const toutes = convs();
-  const n = { tout: toutes.length, attente: toutes.filter(c => c.a_repondre).length, urgence: toutes.filter(c => c.urgence).length };
-  const options = [['tout', 'Tous'], ['attente', 'À répondre'], ['urgence', 'Urgences']];
-  vider(boite, options.filter(([cle]) => cle !== 'urgence' || n.urgence || A.filtre === 'urgence').map(([cle, nom]) => {
+  const toutes = visibles();
+  const n = { tout: toutes.length, attente: toutes.filter(c => c.a_repondre).length, urgence: toutes.filter(c => c.urgence).length, retirees: retirees().length };
+  const options = [['tout', 'Tous'], ['attente', 'À répondre'], ['urgence', 'Urgences'], ['retirees', 'Retirées']];
+  // « Urgences » et « Retirées » ne s'affichent que s'il y en a
+  vider(boite, options.filter(([cle]) => !['urgence', 'retirees'].includes(cle) || n[cle] || A.filtre === cle).map(([cle, nom]) => {
     const b = el('button', { class: 'filtre' + (cle === 'attente' && n.attente ? ' filtre--attente' : ''), type: 'button', 'aria-pressed': String(A.filtre === cle) },
       nom, A.vue ? el('span', { class: 'filtre__n' }, String(n[cle])) : null);
     b.addEventListener('click', () => { A.filtre = cle; rendreFiltres(); rendreListe(); });
@@ -213,15 +225,21 @@ function rendreListe() {
     return;
   }
   const liste = filtrees();
+  const aide = A.filtre === 'retirees'
+    ? el('p', { class: 'appels__aide' }, 'Ces numéros ne s’affichent plus dans la liste, même s’ils rappellent ou textent. Ouvre une conversation pour la remettre.')
+    : null;
   if (!liste.length) {
-    const phrase = A.recherche ? 'Aucune conversation ne correspond.'
-      : A.filtre === 'attente' ? 'Personne n’attend de réponse. Bravo !'
-        : A.filtre === 'urgence' ? 'Aucune urgence ces 7 derniers jours.'
-          : 'Aucun appel ni texto sur cette ligne depuis 30 jours.';
-    vider(boite, el('p', { class: 'vide' }, phrase));
+    const ailleurs = A.recherche && A.filtre !== 'retirees' ? retirees().filter(correspond).length : 0;
+    const phrase = ailleurs ? `Aucune conversation ne correspond ici, mais ${ailleurs > 1 ? `${ailleurs} sont` : 'une est'} dans « Retirées ».`
+      : A.recherche ? 'Aucune conversation ne correspond.'
+        : A.filtre === 'attente' ? 'Personne n’attend de réponse. Bravo !'
+          : A.filtre === 'urgence' ? 'Aucune urgence ces 7 derniers jours.'
+            : A.filtre === 'retirees' ? 'Aucune conversation retirée.'
+              : 'Aucun appel ni texto sur cette ligne depuis 30 jours.';
+    vider(boite, aide, el('p', { class: 'vide' }, phrase));
     return;
   }
-  vider(boite, el('ul', { class: 'convs' }, liste.map(itemConv)));
+  vider(boite, aide, el('ul', { class: 'convs' }, liste.map(itemConv)));
 }
 
 function itemConv(c) {
@@ -269,7 +287,7 @@ function rendreFil() {
   $('#vue-appels').dataset.ouvert = A.ouvert ? '1' : '0';
   if (!A.ouvert) {
     delete s.dataset.numero;
-    vider(s, el('div', { class: 'fil__rien' }, icone('i-appel'), el('p', null, convs().length ? 'Choisis une conversation à gauche.' : 'Les conversations de cette ligne s’afficheront ici.')));
+    vider(s, el('div', { class: 'fil__rien' }, icone('i-appel'), el('p', null, filtrees().length ? 'Choisis une conversation à gauche.' : 'Les conversations de cette ligne s’afficheront ici.')));
     return;
   }
   const c = convDe(A.ouvert) || { numero: A.ouvert, tel: A.ouvert, prenom: '' };
@@ -304,14 +322,27 @@ function teteDuFil(c) {
   if (c.rdv) infos.push(el('span', null, `Rendez-vous ${c.rdv}`));
   if (c.anglais) infos.push(el('span', null, 'Anglais'));
   const actions = el('div', { class: 'fil__actions' });
-  if (c.a_repondre) {
-    const b = el('button', { class: 'btn btn--petit btn--contour', type: 'button' }, icone('i-ok'), 'C’est réglé');
-    b.addEventListener('click', () => regler(true, b));
-    actions.append(b);
-  } else if (c.reglee) {
-    const b = el('button', { class: 'lien lien--petit', type: 'button' }, 'Remettre à répondre');
-    b.addEventListener('click', () => regler(false, b));
-    actions.append(el('span', { class: 'badge badge--neutre' }, 'Réglée'), b);
+  if (c.retiree) {
+    // Retirée : la seule action est de la remettre dans la liste
+    const b = el('button', { class: 'btn btn--petit btn--contour', type: 'button' }, icone('i-oeil'),
+      el('span', null, 'Remettre', el('span', { class: 'fil__long' }, ' dans la liste')));
+    b.addEventListener('click', () => retirer(false, b));
+    actions.append(el('span', { class: 'badge badge--neutre' }, 'Retirée'), b);
+  } else {
+    // Pas un client (un essai, un proche) : la sortir de la liste pour de bon
+    const sortir = el('button', { class: 'btn btn--petit btn--discret fil__retirer', type: 'button', 'aria-label': 'Retirer de la liste', title: 'Retirer de la liste (un essai, un proche) : elle ne reviendra pas, même si ce numéro rappelle' },
+      icone('i-oeil-barre'), el('span', { class: 'fil__long' }, 'Retirer de la liste'));
+    sortir.addEventListener('click', () => retirer(true, sortir));
+    actions.append(sortir);
+    if (c.a_repondre) {
+      const b = el('button', { class: 'btn btn--petit btn--contour', type: 'button' }, icone('i-ok'), 'C’est réglé');
+      b.addEventListener('click', () => regler(true, b));
+      actions.append(b);
+    } else if (c.reglee) {
+      const b = el('button', { class: 'lien lien--petit', type: 'button' }, 'Remettre à répondre');
+      b.addEventListener('click', () => regler(false, b));
+      actions.prepend(el('span', { class: 'badge badge--neutre' }, 'Réglée'), b);
+    }
   }
   return el('header', { class: 'fil__tete' }, retour,
     el('span', { class: 'conv__avatar' + (c.urgence ? ' conv__avatar--urgence' : ''), 'aria-hidden': 'true' }, c.prenom ? c.prenom.charAt(0).toUpperCase() : icone('i-appel')),
@@ -472,6 +503,29 @@ async function regler(reglee, bouton) {
   try {
     await api('/portal/admin/conversation/reglee', { methode: 'POST', corps: { ligne: A.ligne, numero, reglee } });
     toast(reglee ? 'Réglée : elle sort de « À répondre ».' : 'Elle revient dans « À répondre ».');
+    await chargerAppels();
+  } catch (e) {
+    toast(e.message, true);
+    fin();
+  }
+}
+
+async function retirer(retiree, bouton) {
+  const numero = A.ouvert;
+  const fin = occuper(bouton, 'Un instant…');
+  try {
+    const r = await api('/portal/admin/conversation/retirer', { methode: 'POST', corps: { ligne: A.ligne, numero, retiree } });
+    const c = convDe(numero);
+    if (c) c.retiree = r.retiree ? new Date().toISOString() : '';        // tout de suite, avant la relecture
+    if (A.fil && A.fil.conversation) A.fil.conversation.retiree = c ? c.retiree : '';
+    if (retiree) {
+      Object.assign(A, { ouvert: '', fil: null, filErreur: '' });
+      toast('Retirée de la liste, même si ce numéro rappelle. Pour la remettre : le filtre « Retirées ».');
+    } else {
+      if (A.filtre === 'retirees') A.filtre = 'tout';
+      toast('Elle revient dans la liste.');
+    }
+    rendreAppels();
     await chargerAppels();
   } catch (e) {
     toast(e.message, true);

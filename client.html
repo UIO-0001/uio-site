@@ -503,13 +503,17 @@ html[data-theme="sombre"] { --bulle-nous: #2F6BD8; }
 .fil__qui { flex: 1; min-width: 0; }
 .fil__qui h3 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 1.0625rem; font-weight: 700; line-height: 1.25; letter-spacing: -.015em; }
 .fil__qui h3:focus { outline: none; }
-.fil__infos { display: flex; flex-wrap: wrap; gap: 0 10px; font-size: .8125rem; color: var(--texte-2); }
-.fil__infos > * + *::before { content: "·"; margin-right: 10px; color: var(--texte-3); }
-.fil__tel { color: inherit; font-weight: 650; text-decoration: none; font-variant-numeric: tabular-nums; }
+/* Le texte coule comme une phrase : une ligne coupée ne commence jamais par « · » */
+.fil__infos { font-size: .8125rem; color: var(--texte-2); text-wrap: pretty; }
+.fil__infos > * + *::before { content: "·"; margin: 0 8px; color: var(--texte-3); }
+.fil__tel { color: inherit; font-weight: 650; text-decoration: none; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .fil__tel:hover { text-decoration: underline; text-underline-offset: 3px; }
 .fil__actions { display: flex; align-items: center; gap: 8px; flex: none; }
 .fil__outils { display: flex; flex-wrap: wrap; gap: 6px; flex-basis: 100%; }
 .fil__outils .court { display: none; }
+.fil__retirer { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; }
+.fil__retirer svg { width: 15px; height: 15px; flex: none; }
+.convs__aide { margin: 0 6px 6px; font-size: .875rem; line-height: 1.45; color: var(--texte-2); text-wrap: pretty; }
 .fil__lien { min-height: 36px; padding: 0 4px; border: 0; background: none; color: var(--texte-2); font-size: .8125rem; font-weight: 650; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .fil__lien:hover { color: var(--encre); }
 .fil__evenements { display: flex; flex: 1; flex-direction: column; gap: 8px; min-height: 0; padding: 14px; overflow-y: auto; overscroll-behavior: contain; background: var(--carte-2); }
@@ -582,7 +586,7 @@ html[data-theme="sombre"] { --bulle-nous: #2F6BD8; }
   .fil__evenements { max-height: max(240px, calc(100dvh - 400px)); padding: 12px 10px; }
   .msg { max-width: 90%; }
   .evt--petit { border-radius: 16px; }
-  .fil__infos { flex-direction: column; }
+  .fil__infos { display: flex; flex-direction: column; }
   .fil__infos > * + *::before { content: none; }
 }
 @media (max-width: 479px) {
@@ -591,7 +595,7 @@ html[data-theme="sombre"] { --bulle-nous: #2F6BD8; }
   .fil__tete .conv__avatar { display: none; }
   .fil__outils { padding-left: 4px; }
   .fil__outils .mini { min-height: 34px; padding: 0 11px; }
-  .fil__outils .long { display: none; }
+  .fil__outils .long, .fil__actions .long, .fil__actions .tag { display: none; }
   .fil__outils .court { display: inline; }
   .conv { gap: 10px; padding: 10px 6px; }
 }
@@ -1860,16 +1864,20 @@ async function envoyerAction(ev) {
 // GET /portal/centre/conversations et /portal/centre/conversation?numero= (même jeton que le centre).
 // Répondre part du numéro du commerce, à son nom (POST /portal/centre/repondre) : seulement à
 // quelqu'un qui a appelé ou texté depuis 30 jours. « C'est réglé » : POST /portal/centre/reglee.
+// « Retirer de la liste » (un essai, un proche) : POST /portal/centre/retirer ; le numéro ne revient
+// pas, même s'il rappelle, et le filtre « Retirées » permet de le remettre.
 // Les textes des clients sont mis tels quels (textContent) ; les photos passent par le lien signé du serveur.
 const MAX_REPONSE = 600;
 const CONVS_PAR_PAGE = 20;
-const FILTRES_CONVS = [['tous', 'Toutes'], ['attente', 'À répondre'], ['urgence', 'Urgences']];
+const FILTRES_CONVS = [['tous', 'Toutes'], ['attente', 'À répondre'], ['urgence', 'Urgences'], ['retirees', 'Retirées']];
 const CV = {
   vue: null, erreur: '', lu: 0, lecture: null, filtre: 'tous', vues: CONVS_PAR_PAGE, minuterie: 0,
   ouvert: '', fil: null, filErreur: '', filLecture: null, brouillons: new Map(), cle: '', basAvant: true
 };
 const brut = (tag, attrs, t) => { const n = el(tag, attrs); n.textContent = String(t == null ? '' : t); return n; };
 const convsListe = () => (CV.vue && CV.vue.conversations) || [];
+const convsVisibles = () => convsListe().filter(c => !c.retiree);
+const convsRetirees = () => convsListe().filter(c => c.retiree);
 const convDe = numero => convsListe().find(c => c.numero === numero)
   || (CV.fil && CV.fil.conversation && CV.fil.conversation.numero === numero ? CV.fil.conversation : null);
 const nomConv = c => (c && c.prenom) || (c && c.tel) || 'Client';
@@ -1915,9 +1923,10 @@ function chargerConvs({ frais = false, auto = false } = {}) {
   if (CV.lecture) return CV.lecture;
   CV.lecture = (async () => {
     try {
-      const r = await lireConvs('conversations' + (frais ? '?frais=1' : ''));
+      const r = await lireConvs('conversations?retirees=1' + (frais ? '&frais=1' : ''));
       if (!E.projet) return;
       Object.assign(CV, { vue: r, erreur: '', lu: Date.now() });
+      if (CV.filtre === 'retirees' && !convsRetirees().length) CV.filtre = 'tous';
     } catch (e) {
       if (e.code === 401) E.jeton = '';
       if (e.code === 403 || e.code === 404) Object.assign(CV, { vue: null, erreur: 'absent' });   // pas pour cette entreprise
@@ -1977,13 +1986,14 @@ function rendreConvs() {
   const carte = $('#carte-convs');
   if (!E.centre || !E.centre.actif || CV.erreur === 'absent') { carte.hidden = true; return; }
   carte.hidden = false;
-  const v = CV.vue, toutes = convsListe();
-  carte.dataset.vide = toutes.length || CV.ouvert ? '0' : '1';          // rien encore : pas de grand cadre vide
-  const n = { tous: toutes.length, attente: toutes.filter(c => c.a_repondre).length, urgence: toutes.filter(c => c.urgence).length };
+  const v = CV.vue, toutes = convsVisibles();
+  carte.dataset.vide = convsListe().length || CV.ouvert ? '0' : '1';      // rien encore : pas de grand cadre vide
+  const n = { tous: toutes.length, attente: toutes.filter(c => c.a_repondre).length, urgence: toutes.filter(c => c.urgence).length, retirees: convsRetirees().length };
   ecrireTexte($('#convs-compte'), !v || !n.tous ? '' : n.attente ? `${pluriel(n.tous, 'conversation', 'conversations')} · ${nombre(n.attente)} à répondre`
     : pluriel(n.tous, 'conversation', 'conversations'));
-  $('#convs-filtres').hidden = !v || !n.tous;
-  vider($('#convs-filtres'), !v || !n.tous ? [] : FILTRES_CONVS.filter(([f]) => f !== 'urgence' || n.urgence || CV.filtre === f).map(([f, nom]) =>
+  const filtres = !v || !(n.tous || n.retirees) ? [] : FILTRES_CONVS.filter(([f]) => !['urgence', 'retirees'].includes(f) || n[f] || CV.filtre === f);
+  $('#convs-filtres').hidden = !filtres.length;
+  vider($('#convs-filtres'), filtres.map(([f, nom]) =>
     el('button', { type: 'button', class: 'filtre' + (f === 'attente' && n.attente ? ' filtre--attente' : ''), 'aria-pressed': String(CV.filtre === f),
       onclick: () => { CV.filtre = f; CV.vues = CONVS_PAR_PAGE; rendreConvs(); } },
       nom, el('span', { 'aria-hidden': 'true' }, String(n[f])))));
@@ -2000,7 +2010,8 @@ function rendreConvs() {
 }
 
 function convsFiltrees() {
-  return convsListe().filter(c => CV.filtre === 'tous' || (CV.filtre === 'attente' ? c.a_repondre : c.urgence));
+  if (CV.filtre === 'retirees') return convsRetirees();
+  return convsVisibles().filter(c => CV.filtre === 'tous' || (CV.filtre === 'attente' ? c.a_repondre : c.urgence));
 }
 
 function rendreListeConvs() {
@@ -2010,13 +2021,18 @@ function rendreListeConvs() {
     return;
   }
   const liste = convsFiltrees(), montres = liste.slice(0, CV.vues);
+  const aide = CV.filtre === 'retirees'
+    ? el('p', { class: 'convs__aide' }, 'Ces numéros ne s’affichent plus dans vos conversations, même s’ils rappellent ou textent. Ouvrez une conversation pour la remettre.')
+    : null;
   if (!liste.length) {
-    vider(boite, el('p', { class: 'vide' }, CV.filtre === 'attente' ? 'Personne n’attend de réponse. Tout est à jour !'
+    vider(boite, aide, el('p', { class: 'vide' }, CV.filtre === 'attente' ? 'Personne n’attend de réponse. Tout est à jour !'
       : CV.filtre === 'urgence' ? 'Aucune urgence ces 7 derniers jours.'
-        : 'Aucun appel ni texto depuis 30 jours. Dès qu’un client appelle ou texte votre numéro, sa conversation arrive ici.'));
+        : CV.filtre === 'retirees' ? 'Aucune conversation retirée.'
+          : convsRetirees().length ? 'Vos conversations des 30 derniers jours sont toutes dans « Retirées ».'
+            : 'Aucun appel ni texto depuis 30 jours. Dès qu’un client appelle ou texte votre numéro, sa conversation arrive ici.'));
     return;
   }
-  vider(boite, el('ul', { class: 'convs__items' }, montres.map(itemConv)),
+  vider(boite, aide, el('ul', { class: 'convs__items' }, montres.map(itemConv)),
     liste.length > montres.length ? el('button', { type: 'button', class: 'btn btn--petit btn--second convs__plus',
       onclick: () => { CV.vues += CONVS_PAR_PAGE; rendreListeConvs(); } }, 'Voir plus de conversations') : null);
 }
@@ -2095,7 +2111,10 @@ function teteFil(c) {
   if (c.rdv) infos.push(el('span', null, `Rendez-vous ${c.rdv}`));
   if (c.anglais) infos.push(el('span', null, 'Anglais'));
   const actions = el('div', { class: 'fil__actions' });
-  if (c.a_repondre) actions.append(el('button', { type: 'button', class: 'mini', onclick: ev => reglerConv(true, ev.currentTarget) }, icone('i-coche'), 'C’est réglé'));
+  if (c.retiree) actions.append(el('span', { class: 'tag' }, 'Retirée'),
+    el('button', { type: 'button', class: 'mini', onclick: ev => retirerConv(false, ev.currentTarget) }, icone('i-oeil'),
+      el('span', null, 'Remettre', el('span', { class: 'long' }, ' dans la liste'))));
+  else if (c.a_repondre) actions.append(el('button', { type: 'button', class: 'mini', onclick: ev => reglerConv(true, ev.currentTarget) }, icone('i-coche'), 'C’est réglé'));
   else if (c.reglee) actions.append(el('button', { type: 'button', class: 'fil__lien', onclick: ev => reglerConv(false, ev.currentTarget) }, 'Remettre à répondre'));
   const act = (E.centre && E.centre.actions) || {};
   const pre = { numero: c.numero, prenom: c.prenom, anglais: c.anglais };
@@ -2106,6 +2125,10 @@ function teteFil(c) {
     if (act.relance) outils.push(el('button', { type: 'button', class: 'mini', 'aria-label': 'Relancer la soumission', onclick: () => ouvrirAction('relance', pre) },
       icone('i-relance'), el('span', { class: 'long' }, 'Relancer la soumission'), el('span', { class: 'court' }, 'Relancer')));
   }
+  // Pas un client (un essai, un proche) : la sortir de la liste pour de bon
+  if (!c.retiree) outils.push(el('button', { type: 'button', class: 'fil__lien fil__retirer', 'aria-label': 'Retirer de la liste',
+    title: 'Un essai, un proche : cette conversation ne reviendra pas, même si ce numéro rappelle', onclick: ev => retirerConv(true, ev.currentTarget) },
+    icone('i-oeil-barre'), el('span', { class: 'long' }, 'Retirer de la liste'), el('span', { class: 'court' }, 'Retirer')));
   return el('header', { class: 'fil__tete' },
     el('button', { type: 'button', class: 'rond fil__retour', 'aria-label': 'Retour aux conversations', title: 'Retour', onclick: fermerConv }, icone('i-retour')),
     avatar(c),
@@ -2255,6 +2278,30 @@ async function reglerConv(reglee, bouton) {
   try {
     await posterCentre('reglee', { numero, reglee });
     toast(reglee ? 'C’est noté : cette conversation sort de « À répondre ».' : 'Elle revient dans « À répondre ».');
+    if (CV.lecture) await CV.lecture.catch(() => {});
+    await chargerConvs();
+  } catch (e) {
+    toast(e.message, true);
+    if (bouton && bouton.isConnected) bouton.disabled = false;
+  }
+}
+
+async function retirerConv(retiree, bouton) {
+  const numero = CV.ouvert;
+  if (!numero) return;
+  if (bouton) bouton.disabled = true;
+  try {
+    await posterCentre('retirer', { numero, retiree });
+    const c = convDe(numero);
+    if (c) c.retiree = retiree ? new Date().toISOString() : '';           // tout de suite, avant la relecture
+    if (retiree) {
+      Object.assign(CV, { ouvert: '', fil: null, filErreur: '' });
+      toast('Retirée de vos conversations, même si ce numéro rappelle. Pour la remettre : « Retirées ».');
+    } else {
+      if (CV.filtre === 'retirees') CV.filtre = 'tous';
+      toast('Elle revient dans vos conversations.');
+    }
+    rendreConvs();
     if (CV.lecture) await CV.lecture.catch(() => {});
     await chargerConvs();
   } catch (e) {
