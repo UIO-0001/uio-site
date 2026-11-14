@@ -187,7 +187,7 @@ html[data-theme="sombre"] .icone-uio { background-image: url("assets/logo/uio-ic
   <div class="wrap page">
     <header class="page__tete">
       <h1>Politique de confidentialité</h1>
-      <p class="meta">Dernière mise à jour : <time datetime="2026-11-09">9 novembre 2026</time></p>
+      <p class="meta">Dernière mise à jour : <time datetime="2026-11-14">14 novembre 2026</time></p>
     </header>
     <div class="page__corps">
       <nav class="sommaire" aria-label="Sommaire de la politique">
@@ -246,7 +246,7 @@ html[data-theme="sombre"] .icone-uio { background-image: url("assets/logo/uio-ic
         <li><strong>Courriel et Instagram :</strong> si vous nous écrivez directement, nous recevons votre message et vos coordonnées.</li>
         <li><strong>Appels et textos :</strong> quand notre agent répondeur répond, votre numéro, l’enregistrement et la transcription de l’appel, et ce que vous lui dites ou écrivez. Tout est expliqué à la section 4.</li>
         <li><strong>Données techniques :</strong> comme pour tout site, notre hébergeur (GitHub Pages) peut enregistrer des journaux techniques (adresse IP, date et heure, page consultée) pour la sécurité et le bon fonctionnement du site.</li>
-        <li><strong>Espace client :</strong> réservé à nos clients, il demande un identifiant et un mot de passe. Il passe par notre serveur hébergé chez Render, les comptes sont gérés dans Google Sheets, et la page charge des polices depuis Google Fonts (Google reçoit alors votre adresse IP).</li>
+        <li><strong>Espace client :</strong> réservé à nos clients, il demande un identifiant et un mot de passe. Il passe par notre serveur hébergé chez Render, les comptes sont gérés dans Google Sheets, et la page charge des polices depuis Google Fonts (Google reçoit alors votre adresse IP). L’entreprise cliente y voit ses appels des 30 derniers jours (sans transcription), ses rendez-vous à venir et ses textos de suivi, lus chez nos fournisseurs quand elle ouvre la page.</li>
       </ul>
       <p><strong>Comment fonctionne le chatbot :</strong> vos messages passent par notre serveur, hébergé chez Render, qui les transmet à OpenAI pour rédiger la réponse. Ces réponses sont produites par une intelligence artificielle et peuvent contenir des erreurs : nos prix et nos conditions sont ceux écrits sur le site. Notre serveur ne conserve pas la conversation. Elle nous est envoyée par courriel seulement si vous nous laissez vos coordonnées, réservez votre audit ou donnez votre avis. Vos coordonnées et un résumé de votre demande s’ajoutent alors à notre liste de demandes (Google Sheets), et un rendez-vous s’inscrit dans notre agenda (Google Agenda).</p>
       <p>Votre navigateur garde la conversation dans son stockage de session jusqu’à ce que vous fermiez l’onglet, pour que vous la retrouviez si vous rechargez la page. Ce n’est pas un témoin : elle reste sur votre appareil et ne sert pas à vous suivre. Pour limiter les abus, notre serveur garde aussi en mémoire votre adresse IP et le nombre de messages envoyés, au plus 24 heures.</p>
@@ -259,10 +259,13 @@ html[data-theme="sombre"] .icone-uio { background-image: url("assets/logo/uio-ic
       <p>Notre agent répondeur est une intelligence artificielle qui répond au téléphone, pour Agence UIO ou pour une entreprise cliente. Au début de chaque appel, un court message automatique donne le nom de l’entreprise et annonce que l’appel est enregistré, puis l’agent répond. Il ne se fait jamais passer pour une personne : si vous lui demandez, il confirme toujours qu’il est un agent répondeur virtuel.</p>
       <ul>
         <li><strong>Ce qui est recueilli :</strong> votre numéro de téléphone, la date et la durée de l’appel, l’enregistrement de la conversation et sa transcription écrite, ce que vous dites à l’agent (par exemple votre nom, votre adresse, votre besoin et le moment qui vous convient) et les textos échangés.</li>
-        <li><strong>Comment il fonctionne :</strong> votre voix est transformée en texte, une intelligence artificielle rédige la réponse en suivant le script approuvé par l’entreprise, puis une voix de synthèse la prononce. À la fin de l’appel, un résumé est envoyé par texto à l’entreprise et à vous.</li>
+        <li><strong>Comment il fonctionne :</strong> votre voix est transformée en texte, une intelligence artificielle rédige la réponse en suivant le script approuvé par l’entreprise, puis une voix de synthèse la prononce. À la fin de l’appel, l’entreprise en reçoit un résumé par courriel ou par texto. Si vous avez laissé une demande, vous recevez un texto qui la confirme, avec l’heure de votre rendez-vous s’il y en a un.</li>
         <li><strong>Qui y a accès :</strong> l’entreprise que vous avez appelée, pour ses propres appels ; les personnes d’Agence UIO qui installent l’agent et vérifient qu’il suit le script, en écoutant un enregistrement ou en lisant une transcription au besoin ; et nos fournisseurs de téléphonie et d’agent vocal (section 7).</li>
         <li><strong>Une personne au besoin :</strong> si vous voulez parler à quelqu’un, dites-le à l’agent. Il transfère l’appel ou prend un message pour qu’on vous rappelle. L’agent applique les consignes de l’entreprise, par exemple son secteur de service : si vous n’êtes pas d’accord avec une de ses réponses, une personne de l’entreprise peut revoir votre demande.</li>
         <li><strong>Texto après un appel manqué :</strong> si l’entreprise ne peut pas répondre, ou si vous raccrochez avant de parler, un texto automatique est envoyé au numéro qui a appelé, au nom de l’entreprise, pour reprendre votre demande. Répondez ARRÊT ou STOP et vous n’en recevrez plus.</li>
+        <li><strong>Rendez-vous :</strong> si l’entreprise le permet, l’agent vous propose des heures libres et inscrit votre rendez-vous dans son agenda (Google Agenda), avec votre nom, votre numéro, votre adresse et le motif. La veille, un texto vous le rappelle.</li>
+        <li><strong>Urgence :</strong> si vous signalez une urgence, l’agent peut envoyer un texto à la personne de garde de l’entreprise, avec votre nom, votre numéro, votre adresse et le problème, pour qu’elle vous rappelle très vite.</li>
+        <li><strong>Textos de suivi :</strong> à la demande de l’entreprise, vous pouvez recevoir par texto une demande d’avis Google (avec un seul rappel au plus), une relance de votre soumission ou le rappel de votre rendez-vous. Ils partent du numéro de l’entreprise. Si vous écrivez à ce numéro, votre texto et vos photos sont transmis au cellulaire de l’entreprise. Répondez ARRÊT ou STOP et vous ne recevrez plus aucun texto automatique de cette entreprise ; écrivez START pour les recevoir de nouveau.</li>
       </ul>
       <p>Nous ne nous servons pas de votre voix pour vous reconnaître (aucune empreinte vocale) ni de vos appels pour entraîner une intelligence artificielle, et votre numéro ne sert jamais à de la publicité. L’agent ne vous demandera jamais de renseignements bancaires.</p>
       <p><strong>Si vous appelez une de nos entreprises clientes :</strong> c’est elle qui est responsable de vos renseignements, et sa propre politique de confidentialité s’applique. Agence UIO les traite pour son compte, selon une entente écrite, et seulement pour lui rendre ses services (agent répondeur, textos, rendez-vous, demandes d’avis). Pour exercer vos droits, adressez-vous à l’entreprise ; vous pouvez aussi nous écrire et nous lui transmettrons votre demande.</p>
@@ -274,7 +277,8 @@ html[data-theme="sombre"] .icone-uio { background-image: url("assets/logo/uio-ic
       <ul>
         <li>Vous rappeler, préparer votre audit gratuit et, si vous le souhaitez, une soumission.</li>
         <li>Répondre à vos questions dans le chatbot et, si vous le demandez, réserver votre audit dans notre agenda et vous en envoyer la confirmation par courriel.</li>
-        <li>Répondre à vos appels, prendre votre demande ou votre rendez-vous, vous envoyer le résumé par texto et vous passer une personne au besoin.</li>
+        <li>Répondre à vos appels, prendre votre demande ou votre rendez-vous, vous le confirmer par texto et vous passer une personne au besoin.</li>
+        <li>Pour une entreprise cliente qui le demande : vous rappeler votre rendez-vous, vous demander votre avis Google ou faire le suivi de votre soumission, par texto.</li>
         <li>Vérifier que l’agent répondeur suit le script approuvé, corriger ses erreurs et, en cas de désaccord, retrouver ce qui a été dit.</li>
         <li>Améliorer le chatbot à partir des avis que vous nous donnez.</li>
         <li>Faire le suivi de nos échanges et, si vous devenez client, réaliser votre projet et vous facturer.</li>
@@ -295,16 +299,15 @@ html[data-theme="sombre"] .icone-uio { background-image: url("assets/logo/uio-ic
       <ul>
         <li><strong>Web3Forms</strong> (serveurs d’Amazon Web Services) reçoit le formulaire et nous le transmet par courriel. Il en conserve une copie pendant 30 jours, puis l’efface automatiquement.</li>
         <li><strong>ImprovMX</strong> fait suivre les courriels envoyés à nos adresses @agenceuio.ca vers notre boîte de réception.</li>
-        <li><strong>Google</strong> héberge notre boîte de réception (Gmail), où arrivent vos demandes, notre agenda (Google Agenda), où s’inscrivent les rendez-vous réservés dans le chatbot, et nos feuilles de calcul (Google Sheets) : la liste des demandes reçues par le chatbot et les comptes des clients.</li>
+        <li><strong>Google</strong> héberge notre boîte de réception (Gmail), où arrivent vos demandes, notre agenda (Google Agenda), où s’inscrivent les rendez-vous réservés dans le chatbot, et nos feuilles de calcul (Google Sheets) : la liste des demandes reçues par le chatbot, les comptes des clients, le suivi des textos automatiques et la liste des numéros qui ont répondu ARRÊT. Les rendez-vous pris par l’agent répondeur s’inscrivent dans l’agenda Google de l’entreprise cliente.</li>
         <li><strong>GitHub Pages</strong> (GitHub) héberge et affiche le site.</li>
-        <li><strong>Render</strong> héberge notre serveur, qui fait fonctionner le chatbot et l’espace client.</li>
-        <li><strong>OpenAI</strong> rédige les réponses du chatbot à partir de vos messages.</li>
-        <li><strong>Resend</strong> envoie les courriels du chatbot : votre demande ou votre avis, qui nous parvient, et la confirmation de votre rendez-vous, qui vous est envoyée.</li>
-        <li><strong>Notre fournisseur de téléphonie</strong> nous fournit nos numéros, achemine les appels et envoie les textos.</li>
-        <li><strong>Notre plateforme d’agent vocal</strong> transforme la voix en texte, fait rédiger les réponses par une intelligence artificielle, leur donne une voix de synthèse et garde l’enregistrement et la transcription de l’appel pendant 30 jours.</li>
+        <li><strong>Render</strong> héberge notre serveur, qui fait fonctionner le chatbot, l’espace client et l’agent répondeur (rendez-vous, textos et courriels après l’appel).</li>
+        <li><strong>OpenAI</strong> rédige les réponses du chatbot à partir de vos messages, et celles de l’agent répondeur.</li>
+        <li><strong>Resend</strong> envoie nos courriels : votre demande ou votre avis laissé dans le chatbot, qui nous parvient, la confirmation de votre rendez-vous, qui vous est envoyée, et le résumé d’un appel, envoyé à l’entreprise appelée.</li>
+        <li><strong>Twilio</strong>, notre fournisseur de téléphonie, nous fournit nos numéros, achemine les appels et envoie les textos. Il garde le journal des textos, contenu compris, jusqu’à 13 mois.</li>
+        <li><strong>Retell AI</strong>, notre plateforme d’agent vocal, transforme la voix en texte, fait rédiger les réponses par une intelligence artificielle (OpenAI), leur donne une voix de synthèse (ElevenLabs) et garde l’enregistrement et la transcription de l’appel pendant 30 jours.</li>
         <li><strong>Des outils d’intelligence artificielle</strong>, comme Claude d’Anthropic, peuvent nous aider à trier nos courriels, à préparer nos réponses et à tenir nos dossiers à jour (par exemple vos coordonnées et votre facturation).</li>
       </ul>
-      <p>Vous pouvez nous demander en tout temps le nom de nos fournisseurs de téléphonie et d’agent vocal.</p>
       <p>Nous ne vendons, ne louons et n’échangeons jamais vos renseignements.</p>
     </section>
 
@@ -321,6 +324,8 @@ html[data-theme="sombre"] .icone-uio { background-image: url("assets/logo/uio-ic
         <li><strong>Conversation du chatbot :</strong> effacée de votre navigateur quand vous fermez l’onglet ; notre serveur ne la garde pas. Celle qui nous est envoyée avec une demande, un rendez-vous ou un avis suit les mêmes règles que les demandes.</li>
         <li><strong>Adresse IP (limites du chatbot) :</strong> au plus 24 heures, dans la mémoire de notre serveur.</li>
         <li><strong>Enregistrement et transcription d’un appel :</strong> effacés automatiquement après 30 jours.</li>
+        <li><strong>Journal des textos chez Twilio :</strong> jusqu’à 13 mois.</li>
+        <li><strong>Numéros qui ont répondu ARRÊT :</strong> gardés tant que l’entreprise est notre cliente, pour ne plus vous écrire.</li>
         <li><strong>Demande prise au téléphone ou par texto :</strong> pour Agence UIO, les mêmes règles que les autres demandes. Pour une entreprise cliente, nous la gardons pour elle pendant son contrat avec nous ; à la fin du contrat, nous lui remettons ses données si elle le demande, puis nous les effaçons de nos outils.</li>
       </ul>
       <p>Ensuite, nous les détruisons de façon sécuritaire.</p>
