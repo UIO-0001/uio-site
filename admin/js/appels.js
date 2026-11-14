@@ -246,7 +246,7 @@ function itemConv(c) {
 
 export function ouvrir(numero) {
   if (A.ouvert === numero) { $('#fil-texte') && $('#fil-texte').focus(); return; }
-  Object.assign(A, { ouvert: numero, fil: null, filErreur: '', cleEnvoi: '', basAvant: true });
+  Object.assign(A, { ouvert: numero, fil: null, filErreur: '', cleEnvoi: '', basAvant: true, allerEnBas: true });
   rendreListe();
   rendreFil();
   chargerFil();
@@ -289,6 +289,11 @@ function rendreFil() {
     vider(s, tete, corps, piedDuFil(c));
   }
   if (A.basAvant) corps.scrollTop = corps.scrollHeight;
+  // Téléphone : le fil suit la page ; à l'ouverture, on descend aux derniers messages (au-dessus de la réponse)
+  if (A.fil && A.allerEnBas) {
+    A.allerEnBas = false;
+    if (matchMedia('(max-width: 899px)').matches) requestAnimationFrame(() => window.scrollTo({ top: document.documentElement.scrollHeight }));
+  }
 }
 
 function teteDuFil(c) {
@@ -338,7 +343,7 @@ function evenement(ev, c, d) {
       ? el('a', { class: 'bulle__video', href: p.url, target: '_blank', rel: 'noopener noreferrer' }, 'Ouvrir la vidéo')
       : el('a', { class: 'bulle__photo', href: p.url, target: '_blank', rel: 'noopener noreferrer', 'aria-label': `Photo de ${nomDe(c)} (ouvrir en grand)` },
         el('img', { src: p.url, alt: '', loading: 'lazy', decoding: 'async', referrerpolicy: 'no-referrer' })));
-    const manque = ev.photos && !photos.length ? el('p', { class: 'bulle__note' }, ev.photos > 1 ? `${ev.photos} photos (pas encore lisibles)` : 'Une photo (pas encore lisible)') : null;
+    const manque = ev.photos && !photos.length ? el('p', { class: 'bulle__note' }, ev.photos > 1 ? `${ev.photos} photos (non affichées ici)` : 'Une photo (non affichée ici)') : null;
     return el('li', { class: 'bulle bulle--recu' },
       ev.texte ? brut('p', { class: 'bulle__texte' }, ev.texte) : null,
       photos.length ? el('div', { class: 'bulle__photos' }, photos) : null, manque, moment(d));
