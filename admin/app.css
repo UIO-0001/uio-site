@@ -1335,9 +1335,10 @@ html[data-theme="sombre"] { --bulle-nous: #2F6BD8; }
 .fil__qui { min-width: 0; margin-right: auto; }
 .fil__qui h2 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 1.125rem; font-weight: 700; line-height: 1.25; letter-spacing: -.015em; }
 .fil__qui h2:focus { outline: none; }
-.fil__infos { display: flex; flex-wrap: wrap; gap: 0 10px; color: var(--texte-2); font-size: .875rem; }
-.fil__infos > * + *::before { content: "·"; margin-right: 10px; color: var(--texte-3); }
-.fil__tel { color: inherit; font-weight: 650; text-decoration: none; font-variant-numeric: tabular-nums; }
+/* Le texte coule comme une phrase : une ligne coupée ne commence jamais par « · » */
+.fil__infos { color: var(--texte-2); font-size: .875rem; text-wrap: pretty; }
+.fil__infos > * + *::before { content: "·"; margin: 0 8px; color: var(--texte-3); }
+.fil__tel { color: inherit; font-weight: 650; text-decoration: none; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .fil__tel:hover { text-decoration: underline; text-underline-offset: 3px; }
 .fil__actions { display: flex; align-items: center; gap: 8px; flex: none; }
 .fil__evenements { display: flex; flex: 1; flex-direction: column; gap: 8px; min-height: 0; padding: 16px; overflow-y: auto; overscroll-behavior: contain; background: var(--carte-2); }
@@ -1416,7 +1417,7 @@ html[data-theme="sombre"] { --bulle-nous: #2F6BD8; }
   .fil__actions .btn { padding: 0 12px; }
   .bulle { max-width: 88%; }
   .evt--petit { border-radius: 16px; }
-  .fil__infos { flex-direction: column; }
+  .fil__infos { display: flex; flex-direction: column; }
   .fil__infos > * + *::before { content: none; }
   html:has(#vue-appels:not([hidden])[data-ouvert="1"]) .assistant-bulle { display: none; }
 }
@@ -1425,3 +1426,21 @@ html[data-theme="sombre"] { --bulle-nous: #2F6BD8; }
   .conv { gap: 10px; padding: 10px 8px; }
 }
 @media (prefers-reduced-motion: reduce) { .conv { transition: none; } }
+
+/* « Retirer de la liste » (un essai, un proche) et le filtre « Retirées » */
+.appels__aide { margin: 2px 4px 12px; color: var(--texte-2); font-size: .875rem; line-height: 1.45; }
+.fil__retirer { color: var(--texte-2); }
+@media (min-width: 900px) and (max-width: 1279px) {
+  /* Ordinateur étroit : l'œil seul (le nom de la personne et son numéro gardent leur place) */
+  .fil__retirer .fil__long { display: none; }
+  .fil__actions .fil__retirer { width: 40px; padding: 0; }
+}
+@media (max-width: 599px) {
+  /* Téléphone : les boutons passent sous le nom, avec leur texte */
+  .fil__tete { flex-wrap: wrap; row-gap: 4px; }
+  .fil__actions { flex: 1 1 100%; flex-wrap: wrap; justify-content: flex-end; }
+}
+@media (max-width: 379px) {
+  .fil__long { display: none; }
+  .fil__actions .fil__retirer { width: 40px; padding: 0; }
+}
