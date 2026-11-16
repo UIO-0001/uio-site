@@ -1477,3 +1477,5 @@ html[data-theme="sombre"] { --bulle-nous: #2F6BD8; }
 .encours__messages-tete .lien { margin: -2px -8px; }
 .encours__messages-tete .lien svg, .encours__actions .lien svg { width: 15px; height: 15px; flex: none; }
 .encours__corps > * { min-width: 0; }
+.encours__taches { display: flex; gap: .375rem; align-items: baseline; font-size: .875rem; color: var(--texte-2); overflow-wrap: anywhere; }
+.encours__taches svg { width: 1rem; height: 1rem; flex: none; align-self: center; color: var(--texto-fonce); }
