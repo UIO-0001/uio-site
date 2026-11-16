@@ -1444,3 +1444,36 @@ html[data-theme="sombre"] { --bulle-nous: #2F6BD8; }
   .fil__long { display: none; }
   .fil__actions .fil__retirer { width: 40px; padding: 0; }
 }
+
+/* « En cours maintenant » (Équipe) : ce que chaque associé et son Claude font en ce moment */
+@media (min-width: 1120px) { .grille > .l12 { grid-column: span 12; } }
+.badge--ok { background: var(--texto-teinte); color: var(--texto-fonce); }
+.encours { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; margin: 0; padding: 0; list-style: none; }
+.encours__un { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; padding: 14px 0; border-top: 1px solid var(--trait); }
+.encours__un:first-child { border-top: 0; padding-top: 2px; }
+.encours__un--perime .encours__titre b, .encours__un--perime .encours__avance { color: var(--texte-2); }
+.encours__corps { display: grid; gap: 4px; min-width: 0; }
+.encours__titre { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font-size: 1rem; line-height: 1.35; }
+.encours__titre b { font-weight: 650; overflow-wrap: anywhere; }
+.encours__meta { font-size: .8125rem; color: var(--texte-2); line-height: 1.4; }
+.encours__avance { font-size: .9375rem; line-height: 1.45; overflow-wrap: anywhere; }
+.encours__zones { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 2px; }
+.encours__zone { display: inline-block; flex: 0 1 auto; min-width: 0; max-width: 100%; padding: 2px 8px; border-radius: 8px; background: var(--carte-2); color: var(--texte-2); font-size: .8125rem; line-height: 1.5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.encours__zone--branche { color: var(--centre-fonce); background: var(--centre-teinte); }
+.encours__actions { display: flex; flex-wrap: wrap; gap: 4px 18px; padding-top: 4px; }
+.encours__actions .lien { margin: -2px -8px; }
+.encours__actions .lien svg { width: 15px; height: 15px; }
+.encours__un .notes { margin-top: 6px; }
+.encours__messages { display: grid; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--trait); }
+.encours__messages-tete { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.encours__messages-tete h3 { font-size: .9375rem; font-weight: 650; }
+.encours__messages .notes { padding-top: 0; border-top: 0; }
+.encours--finis .encours__un { padding: 10px 0; }
+.encours--finis .encours__titre { font-size: .9375rem; }
+.encours__lu { margin-top: 12px; font-size: .75rem; }
+.vide--petit { padding: 10px 14px; font-size: .875rem; }
+.cle__actions { display: inline-flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+.depliant .encours { margin-top: 8px; }
+.encours__messages-tete .lien { margin: -2px -8px; }
+.encours__messages-tete .lien svg, .encours__actions .lien svg { width: 15px; height: 15px; flex: none; }
+.encours__corps > * { min-width: 0; }

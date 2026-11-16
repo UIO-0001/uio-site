@@ -14,6 +14,7 @@ import { prenom, rendreBonjour } from './tableau.js';
 import { fr, el, Invalide, nouvelleCle, dureeHM, badge, rangee, confirmations, champTexte, champDate, pilules, liste, formulaireEnLigne,
   panneauFormulaire as panneauBase } from './formes.js';
 import { suivreDocuments } from './fiche.js';
+import { chargerEnCours, rendreEnCours, viderEnCours, ouvrirReservation } from './encours.js';
 
 const ui = { construit: false, charge: null, confirmer: '', filtre: 'moi', plusTaches: false, recapsMontres: 6,
   emoji: '', note: '', chrono: false, brouillons: new Map(), clesNotes: new Map(), trouve: '', trouveJusqua: 0 };
@@ -110,6 +111,7 @@ export function viderEquipe() {
   E.equipe = null; E.equipeErreur = ''; E.equipeLu = 0;
   Object.assign(ui, { confirmer: '', filtre: 'moi', plusTaches: false, recapsMontres: 6, emoji: '', note: '', chrono: false });
   ui.brouillons.clear(); ui.clesNotes.clear();
+  viderEnCours();
   if (ui.construit) rendreEquipe();
 }
 
@@ -153,6 +155,7 @@ function construire() {
         el('button', { class: 'btn btn--petit btn--sombre chrono', type: 'button', id: 'chrono', onclick: basculerChrono }, icone('i-lecture'), 'Je commence'),
         el('button', { class: 'btn btn--contour btn--petit', type: 'button', onclick: () => ouvrirTache() }, icone('i-plus'), 'Tâche'))),
     el('div', { class: 'grille' },
+      carte('carte--encours l12', 'encours', 'En cours maintenant', lien('Je m’en occupe', () => ouvrirReservation())),
       carte('carte--taches l7', 'taches', 'Tâches'),
       carte('carte--heures l5', 'heures', 'Heures', lien('Mes heures', () => ouvrirHeures())),
       carte('carte--recaps l7', 'recaps', 'Qui a fait quoi', lien('Écrire un récap', () => ouvrirRecap())),
@@ -162,7 +165,7 @@ function construire() {
 export function rendreEquipe() {
   if (!$('#vue-equipe')) return;                 // une page d'une version plus ancienne (mise à jour en cours)
   construire();
-  garderFocus(() => { rendreTete(); rendreChrono(); rendreTaches(); rendreHeures(); rendreRecaps(); rendreDocuments(); rendreClaude(); });
+  garderFocus(() => { rendreEnCours(); rendreTete(); rendreChrono(); rendreTaches(); rendreHeures(); rendreRecaps(); rendreDocuments(); rendreClaude(); });
 }
 
 const ouvertes = () => (E.equipe ? E.equipe.taches.filter(t => t.statut === 'a_faire' || t.statut === 'en_cours') : []);
@@ -801,7 +804,7 @@ export function rendreClaude() {
   const miennes = q.cles.filter(k => k.qui === moi()).length;
   const code = t => el('code', null, t);
   vider(boite,
-    el('p', { class: 'claude__intro' }, 'Ton Claude lit tes tâches, en donne aux autres et écrit le récap de ta session. Sa clé ne sert qu’à ça : jamais à l’argent, aux clients ni aux comptes.'),
+    el('p', { class: 'claude__intro' }, 'Ton Claude lit tes tâches, en donne aux autres, réserve son travail dans « En cours » et écrit le récap de ta session. Si tu ouvres le CRM à sa clé, il peut aussi lire et changer les clients, l’argent et les prospects, comme l’assistant. Jamais les comptes, les mots de passe ni les clés.'),
     el('ol', { class: 'etapes-installer' },
       el('li', null, el('span', null, el('b', null, 'Crée une clé'), ' pour ton Claude (une par Claude).')),
       el('li', null, el('span', null, 'Mets-la dans la variable ', code('UIO_CLE_CLAUDE'), ' de son environnement : jamais dans un message, un fichier ni sa mémoire.')),
@@ -818,12 +821,17 @@ export function rendreClaude() {
       el('span', { class: 'rangee__action' }, el('button', { class: 'btn btn--contour btn--petit', type: 'button', onclick: () => ouvrirCollage() }, 'Coller un bloc'))),
     q.cles.length ? el('div', { class: 'rangees cles-claude' }, q.cles.map(k => rangee({
       icon: 'i-cle', titre: k.nom,
-      badges: [k.qui === moi() ? badge('À toi') : badge(`À ${prenom(k.nom_personne) || k.qui}`, 'neutre')],
+      badges: [k.qui === moi() ? badge('À toi') : badge(`À ${prenom(k.nom_personne) || k.qui}`, 'neutre'),
+        k.portee === 'crm' ? badge('Ouvre le CRM', 'bleu') : badge('Tâches et récaps', 'neutre')],
       meta: [`${k.apercu} · créée ${quand(date(k.cree_le))}`, k.utilisee_le ? `Utilisée ${quand(date(k.utilisee_le))}` : 'Pas encore utilisée'],
-      action: confirmer(`cle-${k.id}`, 'Retirer', k.qui === moi() ? 'Retirer cette clé ?' : `Retirer la clé de ${prenom(k.nom_personne) || k.qui} ?`, async () => {
+      action: el('span', { class: 'cle__actions' }, k.qui === moi() ? confirmer(`portee-${k.id}`, k.portee === 'crm' ? 'Fermer le CRM' : 'Ouvrir le CRM',
+        k.portee === 'crm' ? 'Ce Claude ne touchera plus au CRM ?' : 'Ce Claude pourra lire et changer les clients, l’argent et les prospects. Ouvrir ?', async () => {
+          await ecrire('cle/portee', { id: k.id, portee: k.portee === 'crm' ? '' : 'crm' });
+          toast(k.portee === 'crm' ? 'Ce Claude ne touche plus au CRM.' : 'CRM ouvert à ce Claude. Un courriel prévient la boîte de l’agence.');
+        }, { danger: false }) : null, confirmer(`cle-${k.id}`, 'Retirer', k.qui === moi() ? 'Retirer cette clé ?' : `Retirer la clé de ${prenom(k.nom_personne) || k.qui} ?`, async () => {
         await ecrire('cle/retirer', { id: k.id });
         toast('Clé retirée : ce Claude n’a plus accès.');
-      })
+      }))
     }))) : null);
 }
 
@@ -850,7 +858,7 @@ export function modeEmploi() {
     ``,
     `## Règles`,
     `- Ne montre, n’écris et ne mémorise jamais la clé (ni dans un fichier, ni dans un message, ni dans un commit, ni dans ta mémoire). Sers-toi seulement de $UIO_CLE_CLAUDE.`,
-    `- La clé ne sert qu’aux tâches et aux récaps : rien sur l’argent, les clients ni les comptes.`,
+    `- La clé sert aux tâches, aux récaps et au tableau « En cours » ; au CRM seulement si ${nom} l’a ouvert (section « Le CRM »). Jamais les comptes, les mots de passe ni les clés.`,
     `- Les heures sont en heure du Québec, écrites comme 2026-11-08 20:10.`,
     `- Le serveur dort quand personne ne s’en sert : la première requête peut prendre une minute.`,
     `- Si une requête est refusée (réseau bloqué, clé absente), passe aux blocs à coller (plus bas) : ne cherche pas d’autre chemin.`,
@@ -858,6 +866,27 @@ export function modeEmploi() {
     `## Au début d’une session`,
     `curl -sS ${B}/portal/claude/taches ${entete}`,
     `Dis à ${nom} ce qui l’attend (« pour_toi ») : les urgentes et celles en retard d’abord.`,
+    ``,
+    `## Travailler à deux sans se marcher dessus : « En cours » (OBLIGATOIRE)`,
+    `${nom} et ${autre} ont chacun leur Claude. Le tableau « En cours » (CRM, onglet Équipe) dit ce que chacun fait en ce moment.`,
+    `1. AVANT tout travail (code, site, CRM, document, vidéo, prospect) : lis le tableau et les messages.`,
+    `curl -sS ${B}/portal/claude/en-cours ${entete}`,
+    `   Si « en_cours » montre un travail qui touche la même chose, ARRÊTE-TOI et dis-le à ${nom} (qui, quoi, depuis quand). Lis aussi « messages » : un mot de l’autre Claude passe avant ton travail.`,
+    `2. Réserve ton travail. « zones » = où tu vas toucher : un dépôt (uio-site), un dossier ou un fichier (uio-backend/suivis.py), ou un sujet (agent répondeur, prospects/plomberie capital, pub v9).`,
+    poste('/portal/claude/en-cours', `{"titre": "…", "zones": ["uio-site/admin/js"], "depot": "uio-site", "branche": "claude/…", "session": "Claude Code sur le Mac", "avancement": "Je commence"}`),
+    `   Réponse 409 (« pris ») : quelqu’un y travaille déjà. Ne force pas : dis-le à ${nom}. "forcer": true seulement si ${nom} et ${autre} se sont parlé (un courriel prévient l’autre).`,
+    `3. Donne des nouvelles au moins toutes les 2 h (sinon ton travail paraît « endormi ») :`,
+    poste('/portal/claude/en-cours/nouvelles', `{"id": "ec_…", "avancement": "Tests verts, demande de fusion ouverte"}`),
+    `4. Un changement que l’autre Claude doit connaître (les prix, une règle, un fichier déplacé) : un message.`,
+    poste('/portal/claude/en-cours/message', `{"texte": "…", "chantier": "ec_… (facultatif)"}`),
+    `5. À la fin : libère le travail, avec le récap (il part dans « Qui a fait quoi », pas besoin de l’envoyer à part).`,
+    poste('/portal/claude/en-cours/liberer', `{"id": "ec_…", "resultat": "fini", "recap": {"fait": ["…"], "reste": ["…"], "liens": ["https://…"], "debut": "2026-11-08 20:10", "fin": "2026-11-08 22:40"}}`),
+    `   resultat : fini, pause ou abandonne. Ne libère jamais le travail de l’autre.`,
+    `- Git : une branche par changement (jamais deux Claude sur la même branche), et jamais de push direct sur main.`,
+    ``,
+    `## Le CRM (seulement si ${nom} a ouvert le CRM à ta clé)`,
+    `curl -sS ${B}/portal/claude ${entete}`,
+    `« crm »: true veut dire que la même clé ouvre les routes /portal/admin/* listées dans « routes_crm » (clients, fiches, argent, prospects, équipe), avec les mêmes vérifications et le même journal que l’app. Lis toujours avant d’écrire, et demande l’accord de ${nom} avant de changer de l’argent ou la fiche d’un client. Jamais les comptes, les mots de passe, les clés, les notifications, ni un courriel ou un texto à un client.`,
     ``,
     `## Donner une tâche à ${autre}`,
     poste('/portal/claude/tache', `{"pour": "${autre}", "titre": "…", "details": "…", "priorite": "normale", "echeance": "2026-11-12"}`),
@@ -910,10 +939,12 @@ export function ouvrirCle() {
   const etat = { modifie: () => false, fermer: () => { for (const s of corps.querySelectorAll('.secret--cle')) s.textContent = ''; } };
   const nom = champTexte('Nom de ce Claude', { maxlength: 60, autocomplete: 'off', placeholder: 'Ex. : Claude Code sur mon Mac' },
     'Pour le reconnaître dans la liste et dans le journal.');
+  const portee = pilules('Ce qu’elle ouvre', [['', 'Tâches et récaps'], ['crm', 'Aussi le CRM']], '', undefined,
+    { aide: 'Aussi le CRM : ton Claude lit et change les clients, l’argent et les prospects, comme l’assistant (jamais les comptes, mots de passe ni clés). Tout va au journal.' });
   const erreur = el('p', { class: 'erreur', role: 'alert' });
   const form = el('form', { class: 'formulaire', id: 'form-cle', novalidate: true },
-    el('p', { class: 'info' }, el('span', null, el('b', null, 'Une clé par Claude. '), 'Elle ne sert qu’aux tâches et aux récaps de l’équipe, jamais à l’argent, aux clients ni aux comptes. Elle se retire en un geste.')),
-    nom.boite, erreur);
+    el('p', { class: 'info' }, el('span', null, el('b', null, 'Une clé par Claude. '), 'Elle se retire en un geste, et ce qu’elle ouvre se change dans la liste des clés.')),
+    nom.boite, portee.boite, erreur);
   const creer = el('button', { class: 'btn', type: 'submit', form: 'form-cle' }, 'Créer la clé');
   let envoi = false;
   form.addEventListener('submit', async ev => {
@@ -923,7 +954,7 @@ export function ouvrirCle() {
     erreur.textContent = '';
     creer.disabled = true;
     try {
-      const r = await ecrire('cle', { nom: nom.input.value.trim() || 'Mon Claude' });
+      const r = await ecrire('cle', { nom: nom.input.value.trim() || 'Mon Claude', portee: portee.lire() });
       montrerCle(r.cle, nom.input.value.trim() || 'Mon Claude');
     } catch (e) {
       envoi = false;
