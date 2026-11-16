@@ -160,7 +160,32 @@ export async function chargerOffre() {
   rendreOffre();
 }
 
-export function rendreTableau() { rendreBonjour(); rendreDirect(); rendrePouls(); rendreAppels(); rendreDemandes(); rendreAudits(); rendreChatbot(); rendreRaccourcis(); }
+export function rendreTableau() { rendreBonjour(); rendreDirect(); rendrePouls(); rendreAppels(); rendreDemandes(); rendreAudits(); rendreChatbot(); rendreVisites(); rendreRaccourcis(); }
+
+// Visites d'agenceuio.ca : compteur sans témoins du serveur (visites.py, fiche « uio »), 30 derniers jours.
+function rendreVisites() {
+  const boite = $('#visites');
+  if (!boite) return;
+  const manque = indisponible('visites', 'Les visites du site');
+  if (manque) return vider(boite, manque);
+  const s = source('visites');
+  const total = (s.total && s.total.visites) || 0;
+  const pages = (s.total && s.total.pages) || 0;
+  if (!total) return vider(boite, el('p', { class: 'vide' }, 'Aucune visite comptée depuis 30 jours. Le compteur ne compte pas les robots ni les rechargements.'));
+  const blocs = [el('p', { class: 'grand' }, el('b', null, pluriel(total, 'visite', 'visites')), ` en 30 jours · ${pluriel(pages, 'page vue', 'pages vues')}`)];
+  if (s.avant && s.avant.visites) {
+    const ecart = Math.round(100 * (total - s.avant.visites) / s.avant.visites);
+    blocs.push(el('p', { class: 'note' }, `${ecart >= 0 ? '+' : ''}${ecart} % par rapport aux 30 jours d’avant (${nombre(s.avant.visites)}).`));
+  }
+  const provenance = (s.provenance || []).slice(0, 5);
+  if (provenance.length) blocs.push(el('div', { class: 'raccourcis' }, provenance.map(p => el('div', { class: 'jauge-ligne' },
+    el('span', { class: 'jauge-ligne__nom' }, p.libelle),
+    el('span', { class: 'jauge jauge--bleu', role: 'img', 'aria-label': `${p.visites} visites sur ${total}` }, el('i', { style: `width:${Math.min(100, Math.max(2, 100 * p.visites / total))}%` })),
+    el('b', null, nombre(p.visites))))));
+  const a = s.appareils || {};
+  if (a.telephone || a.ordinateur) blocs.push(el('p', { class: 'note' }, `Téléphone : ${nombre(a.telephone || 0)} · Ordinateur : ${nombre(a.ordinateur || 0)}. Sans témoins : seulement des totaux par jour.`));
+  vider(boite, blocs);
+}
 
 const dernierPing = () => E.pings[E.pings.length - 1];
 export function etatServeur() {
