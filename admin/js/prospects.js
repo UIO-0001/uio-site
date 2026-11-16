@@ -293,7 +293,7 @@ export function brouillonCourriel(p, signataire) {
     '',
     'Si ça vous intéresse, répondez simplement à ce courriel.',
     '',
-    `${signataire || 'L’équipe'}, Agence UIO`,
+    'L’équipe Agence UIO',
     '873 800-2999 · info@agenceuio.ca · agenceuio.ca',
     ADRESSE_AGENCE,
     'Vous recevez ce courriel parce que votre entreprise publie cette adresse. Pour ne plus recevoir nos courriels, répondez « désabonner » ou écrivez à info@agenceuio.ca : ce sera fait le jour même.'
@@ -305,7 +305,7 @@ const HORS_QUEBEC = /ottawa|orl[eé]ans|rockland|clarence|embrun|nepean|kanata|v
 function blocComposeur(p, quandOuvert) {
   if (!p.courriel || p.ne_pas_contacter || !lienCourriel(p.courriel)) return null;
   if (HORS_QUEBEC.test(`${p.secteur || ''} ${p.ville || ''}`)) return el('p', { class: 'champ__aide' }, 'Hors Québec : pas de courriel de prospection pour l’instant.');
-  const b = brouillonCourriel(p, prenomDe(moi()));
+  const b = brouillonCourriel(p);
   const objet = champTexte('Objet', { maxlength: 160, autocomplete: 'off' });
   objet.input.value = b.objet;
   const texte = champTexte('Courriel', { multiligne: true, rows: 12, maxlength: 2000 });
