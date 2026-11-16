@@ -11,6 +11,11 @@
 <link rel="icon" type="image/svg+xml" href="assets/logo/uio-icone.svg?v=3">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png?v=3">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=3">
+<link rel="manifest" href="client.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mon espace">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preload" href="assets/fonts/hanken-grotesk.woff2" as="font" type="font/woff2" crossorigin>
 <!--
   Espace client d'Agence UIO. Même style que le site et l'admin : Hanken Grotesk, les couleurs
@@ -488,6 +493,11 @@ html[data-theme="sombre"] { --bulle-nous: #2F6BD8; }
 .demande__statut { min-height: 36px; padding: 0 12px; border: 1px solid var(--trait-fort); border-radius: 999px; background: var(--carte); color: var(--encre); font: inherit; font-size: .875rem; font-weight: 650; }
 .demande__note { width: 100%; min-height: 64px; padding: 10px 12px; border: 1px solid var(--trait); border-radius: 10px; background: var(--carte-2); color: var(--encre); font: inherit; font-size: .9rem; resize: vertical; }
 .demande__note-pied { display: flex; align-items: center; gap: 10px; color: var(--texte-3); font-size: .8125rem; }
+.app-tel { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 12px 16px; border-radius: 14px; background: var(--carte-2); }
+.app-tel__texte { display: flex; flex-direction: column; gap: 2px; margin-right: auto; font-size: .9rem; }
+.app-tel__texte span { color: var(--texte-2); font-size: .8125rem; }
+.app-tel__boutons { display: flex; flex-wrap: wrap; gap: 8px; }
+.app-tel .centre__note { flex-basis: 100%; }
 .demande__source { padding: 2px 9px; border-radius: 999px; background: var(--carte-2); color: var(--texte-2); font-size: .75rem; font-weight: 650; }
 .demandes__form { display: flex; flex-direction: column; gap: 12px; padding: 16px 18px; border: 1px dashed var(--trait-fort); border-radius: 14px; }
 .demandes__champs { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px 12px; }
@@ -816,6 +826,14 @@ html[data-theme="sombre"] { --bulle-nous: #2F6BD8; }
         <div class="demande__actions"><button class="btn btn--petit" type="submit" id="dn-envoyer">Ajouter la demande</button><button class="btn btn--petit btn--second" type="button" id="dn-annuler">Annuler</button></div>
       </form>
       <p class="centre__note demandes__intro">Vos demandes des 90 derniers jours : votre assistant, le formulaire de votre site et celles que vous ajoutez. Changez le statut au fur et à mesure : vous voyez d’un coup d’œil qui rappeler.</p>
+      <div class="app-tel" id="app-tel" hidden>
+        <div class="app-tel__texte"><b>Sur votre téléphone</b><span id="app-tel-etat"></span></div>
+        <div class="app-tel__boutons">
+          <button class="mini" type="button" id="app-installer" hidden>Installer l’app</button>
+          <button class="mini" type="button" id="app-notifs" hidden>Activer les notifications</button>
+        </div>
+        <p class="centre__note" id="app-aide" hidden></p>
+      </div>
       <div class="filtres" id="demandes-filtres" role="group" aria-label="Montrer les demandes"></div>
       <ul class="demandes" id="demandes-liste"></ul>
       <p class="centre__note" id="demandes-note" hidden></p>
@@ -2409,7 +2427,7 @@ function entrer(client) {
   E.centre = null; E.filtre = 'tous'; E.appelsVus = APPELS_PAR_PAGE;
   viderConvs();
   chargerCentre();
-  chargerDemandes();
+  chargerDemandes().then(() => { if (location.hash === '#demandes' && !$('#demandes').hidden) $('#demandes').scrollIntoView(); });
   chargerRapport('');
   $('#projet-nom').focus({ preventScroll: true });
 }
@@ -2490,6 +2508,7 @@ async function chargerDemandes() {
     if (!d.actif) { E.demandes = null; $('#demandes').hidden = true; return; }
     E.demandes = d;
     rendreDemandes();
+    lireApp();
   } catch (e) {
     if (E.demandes) { const n = $('#demandes-note'); n.hidden = false; ecrireTexte(n, 'Pas pu relire vos demandes : ' + e.message); }
   } finally { E.lectureDemandes = false; $('#demandes').setAttribute('aria-busy', 'false'); }
@@ -2592,6 +2611,97 @@ async function changerDemande(id, corps) {
     return false;
   }
 }
+
+// ─── L'app sur le téléphone : installer, notifications (client-sw.js, notifs_clients.py) ──
+const APP = { sw: null, invite: null, cle: '', appareils: [], ici: '' };
+const autonome = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const iphone = () => /iPhone|iPad|iPod/.test(navigator.userAgent) && !window.MSStream;
+function b64uOctets(s) {
+  const b = atob(s.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - s.length % 4) % 4));
+  return Uint8Array.from(b, c => c.charCodeAt(0));
+}
+async function empreinteAdresse(adresse) {
+  const h = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(adresse));
+  return [...new Uint8Array(h)].map(x => x.toString(16).padStart(2, '0')).join('').slice(0, 32);
+}
+async function demarrerApp() {
+  if ('serviceWorker' in navigator) {
+    try { APP.sw = await navigator.serviceWorker.register('client-sw.js', { scope: '/client' }); } catch (e) { APP.sw = null; }
+    navigator.serviceWorker.addEventListener('message', ev => {
+      if (ev.data && ev.data.type === 'uio-aller') { const s = $('#demandes'); if (s && !s.hidden) s.scrollIntoView({ behavior: reduit() ? 'auto' : 'smooth' }); }
+    });
+  }
+  window.addEventListener('beforeinstallprompt', ev => { ev.preventDefault(); APP.invite = ev; rendreApp(); });
+  window.addEventListener('appinstalled', () => { APP.invite = null; rendreApp(); toast('L’app est installée sur votre écran d’accueil.'); });
+}
+async function lireApp() {
+  if (!E.jeton) return;
+  try {
+    const r = await fetch(BACKEND + '/portal/centre/notifications', { headers: { Authorization: 'Bearer ' + E.jeton }, cache: 'no-store' });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok || !d.actif) return;
+    APP.cle = d.cle || ''; APP.appareils = d.appareils || [];
+    const abo = APP.sw && APP.sw.pushManager ? await APP.sw.pushManager.getSubscription() : null;
+    APP.ici = abo ? await empreinteAdresse(abo.endpoint) : '';
+  } catch (e) { /* la carte reste sans notifications */ }
+  rendreApp();
+}
+function rendreApp() {
+  const boite = $('#app-tel');
+  if (!boite || !E.demandes) { if (boite) boite.hidden = true; return; }
+  boite.hidden = false;
+  const installee = autonome();
+  const pushPossible = !!(APP.sw && APP.sw.pushManager && 'Notification' in window && APP.cle);
+  const actives = pushPossible && APP.ici && APP.appareils.includes(APP.ici) && Notification.permission === 'granted';
+  const inst = $('#app-installer'), notifs = $('#app-notifs'), aide = $('#app-aide');
+  inst.hidden = installee || !(APP.invite || iphone());
+  notifs.hidden = !pushPossible && !(iphone() && !installee);
+  notifs.textContent = actives ? 'Désactiver les notifications' : 'Activer les notifications';
+  const etat = installee ? (actives ? 'App installée · notifications activées' : 'App installée')
+    : (actives ? 'Notifications activées sur cet appareil' : 'Une notification à chaque nouvelle demande');
+  ecrireTexte($('#app-tel-etat'), etat);
+  if (!aide.dataset.garde) aide.hidden = true;
+}
+function aideIphone() {
+  const aide = $('#app-aide');
+  aide.dataset.garde = '1'; aide.hidden = false;
+  ecrireTexte(aide, 'Sur iPhone : touchez le bouton Partager de Safari (le carré avec une flèche), puis « Sur l’écran d’accueil ». Ouvrez ensuite l’app depuis l’icône et activez les notifications.');
+}
+async function installerApp() {
+  if (APP.invite) {
+    APP.invite.prompt();
+    try { await APP.invite.userChoice; } catch (e) {}
+    APP.invite = null; rendreApp();
+    return;
+  }
+  if (iphone()) aideIphone();
+}
+async function basculerNotifs() {
+  if (iphone() && !autonome()) { aideIphone(); return; }
+  if (!APP.sw || !APP.sw.pushManager || !APP.cle) { toast('Ce navigateur ne permet pas les notifications.', true); return; }
+  const bouton = $('#app-notifs');
+  bouton.disabled = true;
+  try {
+    const abo = await APP.sw.pushManager.getSubscription();
+    if (abo && APP.ici && APP.appareils.includes(APP.ici) && Notification.permission === 'granted') {
+      await posterCentre('notifications/desactiver', { empreinte: APP.ici });
+      try { await abo.unsubscribe(); } catch (e) {}
+      APP.appareils = APP.appareils.filter(x => x !== APP.ici); APP.ici = '';
+      toast('Notifications désactivées sur cet appareil.');
+    } else {
+      const permis = await Notification.requestPermission();
+      if (permis !== 'granted') { toast('Les notifications sont bloquées : autorisez-les dans les réglages du navigateur.', true); return; }
+      const neuf = abo || await APP.sw.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64uOctets(APP.cle) });
+      const r = await posterCentre('notifications/activer', { abonnement: neuf.toJSON() });
+      APP.appareils = r.appareils || []; APP.ici = await empreinteAdresse(neuf.endpoint);
+      toast(r.essai ? 'Notifications activées : une notification d’essai vient d’arriver.' : 'Notifications activées.');
+    }
+  } catch (e) { toast(e.message || 'Les notifications n’ont pas pu être activées.', true); }
+  finally { bouton.disabled = false; rendreApp(); }
+}
+$('#app-installer').addEventListener('click', installerApp);
+$('#app-notifs').addEventListener('click', basculerNotifs);
+demarrerApp();
 
 function quitter(message = '', garderNom = false) {
   clearTimeout(E.minuterie); clearInterval(E.horloge);
