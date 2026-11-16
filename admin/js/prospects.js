@@ -272,26 +272,30 @@ function blocContact(p) {
 // besoin, puis on l'ouvre dans Gmail tout prêt. Rien ne part sans qu'on clique « Envoyer » dans Gmail.
 const ADRESSE_AGENCE = 'Agence UIO, 51, rue Conrad-Valéra, Gatineau (Québec) J9J 3L7';
 const LIEUX = [
-  [/plomb/, 'sous un évier'], [/chauff|clim|thermo|fournai|ventil|gaz/, 'dans une fournaise'],
-  [/electri/, 'dans un panneau électrique'], [/toit|couvr/, 'sur un toit'], [/deneig|neige/, 'dans le tracteur'],
+  [/plomb/, 'sous un évier'], [/chauff|clim|thermo|fournai|ventil|gaz/, 'chez un client'],
+  [/electri/, 'sur un chantier'], [/toit|couvr/, 'sur un toit'], [/deneig|neige/, 'dans le tracteur'],
   [/remorq|towing/, 'sur la route'], [/garage|meca|pneu|carross|vitr/, 'sous une auto'],
-  [/serrur/, 'chez un client'], [/septi|puits|pomp|excav/, 'sur un chantier'], [/demenag/, 'en plein déménagement']
+  [/serrur|extermin/, 'chez un client'], [/septi|puits|pomp|excav/, 'sur un terrain'], [/demenag/, 'en plein déménagement']
 ];
 function lieuDe(metier) {
   const m = normal(metier || '');
   return (LIEUX.find(([re]) => re.test(m)) || [null, 'sur un chantier'])[1];
 }
-export function brouillonCourriel(p, signataire) {
+export function brouillonCourriel(p) {
   const lieu = lieuDe(p.metier);
-  const objet = `Qui répond chez ${p.entreprise} quand vous êtes ${lieu} ?`;
+  const objet = `Une petite question pour ${p.entreprise}`;
   const texte = [
     'Bonjour,',
     '',
-    `Quand vous êtes ${lieu} et que le téléphone sonne, qui répond chez ${p.entreprise} ?`,
+    `Une question toute simple : quand vous êtes ${lieu} et que le téléphone sonne, qui répond chez ${p.entreprise} ? Souvent, le client qui tombe sur la boîte vocale appelle simplement le suivant sur Google.`,
     '',
-    'Notre agent répondeur répond à votre nom, 24 h sur 24, vous passe les urgences et vous texte le reste. Pour l’entendre, appelez le 819 510-5624 (une plomberie d’exemple : faites comme si votre chauffe-eau coulait).',
+    `C’est ce qu’on règle chez Agence UIO. Notre agent répondeur prend vos appels au nom de ${p.entreprise}, jour et nuit, note ce dont le client a besoin, vous transfère les urgences et vous envoie le reste par texto.`,
     '',
-    'Si ça vous intéresse, répondez simplement à ce courriel.',
+    'Le plus simple, c’est de l’essayer : appelez le 819 510-5624. C’est une plomberie fictive, alors faites comme si votre chauffe-eau coulait. Ça prend une minute.',
+    '',
+    'Si ça vous intéresse, répondez simplement à ce courriel ou appelez-nous au 873 800-2999.',
+    '',
+    'Bonne journée,',
     '',
     'L’équipe Agence UIO',
     '873 800-2999 · info@agenceuio.ca · agenceuio.ca',
