@@ -291,14 +291,14 @@ export function brouillonCourriel(p) {
     '',
     `C’est ce qu’on règle chez Agence UIO. Notre agent répondeur prend vos appels au nom de ${p.entreprise}, jour et nuit, note ce dont le client a besoin, vous transfère les urgences et vous envoie le reste par texto.`,
     '',
-    'Le plus simple, c’est de l’essayer : appelez le 873 800-2999. C’est notre propre agent répondeur qui vous répondra : posez-lui vos questions comme le ferait un client. Ça prend une minute.',
+    'Si vous voulez l’entendre en action, remplissez le petit formulaire sur agenceuio.ca/#formulaire : on vous rappelle pour vous faire une démo avec le nom de votre entreprise.',
     '',
     'Si ça vous intéresse, répondez simplement à ce courriel.',
     '',
     'Bonne journée,',
     '',
     'L’équipe Agence UIO',
-    '873 800-2999 · info@agenceuio.ca · agenceuio.ca',
+    'info@agenceuio.ca · agenceuio.ca',
     ADRESSE_AGENCE,
     'Vous recevez ce courriel parce que votre entreprise publie cette adresse. Pour ne plus recevoir nos courriels, répondez « désabonner » ou écrivez à info@agenceuio.ca : ce sera fait le jour même.'
   ].join('\n');
