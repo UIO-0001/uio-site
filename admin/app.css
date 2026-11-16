@@ -1479,3 +1479,16 @@ html[data-theme="sombre"] { --bulle-nous: #2F6BD8; }
 .encours__corps > * { min-width: 0; }
 .encours__taches { display: flex; gap: .375rem; align-items: baseline; font-size: .875rem; color: var(--texte-2); overflow-wrap: anywhere; }
 .encours__taches svg { width: 1rem; height: 1rem; flex: none; align-self: center; color: var(--texto-fonce); }
+
+/* Onglet « Accueil » de la fiche : le formulaire d'accueil du propriétaire (2026-11-16) */
+.accueil__etat { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.accueil__pre { margin: 0; padding: 12px 14px; max-height: 320px; overflow: auto; border-radius: 12px; border: 1px solid var(--trait); background: var(--carte-2); color: var(--encre); font: 500 .8125rem/1.55 ui-monospace, "SF Mono", Menlo, Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+.accueil__section { border: 1px solid var(--trait); border-radius: 12px; padding: 0 14px; }
+.accueil__section + .accueil__section { margin-top: 8px; }
+.accueil__section > summary { cursor: pointer; padding: 11px 0; font-weight: 650; }
+.accueil__dl { display: grid; gap: 10px; margin: 0 0 14px; }
+.accueil__dl dt { font-size: .8125rem; color: var(--texte-2); }
+.accueil__dl dd { margin: 2px 0 0; }
+.accueil__texte { white-space: pre-wrap; }
+.accueil__lignes { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.fiche__onglets { overflow-x: auto; scrollbar-width: none; }

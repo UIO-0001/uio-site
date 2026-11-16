@@ -16,6 +16,7 @@ import { ouvrirPanneau, fermerPanneau } from './panneau.js';
 import { occuper } from './ui.js';
 import { fr, el, Invalide, nouvelleCle, badge, champTexte, champDate, pilules, bascule, confirmations, formulaireEnLigne } from './formes.js';
 import { blocRapport } from './rapport.js';
+import { blocAccueil } from './accueil.js';
 import { argent as montant, leJour, badgeFacture, chargerArgent, ouvrirAbonnement } from './argent.js';
 import { chargerFiches, garderFiches, rendreClients, rendrePortail, blocMotDePasse } from './clients.js';
 import { rendreEquipe } from './equipe.js';
@@ -119,6 +120,7 @@ export function ouvrirFiche(c, { section = '', rappel = null } = {}) {
   const etat = { type: 'client', id };
   const change = () => { erreur.textContent = ''; if (etat.majPied) etat.majPied(); dessinerResume(); dessinerAuto(); };
   const rapport = blocRapport(c, () => etat.majPied && etat.majPied());
+  const accueil = blocAccueil(c);
   etat.rapport = rapport;
   etat.modifie = () => JSON.stringify(nettoyer(v)) !== JSON.stringify(nettoyer(depart)) || rapport.modifie();
   const erreur = el('p', { class: 'erreur', role: 'alert' });
@@ -159,8 +161,8 @@ export function ouvrirFiche(c, { section = '', rappel = null } = {}) {
     if (avant) { const b = [...resume.querySelectorAll('[data-focus]')].find(x => x.dataset.focus === avant); if (b) b.focus({ preventScroll: true }); }
   }
 
-  // ── Quatre onglets : Aperçu · Factures · Rapport · Historique ──
-  const ONGLETS = [['apercu', 'Aperçu'], ['factures', 'Factures'], ['rapport', 'Rapport'], ['historique', 'Historique']];
+  // ── Cinq onglets : Aperçu · Factures · Rapport · Accueil (le formulaire d'accueil, 2026-11-16) · Historique ──
+  const ONGLETS = [['apercu', 'Aperçu'], ['factures', 'Factures'], ['rapport', 'Rapport'], ['accueil', 'Accueil'], ['historique', 'Historique']];
   const vues = Object.fromEntries(ONGLETS.map(([k]) => [k, el('section', { class: 'fiche__vue', id: `fiche-${k}`, role: 'tabpanel',
     'aria-labelledby': `fiche-o-${k}`, tabindex: '-1', hidden: k !== onglet })]));
   const boutonsOnglets = ONGLETS.map(([k, t]) => el('button', { class: 'fiche__onglet', type: 'button', role: 'tab', id: `fiche-o-${k}`,
@@ -203,6 +205,7 @@ export function ouvrirFiche(c, { section = '', rappel = null } = {}) {
         if (corps.scrollTop > haut) corps.scrollTop = haut;
       }
       if (k === 'historique' && !H.lu && !H.lecture && !H.erreur) lireHistorique();
+      if (k === 'accueil') accueil.ouvrir();
     }
     if (focus) { const b = boutonsOnglets.find(x => x.dataset.onglet === k); if (b) b.focus(); }
   }
@@ -735,8 +738,9 @@ export function ouvrirFiche(c, { section = '', rappel = null } = {}) {
       : `La fiche n’a pas pu être lue${E.fichesErreur ? ` (${E.fichesErreur})` : ''}. Ferme et rouvre dans un instant.`);
   vues.apercu.append(...[avertissement, apercu].filter(Boolean));
   vues.factures.append(forfait, factures);
+  vues.accueil.append(accueil.boite);
   // Une seule boîte (pas la grille du panneau) : la barre des onglets peut rester collée en haut
-  const corps = [el('div', { class: 'fiche' }, resume, repere, barre, vues.apercu, vues.factures, vues.rapport, vues.historique, erreur)];
+  const corps = [el('div', { class: 'fiche' }, resume, repere, barre, vues.apercu, vues.factures, vues.rapport, vues.accueil, vues.historique, erreur)];
   etat.focus = () => null;                 // le titre : pas de clavier qui surgit sur un téléphone
   ouvrirPanneau(etat, c.project_name || c.client_id, c.username && c.username !== c.client_id ? `@${c.username} · ID ${c.client_id}` : `@${c.client_id}`, corps,
     [marque, boutonFermer, boutonAnnuler, boutonEnregistrer]);

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="fr-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Formulaire d’accueil · Agence UIO</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#F4F5F8">
+<script>try{if(localStorage.getItem('uio-theme')==='sombre'){document.documentElement.setAttribute('data-theme','sombre');document.querySelector('meta[name="theme-color"]').setAttribute('content','#0E1420');}}catch(e){}</script>
+<link rel="icon" type="image/svg+xml" href="assets/logo/uio-icone.svg?v=3">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png?v=3">
+<link rel="preload" href="assets/fonts/hanken-grotesk.woff2" as="font" type="font/woff2" crossorigin>
+<!--
+  Formulaire d'accueil d'un nouveau client (2026-11-16). Le propriétaire reçoit un lien
+  agenceuio.ca/accueil.html#<jeton> (créé dans sa fiche du CRM) et y dit tout ce que son agent
+  répondeur doit savoir : services et prix, territoire, heures, urgences, rendez-vous, après
+  l'appel, ton, questions fréquentes, interdits. L'équipe a souvent prérempli ce qu'elle a trouvé
+  (la « méga analyse ») : il relit et corrige.
+  Le jeton est dans le « # » : il ne part jamais vers un serveur sauf dans le corps des demandes
+  POST /accueil/lire et /accueil/enregistrer de uio-backend. Les questions viennent du serveur
+  (accueil_clients.SECTIONS) : une seule définition pour la page, le CRM et la vérification.
+  Enregistré tout seul 4 s après un changement ; « Envoyer » vérifie ce qui manque. Rien n'est
+  gardé sur l'appareil. Tout texte venu du serveur est inséré avec textContent, jamais innerHTML.
+-->
+<style>
+@font-face { font-family: "Hanken Grotesk"; src: url("assets/fonts/hanken-grotesk.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+:root {
+  --page: #F4F5F8; --carte: #FFFFFF; --carte-2: #F6F7F9;
+  --encre: #1F2937; --texte-2: #5B6472; --texte-3: #6B7380;
+  --trait: #E3E5E8; --trait-fort: #D3D7DD; --contour: #868D98;
+  --lampe: #FF8A3D; --lampe-survol: #FF9D5C; --lampe-trait: #E2691A; --lampe-teinte: #FFF1E6; --lampe-fonce: #A84A0E;
+  --vert: #1E9E5A; --vert-teinte: #E8F6EE; --vert-fonce: #166B3D;
+  --urgence: #B42318; --urgence-teinte: #FDECEA;
+  --survol: rgba(31, 41, 55, .06);
+  --ombre-douce: 0 1px 2px rgba(31, 41, 55, .06), 0 6px 16px -8px rgba(31, 41, 55, .22);
+  --verre: rgba(255, 255, 255, .8);
+  --police: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+html[data-theme="sombre"] {
+  --page: #0E1420; --carte: #151C2C; --carte-2: #1A2234;
+  --encre: #EEF2F7; --texte-2: #A9B4C5; --texte-3: #8E9AAD;
+  --trait: #24314A; --trait-fort: #2F3D58; --contour: #6F7C92;
+  --lampe-trait: #FF8A3D; --lampe-teinte: #2A1B15; --lampe-fonce: #FFAB70;
+  --vert: #2DBE73; --vert-teinte: #10281E; --vert-fonce: #72DCA5;
+  --urgence: #FF8A80; --urgence-teinte: #3A1A1A;
+  --survol: rgba(238, 242, 247, .07);
+  --ombre-douce: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 20px -10px rgba(0, 0, 0, .6);
+  --verre: rgba(14, 20, 32, .82);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; min-height: 100vh; background: var(--page); color: var(--encre); font: 400 1rem/1.5 var(--police); }
+[hidden] { display: none !important; }
+:focus-visible { outline: 2px solid var(--encre); outline-offset: 2px; }
+.sr { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.aurore { position: absolute; z-index: -1; inset: 0 0 auto; height: 560px; overflow: hidden; pointer-events: none; }
+.aurore i { position: absolute; width: var(--t); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(closest-side, var(--c), transparent); }
+.aurore i:nth-child(1) { --t: min(820px, 92vw); --c: rgba(255, 138, 61, .18); left: -16%; top: -42%; }
+.aurore i:nth-child(2) { --t: min(760px, 86vw); --c: rgba(58, 134, 255, .13); right: -14%; top: -50%; }
+
+.haut { position: sticky; top: 0; z-index: 5; background: var(--verre); -webkit-backdrop-filter: saturate(1.6) blur(18px); backdrop-filter: saturate(1.6) blur(18px); border-bottom: 1px solid var(--trait); }
+.haut__in { max-width: 760px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 12px; }
+.icone-uio { flex: none; width: 36px; height: 36px; border-radius: 50%; background: url("assets/logo/uio-icone-clair.png") center / 100% 100% no-repeat; box-shadow: 0 0 0 1px rgba(31, 41, 55, .06); }
+html[data-theme="sombre"] .icone-uio { background-image: url("assets/logo/uio-icone-sombre.png"); }
+.haut__titre { flex: 1; min-width: 0; }
+.haut__titre b { display: block; font-size: .95rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.haut__titre small { color: var(--texte-2); font-size: .8rem; }
+.jauge { height: 4px; background: var(--trait); }
+.jauge i { display: block; height: 100%; width: 0; background: var(--lampe-trait); transition: width .4s; }
+.rond { display: inline-grid; place-items: center; min-width: 40px; height: 40px; padding: 0 10px; border: 0; border-radius: 999px; background: transparent; color: var(--encre); font: 600 .85rem var(--police); cursor: pointer; }
+.rond:hover { background: var(--survol); }
+.rond svg { width: 20px; height: 20px; }
+
+main { max-width: 760px; margin: 0 auto; padding: 28px 16px 140px; }
+h1 { font-size: clamp(1.7rem, 5vw, 2.3rem); line-height: 1.1; letter-spacing: -.02em; margin: 6px 0 12px; }
+.chapeau { color: var(--texte-2); font-size: 1.05rem; margin: 0 0 18px; }
+.note { border-radius: 16px; padding: 14px 16px; margin: 0 0 14px; background: var(--lampe-teinte); color: var(--encre); }
+.note--vert { background: var(--vert-teinte); }
+.note--erreur { background: var(--urgence-teinte); color: var(--urgence); }
+.note b { display: block; margin-bottom: 2px; }
+
+.sections-nav { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 12px; margin: 10px 0 6px; scrollbar-width: none; }
+.sections-nav a { flex: none; padding: 7px 12px; border-radius: 999px; background: var(--carte); color: var(--texte-2); text-decoration: none; font-size: .85rem; font-weight: 600; box-shadow: var(--ombre-douce); }
+.sections-nav a.fait { color: var(--vert-fonce); }
+.sections-nav a.manque { color: var(--urgence); }
+
+.carte { background: var(--carte); border-radius: 22px; padding: 22px 20px; margin: 0 0 16px; box-shadow: var(--ombre-douce); scroll-margin-top: 80px; }
+.carte h2 { font-size: 1.25rem; margin: 0 0 4px; letter-spacing: -.01em; display: flex; gap: 10px; align-items: baseline; }
+.carte h2 span { color: var(--texte-3); font-size: .9rem; font-weight: 600; }
+.carte > p { color: var(--texte-2); margin: 0 0 14px; }
+.champ { margin: 18px 0 0; }
+.champ > label, .champ > legend { display: block; font-weight: 650; margin: 0 0 4px; padding: 0; }
+.champ .aide { display: block; color: var(--texte-2); font-size: .9rem; margin: 0 0 8px; }
+.champ .requis { color: var(--lampe-fonce); font-weight: 700; }
+fieldset.champ { border: 0; padding: 0; min-width: 0; }
+input[type=text], input[type=tel], input[type=email], textarea { width: 100%; min-height: 46px; padding: 11px 13px; border: 1px solid var(--trait-fort); border-radius: 12px; background: var(--carte-2); color: var(--encre); font: 400 1rem/1.4 var(--police); }
+textarea { min-height: 96px; resize: vertical; }
+input:focus, textarea:focus { outline: none; border-color: var(--lampe-trait); box-shadow: 0 0 0 3px rgba(255, 138, 61, .25); }
+.champ.a-revoir input, .champ.a-revoir textarea, .champ.a-revoir .options { border-color: var(--urgence); box-shadow: 0 0 0 3px rgba(180, 35, 24, .15); border-radius: 12px; }
+.options { display: grid; gap: 8px; }
+.option { display: flex; gap: 10px; align-items: flex-start; padding: 11px 13px; border: 1px solid var(--trait); border-radius: 12px; cursor: pointer; }
+.option:has(input:checked) { border-color: var(--lampe-trait); background: var(--lampe-teinte); }
+.option input { margin: 3px 0 0; accent-color: var(--lampe-trait); width: 18px; height: 18px; flex: none; }
+.liste { display: grid; gap: 10px; }
+.ligne { position: relative; display: grid; gap: 8px; grid-template-columns: repeat(var(--n), minmax(0, 1fr)) 40px; align-items: start; padding: 10px; border: 1px solid var(--trait); border-radius: 14px; }
+.ligne label { font-size: .78rem; color: var(--texte-2); font-weight: 600; display: grid; gap: 3px; }
+.ligne .rond { margin-top: 18px; color: var(--texte-3); }
+@media (max-width: 620px) { .ligne { grid-template-columns: 1fr 40px; } .ligne label { grid-column: 1; } .ligne .rond { grid-column: 2; grid-row: 1; margin: 0; } }
+.ajouter { justify-self: start; border: 1px dashed var(--contour); border-radius: 999px; background: transparent; color: var(--encre); padding: 9px 16px; font: 600 .9rem var(--police); cursor: pointer; }
+.ajouter:hover { background: var(--survol); }
+
+.bas { position: fixed; z-index: 5; left: 0; right: 0; bottom: 0; background: var(--verre); -webkit-backdrop-filter: saturate(1.6) blur(18px); backdrop-filter: saturate(1.6) blur(18px); border-top: 1px solid var(--trait); padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); }
+.bas__in { max-width: 760px; margin: 0 auto; display: flex; align-items: center; gap: 10px; }
+.statut { flex: 1; min-width: 0; color: var(--texte-2); font-size: .88rem; }
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 0 22px; border: 0; border-radius: 999px; background: var(--lampe); color: #1F2937; font: 650 1rem var(--police); cursor: pointer; white-space: nowrap; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), 0 8px 20px -10px rgba(255, 138, 61, .75); }
+.btn:hover { background: var(--lampe-survol); }
+.btn:disabled { opacity: .55; cursor: progress; }
+.btn--discret { background: transparent; color: var(--texte-2); box-shadow: none; }
+.btn--discret:hover { background: var(--survol); color: var(--encre); }
+.centre { text-align: center; padding: 60px 0; color: var(--texte-2); }
+.pied { color: var(--texte-3); font-size: .85rem; text-align: center; margin-top: 30px; }
+.pied a { color: inherit; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="aurore" aria-hidden="true"><i></i><i></i></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-lune" viewBox="0 0 20 20"><path d="M16.6 12.3A6.9 6.9 0 0 1 7.7 3.4a6.9 6.9 0 1 0 8.9 8.9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-x" viewBox="0 0 20 20"><path d="M5 5l10 10M15 5L5 15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+</svg>
+
+<header class="haut">
+  <div class="haut__in">
+    <span class="icone-uio" aria-hidden="true"></span>
+    <div class="haut__titre"><b id="titre-haut">Formulaire d’accueil</b><small id="avance">Agence UIO</small></div>
+    <button class="rond" type="button" id="langue" lang="en">EN</button>
+    <button class="rond" type="button" id="theme" aria-label="Mode sombre" title="Mode sombre"><svg aria-hidden="true"><use href="#i-lune"/></svg></button>
+  </div>
+  <div class="jauge" aria-hidden="true"><i id="jauge"></i></div>
+</header>
+
+<main id="main">
+  <div class="centre" id="chargement">
+    <p id="msg-chargement">Ouverture du formulaire…</p>
+    <p id="msg-reveil" hidden>Le serveur se réveille, ça peut prendre jusqu’à une minute.</p>
+  </div>
+  <div id="erreur-lien" hidden>
+    <h1 id="t-lien">Ce lien ne fonctionne pas</h1>
+    <p class="chapeau" id="t-lien-2">Il a peut-être été remplacé par un nouveau. Écrivez-nous à <a href="mailto:info@agenceuio.ca">info@agenceuio.ca</a> et on vous en envoie un tout de suite.</p>
+  </div>
+  <div id="formulaire" hidden>
+    <h1 id="titre"></h1>
+    <p class="chapeau" id="chapeau"></p>
+    <div class="note" id="note-prerempli" hidden></div>
+    <div class="note note--vert" id="note-soumis" hidden></div>
+    <nav class="sections-nav" id="nav" aria-label="Sections"></nav>
+    <form id="form" novalidate></form>
+    <p class="pied" id="pied"></p>
+  </div>
+</main>
+
+<div class="bas" id="bas" hidden>
+  <div class="bas__in">
+    <span class="statut" id="statut" role="status" aria-live="polite"></span>
+    <button class="btn btn--discret" type="button" id="enregistrer"></button>
+    <button class="btn" type="button" id="envoyer"></button>
+  </div>
+</div>
+
+<script>
+(() => {
+  'use strict';
+  const BACKEND = 'https://uio-backend.onrender.com';
+  const jeton = decodeURIComponent((location.hash || '').slice(1)).trim();
+  const $ = (id) => document.getElementById(id);
+  const etat = { lang: 'fr', sections: [], reponses: {}, version: 0, sale: false, envoi: null, minuterie: 0, occupe: false, manque: [] };
+
+  const T = {
+    fr: {
+      titre: (e) => `Votre agent répondeur, ${e}`,
+      chapeau: 'Ces réponses servent à écrire le script de votre agent répondeur. Il ne dira que ce qui est ici : rien n’est inventé. Comptez 10 à 15 minutes ; tout s’enregistre au fur et à mesure, vous pouvez revenir plus tard avec le même lien.',
+      prerempli: ['L’équipe a déjà rempli ce qu’elle a trouvé', 'Sur votre site, votre fiche Google et vos avis. Vérifiez chaque réponse et corrigez-la au besoin : c’est vous qui savez.'],
+      soumis: (d) => ['Merci, on a bien reçu vos réponses', `Envoyé le ${d}. Vous pouvez encore les corriger : renvoyez le formulaire après vos changements.`],
+      enregistrer: 'Enregistrer', envoyer: 'Envoyer', renvoyer: 'Renvoyer',
+      sauve: 'Enregistré', sauvegarde: 'Enregistrement…', pas_sauve: 'Changements pas encore enregistrés',
+      erreur_reseau: 'Pas de connexion : vos changements ne sont pas encore enregistrés.',
+      avance: (n, t) => `${n} section${n > 1 ? 's' : ''} sur ${t} complète${n > 1 ? 's' : ''}`,
+      ajouter: '+ Ajouter une ligne', retirer: 'Retirer cette ligne', requis: 'obligatoire',
+      manque: 'Il manque des réponses (en rouge).',
+      merci: 'Merci ! Vos réponses sont envoyées à l’équipe.',
+      pied: 'Une question ? Écrivez-nous à info@agenceuio.ca. Ces renseignements servent seulement à configurer votre agent répondeur.',
+      lien: 'Ce lien ne fonctionne pas', reveil: 'Le serveur se réveille, ça peut prendre jusqu’à une minute.', ouverture: 'Ouverture du formulaire…',
+      quitter: 'Vos derniers changements ne sont pas encore enregistrés.'
+    },
+    en: {
+      titre: (e) => `Your answering agent, ${e}`,
+      chapeau: 'These answers are used to write your answering agent’s script. It only says what is here: nothing is made up. Allow 10 to 15 minutes; everything saves as you go, and you can come back later with the same link.',
+      prerempli: ['Our team already filled in what it found', 'From your website, Google profile and reviews. Check each answer and fix it if needed: you know best.'],
+      soumis: (d) => ['Thank you, we received your answers', `Sent on ${d}. You can still change them: send the form again after your changes.`],
+      enregistrer: 'Save', envoyer: 'Send', renvoyer: 'Send again',
+      sauve: 'Saved', sauvegarde: 'Saving…', pas_sauve: 'Changes not saved yet',
+      erreur_reseau: 'No connection: your changes are not saved yet.',
+      avance: (n, t) => `${n} of ${t} sections complete`,
+      ajouter: '+ Add a line', retirer: 'Remove this line', requis: 'required',
+      manque: 'Some answers are missing (in red).',
+      merci: 'Thank you! Your answers were sent to the team.',
+      pied: 'Questions? Email us at info@agenceuio.ca. This information is only used to set up your answering agent.',
+      lien: 'This link does not work', reveil: 'The server is waking up, this can take up to a minute.', ouverture: 'Opening the form…',
+      quitter: 'Your latest changes are not saved yet.'
+    }
+  };
+  const t = (k, ...a) => { const v = T[etat.lang][k]; return typeof v === 'function' ? v(...a) : v; };
+  const L = (o, k) => (o && (o[k + '_' + etat.lang] ?? o[etat.lang] ?? o[k + '_fr'] ?? o.fr)) || '';
+
+  function el(tag, attrs, ...enfants) {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (v == null || v === false) continue;
+      if (k === 'texte') n.textContent = v; else if (k.startsWith('on')) n.addEventListener(k.slice(2), v); else n.setAttribute(k, v === true ? '' : v);
+    }
+    for (const e of enfants) if (e) n.append(e);
+    return n;
+  }
+
+  async function appel(route, corps) {
+    const ctrl = new AbortController();
+    const fin = setTimeout(() => ctrl.abort(), 75000);
+    const reveil = setTimeout(() => { $('msg-reveil').hidden = false; }, 4000);
+    try {
+      const r = await fetch(BACKEND + route, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ j: jeton, langue: etat.lang, ...corps }), signal: ctrl.signal, referrerPolicy: 'no-referrer', credentials: 'omit' });
+      let d = {}; try { d = await r.json(); } catch (e) {}
+      return { statut: r.status, d };
+    } finally { clearTimeout(fin); clearTimeout(reveil); }
+  }
+
+  // ─── Rendu ───
+  function vide(v) { return v === '' || v == null || v === false || (Array.isArray(v) && !v.length); }
+  function sectionComplete(s) { return s.champs.every((c) => !c.obligatoire || !vide(etat.reponses[c.cle])); }
+
+  function champ(c) {
+    const id = 'c-' + c.cle;
+    const aide = L(c, 'aide') ? el('span', { class: 'aide', id: id + '-aide', texte: L(c, 'aide') }) : null;
+    const etiquette = (tag) => el(tag, tag === 'label' ? { for: id } : {}, document.createTextNode(L(c) + ' '), c.obligatoire ? el('span', { class: 'requis', 'aria-hidden': 'true', texte: '*' }) : null, c.obligatoire ? el('span', { class: 'sr', texte: '(' + t('requis') + ')' }) : null);
+    const v = etat.reponses[c.cle];
+    if (c.type === 'choix') {
+      const box = el('div', { class: 'options', role: 'radiogroup' });
+      for (const o of c.options) {
+        const r = el('input', { type: 'radio', name: id, value: o.valeur, onchange: () => changer(c.cle, o.valeur) });
+        r.checked = v === o.valeur;
+        box.append(el('label', { class: 'option' }, r, el('span', { texte: L(o) })));
+      }
+      return el('fieldset', { class: 'champ', 'data-cle': c.cle }, etiquette('legend'), aide, box);
+    }
+    if (c.type === 'case') {
+      const r = el('input', { type: 'checkbox', id, onchange: (e) => changer(c.cle, e.target.checked) });
+      r.checked = !!v;
+      return el('div', { class: 'champ', 'data-cle': c.cle }, el('label', { class: 'option', for: id }, r, el('span', { texte: L(c) })));
+    }
+    if (c.type === 'liste') {
+      const box = el('div', { class: 'liste' });
+      const lignes = Array.isArray(v) ? v : [];
+      const dessiner = () => {
+        box.textContent = '';
+        const rows = Array.isArray(etat.reponses[c.cle]) ? etat.reponses[c.cle] : [];
+        rows.forEach((ligne, i) => {
+          const r = el('div', { class: 'ligne', style: '--n:' + c.colonnes.length });
+          for (const col of c.colonnes) {
+            const inp = el('input', { type: 'text', maxlength: col.max, value: ligne[col.cle] || '', oninput: (e) => { rows[i] = { ...rows[i], [col.cle]: e.target.value }; changer(c.cle, rows, true); } });
+            r.append(el('label', {}, document.createTextNode(L(col)), inp));
+          }
+          r.append(el('button', { class: 'rond', type: 'button', 'aria-label': t('retirer'), title: t('retirer'), onclick: () => { rows.splice(i, 1); changer(c.cle, rows); dessiner(); } }, svg('i-x')));
+          box.append(r);
+        });
+        if (rows.length < 40) box.append(el('button', { class: 'ajouter', type: 'button', texte: t('ajouter'), onclick: () => { rows.push({}); etat.reponses[c.cle] = rows; dessiner(); box.querySelectorAll('.ligne:last-of-type input')[0]?.focus(); } }));
+      };
+      etat.reponses[c.cle] = lignes.length ? lignes : (c.obligatoire ? [{}] : []);
+      dessiner();
+      return el('fieldset', { class: 'champ', 'data-cle': c.cle }, etiquette('legend'), aide, box);
+    }
+    const type = { tel: 'tel', courriel: 'email' }[c.type] || 'text';
+    const attrs = { id, maxlength: c.max || (c.type === 'long' ? 1500 : 200), 'aria-describedby': aide ? id + '-aide' : null, oninput: (e) => changer(c.cle, e.target.value, true) };
+    if (c.type === 'tel') attrs.autocomplete = 'tel';
+    if (c.type === 'courriel') attrs.autocomplete = 'email';
+    const inp = c.type === 'long' ? el('textarea', attrs) : el('input', { ...attrs, type });
+    inp.value = v || '';
+    return el('div', { class: 'champ', 'data-cle': c.cle }, etiquette('label'), aide, inp);
+  }
+  function svg(id) { const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('aria-hidden', 'true'); const u = document.createElementNS('http://www.w3.org/2000/svg', 'use'); u.setAttribute('href', '#' + id); s.append(u); return s; }
+
+  function rendre() {
+    document.documentElement.lang = etat.lang === 'en' ? 'en-CA' : 'fr-CA';
+    $('langue').textContent = etat.lang === 'en' ? 'FR' : 'EN';
+    $('langue').lang = etat.lang === 'en' ? 'fr' : 'en';
+    $('titre').textContent = t('titre', etat.entreprise);
+    $('titre-haut').textContent = etat.entreprise;
+    $('chapeau').textContent = t('chapeau');
+    $('pied').textContent = t('pied');
+    $('enregistrer').textContent = t('enregistrer');
+    $('envoyer').textContent = etat.soumis_le ? t('renvoyer') : t('envoyer');
+    const np = $('note-prerempli');
+    np.hidden = !(etat.prerempli && !etat.soumis_le);
+    np.textContent = ''; np.append(el('b', { texte: t('prerempli')[0] }), document.createTextNode(t('prerempli')[1]));
+    const ns = $('note-soumis');
+    ns.hidden = !etat.soumis_le;
+    if (etat.soumis_le) { const [a, b] = t('soumis', dateLisible(etat.soumis_le)); ns.textContent = ''; ns.append(el('b', { texte: a }), document.createTextNode(b)); }
+    const form = $('form'); form.textContent = '';
+    const nav = $('nav'); nav.textContent = '';
+    etat.sections.forEach((s, i) => {
+      const carte = el('section', { class: 'carte', id: 's-' + s.id, 'aria-labelledby': 'h-' + s.id },
+        el('h2', { id: 'h-' + s.id }, el('span', { texte: String(i + 1) }), document.createTextNode(L(s))),
+        L(s, 'intro') ? el('p', { texte: L(s, 'intro') }) : null);
+      for (const c of s.champs) carte.append(champ(c));
+      form.append(carte);
+      nav.append(el('a', { href: '#s-' + s.id, 'data-s': s.id, texte: L(s), onclick: (e) => { e.preventDefault(); carte.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }));
+    });
+    marquerManque(etat.manqueAffiche || []);
+    avancer();
+  }
+  function dateLisible(iso) { try { return new Date(iso).toLocaleString(etat.lang === 'en' ? 'en-CA' : 'fr-CA', { dateStyle: 'long', timeStyle: 'short', timeZone: 'America/Toronto' }); } catch (e) { return iso; } }
+
+  function avancer() {
+    const total = etat.sections.length;
+    const faits = etat.sections.filter(sectionComplete).length;
+    $('avance').textContent = t('avance', faits, total);
+    $('jauge').style.width = Math.round(100 * faits / Math.max(1, total)) + '%';
+    for (const a of $('nav').children) {
+      const s = etat.sections.find((x) => x.id === a.dataset.s);
+      a.classList.toggle('fait', sectionComplete(s));
+      a.classList.toggle('manque', (etat.manqueAffiche || []).some((m) => m.section === s.id));
+    }
+  }
+  function marquerManque(liste) {
+    etat.manqueAffiche = liste;
+    document.querySelectorAll('.champ.a-revoir').forEach((n) => n.classList.remove('a-revoir'));
+    for (const m of liste) document.querySelector(`.champ[data-cle="${m.cle}"]`)?.classList.add('a-revoir');
+  }
+
+  // ─── Enregistrement ───
+  function statut(texte) { $('statut').textContent = texte; }
+  function changer(cle, valeur, tape) {
+    etat.reponses[cle] = valeur;
+    etat.sale = true;
+    if (etat.manqueAffiche?.some((m) => m.cle === cle) && !vide(valeur)) {
+      marquerManque(etat.manqueAffiche.filter((m) => m.cle !== cle));
+    }
+    statut(t('pas_sauve'));
+    avancer();
+    clearTimeout(etat.minuterie);
+    etat.minuterie = setTimeout(() => enregistrer(false), tape ? 4000 : 1500);
+  }
+  async function enregistrer(soumettre) {
+    if (etat.occupe) { etat.encore = etat.encore || soumettre || 'oui'; return; }
+    if (!soumettre && !etat.sale) return;
+    clearTimeout(etat.minuterie);
+    etat.occupe = true; $('envoyer').disabled = true;
+    statut(t('sauvegarde'));
+    const envoyees = JSON.stringify(etat.reponses);
+    try {
+      const { statut: code, d } = await appel('/accueil/enregistrer', { version: etat.version, reponses: etat.reponses, soumettre });
+      if (code === 200) {
+        etat.version = d.version;
+        etat.sale = JSON.stringify(etat.reponses) !== envoyees;
+        statut(t('sauve'));
+        if (soumettre) {
+          etat.soumis_le = d.soumis_le; marquerManque([]); rendre(); statut(t('merci'));
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      } else if (code === 409) {
+        statut(d.error || ''); await charger();
+      } else if (code === 400 && d.code === 'manque') {
+        marquerManque(d.manque || []); avancer();
+        statut(t('manque'));
+        document.querySelector('.champ.a-revoir')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (code === 404) {
+        montrer('lien');
+      } else {
+        statut(d.error || t('erreur_reseau'));
+      }
+    } catch (e) {
+      statut(t('erreur_reseau'));
+    } finally {
+      etat.occupe = false; $('envoyer').disabled = false;
+      const encore = etat.encore; etat.encore = null;
+      if (encore) enregistrer(encore === true);
+    }
+  }
+
+  function montrer(quoi) {
+    $('chargement').hidden = quoi !== 'chargement';
+    $('erreur-lien').hidden = quoi !== 'lien';
+    $('formulaire').hidden = quoi !== 'formulaire';
+    $('bas').hidden = quoi !== 'formulaire';
+    if (quoi === 'lien') { $('t-lien').textContent = t('lien'); }
+  }
+
+  async function charger() {
+    if (!/^[A-Za-z0-9_-]{30,60}$/.test(jeton)) { montrer('lien'); return; }
+    try {
+      const { statut: code, d } = await appel('/accueil/lire', {});
+      if (code !== 200) { montrer(code === 404 ? 'lien' : 'lien'); if (code !== 404 && d.error) $('t-lien-2').textContent = d.error; return; }
+      Object.assign(etat, { sections: d.sections, reponses: d.reponses || {}, version: d.version, entreprise: d.entreprise, prerempli: d.prerempli, soumis_le: d.soumis_le, sale: false });
+      if (!etat.langueChoisie) etat.lang = d.langue === 'en' ? 'en' : 'fr';
+      montrer('formulaire'); rendre(); statut('');
+    } catch (e) {
+      $('msg-chargement').textContent = t('erreur_reseau');
+    }
+  }
+
+  $('enregistrer').addEventListener('click', () => { etat.sale = true; enregistrer(false); });
+  $('envoyer').addEventListener('click', () => enregistrer(true));
+  $('langue').addEventListener('click', () => { etat.lang = etat.lang === 'en' ? 'fr' : 'en'; etat.langueChoisie = true; statut(''); if (etat.sections.length) rendre(); });
+  $('theme').addEventListener('click', () => {
+    const sombre = document.documentElement.getAttribute('data-theme') !== 'sombre';
+    if (sombre) document.documentElement.setAttribute('data-theme', 'sombre'); else document.documentElement.removeAttribute('data-theme');
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', sombre ? '#0E1420' : '#F4F5F8');
+    try { localStorage.setItem('uio-theme', sombre ? 'sombre' : 'clair'); } catch (e) {}
+  });
+  window.addEventListener('beforeunload', (e) => { if (etat.sale) { e.preventDefault(); e.returnValue = t('quitter'); } });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && etat.sale) enregistrer(false); });
+  charger();
+})();
+</script>
+</body>
+</html>
