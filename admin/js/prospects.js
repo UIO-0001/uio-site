@@ -4,7 +4,7 @@
 // reste sous les yeux : le courriel publié par l'entreprise, la preuve, « ne plus contacter ».
 // Le serveur garde tout dans la feuille du portail ; l'app montre et envoie. Chaque ajout porte
 // une clé tirée au hasard : envoyé deux fois, il n'est ajouté qu'une fois.
-import { $, icone, vider, pluriel, majuscule, date, relatif, ymd, toast, lienTel, lienCourriel, urlSure, normal, lire, ecrire as garder } from './outils.js';
+import { $, icone, vider, pluriel, majuscule, date, relatif, ymd, toast, lienTel, lienCourriel, urlSure, normal, lire, ecrire as garder, copier } from './outils.js';
 import { E } from './etat.js';
 import { api, sessionActuelle } from './api.js';
 import { fermerPanneau } from './panneau.js';
@@ -263,9 +263,65 @@ function blocContact(p) {
       'ARRÊT reçu, ou « pas de sollicitation » sur son site : aucun courriel, aucun appel de vente.') : null,
     (tel || courriel || site) ? el('div', { class: 'actions' },
       tel && !p.ne_pas_contacter ? el('a', { class: 'puce tel', href: tel }, icone('i-telephone'), `Appeler ${p.telephone}`) : null,
-      courriel ? el('a', { class: 'puce', href: courriel }, 'Écrire') : null,
       site ? el('a', { class: 'puce puce--lien', href: site, target: '_blank', rel: 'noopener' }, el('span', null, hote(site)), icone('i-sortie')) : null) : null,
     el('ul', { class: 'faits' }, faits));
+}
+
+// ─── Préparer un courriel de prospection (court, sans prix, conforme LCAP) ──
+// Le brouillon est écrit à partir de la fiche (entreprise, métier) ; on le relit, on le change si
+// besoin, puis on l'ouvre dans Gmail tout prêt. Rien ne part sans qu'on clique « Envoyer » dans Gmail.
+const ADRESSE_AGENCE = 'Agence UIO, 51, rue Conrad-Valéra, Gatineau (Québec) J9J 3L7';
+const LIEUX = [
+  [/plomb/, 'sous un évier'], [/chauff|clim|thermo|fournai|ventil|gaz/, 'dans une fournaise'],
+  [/electri/, 'dans un panneau électrique'], [/toit|couvr/, 'sur un toit'], [/deneig|neige/, 'dans le tracteur'],
+  [/remorq|towing/, 'sur la route'], [/garage|meca|pneu|carross|vitr/, 'sous un char'],
+  [/serrur/, 'chez un client'], [/septi|puits|pomp|excav/, 'sur un chantier'], [/demenag/, 'en plein déménagement']
+];
+function lieuDe(metier) {
+  const m = normal(metier || '');
+  return (LIEUX.find(([re]) => re.test(m)) || [null, 'sur un chantier'])[1];
+}
+export function brouillonCourriel(p, signataire) {
+  const lieu = lieuDe(p.metier);
+  const objet = `Qui répond chez ${p.entreprise} quand vous êtes ${lieu} ?`;
+  const texte = [
+    'Bonjour,',
+    '',
+    `Quand vous êtes ${lieu} et que le téléphone sonne, qui répond chez ${p.entreprise} ?`,
+    '',
+    'Nous avons un agent qui répond à votre nom, 24 h sur 24, vous passe les urgences et vous texte le reste. Pour l’entendre, appelez le 819 510-5624 (une plomberie d’exemple : faites comme si votre chauffe-eau coulait).',
+    '',
+    'Si ça vous intéresse, répondez simplement à ce courriel.',
+    '',
+    `${signataire || 'L’équipe'}, Agence UIO`,
+    '873 800-2999 · agenceuio.ca',
+    ADRESSE_AGENCE,
+    'Pour ne plus recevoir nos courriels, répondez « désabonner ».'
+  ].join('\n');
+  return { objet, texte };
+}
+function blocComposeur(p, quandOuvert) {
+  if (!p.courriel || p.ne_pas_contacter || !lienCourriel(p.courriel)) return null;
+  const b = brouillonCourriel(p, prenomDe(moi()));
+  const objet = champTexte('Objet', { maxlength: 160, autocomplete: 'off' });
+  objet.input.value = b.objet;
+  const texte = champTexte('Courriel', { multiligne: true, rows: 12, maxlength: 2000 });
+  texte.input.value = b.texte;
+  const gmail = () => 'https://mail.google.com/mail/?view=cm&fs=1&to=' + encodeURIComponent(p.courriel)
+    + '&su=' + encodeURIComponent(objet.input.value) + '&body=' + encodeURIComponent(texte.input.value);
+  const boite = el('div', { class: 'bloc', hidden: true },
+    el('p', { class: 'champ__aide' }, 'À : ', el('b', null, p.courriel),
+      p.preuve ? ` · vérifie d’abord que l’adresse est encore sur ${p.preuve.split(' ')[0]}, sans « pas de sollicitation ».` : ' · note d’abord où l’adresse est publiée (preuve).'),
+    objet.boite, texte.boite,
+    el('div', { class: 'actions' },
+      el('button', { class: 'btn btn--petit', type: 'button', onclick: () => { window.open(gmail(), '_blank', 'noopener'); quandOuvert(); } }, 'Ouvrir dans Gmail'),
+      el('button', { class: 'puce', type: 'button', onclick: async () => toast(await copier(`${objet.input.value}\n\n${texte.input.value}`) ? 'Courriel copié.' : 'Copie impossible : sélectionne le texte.') }, 'Copier'),
+      el('a', { class: 'puce', href: `mailto:${encodeURIComponent(p.courriel)}?subject=${encodeURIComponent(b.objet)}&body=${encodeURIComponent(b.texte)}` }, 'App courriel')),
+    el('p', { class: 'champ__aide' }, 'Gmail s’ouvre avec tout de rempli : relis, puis clique « Envoyer » dans Gmail. Un par un, 15 à 20 par jour au plus.'));
+  const bouton = el('button', { class: 'btn btn--contour btn--petit', type: 'button', 'aria-expanded': 'false',
+    onclick: () => { boite.hidden = !boite.hidden; bouton.setAttribute('aria-expanded', String(!boite.hidden)); if (!boite.hidden) texte.input.focus(); } },
+    icone('i-document'), 'Préparer un courriel');
+  return el('div', null, el('div', { class: 'actions' }, bouton), boite);
 }
 
 export function ouvrirProspect(id) {
@@ -307,7 +363,7 @@ export function ouvrirProspect(id) {
 
   panneauFormulaire({
     titre: p.entreprise, sousTitre: [p.metier, p.secteur].filter(Boolean).join(' · ') || etapes()[p.etape],
-    avant: [blocContact(p), el('h3', { class: 'panneau__intertitre' }, 'Noter un suivi')],
+    avant: [blocContact(p), blocComposeur(p, () => { sorte.choisir('courriel'); etape.choisir(contacte('courriel')); if (!texte.input.value) texte.input.value = 'Courriel de prospection envoyé.'; }), el('h3', { class: 'panneau__intertitre' }, 'Noter un suivi')].filter(Boolean),
     corps: [sorte.boite, texte.boite, etape.boite, el('div', { class: 'deux' }, action.boite, jour.boite), nePas.boite],
     apres: [zone, actions], bouton: 'Noter le suivi', chemin: 'prospect/suivi',
     preparer: () => {
