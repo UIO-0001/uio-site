@@ -274,7 +274,7 @@ const ADRESSE_AGENCE = 'Agence UIO, 51, rue Conrad-Valéra, Gatineau (Québec) J
 const LIEUX = [
   [/plomb/, 'sous un évier'], [/chauff|clim|thermo|fournai|ventil|gaz/, 'dans une fournaise'],
   [/electri/, 'dans un panneau électrique'], [/toit|couvr/, 'sur un toit'], [/deneig|neige/, 'dans le tracteur'],
-  [/remorq|towing/, 'sur la route'], [/garage|meca|pneu|carross|vitr/, 'sous un char'],
+  [/remorq|towing/, 'sur la route'], [/garage|meca|pneu|carross|vitr/, 'sous une auto'],
   [/serrur/, 'chez un client'], [/septi|puits|pomp|excav/, 'sur un chantier'], [/demenag/, 'en plein déménagement']
 ];
 function lieuDe(metier) {
@@ -289,20 +289,23 @@ export function brouillonCourriel(p, signataire) {
     '',
     `Quand vous êtes ${lieu} et que le téléphone sonne, qui répond chez ${p.entreprise} ?`,
     '',
-    'Nous avons un agent qui répond à votre nom, 24 h sur 24, vous passe les urgences et vous texte le reste. Pour l’entendre, appelez le 819 510-5624 (une plomberie d’exemple : faites comme si votre chauffe-eau coulait).',
+    'Notre agent répondeur répond à votre nom, 24 h sur 24, vous passe les urgences et vous texte le reste. Pour l’entendre, appelez le 819 510-5624 (une plomberie d’exemple : faites comme si votre chauffe-eau coulait).',
     '',
     'Si ça vous intéresse, répondez simplement à ce courriel.',
     '',
-    `${signataire || 'L’équipe'}, Agence UIO`,
-    '873 800-2999 · agenceuio.ca',
+    'L’équipe Agence UIO',
+    '873 800-2999 · info@agenceuio.ca · agenceuio.ca',
     ADRESSE_AGENCE,
-    'Pour ne plus recevoir nos courriels, répondez « désabonner ».'
+    'Vous recevez ce courriel parce que votre entreprise publie cette adresse. Pour ne plus recevoir nos courriels, répondez « désabonner » ou écrivez à info@agenceuio.ca : ce sera fait le jour même.'
   ].join('\n');
   return { objet, texte };
 }
+// Québec seulement pour l'instant : aucun courriel de prospection à une entreprise de l'Ontario.
+const HORS_QUEBEC = /ottawa|orl[eé]ans|rockland|clarence|embrun|nepean|kanata|vanier|casselman|cumberland|\bcarp\b|ontario/i;
 function blocComposeur(p, quandOuvert) {
   if (!p.courriel || p.ne_pas_contacter || !lienCourriel(p.courriel)) return null;
-  const b = brouillonCourriel(p, prenomDe(moi()));
+  if (HORS_QUEBEC.test(`${p.secteur || ''} ${p.ville || ''}`)) return el('p', { class: 'champ__aide' }, 'Hors Québec : pas de courriel de prospection pour l’instant.');
+  const b = brouillonCourriel(p);
   const objet = champTexte('Objet', { maxlength: 160, autocomplete: 'off' });
   objet.input.value = b.objet;
   const texte = champTexte('Courriel', { multiligne: true, rows: 12, maxlength: 2000 });
