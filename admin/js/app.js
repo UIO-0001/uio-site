@@ -14,6 +14,7 @@ import { chargerCompte, chargerJournal, rendreCompte, viderCompte } from './comp
 import { chargerArgent, rendreArgent, viderArgent } from './argent.js';
 import { chargerAppels, rendreAppels, viderAppels, appelsLus } from './appels.js';
 import { chargerEquipe, rendreEquipe, viderEquipe, rendreChrono, rendreClaude } from './equipe.js';
+import { chargerEnCours, DELAI_EN_COURS } from './encours.js';
 import { chargerProspects, viderProspects, rendreProspects, choisirSousVue, reprendreSousVue, sousVue, ouvrirNouveauProspect } from './prospects.js';
 import { preparerConnexion, demarrerConnexion } from './connexion.js';
 import { installer, quandInstallChange } from './installer.js';
@@ -103,6 +104,7 @@ function chargerTout(frais = false) {
   if (E.vue === 'argent' || E.argent) travaux.push(chargerArgent({ frais }));
   if (E.vue === 'appels' || appelsLus()) travaux.push(chargerAppels({ frais }));
   if (E.vue === 'equipe' || E.equipe) travaux.push(chargerEquipe({ frais }));
+  if (E.vue === 'equipe') travaux.push(chargerEnCours({ frais }));
   if ((E.vue === 'clients' && sousVue() === 'prospects') || E.prospects) travaux.push(chargerProspects({ frais }));
   return Promise.allSettled(travaux);
 }
@@ -122,6 +124,7 @@ function planifier() {
   boucle(() => { if (E.vue === 'reglages') chargerCompte(); if (surPage('historique')) chargerJournal(); }, DELAIS.compte);
   boucle(() => { if (E.vue === 'argent') chargerArgent({ auto: true }); }, DELAIS.argent || 120e3);   // jamais pendant qu'on écrit
   boucle(() => { if (E.vue === 'equipe') chargerEquipe({ auto: true }); }, DELAIS.equipe || 60e3);
+  boucle(() => { if (E.vue === 'equipe') chargerEnCours({ auto: true }); }, DELAI_EN_COURS);   // « En cours » : en direct
   boucle(() => { if (E.vue === 'appels') chargerAppels({ auto: true }); }, DELAIS.appels || 45e3);   // un client qui écrit : vu en moins d'une minute
   // « À faire aujourd'hui » reste juste : l'argent et l'équipe relus toutes les 5 min sur le tableau de bord
   boucle(() => {
@@ -160,7 +163,7 @@ quandPage('systeme', () => {
   if (!E.offre || Date.now() - E.offre.lu > 10 * 60e3) chargerOffre();
 });
 quandVue('argent', () => { rendreArgent(); if (!E.argent || Date.now() - E.argentLu > 60e3) chargerArgent(); });
-quandVue('equipe', () => { rendreEquipe(); if (!E.equipe || Date.now() - E.equipeLu > 30e3) chargerEquipe(); });
+quandVue('equipe', () => { rendreEquipe(); chargerEnCours(); if (!E.equipe || Date.now() - E.equipeLu > 30e3) chargerEquipe(); });
 quandVue('appels', () => { rendreAppels(); if (Date.now() - appelsLus() > 20e3) chargerAppels(); });
 quandVue('clients', () => { rendreClients(); if (sousVue() === 'prospects' && (!E.prospects || Date.now() - (E.prospectsLu || 0) > 30e3)) chargerProspects(); });
 // « À faire aujourd'hui » se redessine avec la phrase du tableau de bord (toutes les 15 s, et après chaque lecture)
