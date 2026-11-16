@@ -471,6 +471,23 @@ html[data-theme="sombre"] .carte--visites .graphe__jour.actif .graphe__barre, ht
 :root { --bulle-nous: #2563EB; }
 html[data-theme="sombre"] { --bulle-nous: #2F6BD8; }
 .carte--convs { --teinte: var(--texto); scroll-margin-top: 84px; }
+.carte--demandes { --teinte: var(--centre); margin-top: 36px; scroll-margin-top: 84px; }
+.demandes__intro { margin-top: -10px; }
+.demandes { display: flex; flex-direction: column; gap: 10px; list-style: none; margin: 0; padding: 0; }
+.demande { display: flex; flex-direction: column; gap: 10px; padding: 16px 18px; border: 1px solid var(--trait); border-radius: 14px; background: var(--carte); }
+.demande[data-statut="nouvelle"] { border-color: var(--trait-fort); box-shadow: inset 4px 0 0 var(--centre); }
+.demande[data-statut="terminee"], .demande[data-statut="perdue"] { opacity: .72; }
+.demande__haut { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.demande__nom { margin-right: auto; font-size: 1rem; font-weight: 650; }
+.demande__quand { color: var(--texte-3); font-size: .8125rem; font-variant-numeric: tabular-nums; }
+.demande__details { display: grid; grid-template-columns: fit-content(42%) minmax(0, 1fr); gap: 4px 14px; margin: 0; font-size: .9rem; line-height: 1.4; }
+.demande__details dt { color: var(--texte-3); }
+.demande__details dd { margin: 0; color: var(--texte-2); overflow-wrap: break-word; }
+.demande__resume { color: var(--texte-2); font-size: .9rem; line-height: 1.45; }
+.demande__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.demande__statut { min-height: 36px; padding: 0 12px; border: 1px solid var(--trait-fort); border-radius: 999px; background: var(--carte); color: var(--encre); font: inherit; font-size: .875rem; font-weight: 650; }
+.demande__note { width: 100%; min-height: 64px; padding: 10px 12px; border: 1px solid var(--trait); border-radius: 10px; background: var(--carte-2); color: var(--encre); font: inherit; font-size: .9rem; resize: vertical; }
+.demande__note-pied { display: flex; align-items: center; gap: 10px; color: var(--texte-3); font-size: .8125rem; }
 .filtre--attente span { color: var(--voix-fonce); }
 .filtre--attente[aria-pressed="true"] span { color: inherit; }
 .convs { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
@@ -775,6 +792,15 @@ html[data-theme="sombre"] { --bulle-nous: #2F6BD8; }
         <div class="provenance" id="visites-provenance" hidden></div>
         <p class="centre__note" id="visites-note">Les 30 derniers jours. Compteur sans témoins : aucune adresse IP ni aucun visiteur n’est gardé, seulement des totaux par jour.</p>
       </article>
+    </section>
+
+    <!-- Vos demandes : les demandes laissées à votre chatbot et leur suivi (demandes_clients.py) -->
+    <section class="carte carte--demandes" id="demandes" aria-labelledby="t-demandes" aria-busy="false" hidden>
+      <div class="carte__tete"><h2 id="t-demandes" tabindex="-1">Vos demandes</h2><span class="carte__compte" id="demandes-compte"></span></div>
+      <p class="centre__note demandes__intro">Les clients qui ont laissé leurs coordonnées à votre assistant, 90 derniers jours. Changez le statut au fur et à mesure : vous voyez d’un coup d’œil qui rappeler.</p>
+      <div class="filtres" id="demandes-filtres" role="group" aria-label="Montrer les demandes"></div>
+      <ul class="demandes" id="demandes-liste"></ul>
+      <p class="centre__note" id="demandes-note" hidden></p>
     </section>
 
     <!-- Le rapport du mois : seulement si le client a un agent répondeur, des textos ou des avis notés -->
@@ -2365,6 +2391,7 @@ function entrer(client) {
   E.centre = null; E.filtre = 'tous'; E.appelsVus = APPELS_PAR_PAGE;
   viderConvs();
   chargerCentre();
+  chargerDemandes();
   chargerRapport('');
   $('#projet-nom').focus({ preventScroll: true });
 }
@@ -2387,6 +2414,7 @@ async function actualiser(manuel = false) {
     if (p.chatbot) chargerChatbot(p.id); else retirerChatbot();
     if (client._jeton) E.jeton = client._jeton;
     chargerCentre();
+    chargerDemandes();
     chargerRapport();
     const annonce = annoncer(c, avant, p);
     if (manuel && !annonce) toast('C’est à jour : rien de nouveau.');
@@ -2415,6 +2443,111 @@ function planifier() {
   if (E.projet) E.minuterie = setTimeout(() => actualiser(), DELAIS.auto);
 }
 
+// ─── Vos demandes (demandes_clients.py) ─────────────────────────────────────
+// GET /portal/centre/demandes et POST /portal/centre/demande, même jeton que le centre.
+// Tout texte venu du serveur passe par el() (textContent), jamais innerHTML.
+const FILTRES_DEMANDES = [['ouvertes', 'À traiter'], ['nouvelle', 'Nouvelles'], ['toutes', 'Toutes']];
+const OUVERTES = new Set(['nouvelle', 'contactee', 'soumission', 'reservee']);
+async function lireDemandes() {
+  const ctrl = new AbortController();
+  const fin = setTimeout(() => ctrl.abort(), DELAIS.max);
+  try {
+    const r = await fetch(BACKEND + '/portal/centre/demandes', { headers: { Authorization: 'Bearer ' + E.jeton }, signal: ctrl.signal, cache: 'no-store' });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new ErreurConnexion(data.error || 'Demandes indisponibles', r.status);
+    return data;
+  } catch (e) {
+    if (e instanceof ErreurConnexion) throw e;
+    throw new ErreurConnexion('Le serveur ne répond pas pour le moment.', 0);
+  } finally { clearTimeout(fin); }
+}
+async function chargerDemandes() {
+  if (!E.jeton || !E.projet) { $('#demandes').hidden = true; return; }
+  if (E.lectureDemandes) return;
+  E.lectureDemandes = true;
+  $('#demandes').setAttribute('aria-busy', 'true');
+  try {
+    const d = await lireDemandes();
+    if (!E.projet) return;
+    if (!d.actif) { E.demandes = null; $('#demandes').hidden = true; return; }
+    E.demandes = d;
+    rendreDemandes();
+  } catch (e) {
+    if (E.demandes) { const n = $('#demandes-note'); n.hidden = false; ecrireTexte(n, 'Pas pu relire vos demandes : ' + e.message); }
+  } finally { E.lectureDemandes = false; $('#demandes').setAttribute('aria-busy', 'false'); }
+}
+function rendreDemandes() {
+  const d = E.demandes, section = $('#demandes');
+  if (!d) { section.hidden = true; return; }
+  section.hidden = false;
+  if (!E.filtreDemandes) E.filtreDemandes = 'ouvertes';
+  const toutes = d.demandes || [];
+  const nouvelles = toutes.filter(x => x.statut === 'nouvelle').length;
+  ecrireTexte($('#demandes-compte'), nouvelles ? `${nouvelles} nouvelle${nouvelles > 1 ? 's' : ''}` : `${toutes.length} en 90 jours`);
+  vider($('#demandes-filtres'), FILTRES_DEMANDES.map(([cle, nom]) => {
+    const n = cle === 'toutes' ? toutes.length : cle === 'nouvelle' ? nouvelles : toutes.filter(x => OUVERTES.has(x.statut)).length;
+    return el('button', { class: 'filtre', type: 'button', 'aria-pressed': String(E.filtreDemandes === cle),
+      onclick: () => { E.filtreDemandes = cle; rendreDemandes(); } }, `${nom} · ${n}`);
+  }));
+  const liste = toutes.filter(x => E.filtreDemandes === 'toutes' ? true : E.filtreDemandes === 'nouvelle' ? x.statut === 'nouvelle' : OUVERTES.has(x.statut));
+  const note = $('#demandes-note');
+  note.hidden = d.disponible !== false;
+  if (d.disponible === false) ecrireTexte(note, 'Vos demandes sont illisibles pour le moment. Elles arrivent toujours par courriel.');
+  if (!liste.length) {
+    vider($('#demandes-liste'), el('li', { class: 'vide' }, toutes.length ? 'Rien à traiter ici. Bravo !' : 'Aucune demande depuis 90 jours. Dès qu’un visiteur laisse ses coordonnées à votre assistant, elle apparaît ici (et par courriel, comme avant).'));
+    return;
+  }
+  vider($('#demandes-liste'), liste.map(carteDemande));
+}
+function carteDemande(x) {
+  const statuts = (E.demandes && E.demandes.statuts) || {};
+  const actions = [];
+  if (x.telephone) {
+    const tel = x.telephone.replace(/[^\d+]/g, '');
+    actions.push(el('a', { class: 'mini', href: 'tel:' + tel }, icone('i-tel'), 'Appeler'));
+    actions.push(el('a', { class: 'mini', href: 'sms:' + tel }, icone('i-bulle'), 'Texto'));
+  }
+  if (x.courriel) actions.push(el('a', { class: 'mini', href: 'mailto:' + x.courriel }, icone('i-courriel'), 'Courriel'));
+  const choix = el('select', { class: 'demande__statut', 'aria-label': `Statut de la demande de ${x.nom || 'ce client'}` },
+    Object.entries(statuts).map(([cle, nom]) => { const o = el('option', { value: cle }, nom); if (cle === x.statut) o.selected = true; return o; }));
+  choix.addEventListener('change', () => changerDemande(x.id, { statut: choix.value }));
+  actions.push(choix);
+  const zone = el('textarea', { class: 'demande__note', maxlength: '1000', placeholder: 'Vos notes (privées) : prix donné, date, à rappeler…', 'aria-label': `Notes sur ${x.nom || 'ce client'}` });
+  zone.value = x.note || '';
+  const etatNote = el('span', null, '');
+  const garder = el('button', { class: 'mini', type: 'button', hidden: true }, 'Enregistrer la note');
+  zone.addEventListener('input', () => { garder.hidden = zone.value === (x.note || ''); etatNote.textContent = ''; });
+  garder.addEventListener('click', async () => {
+    garder.disabled = true;
+    const ok = await changerDemande(x.id, { note: zone.value });
+    garder.disabled = false;
+    if (ok) { x.note = zone.value; garder.hidden = true; etatNote.textContent = 'Note enregistrée.'; }
+  });
+  const details = (x.details || []).map(([nom, valeur]) => [el('dt', null, nom), el('dd', null, valeur)]);
+  return el('li', { class: 'demande', 'data-statut': x.statut },
+    el('div', { class: 'demande__haut' },
+      el('span', { class: 'demande__nom' }, x.nom || 'Visiteur sans nom'),
+      el('span', { class: 'demande__quand', title: new Date(x.quand).toLocaleString('fr-CA', { timeZone: FUSEAU }) }, quandCourt(x.quand))),
+    (x.telephone || x.courriel) ? el('p', { class: 'demande__resume' }, [x.telephone, x.courriel].filter(Boolean).join(' · ')) : null,
+    details.length ? el('dl', { class: 'demande__details' }, details.flat()) : null,
+    x.resume ? el('p', { class: 'demande__resume' }, x.resume) : null,
+    el('div', { class: 'demande__actions' }, actions),
+    zone,
+    el('div', { class: 'demande__note-pied' }, garder, etatNote));
+}
+async function changerDemande(id, corps) {
+  try {
+    const r = await posterCentre('demande', { id, ...corps });
+    E.demandes = { ...E.demandes, demandes: r.demandes, compte: r.compte };
+    if (corps.statut) { rendreDemandes(); toast('Statut changé : ' + ((E.demandes.statuts || {})[corps.statut] || corps.statut) + '.'); }
+    return true;
+  } catch (e) {
+    toast(e.message, true);
+    if (corps.statut) rendreDemandes();
+    return false;
+  }
+}
+
 function quitter(message = '', garderNom = false) {
   clearTimeout(E.minuterie); clearInterval(E.horloge);
   retirerChatbot();
@@ -2426,6 +2559,8 @@ function quitter(message = '', garderNom = false) {
   viderConvs();
   fermerAction();
   $('#centre').hidden = true;
+  E.demandes = null; E.filtreDemandes = 'ouvertes'; E.lectureDemandes = false;
+  $('#demandes').hidden = true;
   E.titre = TITRE; document.title = TITRE;
   $('#appli').hidden = true;
   $('#connexion').hidden = false;
