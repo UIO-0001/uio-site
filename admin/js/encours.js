@@ -2,17 +2,17 @@
 // moment, pour ne jamais travailler deux fois sur la même chose. Avant de commencer, chaque
 // Claude lit ce tableau et réserve son travail (quoi, où, sur quelle branche) ; il donne des
 // nouvelles, puis il libère le travail avec son récap. Le serveur refuse une réservation qui
-// croise celle d'un autre. Ici, on voit tout en direct (relu toutes les 20 s), on écrit un mot à
-// l'autre Claude, on réserve soi-même (« Je m'en occupe ») et on libère un travail périmé.
+// croise celle d'un autre. Tout est rempli par les Claude eux-mêmes (aucune saisie à la main) :
+// ici, on regarde en direct (relu toutes les 20 s) et on ne fait que libérer un travail périmé.
 import { $, icone, vider, majuscule, date, relatif, heure, toast } from './outils.js';
 import { E } from './etat.js';
 import { api, sessionActuelle } from './api.js';
 import { depliant } from './ui.js';
 import { prenom } from './tableau.js';
-import { el, Invalide, nouvelleCle, badge, confirmations, champTexte, formulaireEnLigne, panneauFormulaire } from './formes.js';
+import { el, badge, confirmations } from './formes.js';
 
 export const DELAI_EN_COURS = 20e3;
-const ui = { charge: null, mot: '', confirmer: '', brouillons: new Map(), cles: new Map() };
+const ui = { charge: null, confirmer: '' };
 const confirmer = confirmations(ui, () => rendreEnCours());
 
 const moi = () => (E.enCours && E.enCours.moi) || ((sessionActuelle() || {}).admin || {}).identifiant || '';
@@ -54,8 +54,7 @@ async function ecrire(chemin, corps) {
 
 export function viderEnCours() {
   E.enCours = null; E.enCoursErreur = '';
-  Object.assign(ui, { mot: '', confirmer: '' });
-  ui.brouillons.clear(); ui.cles.clear();
+  ui.confirmer = '';
 }
 
 // ─── La carte ──────────────────────────────────────────────────────────────
@@ -86,8 +85,7 @@ function ligne(t) {
   if (t.force) badges.push(badge('Réservé malgré un autre travail', 'alerte'));
   const meta = [auteur(t), t.appareil && t.source === 'claude' ? t.appareil.replace(/^Claude \([^)]*\)( · )?/, '') : '',
     `commencé ${quand(date(t.debut))}`, t.etat === 'actif' && t.maj_le !== t.debut ? `nouvelles ${quand(vu)}` : ''].filter(Boolean);
-  const peutLiberer = t.qui === moi() || t.etat === 'perime';
-  const ouvert = ui.mot === t.id;
+  const taches = (t.taches || []).map(id => trouverTache(id)).filter(Boolean);
   return el('li', { class: `encours__un encours__un--${t.etat}`, 'data-id': t.id },
     avatar(t.qui, t.nom),
     el('div', { class: 'encours__corps' },
@@ -96,16 +94,19 @@ function ligne(t) {
       t.avancement ? el('p', { class: 'encours__avance' }, t.avancement) : null,
       el('p', { class: 'encours__zones' }, t.zones.map(z => el('code', { class: 'encours__zone' }, z)),
         t.branche ? el('code', { class: 'encours__zone encours__zone--branche' }, 'branche ', t.branche) : null),
+      taches.length ? el('p', { class: 'encours__taches' }, icone('i-ok'),
+        taches.length > 1 ? 'Tâches cochées toutes seules à la fin : ' : 'Tâche cochée toute seule à la fin : ',
+        taches.map(x => x.titre).join(' · ')) : null,
       t.messages.length ? el('div', { class: 'notes' }, t.messages.slice().reverse().map(message)) : null,
-      ouvert ? formMot(t.id) : null,
-      el('div', { class: 'encours__actions' },
-        ouvert ? null : el('button', { class: 'lien lien--petit', type: 'button', 'data-focus': `mot-${t.id}`,
-          onclick: () => { ui.mot = t.id; rendreEnCours(); const z = $(`#mot-${CSS.escape(t.id)}`); if (z) z.focus(); } },
-          icone('i-note'), t.qui === moi() ? 'Ajouter un mot' : `Écrire à ${t.source === 'claude' ? 'son Claude' : prenom(t.nom) || t.qui}`),
-        peutLiberer ? confirmer(`lib-${t.id}`, 'Libérer', t.qui === moi() ? 'C’est fini ? Libérer ce travail' : `Libérer le travail de ${prenom(t.nom) || t.qui} ?`,
-          async () => { await ecrire('liberer', { id: t.id, resultat: 'fini' }); toast('Travail libéré.'); },
-          { danger: t.qui !== moi(), classe: 'lien lien--petit' }) : null)));
+      // Un travail se libère tout seul quand son Claude a fini. Seul un travail périmé (12 h sans
+      // nouvelles : le Claude a été fermé) se libère ici, pour qu'il ne bloque personne.
+      t.etat === 'perime' ? el('div', { class: 'encours__actions' },
+        confirmer(`lib-${t.id}`, 'Libérer', t.qui === moi() ? 'Ton Claude a été fermé ? Libérer ce travail' : `Libérer le travail de ${prenom(t.nom) || t.qui} ?`,
+          async () => { await ecrire('liberer', { id: t.id, resultat: 'abandonne' }); toast('Travail libéré.'); },
+          { danger: t.qui !== moi(), classe: 'lien lien--petit' })) : null));
 }
+
+const trouverTache = id => (E.equipe && E.equipe.taches ? E.equipe.taches.find(x => x.id === id) : null);
 
 function fini(t) {
   const r = (E.enCours.regles.resultats || {})[t.resultat] || 'Fini';
@@ -122,62 +123,8 @@ const message = m => el('div', { class: 'note-fil' }, avatar(m.qui, m.nom),
     el('p', { class: 'note-fil__texte' }, m.texte)));
 
 function messagesEquipe(messages) {
-  const ouvert = ui.mot === 'equipe';
   return el('div', { class: 'encours__messages' },
-    el('div', { class: 'encours__messages-tete' }, el('h3', null, 'Messages entre vos Claude'),
-      ouvert ? null : el('button', { class: 'lien lien--petit', type: 'button', 'data-focus': 'mot-equipe',
-        onclick: () => { ui.mot = 'equipe'; rendreEnCours(); const z = $('#mot-equipe'); if (z) z.focus(); } }, icone('i-note'), 'Écrire à l’équipe')),
+    el('div', { class: 'encours__messages-tete' }, el('h3', null, 'Messages entre vos Claude')),
     messages.length ? el('div', { class: 'notes' }, messages.slice(0, 6).map(message))
-      : el('p', { class: 'vide vide--petit' }, 'Aucun message ces 7 derniers jours. Un Claude qui change quelque chose d’important (les prix, une règle) l’écrit ici.'),
-    ouvert ? formMot('equipe') : null);
-}
-
-function formMot(cible) {
-  const id = `mot-${cible}`;
-  const zone = el('textarea', { id, class: 'note-saisie', maxlength: 600, rows: 2, placeholder: 'Ex. : attends ma branche avant de toucher au site' });
-  zone.value = ui.brouillons.get(cible) || '';
-  zone.addEventListener('input', () => { if (zone.value) ui.brouillons.set(cible, zone.value); else ui.brouillons.delete(cible); });
-  const fermer = () => { ui.mot = ''; ui.brouillons.delete(cible); ui.cles.delete(cible); rendreEnCours(); };
-  const form = formulaireEnLigne({
-    elements: [el('label', { class: 'sr', for: id }, 'Ton mot'), zone],
-    bouton: 'Envoyer', annuler: fermer, classe: 'formulaire--note',
-    envoyer: async () => {
-      const texte = zone.value.trim();
-      if (!texte) throw new Invalide('Écris ton mot.', zone);
-      if (!ui.cles.has(cible)) ui.cles.set(cible, nouvelleCle('em'));
-      await ecrire('message', { texte, chantier: cible === 'equipe' ? '' : cible, cle: ui.cles.get(cible) });
-      ui.mot = ''; ui.brouillons.delete(cible); ui.cles.delete(cible);
-      rendreEnCours();
-      toast('Mot envoyé : les Claude le liront avant leur prochain travail.');
-    }
-  });
-  zone.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); form.requestSubmit(); }
-    else if (e.key === 'Escape') { e.preventDefault(); fermer(); }
-  });
-  return form;
-}
-
-// ─── « Je m'en occupe » : réserver soi-même (un appel, une visite, un dossier) ─
-export function ouvrirReservation() {
-  if (!E.enCours) { toast('Le tableau « En cours » n’est pas encore lu. Réessaie dans un instant.', true); chargerEnCours(); return; }
-  const titre = champTexte('Sur quoi tu travailles', { maxlength: 140, autocomplete: 'off', placeholder: 'Ex. : J’appelle Plomberie Capital' });
-  const zones = champTexte('Où', { multiligne: true, rows: 3, maxlength: 700, placeholder: 'Ex. : prospects/plomberie capital' },
-    'Une ligne par endroit : un dépôt (uio-site), un dossier, un fichier ou un sujet (agent répondeur, pub v9). Personne d’autre ne pourra le réserver tant que tu ne l’as pas libéré.');
-  const cle = nouvelleCle('ec');
-  const valeurs = () => ({ titre: titre.input.value.trim(), zones: zones.input.value.split('\n').map(z => z.trim()).filter(Boolean) });
-  panneauFormulaire({
-    titre: 'Je m’en occupe', sousTitre: 'Dans « En cours », pour que personne ne le fasse en double',
-    corps: [titre.boite, zones.boite], bouton: 'Réserver', chemin: 'reserver',
-    ecrire,
-    preparer: () => {
-      const v = valeurs();
-      if (!v.titre) throw new Invalide('Écris ce que tu fais, en une phrase courte.', titre.input);
-      if (!v.zones.length) throw new Invalide('Écris au moins un endroit.', zones.input);
-      return { ...v, cle };
-    },
-    reussite: 'C’est réservé : les Claude le verront avant de commencer.',
-    modifie: () => !!(valeurs().titre || valeurs().zones.length),
-    focus: () => titre.input
-  });
+      : el('p', { class: 'vide vide--petit' }, 'Aucun message ces 7 derniers jours. Un Claude qui change quelque chose d’important (les prix, une règle) l’écrit ici tout seul.'));
 }

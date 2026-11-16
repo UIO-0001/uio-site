@@ -14,7 +14,7 @@ import { prenom, rendreBonjour } from './tableau.js';
 import { fr, el, Invalide, nouvelleCle, dureeHM, badge, rangee, confirmations, champTexte, champDate, pilules, liste, formulaireEnLigne,
   panneauFormulaire as panneauBase } from './formes.js';
 import { suivreDocuments } from './fiche.js';
-import { chargerEnCours, rendreEnCours, viderEnCours, ouvrirReservation } from './encours.js';
+import { chargerEnCours, rendreEnCours, viderEnCours } from './encours.js';
 
 const ui = { construit: false, charge: null, confirmer: '', filtre: 'moi', plusTaches: false, recapsMontres: 6,
   emoji: '', note: '', chrono: false, brouillons: new Map(), clesNotes: new Map(), trouve: '', trouveJusqua: 0 };
@@ -155,10 +155,10 @@ function construire() {
         el('button', { class: 'btn btn--petit btn--sombre chrono', type: 'button', id: 'chrono', onclick: basculerChrono }, icone('i-lecture'), 'Je commence'),
         el('button', { class: 'btn btn--contour btn--petit', type: 'button', onclick: () => ouvrirTache() }, icone('i-plus'), 'Tâche'))),
     el('div', { class: 'grille' },
-      carte('carte--encours l12', 'encours', 'En cours maintenant', lien('Je m’en occupe', () => ouvrirReservation())),
+      carte('carte--encours l12', 'encours', 'En cours maintenant'),
       carte('carte--taches l7', 'taches', 'Tâches'),
       carte('carte--heures l5', 'heures', 'Heures', lien('Mes heures', () => ouvrirHeures())),
-      carte('carte--recaps l7', 'recaps', 'Qui a fait quoi', lien('Écrire un récap', () => ouvrirRecap())),
+      carte('carte--recaps l7', 'recaps', 'Qui a fait quoi'),
       carte('carte--documents l5', 'documents', 'Documents', lien('Ajouter', () => ouvrirDocument()))));
 }
 
@@ -572,43 +572,6 @@ async function reagir(id, emoji, focus = '') {
   }
 }
 
-// ─── Panneau : écrire un récap soi-même ────────────────────────────────────
-export function ouvrirRecap() {
-  if (!pret()) return;
-  const cle = nouvelleCle('re');
-  const maintenant = versLocal(new Date());
-  const titre = champTexte('Titre', { maxlength: 140, autocomplete: 'off', placeholder: 'Ex. : Onglet Argent terminé' }, 'Ce qui a avancé, en quelques mots.');
-  const fait = champTexte('Fait', { multiligne: true, rows: 5, maxlength: 3000, placeholder: 'Un point par ligne' }, 'Un point par ligne, 12 au plus : ce qui a changé pour l’agence.');
-  const reste = champTexte('Reste à faire', { multiligne: true, rows: 3, maxlength: 3000, placeholder: 'Un point par ligne' }, '', 'facultatif');
-  const liens = champTexte('Liens', { multiligne: true, rows: 2, maxlength: 4000, spellcheck: 'false', autocapitalize: 'none', placeholder: 'https://…' },
-    'Un lien par ligne : un document, une demande de fusion…', 'facultatif');
-  const debut = champTexte('Début', { type: 'datetime-local', max: maintenant }, '', 'facultatif');
-  const fin = champTexte('Fin', { type: 'datetime-local', max: maintenant }, '', 'facultatif');
-  const valeurs = () => [titre, fait, reste, liens, debut, fin].map(c => c.input.value).join('|');
-  const depart = valeurs();
-  panneauFormulaire({
-    titre: 'Écrire un récap', sousTitre: 'Ce qui a avancé pendant ta session de travail',
-    corps: [titre.boite, fait.boite, reste.boite, liens.boite, el('div', { class: 'deux' }, debut.boite, fin.boite),
-      el('p', { class: 'note' }, 'Avec le début et la fin, la session compte dans tes heures, sans compter deux fois ton chrono. Heure du Québec.')],
-    bouton: 'Publier le récap', chemin: 'recap',
-    preparer: () => {
-      const t = titre.input.value.trim(), f = lignesDe(fait.input.value), l = lignesDe(liens.input.value);
-      if (!t) throw new Invalide('Donne un titre au récap.', titre.input);
-      if (!f.length) throw new Invalide('Écris au moins un point dans « Fait ».', fait.input);
-      if (f.length > 12) throw new Invalide('12 points au plus dans « Fait » : regroupe les plus petits.', fait.input);
-      const mauvais = l.find(x => !/^https:\/\/\S+$/.test(x));
-      if (mauvais) throw new Invalide(`Ce lien doit commencer par https:// : ${mauvais.slice(0, 60)}`, liens.input);
-      const d = debut.input.value, n = fin.input.value;
-      if (!!d !== !!n) throw new Invalide('Écris le début et la fin, ou aucun des deux.', d ? fin.input : debut.input);
-      if (d && n <= d) throw new Invalide('La fin doit venir après le début.', fin.input);
-      return { titre: t, fait: f, reste: lignesDe(reste.input.value), liens: l, debut: d, fin: n, cle };
-    },
-    reussite: 'Récap publié.',
-    modifie: () => valeurs() !== depart,
-    focus: () => titre.input
-  });
-}
-
 // ─── Heures ────────────────────────────────────────────────────────────────
 function rendreHeures() {
   const boite = $('#equipe-heures');
@@ -872,8 +835,8 @@ export function modeEmploi() {
     `1. AVANT tout travail (code, site, CRM, document, vidéo, prospect) : lis le tableau et les messages.`,
     `curl -sS ${B}/portal/claude/en-cours ${entete}`,
     `   Si « en_cours » montre un travail qui touche la même chose, ARRÊTE-TOI et dis-le à ${nom} (qui, quoi, depuis quand). Lis aussi « messages » : un mot de l’autre Claude passe avant ton travail.`,
-    `2. Réserve ton travail. « zones » = où tu vas toucher : un dépôt (uio-site), un dossier ou un fichier (uio-backend/suivis.py), ou un sujet (agent répondeur, prospects/plomberie capital, pub v9).`,
-    poste('/portal/claude/en-cours', `{"titre": "…", "zones": ["uio-site/admin/js"], "depot": "uio-site", "branche": "claude/…", "session": "Claude Code sur le Mac", "avancement": "Je commence"}`),
+    `2. Réserve ton travail. « zones » = où tu vas toucher : un dépôt (uio-site), un dossier ou un fichier (uio-backend/suivis.py), ou un sujet (agent répondeur, prospects/plomberie capital, pub v9). « taches » = les identifiants ta_… des tâches de l’Équipe que ce travail règle (lis-les avec GET /portal/claude/taches) : elles passent « en cours » toutes seules, puis « faites » quand tu libères avec "resultat": "fini". Une tâche ouverte pour ${nom} dont le titre ressemble à ton travail est liée toute seule.`,
+    poste('/portal/claude/en-cours', `{"titre": "…", "zones": ["uio-site/admin/js"], "depot": "uio-site", "branche": "claude/…", "session": "Claude Code sur le Mac", "avancement": "Je commence", "taches": ["ta_…"]}`),
     `   Réponse 409 (« pris ») : quelqu’un y travaille déjà. Ne force pas : dis-le à ${nom}. "forcer": true seulement si ${nom} et ${autre} se sont parlé (un courriel prévient l’autre).`,
     `3. Donne des nouvelles au moins toutes les 2 h (sinon ton travail paraît « endormi ») :`,
     poste('/portal/claude/en-cours/nouvelles', `{"id": "ec_…", "avancement": "Tests verts, demande de fusion ouverte"}`),
@@ -881,7 +844,8 @@ export function modeEmploi() {
     poste('/portal/claude/en-cours/message', `{"texte": "…", "chantier": "ec_… (facultatif)"}`),
     `5. À la fin : libère le travail, avec le récap (il part dans « Qui a fait quoi », pas besoin de l’envoyer à part).`,
     poste('/portal/claude/en-cours/liberer', `{"id": "ec_…", "resultat": "fini", "recap": {"fait": ["…"], "reste": ["…"], "liens": ["https://…"], "debut": "2026-11-08 20:10", "fin": "2026-11-08 22:40"}}`),
-    `   resultat : fini, pause ou abandonne. Ne libère jamais le travail de l’autre.`,
+    `   resultat : fini (les tâches liées sont cochées « faites »), pause ou abandonne (elles reviennent « à faire »). Ne libère jamais le travail de l’autre.`,
+    `- Personne ne remplit ce tableau à la main : c’est toi qui le tiens à jour. ${nom} et ${autre} ne font que le regarder.`,
     `- Git : une branche par changement (jamais deux Claude sur la même branche), et jamais de push direct sur main.`,
     ``,
     `## Le CRM (seulement si ${nom} a ouvert le CRM à ta clé)`,
@@ -894,12 +858,14 @@ export function modeEmploi() {
     `- Une tâche pour quelqu’un d’autre envoie aussi un courriel à la boîte de l’agence.`,
     ``,
     `## Quand une tâche avance`,
+    `Le plus souvent, rien à faire : une tâche liée à ton travail « En cours » se coche toute seule. Sinon :`,
     poste('/portal/claude/tache/statut', `{"id": "ta_…", "statut": "fait"}`),
     `- statut : en_cours, fait, a_faire ou annule (seulement les tâches pour ${nom}, de ${nom}, ou pour tous).`,
     ``,
     `## À la fin d’une grande session de travail : le récap`,
     `Écris un récap court : un titre ; de 3 à 8 points « fait » (ce qui a changé pour l’agence, pas le détail technique) ; ce qui reste ; les liens utiles (demande de fusion, document) ; le début et la fin de la session.`,
-    poste('/portal/claude/recap', `{"titre": "…", "fait": ["…", "…"], "reste": ["…"], "liens": ["https://…"], "debut": "2026-11-08 20:10", "fin": "2026-11-08 22:40"}`),
+    poste('/portal/claude/recap', `{"titre": "…", "fait": ["…", "…"], "reste": ["…"], "liens": ["https://…"], "debut": "2026-11-08 20:10", "fin": "2026-11-08 22:40", "taches": ["ta_…"]}`),
+    `- « taches » (facultatif) : les tâches que cette session a réglées ; elles sont cochées « faites » toutes seules.`,
     `- La session compte dans les heures de ${nom}, sans compter deux fois son chrono. ${max} h au plus par récap, et pas dans le futur.`,
     `- Pour ne jamais l’envoyer deux fois, ajoute "cle": "re_" suivi de 16 lettres ou chiffres au hasard (la même clé n’ajoute rien de plus).`,
     ``,
