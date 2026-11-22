@@ -597,11 +597,6 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .champ input:user-invalid, .champ textarea:user-invalid { border-color: #B42318; }
 .form__mention { color: var(--texte-2); font-size: .8125rem; line-height: 1.55; }
 .form__mention a { color: var(--encre); }
-/* Appel de démo : une case sous les coordonnées (seuls ceux qui remplissent le formulaire entendent l'agent) */
-.demo-case { display: flex; gap: 12px; align-items: flex-start; margin: 4px 0 2px; padding: 14px 16px; border: 1.5px solid var(--contour); border-radius: var(--r-champ); cursor: pointer; font-size: .9375rem; line-height: 1.45; }
-.demo-case input { flex: none; width: 22px; height: 22px; margin: 1px 0 0; accent-color: var(--encre); cursor: pointer; }
-.demo-case small { display: block; color: var(--texte-2); font-size: .8125rem; }
-.demo-case:has(input:focus-visible) { box-shadow: 0 0 0 2px var(--encre); }
 .form .btn { width: 100%; }
 .form .btn:disabled { opacity: .6; cursor: progress; }
 .form__resultat { min-height: 1.4em; font-size: .95rem; font-weight: 600; }
@@ -960,7 +955,7 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
         <p class="lead">Quand vous ne pouvez pas répondre, notre agent répondeur prend l’appel à votre nom, en français ou en anglais. Il vous passe les urgences, prend la demande et vous texte le résumé. Quand vous répondez, rien ne change.</p>
         <div class="hero__actions">
           <a class="btn" href="#contact">Demander mon audit gratuit</a>
-          <a class="lien" href="#formulaire">Recevoir un appel de démo</a>
+          <a class="lien" href="#forfaits">Voir les forfaits</a>
         </div>
         <ul class="faits">
           <li>À partir de 199 $ par mois</li>
@@ -1361,7 +1356,6 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
           <div class="champ"><label for="f-tel">Téléphone</label><input id="f-tel" name="telephone" type="tel" autocomplete="tel" inputmode="tel" required></div>
           <div class="champ"><label for="f-courriel">Courriel <span>(facultatif)</span></label><input id="f-courriel" name="courriel" type="email" autocomplete="email"></div>
         </div>
-        <label class="demo-case"><input type="checkbox" name="appel_demo" value="oui"><span>Recevoir un appel de démo de l’agent répondeur<small>Il vous appelle tout de suite, pendant 3&nbsp;minutes, comme s’il répondait à vos clients. De 9&nbsp;h à 20&nbsp;h, une fois par numéro.</small></span></label>
         <details class="plus" id="plus" open>
         <summary>Ajouter des détails <span>(facultatif)</span><svg aria-hidden="true"><use href="#i-plus"/></svg></summary>
         <div class="champs">
@@ -1745,23 +1739,6 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
       resultat.appendChild(document.createTextNode(' ')); resultat.appendChild(a); resultat.appendChild(document.createTextNode('.'));
     }
   }
-  // Appel de démo (uio-backend, demo_appel.py) : seulement après un formulaire bien reçu. Jamais bloquant.
-  var DEMO = {
-    appel: ' L’agent répondeur vous appelle dans moins d’une minute pour votre démo.',
-    hors_heures: ' L’appel de démo se fait de 9 h à 20 h : on vous le fera entendre pendant l’audit.',
-    deja: ' Ce numéro a déjà reçu son appel de démo.',
-    plein: ' Les appels de démo sont complets pour aujourd’hui : on vous le fera entendre pendant l’audit.'
-  };
-  // « Recevoir un appel de démo » (haut de page) mène au formulaire avec la case déjà cochée
-  document.querySelectorAll('a[href="#formulaire"]').forEach(function (a) { a.addEventListener('click', function () { var c = form.querySelector('input[name=appel_demo]'); if (c) c.checked = true; }); });
-  async function appelDemo(d) {
-    try {
-      var r = await fetch('https://uio-backend.onrender.com/demo/appel', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nom: d.nom, entreprise: d.entreprise, telephone: d.telephone, metier: d.metier, langue: document.documentElement.lang, _piege: d.botcheck ? '1' : '' }) });
-      var j = await r.json();
-      return DEMO[j.statut] || ' On vous fera entendre l’agent pendant l’audit.';
-    } catch (e) { return ' On vous fera entendre l’agent pendant l’audit.'; }
-  }
   var ECHEC = 'L’envoi n’a pas fonctionné. Réessayez ou écrivez-nous à';
   form.addEventListener('submit', async function (ev) {
     ev.preventDefault();
@@ -1775,7 +1752,7 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
     try {
       var rep = await fetch(form.action, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(d), signal: ctrl ? ctrl.signal : undefined });
       var json = await rep.json().catch(function () { return {}; });
-      if (rep.ok && json.success) { message('Demande reçue. On vous rappelle le jour même (ou dès le lendemain matin pour les demandes envoyées en soirée).', true); if (d.appel_demo === 'oui') appelDemo(d).then(function (t) { resultat.appendChild(document.createTextNode(t)); }); form.reset(); champForfait.value = ''; champScenario.value = ''; texteForfait.hidden = true; }
+      if (rep.ok && json.success) { message('Demande reçue. On vous rappelle le jour même (ou dès le lendemain matin pour les demandes envoyées en soirée).', true); form.reset(); champForfait.value = ''; champScenario.value = ''; texteForfait.hidden = true; }
       else message(ECHEC, false, true);
     } catch (e) {
       message(ECHEC, false, true);

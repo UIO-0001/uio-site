@@ -595,11 +595,6 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .champ input:user-invalid, .champ textarea:user-invalid { border-color: #B42318; }
 .form__mention { color: var(--texte-2); font-size: .8125rem; line-height: 1.55; }
 .form__mention a { color: var(--encre); }
-/* Appel de démo : une case sous les coordonnées (seuls ceux qui remplissent le formulaire entendent l'agent) */
-.demo-case { display: flex; gap: 12px; align-items: flex-start; margin: 4px 0 2px; padding: 14px 16px; border: 1.5px solid var(--contour); border-radius: var(--r-champ); cursor: pointer; font-size: .9375rem; line-height: 1.45; }
-.demo-case input { flex: none; width: 22px; height: 22px; margin: 1px 0 0; accent-color: var(--encre); cursor: pointer; }
-.demo-case small { display: block; color: var(--texte-2); font-size: .8125rem; }
-.demo-case:has(input:focus-visible) { box-shadow: 0 0 0 2px var(--encre); }
 .form .btn { width: 100%; }
 .form .btn:disabled { opacity: .6; cursor: progress; }
 .form__resultat { min-height: 1.4em; font-size: .95rem; font-weight: 600; }
@@ -965,7 +960,7 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
         <h1 id="titre">Every call answered. Even under the sink.</h1>
         <p class="lead">When you’re out on a service call, our answering agent picks up for you, in your business’s name. It puts emergencies through to you and texts you a summary of the other calls. When you answer, nothing changes.</p>
         <div class="hero__actions">
-          <a class="btn" href="#contact">Request my free audit</a> <a class="lien" href="#formulaire">Get a demo call</a>
+          <a class="btn" href="#contact">Request my free audit</a> <a class="lien" href="#prix">See pricing</a>
         </div>
         <ul class="faits">
           <li>$199 a month</li>
@@ -986,7 +981,7 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
           <div class="scene__photos" aria-hidden="true">
             <span class="photo-metier scene__photo actif pret" data-photo="plomberie"></span> <span class="photo-metier scene__photo" data-photo="chauffage"></span> <span class="photo-note">Illustrative photo</span>
           </div>
-          <div class="metiers" id="metiers" role="group" aria-label="Choose the demo call">
+          <div class="metiers" id="metiers" role="group" aria-label="Choose the call for the demo">
             <button type="button" data-metier="chauffe-eau" data-photo="plomberie" aria-pressed="true">Water heater</button>
             <button type="button" data-metier="gel" data-photo="plomberie" aria-pressed="false">Frozen pipe</button>
             <button type="button" data-metier="degat" data-photo="plomberie" aria-pressed="false">Water damage</button>
@@ -1297,7 +1292,6 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
           <div class="champ"><label for="f-tel">Phone</label><input id="f-tel" name="telephone" type="tel" autocomplete="tel" inputmode="tel" required></div>
           <div class="champ"><label for="f-courriel">Email <span>(optional)</span></label><input id="f-courriel" name="courriel" type="email" autocomplete="email"></div>
         </div>
-        <label class="demo-case"><input type="checkbox" name="appel_demo" value="oui"><span>Get a demo call from the answering agent<small>It calls you right away, for 3 minutes, as if it were answering your customers. From 9 a.m. to 8 p.m., once per number.</small></span></label>
         <details class="plus" id="plus" open>
         <summary>Add details <span>(optional)</span><svg aria-hidden="true"><use href="#i-plus"/></svg></summary>
         <div class="champs">
@@ -1626,23 +1620,6 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
       resultat.appendChild(document.createTextNode(' ')); resultat.appendChild(a); resultat.appendChild(document.createTextNode('.'));
     }
   }
-  // Appel de démo (uio-backend, demo_appel.py) : seulement après un formulaire bien reçu. Jamais bloquant.
-  var DEMO = {
-    appel: ' The answering agent will call you within a minute for your demo.',
-    hors_heures: ' Demo calls run from 9 a.m. to 8 p.m.: we’ll let you hear it during the audit.',
-    deja: ' This number has already had its demo call.',
-    plein: ' Today’s demo calls are full: we’ll let you hear it during the audit.'
-  };
-  // « Recevoir un appel de démo » (haut de page) mène au formulaire avec la case déjà cochée
-  document.querySelectorAll('a[href="#formulaire"]').forEach(function (a) { a.addEventListener('click', function () { var c = form.querySelector('input[name=appel_demo]'); if (c) c.checked = true; }); });
-  async function appelDemo(d) {
-    try {
-      var r = await fetch('https://uio-backend.onrender.com/demo/appel', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nom: d.nom, entreprise: d.entreprise, telephone: d.telephone, metier: d.metier, langue: document.documentElement.lang, _piege: d.botcheck ? '1' : '' }) });
-      var j = await r.json();
-      return DEMO[j.statut] || ' We’ll let you hear the agent during the audit.';
-    } catch (e) { return ' We’ll let you hear the agent during the audit.'; }
-  }
   var ECHEC = 'Sending didn’t work. Try again or email us at';
   form.addEventListener('submit', async function (ev) {
     ev.preventDefault();
@@ -1656,7 +1633,7 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
     try {
       var rep = await fetch(form.action, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(d), signal: ctrl ? ctrl.signal : undefined });
       var json = await rep.json().catch(function () { return {}; });
-      if (rep.ok && json.success) { message('Request received. We’ll call you back the same day (or first thing the next morning for requests sent in the evening).', true); if (d.appel_demo === 'oui') appelDemo(d).then(function (t) { resultat.appendChild(document.createTextNode(t)); }); form.reset(); champForfait.value = ''; champScenario.value = ''; texteForfait.hidden = true; }
+      if (rep.ok && json.success) { message('Request received. We’ll call you back the same day (or first thing the next morning for requests sent in the evening).', true); form.reset(); champForfait.value = ''; champScenario.value = ''; texteForfait.hidden = true; }
       else message(ECHEC, false, true);
     } catch (e) {
       message(ECHEC, false, true);
