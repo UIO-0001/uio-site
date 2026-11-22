@@ -963,7 +963,7 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
         <figure class="resume" id="resume" aria-label="Fictional example: the text you get after the call">
           <div class="resume__carte">
             <div class="resume__tete"><span class="icone-uio" aria-hidden="true"></span><b>Answering agent</b><span class="resume__quand">just now</span></div>
-            <p class="resume__texte" id="resume-texte">New appointment: Tuesday 9 a.m., 12 rue Laval. Leaking water heater. Customer: 819-555-0142.</p>
+            <p class="resume__texte" id="resume-texte">New request: leaking water heater, 12 rue Laval. Call back before noon: 819-555-0142.</p>
           </div>
           <figcaption class="petit">The text you get after every call. Fictional example.</figcaption>
         </figure>
@@ -991,11 +991,11 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
               <li data-t="1800"><span class="qui">Caller</span><q>My water heater is leaking a bit. Can you come by this week?</q></li>
               <li data-t="3100"><span class="qui">Agent</span><q>Yes. What’s the address?</q></li>
               <li data-t="4300"><span class="qui">Caller</span><q>12 rue Laval.</q></li>
-              <li data-t="5500"><span class="qui">Agent</span><q>That’s in our area. I can offer Tuesday at 9 a.m. or Wednesday at 1 p.m.</q><small class="selon">Based on your service area and calendar</small></li>
-              <li data-t="6700"><span class="qui">Caller</span><q>Tuesday, 9 a.m.</q></li>
+              <li data-t="5500"><span class="qui">Agent</span><q>That’s in our area. The plumber will call you back before noon to set a time.</q><small class="selon">Based on your service area and script</small></li>
+              <li data-t="6700"><span class="qui">Caller</span><q>Sounds good, thanks.</q></li>
             </ol>
             <ul class="appel__suite">
-              <li data-t="7800"><i class="puce puce--centre"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10.5l3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></i><div><b>Appointment added to the calendar</b><span>Tuesday 9 a.m. · 12 rue Laval</span></div></li>
+              <li data-t="7800"><i class="puce puce--centre"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10.5l3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></i><div><b>Callback promised before noon</b><span>Leaking water heater · 12 rue Laval</span></div></li>
               <li data-t="8400"><i class="puce puce--texto"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10.5l3.2 3.2L15 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></i><div><b>Summary sent by text</b><span>To you and the customer</span></div></li>
             </ul>
           </div>
@@ -1458,7 +1458,7 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
   var logo = document.getElementById('logo');
   if (!calme) { logo.classList.add('ouvert'); setTimeout(function () { logo.classList.remove('ouvert'); }, 2400); }
 
-  // L'appel : au repos, la carte montre la fin (rendez-vous ajouté, résumé envoyé).
+  // L'appel : au repos, la carte montre la fin (demande notée, résumé envoyé).
   // Avec JavaScript, il se déroule une fois à l'arrivée ; le bouton le rejoue ou l'arrête.
   // Les pastilles changent de métier : le même moteur, un autre script.
   var appel = document.getElementById('appel'), lignes = appel.querySelectorAll('[data-t]');
@@ -1467,13 +1467,13 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
   var FIN_APPEL = 7400, FIN = 9000, SECONDES = 62, FIN_TEXTE = 'Call ended';
   var minuteries = [], chrono = null, joue = false;
   var METIERS = {
-    plomberie: { num: '819-555-0142', nom: 'Lavoie Plumbing', s: 62, resume: 'New appointment: Tuesday 9 a.m., 12 rue Laval. Leaking water heater. Customer: 819-555-0142.', lignes: [
+    plomberie: { num: '819-555-0142', nom: 'Lavoie Plumbing', s: 62, resume: 'New request: leaking water heater, 12 rue Laval. Call back before noon: 819-555-0142.', lignes: [
       ['Caller', 'My water heater is leaking a bit. Can you come by this week?'],
       ['Agent', 'Yes. What’s the address?'],
       ['Caller', '12 rue Laval.'],
-      ['Agent', 'That’s in our area. I can offer Tuesday at 9 a.m. or Wednesday at 1 p.m.', 'Based on your service area and calendar'],
-      ['Caller', 'Tuesday, 9 a.m.']],
-      suite: [['centre', 'Appointment added to the calendar', 'Tuesday 9 a.m. · 12 rue Laval'], ['texto', 'Summary sent by text', 'To you and the customer']] },
+      ['Agent', 'That’s in our area. The plumber will call you back before noon to set a time.', 'Based on your service area and script'],
+      ['Caller', 'Sounds good, thanks.']],
+      suite: [['centre', 'Callback promised before noon', 'Leaking water heater · 12 rue Laval'], ['texto', 'Summary sent by text', 'To you and the customer']] },
     chauffage: { num: '819-555-0187', nom: 'Gagnon Heating', s: 34, resume: 'Emergency transferred to your cell: furnace down, 15°C in the house. Customer: 819-555-0187.', fin: 'Call transferred', lignes: [
       ['Caller', 'My furnace won’t start, and it’s 15 degrees in the house.'],
       ['Agent', 'That’s an emergency. I’m transferring you to the technician right now, please stay on the line.', 'Emergency set out in your script'],
@@ -1484,13 +1484,13 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
       ['Agent', 'Happy to help. An electrician will call you back today before 4 p.m.', 'Per your script: quotes'],
       ['Caller', 'Perfect, thanks.']],
       suite: [['centre', 'Callback promised before 4 p.m.', 'Quote · EV charger'], ['texto', 'Summary sent by text', 'To you and the customer']] },
-    garage: { num: '613-555-0164', nom: 'Dubé Auto', s: 57, resume: 'New appointment: Thursday 8 a.m., winter tire install on a 2019 Civic, customer has the tires. French-speaking customer: 613-555-0164.', lignes: [
+    garage: { num: '613-555-0164', nom: 'Dubé Auto', s: 57, resume: 'New request: winter tire install on a 2019 Civic, customer has the tires. French-speaking customer, call back tomorrow morning: 613-555-0164.', lignes: [
       ['Caller', 'Bonjour ! Est-ce que vous posez des pneus d’hiver cette semaine ?', '', 'fr'],
       ['Agent', 'Oui. C’est pour quelle voiture, et vous avez déjà les pneus ?', 'Switched to French', 'fr'],
       ['Caller', 'Une Civic 2019. Les pneus sont chez moi.', '', 'fr'],
-      ['Agent', 'Parfait. J’ai jeudi à 8 h ou vendredi à 14 h.', 'Based on your calendar', 'fr'],
-      ['Caller', 'Jeudi, 8 h, ça me va.', '', 'fr']],
-      suite: [['centre', 'Appointment added to the calendar', 'Thursday 8 a.m. · Winter tires, 2019 Civic'], ['texto', 'Summary sent by text', 'To you and the customer']] }
+      ['Agent', 'Parfait. Le garage vous rappelle demain matin pour fixer l’heure.', 'Per your script', 'fr'],
+      ['Caller', 'Super, merci !', '', 'fr']],
+      suite: [['centre', 'Callback promised tomorrow morning', 'Winter tires · 2019 Civic'], ['texto', 'Summary sent by text', 'To you and the customer']] }
   };
   var DEPARTS = [300, 1800, 3100, 4300, 5500, 6700], DEPARTS_SUITE = [7800, 8400];
   // Le minutage suit la longueur de l'appel : la suite arrive après la dernière réplique
