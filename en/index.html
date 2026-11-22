@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- Page fabriquée à partir de ../index.html par l’outil de traduction (agenceuio/design/outils/traduction/LISEZMOI.md) : ne pas la modifier à la main. -->
 <title>Agence UIO · AI answering agent for the trades</title>
-<meta name="description" content="An AI answering agent takes your calls 24/7, in French and English, books appointments and texts you a summary. From $199 a month, no contract.">
+<meta name="description" content="When you can’t pick up, an AI answering agent takes the call in your business’s name, in French or English, and texts you the summary. From $199 a month, no contract.">
 <link rel="canonical" href="https://agenceuio.ca/en/">
 <link rel="alternate" hreflang="fr-CA" href="https://agenceuio.ca/">
 <link rel="alternate" hreflang="en-CA" href="https://agenceuio.ca/en/">
@@ -17,7 +17,7 @@
 <meta property="og:locale:alternate" content="fr_CA">
 <meta property="og:site_name" content="Agence UIO">
 <meta property="og:title" content="Every call answered, even on the job site">
-<meta property="og:description" content="An AI answering agent 24/7, in French and English, for trade contractors. From $199 a month, no contract.">
+<meta property="og:description" content="When you can’t pick up, an AI answering agent takes the call in your business’s name. For trade contractors, from $199 a month, no contract.">
 <meta property="og:url" content="https://agenceuio.ca/en/">
 <meta property="og:image" content="https://agenceuio.ca/assets/og-image-en.jpg">
 <meta property="og:image:width" content="1200">
@@ -598,11 +598,6 @@ h3 { font-size: 1.3125rem; line-height: 1.25; font-weight: 650; letter-spacing: 
 .champ input:user-invalid, .champ textarea:user-invalid { border-color: #B42318; }
 .form__mention { color: var(--texte-2); font-size: .8125rem; line-height: 1.55; }
 .form__mention a { color: var(--encre); }
-/* Appel de démo : une case sous les coordonnées (seuls ceux qui remplissent le formulaire entendent l'agent) */
-.demo-case { display: flex; gap: 12px; align-items: flex-start; margin: 4px 0 2px; padding: 14px 16px; border: 1.5px solid var(--contour); border-radius: var(--r-champ); cursor: pointer; font-size: .9375rem; line-height: 1.45; }
-.demo-case input { flex: none; width: 22px; height: 22px; margin: 1px 0 0; accent-color: var(--encre); cursor: pointer; }
-.demo-case small { display: block; color: var(--texte-2); font-size: .8125rem; }
-.demo-case:has(input:focus-visible) { box-shadow: 0 0 0 2px var(--encre); }
 .form .btn { width: 100%; }
 .form .btn:disabled { opacity: .6; cursor: progress; }
 .form__resultat { min-height: 1.4em; font-size: .95rem; font-weight: 600; }
@@ -956,9 +951,9 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
     <div class="wrap hero__grille">
       <div class="hero__texte">
         <h1 id="titre">Every call answered. Even on the job site.</h1>
-        <p class="lead">An AI answering agent takes your calls 24/7, in French and English: on the job site, in the evening and on weekends. It only puts emergencies through to you, books the appointment and texts you the summary.</p>
+        <p class="lead">When you can’t pick up, our answering agent takes the call in your business’s name, in French or English. It puts emergencies through to you, takes down the request and texts you the summary. When you answer, nothing changes.</p>
         <div class="hero__actions">
-          <a class="btn" href="#contact">Request my free audit</a> <a class="lien" href="#formulaire">Get a demo call</a>
+          <a class="btn" href="#contact">Request my free audit</a> <a class="lien" href="#forfaits">See plans</a>
         </div>
         <ul class="faits">
           <li>From $199 a month</li>
@@ -1077,7 +1072,6 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
       <div class="onglets" id="onglets" aria-label="The modules">
         <button type="button" id="o-centre" data-m="centre" aria-controls="p-centre"><span>Control<span class="o-long"> centre</span></span></button>
         <button type="button" id="o-texto" data-m="texto" aria-controls="p-texto"><span>Text<span class="o-long"> after a missed call</span></span></button>
-        <button type="button" id="o-site" data-m="site" aria-controls="p-site"><span>Website</span></button>
       </div>
 
       <div class="panneaux">
@@ -1092,7 +1086,7 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
               <li><b>Automatic texts</b><span>Quote follow-ups and appointment reminders.</span></li>
               <li><b>Charts and the monthly report</b><span>Calls taken, jobs booked, reviews received.</span></li>
             </ul>
-            <p class="offre-ligne">On its own: $149 a month. Included in Growth and Complete.</p>
+            <p class="offre-ligne">Included in Growth and Complete.</p>
           </div>
           <div class="panneau__scene">
             <figure class="bord" id="bord" aria-label="Fictional example of the control centre">
@@ -1114,32 +1108,19 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
         <div class="panneau panneau--texto" id="p-texto">
           <div class="panneau__texte">
             <h3>The missed-call text</h3>
-            <p>If someone hangs up before speaking, they get a text in your name right away. The lead isn’t lost.</p>
-            <p>The text gives your business’s name and honours opt-out requests (STOP or ARRÊT).</p>
-            <p class="offre-ligne">Included with the answering agent. On its own: $69 a month.</p>
+            <p>If someone hangs up before speaking, they get a text in your name right away, with one question: emergency or quote? Their reply comes to you by text.</p>
+            <p>The lead isn’t lost, and the text honours opt-out requests (STOP or ARRÊT).</p>
+            <p class="offre-ligne">Included in all three plans.</p>
           </div>
           <div class="panneau__scene">
             <figure class="fil" id="fil" aria-label="Fictional example of a missed-call text">
               <ol>
                 <li data-etat="manque"><span class="bord__heure">2:32 p.m.</span><span class="bord__quoi"><b>Missed call</b><span>819-555-0142 hung up before speaking.</span></span></li>
-                <li data-etat="envoye"><span class="bord__heure">2:32 p.m.</span><span class="bord__quoi"><b>Text sent in your name</b><q>Sorry we missed your call. How can we help?</q><span class="fil__ecrit" aria-hidden="true"><i></i><i></i><i></i></span></span></li>
-                <li data-etat="reponse"><span class="bord__heure">2:39 p.m.</span><span class="bord__quoi"><b>Customer’s reply</b><q>A leak under the sink. Can you come by tomorrow?</q><span class="fil__ecrit" aria-hidden="true"><i></i><i></i><i></i></span></span></li>
+                <li data-etat="envoye"><span class="bord__heure">2:32 p.m.</span><span class="bord__quoi"><b>Text sent in your name</b><q>Hi, this is Lavoie Plumbing. Sorry we missed your call. Is it an emergency or a quote? Reply to this text and we’ll get back to you shortly.</q><span class="fil__ecrit" aria-hidden="true"><i></i><i></i><i></i></span></span></li>
+                <li data-etat="reponse"><span class="bord__heure">2:39 p.m.</span><span class="bord__quoi"><b>Customer’s reply</b><q>Not an emergency. A leak under the sink: can you come by tomorrow?</q><span class="fil__ecrit" aria-hidden="true"><i></i><i></i><i></i></span></span></li>
               </ol>
               <figcaption class="exemple-note">Fictional example.</figcaption>
             </figure>
-          </div>
-        </div>
-
-        <div class="panneau panneau--site" id="p-site">
-          <div class="panneau__texte">
-            <h3>A website that gets you calls</h3>
-            <p>A custom bilingual website, hosted and kept up to date. As an option, an AI chatbot built for your trade: price estimator, frequently asked questions, appointment booking.</p>
-            <button class="rejouer essai-chat" id="essayer-chat" type="button" data-avec-chat data-ouvre-chat hidden>Try this page’s chatbot</button>
-            <p class="petit">Our work: Mobilo Moving, a moving company. Bilingual website with estimates from a photo. <a class="lien-externe" href="https://themobilo.com" target="_blank" rel="noopener">themobilo.com</a></p>
-            <p class="offre-ligne">Website: $99 a month. Chatbot: $59 more.</p>
-          </div>
-          <div class="panneau__scene">
-            <a class="module__image" href="https://themobilo.com" target="_blank" rel="noopener" aria-label="See the Mobilo Moving website (new tab)"><img src="../assets/mobilo-apercu.webp" srcset="../assets/mobilo-apercu-720.webp 720w, ../assets/mobilo-apercu.webp 1440w" sizes="(min-width: 960px) 600px, 100vw" width="1440" height="900" alt="Home page of the Mobilo Moving website" loading="lazy" decoding="async"></a>
           </div>
         </div>
       </div>
@@ -1189,19 +1170,19 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
       </div>
 
       <div class="choix-forfait" id="choix-forfait" role="group" aria-label="View a plan" aria-controls="liste-forfaits">
-        <button type="button" data-plan="Répondeur" aria-pressed="false">Answering</button>
-        <button type="button" data-plan="Croissance" aria-pressed="true">Growth</button>
+        <button type="button" data-plan="Répondeur" aria-pressed="true">Answering</button>
+        <button type="button" data-plan="Croissance" aria-pressed="false">Growth</button>
         <button type="button" data-plan="Complet" aria-pressed="false">Complete</button>
       </div>
       <div class="forfaits" id="liste-forfaits">
-        <div class="forfait" data-nom="Répondeur">
-          <div class="forfait__nom"><h3>Answering</h3></div>
+        <div class="forfait forfait--vedette" data-nom="Répondeur">
+          <div class="forfait__nom"><h3>Answering</h3><span class="etiquette">Start here</span></div>
           <p class="forfait__pour">So you never lose another call.</p>
           <p class="forfait__prix"><b>$199</b><span>a month</span></p>
           <p class="forfait__depart">Setup fee: $299, credited back starting with your 4th invoice <span class="forfait__valeur">First-month money-back guarantee, setup fee included</span></p>
-          <a class="btn btn--contour" href="#contact" data-forfait="Answering">Choose the Answering plan</a>
+          <a class="btn" href="#contact" data-forfait="Answering">Choose the Answering plan</a>
           <ul>
-            <li data-m="voix">AI answering agent 24/7, in French and English</li>
+            <li data-m="voix">AI answering agent for the calls you don’t take, 24/7, in French and English</li>
             <li data-m="voix">Script written for your trade, emergencies included</li>
             <li data-m="voix">A text summary of every call, and a confirmation text to your customer</li>
             <li data-m="voix">Only emergencies are transferred to your cell</li>
@@ -1210,12 +1191,12 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
             <li class="minutes" data-m="voix">250 minutes a month, about 80 to 190 calls</li>
           </ul>
         </div>
-        <div class="forfait forfait--vedette" data-nom="Croissance">
-          <div class="forfait__nom"><h3>Growth</h3><span class="etiquette">Recommended</span></div>
+        <div class="forfait" data-nom="Croissance">
+          <div class="forfait__nom"><h3>Growth</h3></div>
           <p class="forfait__pour">Appointments in your calendar, Google reviews and a monthly report.</p>
           <p class="forfait__prix"><b>$299</b><span>a month</span></p>
-          <p class="forfait__depart">Setup fee: $399, credited back starting with your 4th invoice <span class="forfait__valeur">First-month money-back guarantee, setup fee included</span> <span class="forfait__valeur">À la carte: $348 a month</span></p>
-          <a class="btn" href="#contact" data-forfait="Growth">Choose the Growth plan</a>
+          <p class="forfait__depart">Setup fee: $399, credited back starting with your 4th invoice <span class="forfait__valeur">First-month money-back guarantee, setup fee included</span></p>
+          <a class="btn btn--contour" href="#contact" data-forfait="Growth">Choose the Growth plan</a>
           <ul>
             <li data-m="voix">Everything in Answering</li>
             <li data-m="centre">Appointments booked in your calendar</li>
@@ -1229,7 +1210,7 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
           <div class="forfait__nom"><h3>Complete</h3></div>
           <p class="forfait__pour">Growth + a custom website, for $100 more a month.</p>
           <p class="forfait__prix"><b>$399</b><span>a month</span></p>
-          <p class="forfait__depart">Setup fee: $799, website build included <span class="forfait__valeur">First-month money-back guarantee, setup fee included</span> <span class="forfait__valeur">À la carte: $447 a month</span></p>
+          <p class="forfait__depart">Setup fee: $799, website build included <span class="forfait__valeur">First-month money-back guarantee, setup fee included</span></p>
           <a class="btn btn--contour" href="#contact" data-forfait="Complete">Choose the Complete plan</a>
           <ul>
             <li data-m="centre">Everything in Growth</li>
@@ -1243,23 +1224,11 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
 
       <details class="tuile carte" id="a-la-carte" open>
         <summary>
-          <h3>Or à la carte</h3>
-          <span class="carte__texte">Take only what you need. Several modules together cost less: we’ll do the math with you during the audit.</span>
+          <h3>Minutes and options</h3>
+          <span class="carte__texte">What happens if you go over your minutes, and what we can add.</span>
           <span class="carte__chevron"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 7.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         </summary>
         <div class="carte__corps">
-        <div class="table-defile">
-          <table class="modules">
-            <thead><tr><th scope="col">Module</th><th scope="col">Monthly</th><th scope="col">Setup</th></tr></thead>
-            <tbody>
-              <tr data-m="voix"><td><b>AI answering agent</b><span>Includes the missed-call text, 250 minutes</span></td><td>$199</td><td>$299</td></tr>
-              <tr data-m="texto"><td><b>Missed-call text</b></td><td>$69</td><td>$99</td></tr>
-              <tr data-m="site"><td><b>Website</b><span>Custom, bilingual, hosted</span></td><td>$99</td><td>$499</td></tr>
-              <tr data-m="centre"><td><b>Control centre</b><span>Customers, calendar, reviews, texts, report</span></td><td>$149</td><td>$199</td></tr>
-              <tr data-m="site"><td><b>AI chatbot on your website</b><span>With the website, or on your current site</span></td><td>+ $59</td><td>+ $199</td></tr>
-            </tbody>
-          </table>
-        </div>
         <div class="extras">
           <p><b>Extra minutes:</b> $0.39 a minute, and we warn you at 80% of your plan. If you often go over: a block of 250 more minutes for $99 a month, stackable. Very large volumes: custom quote. Spam and calls under 15 seconds never count toward your minutes.</p>
           <p><b>Second number or location:</b> $49 a month. <b>Answering agent for all your calls,</b> not just the ones you miss: custom quote.</p>
@@ -1337,10 +1306,10 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
         <details><summary>Do I keep my number?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Yes. The calls you don’t take are forwarded to the answering agent; we set up the forwarding with you at your phone provider. It can also answer all your calls; we quote that separately.</p></details>
         <details><summary>How many minutes are included?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>250, 500 or 750 minutes a month depending on the plan; 250 minutes is about 80 to 190 calls. Spam and calls under 15 seconds never count. We warn you at 80%. Past your included minutes, it’s $0.39 a minute, or a block of 250 more minutes for $99 a month if you often go over.</p></details>
         <details><summary>Am I tied to a contract?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>No. It’s month to month, and you can stop whenever you want. The setup fee pays for installing and testing your script. With Answering and Growth, it comes back to you as a credit on your 4th invoice; anything above that invoice ($100 with the plan alone) carries over to the 5th. This credit is never paid out in cash: if you stop before the 5th invoice, the rest isn’t refunded. The first month is money-back guaranteed, setup fee included.</p></details>
-        <details><summary>I already have a website. Do I need to redo it?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>No. The answering agent and the control centre work with any website. The AI chatbot can also be added to most existing websites (WordPress, Wix, Shopify, Squarespace): we install it for you, without touching your design.</p></details>
+        <details><summary>I already have a website. Do I need to redo it?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>No. The answering agent connects to your current number: your website doesn’t change. If you don’t have a website, the Complete plan includes a custom one.</p></details>
         <details><summary>Are review requests allowed by Google?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>Yes, as long as there’s no filtering. All your customers get the same request, with no reward and without picking only the happy ones, as Google’s rules require.</p></details>
         <details><summary>Do you guarantee a number of customers?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>No. The number of jobs depends on your calls, your prices and your service. We commit to installing the tools and making them work, and every call summary shows you what they do for you.</p></details>
-        <details><summary>Do you only work with plumbers?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>We specialize in trades where a missed call costs a lot: plumbing, heating and cooling, electrical, auto repair, roofing, moving. For another field, call or email us.</p></details>
+        <details><summary>Do you only work with plumbers?<svg aria-hidden="true"><use href="#i-plus"/></svg></summary><p>We specialize in trades where a missed call costs a lot: plumbing, heating and cooling, electrical, auto repair, roofing, moving. Plumbers and heating contractors have <a href="plumbers/">their own page</a>. For another field, email us.</p></details>
       </div>
     </div>
   </section>
@@ -1381,7 +1350,6 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
           <div class="champ"><label for="f-tel">Phone</label><input id="f-tel" name="telephone" type="tel" autocomplete="tel" inputmode="tel" required></div>
           <div class="champ"><label for="f-courriel">Email <span>(optional)</span></label><input id="f-courriel" name="courriel" type="email" autocomplete="email"></div>
         </div>
-        <label class="demo-case"><input type="checkbox" name="appel_demo" value="oui"><span>Get a demo call from the answering agent<small>It calls you right away, for 3 minutes, as if it were answering your customers. From 9 a.m. to 8 p.m., once per number.</small></span></label>
         <details class="plus" id="plus" open>
         <summary>Add details <span>(optional)</span><svg aria-hidden="true"><use href="#i-plus"/></svg></summary>
         <div class="champs">
@@ -1712,7 +1680,7 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
   [ra, rt, rv].forEach(function (r) { r.addEventListener('input', function () { var c = calculer(); champScenario.value = ra.value + ' appels manqués par semaine, ' + rt.value + ' sur 10 deviendraient clients, contrat moyen de ' + rv.value + ' $ : ' + fmt(c) + ' $ par mois'; }); });
   calculer();
 
-  // Forfaits au cellulaire : un seul à la fois, on choisit en haut (Croissance d'abord)
+  // Forfaits au cellulaire : un seul à la fois, on choisit en haut (Répondeur d'abord)
   var choix = document.getElementById('choix-forfait'), plans = document.querySelectorAll('.forfait[data-nom]');
   function montrerPlan(nom, anime) {
     choix.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.plan === nom ? 'true' : 'false'); });
@@ -1722,7 +1690,7 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
     });
   }
   choix.addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) montrerPlan(b.dataset.plan, true); });
-  montrerPlan('Croissance', false);
+  montrerPlan('Répondeur', false);
 
   // À la carte : ouvert sur grand écran, replié au cellulaire. Détails du formulaire : repliés au cellulaire.
   document.getElementById('a-la-carte').open = grand.matches;
@@ -1764,23 +1732,6 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
       resultat.appendChild(document.createTextNode(' ')); resultat.appendChild(a); resultat.appendChild(document.createTextNode('.'));
     }
   }
-  // Appel de démo (uio-backend, demo_appel.py) : seulement après un formulaire bien reçu. Jamais bloquant.
-  var DEMO = {
-    appel: ' The answering agent will call you within a minute for your demo.',
-    hors_heures: ' Demo calls run from 9 a.m. to 8 p.m.: we’ll let you hear it during the audit.',
-    deja: ' This number has already had its demo call.',
-    plein: ' Today’s demo calls are full: we’ll let you hear it during the audit.'
-  };
-  // « Recevoir un appel de démo » (haut de page) mène au formulaire avec la case déjà cochée
-  document.querySelectorAll('a[href="#formulaire"]').forEach(function (a) { a.addEventListener('click', function () { var c = form.querySelector('input[name=appel_demo]'); if (c) c.checked = true; }); });
-  async function appelDemo(d) {
-    try {
-      var r = await fetch('https://uio-backend.onrender.com/demo/appel', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nom: d.nom, entreprise: d.entreprise, telephone: d.telephone, metier: d.metier, langue: document.documentElement.lang, _piege: d.botcheck ? '1' : '' }) });
-      var j = await r.json();
-      return DEMO[j.statut] || ' We’ll let you hear the agent during the audit.';
-    } catch (e) { return ' We’ll let you hear the agent during the audit.'; }
-  }
   var ECHEC = 'Sending didn’t work. Try again or email us at';
   form.addEventListener('submit', async function (ev) {
     ev.preventDefault();
@@ -1794,7 +1745,7 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
     try {
       var rep = await fetch(form.action, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(d), signal: ctrl ? ctrl.signal : undefined });
       var json = await rep.json().catch(function () { return {}; });
-      if (rep.ok && json.success) { message('Request received. We’ll call you back the same day (or first thing the next morning for requests sent in the evening).', true); if (d.appel_demo === 'oui') appelDemo(d).then(function (t) { resultat.appendChild(document.createTextNode(t)); }); form.reset(); champForfait.value = ''; champScenario.value = ''; texteForfait.hidden = true; }
+      if (rep.ok && json.success) { message('Request received. We’ll call you back the same day (or first thing the next morning for requests sent in the evening).', true); form.reset(); champForfait.value = ''; champScenario.value = ''; texteForfait.hidden = true; }
       else message(ECHEC, false, true);
     } catch (e) {
       message(ECHEC, false, true);
@@ -1802,7 +1753,7 @@ html[data-theme="sombre"] #uio-btn { box-shadow: 0 0 0 2px var(--blanc), 0 8px 2
   });
 
   // Le chatbot de l'agence vient de notre serveur (uio-backend). Il se charge une fois la page prête,
-  // pour ne jamais la ralentir ; s'il répond, le module Site propose de l'essayer et le contact, d'y choisir un créneau.
+  // pour ne jamais la ralentir ; s'il répond, le contact propose d'y choisir un créneau.
   function chatPret() {
     document.querySelectorAll('[data-avec-chat]').forEach(function (e) { e.hidden = false; });
     document.querySelectorAll('[data-ouvre-chat]').forEach(function (b) { b.addEventListener('click', function () { window.UIOChat.open(); }); });

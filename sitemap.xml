@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://agenceuio.ca/</loc>
-    <lastmod>2026-11-07</lastmod>
+    <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="fr-CA" href="https://agenceuio.ca/"/>
@@ -11,12 +11,30 @@
   </url>
   <url>
     <loc>https://agenceuio.ca/en/</loc>
-    <lastmod>2026-11-07</lastmod>
+    <lastmod>2026-11-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="fr-CA" href="https://agenceuio.ca/"/>
     <xhtml:link rel="alternate" hreflang="en-CA" href="https://agenceuio.ca/en/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://agenceuio.ca/"/>
+  </url>
+  <url>
+    <loc>https://agenceuio.ca/plombiers/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://agenceuio.ca/plombiers/"/>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://agenceuio.ca/en/plumbers/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://agenceuio.ca/plombiers/"/>
+  </url>
+  <url>
+    <loc>https://agenceuio.ca/en/plumbers/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://agenceuio.ca/plombiers/"/>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://agenceuio.ca/en/plumbers/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://agenceuio.ca/plombiers/"/>
   </url>
   <url>
     <loc>https://agenceuio.ca/confidentialite.html</loc>
